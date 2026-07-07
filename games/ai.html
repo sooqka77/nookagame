@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"/>
   <title>Нейро Академия</title>
   <link rel="preconnect" href="https://fonts.bunny.net">
-  <link href="https://fonts.bunny.net/css2?family=nunito:wght@400;600;700;800;900&family=orbitron:wght@500;700;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.bunny.net/css2?family=nunito:wght@400;600;700;800;900&family=orbitron:wght@500;700;900&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
   <style>
     *{box-sizing:border-box;margin:0;padding:0}
     html,body{height:100%;overflow:hidden;overscroll-behavior:none;touch-action:none;}
@@ -8249,7 +8249,7 @@ function App() {
   const [codeSuccess, setCodeSuccess] = useState(false);
   useEffect(() => {
     try {
-      if (TG.CloudStorage) {
+      if (TG.CloudStorage && TG.isVersionAtLeast && TG.isVersionAtLeast('6.9')) {
         TG.CloudStorage.getItems(['aiq_gs', 'aiq_paid'], (err, values) => {
           if (!err && values) {
             if (values.aiq_gs) try {
@@ -8266,7 +8266,7 @@ function App() {
       localStorage.setItem('aiq5_gs', JSON.stringify(gs));
     } catch (e) {}
     try {
-      if (TG.CloudStorage) TG.CloudStorage.setItem('aiq_gs', JSON.stringify(gs), () => {});
+      if (TG.CloudStorage && TG.isVersionAtLeast && TG.isVersionAtLeast('6.9')) TG.CloudStorage.setItem('aiq_gs', JSON.stringify(gs), () => {});
     } catch (e) {}
   }, [gs]);
   useEffect(() => {
@@ -8345,7 +8345,7 @@ function App() {
     if (UNLOCK_CODE && t === UNLOCK_CODE || t === 'DEMO_UNLOCK') {
       setPaid(true);
       localStorage.setItem('aiq5_paid', '1');
-      if (TG.CloudStorage) TG.CloudStorage.setItem('aiq_paid', '1', () => {});
+      if (TG.CloudStorage && TG.isVersionAtLeast && TG.isVersionAtLeast('6.9')) TG.CloudStorage.setItem('aiq_paid', '1', () => {});
       setCodeSuccess(true);
       if (TG.HapticFeedback) TG.HapticFeedback.notificationOccurred('success');
       setTimeout(() => {
