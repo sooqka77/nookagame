@@ -1,0 +1,976 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no"/>
+<title>КвантУм — Физика</title>
+<style>
+@import url('https://fonts.bunny.net/css?family=fredoka-one:400|nunito:500,700,800');
+:root{
+  --ak-bg:#FFF3E2;--ak-bg-2:#FFE8CC;--ak-surface:#FFFDF7;
+  --ak-ink:#2D1B45;--ak-ink-2:#6B5680;--ak-ink-3:#A797B8;
+  --ak-phys-1:#E5DCFF;--ak-phys-2:#B5A1FF;--ak-phys-3:#7C5FE0;
+  --ak-cta-1:#FFEDA8;--ak-cta-2:#FFD262;--ak-cta-3:#D4A22B;
+  --ak-ok-1:#C8F2DD;--ak-ok-2:#5DD9A0;--ak-ok-3:#2BA873;
+  --ak-warn-1:#FFD2C8;--ak-warn-2:#FF8B7A;--ak-warn-3:#D9523F;
+  --ak-star-1:#FFE49E;--ak-star-2:#FFC857;--ak-star-3:#D4972B;
+  --ak-display:'Fredoka One','Nunito',system-ui,sans-serif;
+  --ak-body:'Nunito',system-ui,sans-serif;
+}
+html,body{background:var(--ak-bg);margin:0;overflow:hidden;}
+#root{height:100vh;overflow:hidden;}
+body{margin:0;font-family:var(--ak-body);color:var(--ak-ink);}
+.ak{font-family:var(--ak-body);color:var(--ak-ink);-webkit-font-smoothing:antialiased;}
+.ak-clay{background:var(--ak-surface);border-radius:28px;box-shadow:0 10px 22px -8px rgba(45,27,69,.22),0 4px 10px -4px rgba(45,27,69,.10),inset 0 2px 0 rgba(255,255,255,.9),inset 0 -3px 0 rgba(45,27,69,.06);}
+.ak-btn{font-family:var(--ak-display);font-size:17px;border:none;cursor:pointer;transition:transform .08s,box-shadow .08s;user-select:none;display:inline-flex;align-items:center;justify-content:center;gap:8px;line-height:1;padding:15px 26px;border-radius:999px;color:var(--ak-ink);}
+.ak-btn--phys{color:#fff;background:linear-gradient(180deg,#C4B5FF,#B5A1FF 55%,#9C83FF);box-shadow:0 6px 0 var(--ak-phys-3),0 12px 24px -6px rgba(124,95,224,.5),inset 0 2px 0 rgba(255,255,255,.5);}
+.ak-btn--phys:active{transform:translateY(4px);box-shadow:0 2px 0 var(--ak-phys-3);}
+.ak-btn--cta{color:var(--ak-ink);background:linear-gradient(180deg,#FFEDA8,#FFD262 55%,#FFC03A);box-shadow:0 6px 0 var(--ak-cta-3),0 12px 24px -6px rgba(212,162,43,.55),inset 0 2px 0 rgba(255,255,255,.85);}
+.ak-btn--cta:active{transform:translateY(4px);}
+.ak-btn--soft{color:var(--ak-ink);background:linear-gradient(180deg,#fff,#FFF7E8);box-shadow:0 4px 0 rgba(45,27,69,.10),0 8px 18px -6px rgba(45,27,69,.12),inset 0 2px 0 #fff,inset 0 0 0 1px rgba(45,27,69,.06);}
+.ak-btn--soft:active{transform:translateY(3px);}
+.ak-btn--sm{padding:10px 18px;font-size:14px;}
+.ak-btn--ok{color:#fff;background:linear-gradient(180deg,#7CECB5,#5DD9A0 55%,#3FC685);box-shadow:0 6px 0 var(--ak-ok-3),0 12px 24px -6px rgba(43,168,115,.5),inset 0 2px 0 rgba(255,255,255,.5);}
+.ak-btn--ok:active{transform:translateY(4px);}
+@keyframes ak-bob{0%,100%{transform:translateY(0) rotate(-1deg);}50%{transform:translateY(-5px) rotate(1deg);}}
+@keyframes ak-pop{0%{transform:scale(.65);opacity:0;}65%{transform:scale(1.07);}100%{transform:scale(1);opacity:1;}}
+@keyframes ak-shake{0%,100%{transform:translateX(0);}20%{transform:translateX(-8px);}40%{transform:translateX(8px);}60%{transform:translateX(-5px);}80%{transform:translateX(5px);}}
+@keyframes ak-pulse{0%,100%{opacity:1;}50%{opacity:.45;}}
+.ak-bob{animation:ak-bob 3s ease-in-out infinite;}
+.ak-pop{animation:ak-pop .38s cubic-bezier(.2,.8,.3,1) both;}
+.ak-shake{animation:ak-shake .4s ease-in-out;}
+.ak-pulse{animation:ak-pulse 1.4s ease-in-out infinite;}
+input[type=range]{-webkit-appearance:none;width:100%;height:20px;border-radius:999px;background:transparent;cursor:pointer;outline:none;}
+input[type=range]::-webkit-slider-runnable-track{height:20px;border-radius:999px;background:linear-gradient(180deg,var(--ak-phys-1),var(--ak-phys-2));}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:38px;height:38px;border-radius:50%;margin-top:-9px;cursor:pointer;background:linear-gradient(180deg,#fff,#FFF7E8);box-shadow:0 4px 0 rgba(45,27,69,.15),0 8px 16px -6px rgba(45,27,69,.2);}
+</style>
+</head>
+<body><div id="root"></div>
+<script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js" crossorigin></script>
+<script type="text/babel">
+const {useState,useEffect,useRef}=React;
+const G=0.27;
+
+/* ── canvas utils ─────────────────────────────────────────── */
+function rrect(ctx,x,y,w,h,r){
+  ctx.beginPath();
+  ctx.moveTo(x+r,y);ctx.lineTo(x+w-r,y);ctx.arcTo(x+w,y,x+w,y+r,r);
+  ctx.lineTo(x+w,y+h-r);ctx.arcTo(x+w,y+h,x+w-r,y+h,r);
+  ctx.lineTo(x+r,y+h);ctx.arcTo(x,y+h,x,y+h-r,r);
+  ctx.lineTo(x,y+r);ctx.arcTo(x,y,x+r,y,r);
+  ctx.closePath();
+}
+function arrowLine(ctx,x1,y1,x2,y2,col,w){
+  const a=Math.atan2(y2-y1,x2-x1),hw=w*3.2;
+  ctx.save();ctx.strokeStyle=col;ctx.fillStyle=col;ctx.lineWidth=w;ctx.lineCap='round';
+  ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(x2,y2);
+  ctx.lineTo(x2-hw*Math.cos(a-.42),y2-hw*Math.sin(a-.42));
+  ctx.lineTo(x2-hw*Math.cos(a+.42),y2-hw*Math.sin(a+.42));
+  ctx.closePath();ctx.fill();ctx.restore();
+}
+function gBall(ctx,x,y,r,c1,c2){
+  const g=ctx.createRadialGradient(x-r*.3,y-r*.35,0,x,y,r);
+  g.addColorStop(0,'#fff');g.addColorStop(.25,c1);g.addColorStop(1,c2);
+  ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);
+  ctx.fillStyle=g;ctx.fill();
+  ctx.strokeStyle='rgba(45,27,69,.2)';ctx.lineWidth=1.5;ctx.stroke();
+}
+function evXY(e,canvas){
+  const r=canvas.getBoundingClientRect(),t=e.touches?e.touches[0]:e;
+  return{x:(t.clientX-r.left)*(canvas.width/r.width),y:(t.clientY-r.top)*(canvas.height/r.height)};
+}
+
+/* ── shared UI ─────────────────────────────────────────────── */
+function TopBar({level,title,onHome,step,total}){
+  return(
+    <div style={{display:'flex',alignItems:'center',gap:10,padding:'12px 16px 6px',flexShrink:0}}>
+      <button className="ak-btn ak-btn--soft ak-btn--sm" onClick={onHome}>← Назад</button>
+      <div style={{flex:1}}>
+        <div style={{fontFamily:'var(--ak-display)',fontSize:11,color:'var(--ak-ink-3)',textTransform:'uppercase',letterSpacing:1}}>Уровень {level}</div>
+        <div style={{fontFamily:'var(--ak-display)',fontSize:16,fontWeight:700,color:'var(--ak-ink)'}}>{title}</div>
+      </div>
+      {total>1&&<div style={{display:'flex',gap:5}}>
+        {Array.from({length:total},(_,i)=>(
+          <div key={i} style={{width:22,height:22,borderRadius:'50%',
+            background:i<step?'var(--ak-ok-2)':i===step?'var(--ak-phys-2)':'rgba(45,27,69,.1)',
+            display:'flex',alignItems:'center',justifyContent:'center',
+            fontSize:12,color:i<step?'#fff':i===step?'#fff':'var(--ak-ink-3)',
+            fontFamily:'var(--ak-display)'}}>{i+1}</div>
+        ))}
+      </div>}
+    </div>
+  );
+}
+
+function TaskBadge({children}){
+  return(
+    <div className="ak-pulse" style={{margin:'0 16px 10px',
+      display:'inline-flex',alignItems:'center',gap:10,
+      padding:'11px 18px 11px 14px',borderRadius:999,
+      background:'#fff',
+      fontFamily:'var(--ak-display)',fontSize:14,fontWeight:600,color:'var(--ak-ink)',
+      boxShadow:'0 4px 0 rgba(45,27,69,.08),0 10px 22px -6px rgba(45,27,69,.14),inset 0 1px 0 rgba(255,255,255,1)'}}>
+      <div style={{width:10,height:10,borderRadius:'50%',background:'#B5A1FF',flexShrink:0,
+        boxShadow:'0 0 0 4px rgba(181,161,255,.33),inset 0 -1px 0 #7C5FE0'}}/>
+      <span>{children}</span>
+    </div>
+  );
+}
+
+function WinModal({emoji,title,law,fact,cta,onNext,onHome}){
+  return(
+    <div style={{position:'absolute',inset:0,background:'rgba(45,27,69,.5)',backdropFilter:'blur(10px)',
+      display:'flex',alignItems:'center',justifyContent:'center',zIndex:200}}>
+      <div className="ak-clay ak-pop" style={{margin:20,padding:28,textAlign:'center',maxWidth:320}}>
+        <div style={{fontSize:52,marginBottom:6}}>{emoji}</div>
+        <div style={{fontFamily:'var(--ak-display)',fontSize:22,fontWeight:700,color:'var(--ak-ink)',marginBottom:12}}>{title}</div>
+        <div style={{background:'var(--ak-phys-1)',borderRadius:18,padding:'14px 18px',marginBottom:18,textAlign:'left'}}>
+          <div style={{fontFamily:'var(--ak-display)',fontSize:13,color:'var(--ak-phys-3)',marginBottom:6}}>⚡ {law}</div>
+          <div style={{fontSize:13,color:'var(--ak-ink)',lineHeight:1.55}}>{fact}</div>
+        </div>
+        <div style={{display:'flex',gap:10,justifyContent:'center'}}>
+          <button className="ak-btn ak-btn--soft ak-btn--sm" onClick={onHome}>🏠</button>
+          <button className="ak-btn ak-btn--cta" onClick={onNext}>{cta}</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function FailModal({tip,onRetry}){
+  return(
+    <div style={{position:'absolute',inset:0,background:'rgba(45,27,69,.5)',backdropFilter:'blur(10px)',
+      display:'flex',alignItems:'center',justifyContent:'center',zIndex:200}}>
+      <div className="ak-clay ak-pop" style={{margin:20,padding:28,textAlign:'center',maxWidth:300}}>
+        <div style={{fontSize:44,marginBottom:8}}>🤔</div>
+        <div style={{fontFamily:'var(--ak-display)',fontSize:20,fontWeight:700,color:'var(--ak-ink)',marginBottom:10}}>Попробуй ещё!</div>
+        <div style={{fontSize:14,color:'var(--ak-ink-2)',lineHeight:1.55,marginBottom:22}}>💡 {tip}</div>
+        <button className="ak-btn ak-btn--phys" onClick={onRetry}>Ещё раз 🔄</button>
+      </div>
+    </div>
+  );
+}
+
+function IntroModal({emoji,title,law,diagram,tip,onStart}){
+  return(
+    <div style={{position:'absolute',inset:0,
+      background:'linear-gradient(160deg,var(--ak-phys-1) 0%,var(--ak-bg) 55%)',
+      display:'flex',flexDirection:'column',alignItems:'center',
+      padding:'32px 24px 28px',overflowY:'auto',zIndex:100}}>
+      <div className="ak-bob" style={{fontSize:64,marginBottom:10}}>{emoji}</div>
+      <div style={{fontFamily:'var(--ak-display)',fontSize:26,fontWeight:700,color:'var(--ak-ink)',marginBottom:16,textAlign:'center'}}>{title}</div>
+      {/* diagram */}
+      <div style={{width:'100%',maxWidth:320,marginBottom:16}}>
+        <canvas id="intro-canvas" width={320} height={130}
+          style={{width:'100%',borderRadius:18,background:'rgba(255,255,255,.7)',display:'block'}}/>
+      </div>
+      {/* law */}
+      <div style={{width:'100%',maxWidth:320,background:'rgba(255,255,255,.8)',borderRadius:20,
+        padding:'14px 18px',marginBottom:12,boxShadow:'inset 0 1px 0 #fff, 0 4px 12px -6px rgba(45,27,69,.1)'}}>
+        <div style={{fontFamily:'var(--ak-display)',fontSize:13,color:'var(--ak-phys-3)',marginBottom:6}}>📐 Закон физики:</div>
+        <div style={{fontSize:14,color:'var(--ak-ink)',lineHeight:1.6}}>{law}</div>
+      </div>
+      <div style={{width:'100%',maxWidth:320,background:'rgba(255,210,98,.2)',borderRadius:14,
+        padding:'10px 16px',marginBottom:24,fontSize:13,color:'var(--ak-ink-2)',lineHeight:1.5}}>
+        🎮 {tip}
+      </div>
+      <button className="ak-btn ak-btn--phys" style={{minWidth:200,fontSize:18}} onClick={onStart}>Начать! ⚡</button>
+    </div>
+  );
+}
+
+/* ══════════════════════════════════════════════════════════════
+   LEVEL 1 — ТРАЕКТОРИЯ
+   Cannon + angle → fire → velocity vectors shown on ball → hit stars
+   ══════════════════════════════════════════════════════════════ */
+function Level1({onWin,onHome}){
+  const [phase,setPhase]=useState('intro');
+  const [ang,setAng]=useState(45);
+  const angRef=useRef(45);
+  const canRef=useRef(null);
+  const raf=useRef(null);
+  const gs=useRef(null);
+
+  // draw intro diagram
+  useEffect(()=>{
+    if(phase!=='intro') return;
+    const el=document.getElementById('intro-canvas');
+    if(!el) return;
+    const ctx=el.getContext('2d');
+    const W=el.width,H=el.height;
+    ctx.clearRect(0,0,W,H);
+    // parabola
+    ctx.strokeStyle='rgba(124,95,224,.35)';ctx.lineWidth=2;ctx.setLineDash([5,4]);
+    ctx.beginPath();
+    for(let t=0;t<52;t++){
+      const x=16+t*5.4,y=H-16-Math.max(0,14*t-0.27*t*t)*0.9;
+      t===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+    }
+    ctx.stroke();ctx.setLineDash([]);
+    // 3 balls with vectors
+    [[16,H-16],[90,H-46],[195,H-51],[294,H-16]].forEach(([bx,by],i)=>{
+      gBall(ctx,bx,by,8,'#C4B5FF','#7C5FE0');
+      if(i>0&&i<3){
+        const vyLen=6+i*18;
+        arrowLine(ctx,bx,by,bx+32,by,'#FF6B35',2);
+        arrowLine(ctx,bx,by,bx,by+vyLen,'#4A9EFF',2);
+      }
+    });
+    ctx.font='bold 11px Nunito,sans-serif';
+    ctx.fillStyle='#FF6B35';ctx.fillText('→ горизонт. скорость (постоянная)',14,H-5);
+    ctx.fillStyle='#4A9EFF';ctx.fillText('↓ сила тяжести (нарастает)',14,14);
+  },[phase]);
+
+  function initGs(){
+    const canvas=canRef.current;
+    if(!canvas) return;
+    const W=canvas.width,H=canvas.height;
+    gs.current={
+      W,H,
+      cannon:{x:46,y:H-78},
+      SPEED:8.5,
+      ball:null,
+      targets:[
+        {x:Math.round(W*.57),y:Math.round(H*.40),r:26,alive:true,burst:0},
+        {x:Math.round(W*.78),y:Math.round(H*.62),r:26,alive:true,burst:0},
+        {x:Math.round(W*.68),y:Math.round(H*.22),r:26,alive:true,burst:0},
+      ],
+      shots:0,maxShots:7,done:false,
+    };
+  }
+
+  useEffect(()=>{
+    if(phase!=='play') return;
+    initGs();
+    const canvas=canRef.current;
+    const ctx=canvas.getContext('2d');
+    const g=gs.current;
+    const {W,H}=g;
+
+    function simDots(ar){
+      const pts=[];let x=g.cannon.x,y=g.cannon.y;
+      let vx=Math.cos(ar)*g.SPEED,vy=-Math.sin(ar)*g.SPEED;
+      for(let i=0;i<200;i++){x+=vx;y+=vy;vy+=G;if(y>H||x>W+10||x<-10)break;pts.push({x,y});}
+      return pts;
+    }
+
+    function drawCannon(a){
+      const ar=a*Math.PI/180,cx=g.cannon.x,cy=g.cannon.y;
+      ctx.save();ctx.translate(cx,cy);ctx.rotate(-ar);
+      const gr=ctx.createLinearGradient(0,-12,68,-12);
+      gr.addColorStop(0,'#C4B5FF');gr.addColorStop(1,'#7C5FE0');
+      ctx.fillStyle=gr;ctx.fillRect(0,-12,68,24);
+      ctx.fillStyle='rgba(255,255,255,.25)';ctx.fillRect(5,-8,58,10);
+      ctx.restore();
+      ctx.save();ctx.translate(cx,cy);
+      const pg=ctx.createRadialGradient(-3,-3,0,0,0,20);
+      pg.addColorStop(0,'#C4B5FF');pg.addColorStop(1,'#7C5FE0');
+      ctx.fillStyle=pg;ctx.beginPath();ctx.arc(0,0,20,0,Math.PI*2);ctx.fill();
+      ctx.restore();
+    }
+
+    function loop(){
+      const a=angRef.current,ar=a*Math.PI/180;
+      ctx.clearRect(0,0,W,H);
+      // sky bg
+      const sky=ctx.createLinearGradient(0,0,0,H);
+      sky.addColorStop(0,'#EEE8FF');sky.addColorStop(1,'#FFF3E2');
+      ctx.fillStyle=sky;ctx.fillRect(0,0,W,H);
+      // stars decoration
+      [[28,42],[130,26],[240,56],[328,22],[350,90]].forEach(([sx,sy])=>{
+        ctx.fillStyle='rgba(124,95,224,.25)';
+        ctx.beginPath();ctx.arc(sx,sy,2,0,Math.PI*2);ctx.fill();
+      });
+      // ground
+      ctx.fillStyle='#C8F2DD';ctx.fillRect(0,H-44,W,44);
+      ctx.fillStyle='#2BA873';ctx.fillRect(0,H-44,W,5);
+
+      drawCannon(a);
+      ctx.font='30px serif';ctx.textBaseline='alphabetic';
+      ctx.fillText('🧑‍🔬',g.cannon.x-52,g.cannon.y+46);
+
+      // targets
+      g.targets.forEach(t=>{
+        if(!t.alive){
+          if(t.burst>0){
+            for(let i=0;i<8;i++){
+              const ang2=(i/8)*Math.PI*2,prog=1-t.burst/15,rd=prog*36;
+              ctx.beginPath();ctx.arc(t.x+Math.cos(ang2)*rd,t.y+Math.sin(ang2)*rd,4*(1-prog),0,Math.PI*2);
+              ctx.fillStyle=`rgba(255,210,98,${1-prog})`;ctx.fill();
+            }
+            t.burst--;
+          }
+          return;
+        }
+        ctx.beginPath();ctx.arc(t.x,t.y,t.r+8,0,Math.PI*2);
+        ctx.fillStyle='rgba(255,210,98,.18)';ctx.fill();
+        ctx.beginPath();ctx.arc(t.x,t.y,t.r,0,Math.PI*2);
+        ctx.fillStyle='#FFEDA8';ctx.fill();
+        ctx.strokeStyle='#D4A22B';ctx.lineWidth=2.5;ctx.stroke();
+        ctx.font='28px serif';ctx.textAlign='center';ctx.textBaseline='middle';
+        ctx.fillText('⭐',t.x,t.y);
+        ctx.textAlign='left';ctx.textBaseline='alphabetic';
+      });
+
+      // trajectory preview
+      if(!g.ball){
+        const pts=simDots(ar);
+        pts.forEach((p,i)=>{
+          if(i%5!==0) return;
+          ctx.beginPath();ctx.arc(p.x,p.y,2.5,0,Math.PI*2);
+          ctx.fillStyle=`rgba(124,95,224,${(1-i/pts.length)*.4})`;ctx.fill();
+        });
+        // angle arc + label
+        ctx.save();ctx.translate(g.cannon.x,g.cannon.y);
+        ctx.strokeStyle='rgba(124,95,224,.3)';ctx.lineWidth=2;
+        ctx.beginPath();ctx.arc(0,0,40,-ar,0,false);ctx.stroke();
+        ctx.restore();
+        ctx.fillStyle='#7C5FE0';ctx.font='bold 14px Nunito,sans-serif';
+        ctx.textAlign='left';ctx.fillText(`${a}°`,g.cannon.x+44,g.cannon.y-32);
+        if(Math.abs(a-45)<6){
+          ctx.fillStyle='#D4A22B';ctx.font='bold 12px Nunito,sans-serif';
+          ctx.fillText('⭐ 45° — MAX дальность!',g.cannon.x+44,g.cannon.y-50);
+        }
+      }
+
+      // ball in flight
+      if(g.ball){
+        const b=g.ball;
+        b.frame=(b.frame||0)+1;
+        b.trail.push({x:b.x,y:b.y});
+        if(b.trail.length>15) b.trail.shift();
+        b.x+=b.vx;b.y+=b.vy;b.vy+=G;
+        b.trail.forEach((p,i)=>{
+          ctx.beginPath();ctx.arc(p.x,p.y,9*(i/b.trail.length),0,Math.PI*2);
+          ctx.fillStyle=`rgba(124,95,224,${(i/b.trail.length)*.22})`;ctx.fill();
+        });
+        gBall(ctx,b.x,b.y,11,'#C4B5FF','#7C5FE0');
+        // EDUCATIONAL: velocity vectors
+        const VXL=38, VYL=Math.min(Math.abs(b.vy)*4.5,52);
+        arrowLine(ctx,b.x,b.y,b.x+VXL,b.y,'#FF6B35',2.5);
+        ctx.fillStyle='#FF6B35';ctx.font='bold 11px Nunito,sans-serif';ctx.textAlign='left';
+        ctx.fillText('vx',b.x+VXL+4,b.y-2);
+        arrowLine(ctx,b.x,b.y,b.x,b.y+VYL,'#4A9EFF',2.5);
+        ctx.fillStyle='#4A9EFF';ctx.fillText('g↓',b.x+5,b.y+VYL+13);
+        // pop label at frame 18
+        if(b.frame===18){
+          ctx.fillStyle='rgba(255,255,255,.93)';
+          rrect(ctx,b.x-92,b.y-56,128,40,10);ctx.fill();
+          ctx.strokeStyle='rgba(124,95,224,.3)';ctx.lineWidth=1.5;
+          rrect(ctx,b.x-92,b.y-56,128,40,10);ctx.stroke();
+          ctx.fillStyle='var(--ak-ink)';ctx.font='bold 11px Nunito,sans-serif';
+          ctx.fillText('→ vx не меняется!',b.x-85,b.y-38);
+          ctx.fillText('↓ g нарастает!',b.x-85,b.y-20);
+        }
+        // collision
+        g.targets.forEach(t=>{
+          if(!t.alive) return;
+          if(Math.hypot(b.x-t.x,b.y-t.y)<11+t.r){t.alive=false;t.burst=15;}
+        });
+        if(b.y>H+20||b.x>W+20) g.ball=null;
+      }
+
+      // HUD
+      const alive=g.targets.filter(t=>t.alive).length;
+      ctx.fillStyle='#6B5680';ctx.font='bold 13px Nunito,sans-serif';ctx.textAlign='right';
+      ctx.fillText(`⭐ ${3-alive}/3  ·  💥 ${g.maxShots-g.shots} выстрелов`,W-12,26);
+      ctx.textAlign='left';
+
+      if(!g.done){
+        if(alive===0){g.done=true;setTimeout(()=>setPhase('win'),500);}
+        else if(g.shots>=g.maxShots&&!g.ball&&alive>0){g.done=true;setTimeout(()=>setPhase('fail'),500);}
+      }
+      raf.current=requestAnimationFrame(loop);
+    }
+    raf.current=requestAnimationFrame(loop);
+    return()=>cancelAnimationFrame(raf.current);
+  },[phase]);
+
+  function fire(){
+    const g=gs.current;
+    if(!g||g.ball||g.done||g.shots>=g.maxShots) return;
+    const ar=angRef.current*Math.PI/180;
+    g.ball={x:g.cannon.x,y:g.cannon.y,vx:Math.cos(ar)*g.SPEED,vy:-Math.sin(ar)*g.SPEED,trail:[],frame:0};
+    g.shots++;
+  }
+  function retry(){initGs();setPhase('play');}
+
+  return(
+    <div className="ak" style={{position:'relative',width:'100%',height:'100vh',display:'flex',flexDirection:'column',overflow:'hidden',
+      background:'radial-gradient(80% 40% at 50% 0%,var(--ak-phys-1) 0%,transparent 65%),linear-gradient(180deg,#FFF8EA,var(--ak-bg) 60%)'}}>
+      <TopBar level={1} title="Траектория полёта" onHome={onHome}/>
+      <div style={{display:'flex',justifyContent:'center',padding:'2px 0'}}>
+        <TaskBadge>Попади в ⭐ из пушки — смотри на стрелки скорости!</TaskBadge>
+      </div>
+      <canvas ref={canRef} width={360} height={460} style={{width:'100%',flex:1,display:'block'}}/>
+      <div style={{padding:'10px 20px 16px',background:'rgba(255,255,255,.75)',backdropFilter:'blur(8px)',flexShrink:0}}>
+        <div style={{fontFamily:'var(--ak-display)',fontSize:13,color:'var(--ak-ink-2)',textAlign:'center',marginBottom:6}}>
+          Угол: <strong style={{color:'var(--ak-phys-3)'}}>{ang}°</strong>
+          {Math.abs(ang-45)<6&&<span style={{color:'var(--ak-cta-3)'}}> ← максимальная дальность!</span>}
+        </div>
+        <input type="range" min="5" max="80" value={ang}
+          onChange={e=>{const v=+e.target.value;setAng(v);angRef.current=v;}} style={{width:'100%',marginBottom:8}}/>
+        <div style={{display:'flex',justifyContent:'center'}}>
+          <button className="ak-btn ak-btn--phys" onClick={fire}>💥 Выстрел!</button>
+        </div>
+      </div>
+      {phase==='intro'&&<IntroModal emoji="🧑‍🔬"
+        title="Как летит снаряд?"
+        law={'Горизонтальная скорость НЕ меняется.\nСила тяжести тянет вниз всё сильнее.\n→ Путь становится дугой — параболой!\n\nУгол 45° = максимальная дальность'}
+        diagram={null}
+        tip="Выбери угол ползунком и жми «Выстрел». Смотри на красную и синюю стрелки!"
+        onStart={()=>setPhase('play')}/>}
+      {phase==='win'&&<WinModal emoji="🎯" title="Все звёзды поражены!"
+        law="Закон движения тел — Ньютон"
+        fact="Горизонтальная скорость постоянна, вертикальная нарастает под действием гравитации. Вместе они дают параболу. При 45° дальность максимальна!"
+        cta="Уровень 2 →" onNext={onWin} onHome={onHome}/>}
+      {phase==='fail'&&<FailModal tip="Видел стрелки? Красная → постоянная, синяя ↓ нарастает. Попробуй угол 45°!" onRetry={retry}/>}
+    </div>
+  );
+}
+
+/* ══════════════════════════════════════════════════════════════
+   LEVEL 2 — РЫЧАГ АРХИМЕДА
+   Slider moves right weight → live F×d=F×d equation → find balance
+   ══════════════════════════════════════════════════════════════ */
+// ⚠️ ПРАВИЛО: lMass*lDist = rMass*ans, И ans ≤ ARM(138)!
+const LVL2_PUZZLES=[
+  {lMass:60,lDist:40,rMass:30,e1:'🐘',e2:'🐭',ans:80},   // 60×40=2400, 30×80=2400 ✓
+  {lMass:50,lDist:60,rMass:25,e1:'🦏',e2:'🐱',ans:120},  // 50×60=3000, 25×120=3000 ✓
+  {lMass:60,lDist:80,rMass:80,e1:'🦛',e2:'🐰',ans:60},   // 60×80=4800, 80×60=4800 ✓
+];
+
+function Level2({onWin,onHome}){
+  const [phase,setPhase]=useState('intro');
+  const [pIdx,setPIdx]=useState(0);
+  const [rDist,setRDist]=useState(50);
+  const rDistRef=useRef(50);
+  const canRef=useRef(null);
+  const raf=useRef(null);
+  const wonRef=useRef(false);
+
+  useEffect(()=>{
+    if(phase!=='intro') return;
+    const el=document.getElementById('intro-canvas');
+    if(!el) return;
+    const ctx=el.getContext('2d');
+    const W=el.width,H=el.height;
+    ctx.clearRect(0,0,W,H);
+    const cx=W/2,cy=H/2+8;
+    // beam
+    ctx.strokeStyle='#8B5E3C';ctx.lineWidth=8;ctx.lineCap='round';
+    ctx.beginPath();ctx.moveTo(cx-125,cy);ctx.lineTo(cx+125,cy);ctx.stroke();
+    // fulcrum
+    ctx.fillStyle='#6B5680';ctx.beginPath();ctx.moveTo(cx-15,cy+2);ctx.lineTo(cx+15,cy+2);ctx.lineTo(cx,cy+28);ctx.closePath();ctx.fill();
+    // distance arrows
+    arrowLine(ctx,cx,cy-16,cx-55,cy-16,'#FF6B35',1.5);
+    arrowLine(ctx,cx,cy-16,cx+110,cy-16,'#4A9EFF',1.5);
+    ctx.fillStyle='#FF6B35';ctx.font='bold 11px Nunito,sans-serif';ctx.textAlign='center';
+    ctx.fillText('d₁ (близко)',cx-28,cy-20);
+    ctx.fillStyle='#4A9EFF';ctx.fillText('d₂ (далеко)',cx+54,cy-20);
+    ctx.font='30px serif';ctx.textBaseline='bottom';
+    ctx.fillText('🐘',cx-55,cy);ctx.fillText('🐭',cx+100,cy);
+    ctx.textAlign='left';ctx.textBaseline='alphabetic';
+    ctx.fillStyle='var(--ak-ok-3)';ctx.font='bold 12px Nunito,sans-serif';ctx.textAlign='center';
+    ctx.fillText('80 × 55 = 20 × 220 ← это равновесие!',cx,H-6);ctx.textAlign='left';
+  },[phase]);
+
+  useEffect(()=>{
+    if(phase!=='play') return;
+    wonRef.current=false;
+    const canvas=canRef.current;
+    const ctx=canvas.getContext('2d');
+    const W=canvas.width,H=canvas.height;
+    const ARM=138,cx=W/2,cy=H*.42;
+
+    function loop(){
+      const pz=LVL2_PUZZLES[pIdx];
+      const rd=rDistRef.current;
+      const tL=pz.lMass*pz.lDist, tR=pz.rMass*rd;
+      const net=tL-tR;
+      const beamAng=Math.max(-.44,Math.min(.44,net/3500));
+      const balanced=Math.abs(net)<pz.rMass*9;
+
+      ctx.clearRect(0,0,W,H);
+      // bg
+      const bg=ctx.createLinearGradient(0,0,0,H);
+      bg.addColorStop(0,'#FFF8EA');bg.addColorStop(1,'var(--ak-bg)');
+      ctx.fillStyle='#FFF8EA';ctx.fillRect(0,0,W,H);
+      // sky dots
+      [[30,50],[160,30],[290,45],[340,80]].forEach(([sx,sy])=>{
+        ctx.fillStyle='rgba(124,95,224,.2)';ctx.beginPath();ctx.arc(sx,sy,2,0,Math.PI*2);ctx.fill();
+      });
+      // ground
+      ctx.fillStyle='#C8F2DD';ctx.fillRect(0,H-44,W,44);
+      ctx.fillStyle='#2BA873';ctx.fillRect(0,H-44,W,5);
+
+      // beam math — positions of weights on rotated beam
+      function beamPt(d){
+        return{x:cx+d*Math.cos(beamAng), y:cy+d*Math.sin(beamAng)};
+      }
+      const leftPt=beamPt(-pz.lDist);
+      const rightPt=beamPt(rd);
+      const tipL=beamPt(-ARM), tipR=beamPt(ARM);
+
+      // beam glow when balanced
+      if(balanced){
+        ctx.shadowColor='#5DD9A0';ctx.shadowBlur=18;
+      }
+      // beam
+      const beamGr=ctx.createLinearGradient(tipL.x,tipL.y,tipR.x,tipR.y);
+      beamGr.addColorStop(0,'#9B6B3A');beamGr.addColorStop(.5,'#B07D48');beamGr.addColorStop(1,'#9B6B3A');
+      ctx.strokeStyle=beamGr;ctx.lineWidth=12;ctx.lineCap='round';
+      ctx.beginPath();ctx.moveTo(tipL.x,tipL.y);ctx.lineTo(tipR.x,tipR.y);ctx.stroke();
+      ctx.shadowBlur=0;
+      // tick marks
+      ctx.strokeStyle='rgba(255,255,255,.5)';ctx.lineWidth=1.5;
+      for(let d=-ARM;d<=ARM;d+=20){
+        const p=beamPt(d);
+        const nx=Math.sin(beamAng)*4, ny=-Math.cos(beamAng)*4;
+        ctx.beginPath();ctx.moveTo(p.x-nx,p.y-ny);ctx.lineTo(p.x+nx,p.y+ny);ctx.stroke();
+      }
+      // fulcrum
+      ctx.fillStyle='#6B5680';ctx.beginPath();ctx.moveTo(cx-20,cy+2);ctx.lineTo(cx+20,cy+2);ctx.lineTo(cx,cy+36);ctx.closePath();ctx.fill();
+      ctx.fillStyle='#8B7095';ctx.beginPath();ctx.moveTo(cx-18,cy+2);ctx.lineTo(cx+18,cy+2);ctx.lineTo(cx,cy+32);ctx.closePath();ctx.fill();
+      // pivot circle
+      const piv=ctx.createRadialGradient(cx-3,cy-3,0,cx,cy,12);
+      piv.addColorStop(0,'#C4B5FF');piv.addColorStop(1,'#7C5FE0');
+      ctx.fillStyle=piv;ctx.beginPath();ctx.arc(cx,cy,12,0,Math.PI*2);ctx.fill();
+
+      // left weight (fixed)
+      ctx.font='34px serif';ctx.textAlign='center';ctx.textBaseline='bottom';
+      ctx.fillText(pz.e1,leftPt.x,leftPt.y-4);
+      // left distance line
+      ctx.strokeStyle='rgba(255,107,53,.6)';ctx.lineWidth=2;ctx.setLineDash([4,3]);
+      ctx.beginPath();ctx.moveTo(cx,cy-18);ctx.lineTo(leftPt.x,leftPt.y-18);ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.fillStyle='#FF6B35';ctx.font='bold 12px Nunito,sans-serif';ctx.textAlign='center';
+      ctx.fillText(`d₁=${pz.lDist}`,cx-pz.lDist/2,cy-22);
+
+      // right weight (movable) — glow ring
+      ctx.beginPath();ctx.arc(rightPt.x,rightPt.y-20,22,0,Math.PI*2);
+      ctx.fillStyle=balanced?'rgba(93,217,160,.3)':'rgba(181,161,255,.25)';ctx.fill();
+      ctx.strokeStyle=balanced?'#5DD9A0':'#B5A1FF';ctx.lineWidth=2.5;ctx.stroke();
+      ctx.font='28px serif';ctx.textAlign='center';ctx.textBaseline='bottom';
+      ctx.fillText(pz.e2,rightPt.x,rightPt.y-4);
+      // right distance line
+      ctx.strokeStyle='rgba(74,158,255,.6)';ctx.lineWidth=2;ctx.setLineDash([4,3]);
+      ctx.beginPath();ctx.moveTo(cx,cy-18);ctx.lineTo(rightPt.x,rightPt.y-18);ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.fillStyle='#4A9EFF';ctx.font='bold 12px Nunito,sans-serif';ctx.textAlign='center';
+      ctx.fillText(`d₂=${Math.round(rd)}`,cx+rd/2,cy-22);
+      ctx.textAlign='left';ctx.textBaseline='alphabetic';
+
+      // EQUATION BOX (HTML-style in canvas)
+      const eqY=H-92;
+      ctx.fillStyle=balanced?'rgba(93,217,160,.22)':'rgba(229,220,255,.5)';
+      rrect(ctx,18,eqY,W-36,58,14);ctx.fill();
+      ctx.strokeStyle=balanced?'#3CA876':'rgba(181,161,255,.6)';ctx.lineWidth=2;
+      rrect(ctx,18,eqY,W-36,58,14);ctx.stroke();
+      ctx.textAlign='center';
+      // row 1: formula
+      ctx.fillStyle='#FF6B35';ctx.font='bold 13px Nunito,sans-serif';
+      ctx.fillText(`${pz.e1} × d₁`,W/2-72,eqY+20);
+      ctx.fillStyle=balanced?'#3CA876':'#A797B8';ctx.font='bold 18px Nunito,sans-serif';
+      ctx.fillText(balanced?'=':'≠',W/2,eqY+20);
+      ctx.fillStyle='#4A9EFF';ctx.font='bold 13px Nunito,sans-serif';
+      ctx.fillText(`${pz.e2} × d₂`,W/2+72,eqY+20);
+      // row 2: numbers
+      ctx.fillStyle='#FF6B35';ctx.font='bold 17px Nunito,sans-serif';
+      ctx.fillText(`${tL}`,W/2-80,eqY+46);
+      ctx.fillStyle='#A797B8';ctx.font='12px Nunito,sans-serif';
+      ctx.fillText('ед',W/2-52,eqY+46);
+      ctx.fillStyle=balanced?'#3CA876':'#A797B8';ctx.font='bold 18px Nunito,sans-serif';
+      ctx.fillText(balanced?'✓ =':'≠',W/2,eqY+46);
+      ctx.fillStyle=balanced?'#3CA876':tR>tL?'#D9523F':'#4A9EFF';ctx.font='bold 17px Nunito,sans-serif';
+      ctx.fillText(`${tR}`,W/2+72,eqY+46);
+      ctx.fillStyle='#A797B8';ctx.font='12px Nunito,sans-serif';
+      ctx.fillText('ед',W/2+96,eqY+46);
+      ctx.textAlign='left';
+
+      if(balanced&&!wonRef.current){
+        wonRef.current=true;
+        setTimeout(()=>{
+          if(pIdx<LVL2_PUZZLES.length-1){setPIdx(p=>p+1);setRDist(50);rDistRef.current=50;wonRef.current=false;}
+          else setPhase('win');
+        },900);
+      }
+
+      // hint
+      if(!balanced){
+        const diff=tL-tR;
+        ctx.fillStyle='#A797B8';ctx.font='13px Nunito,sans-serif';ctx.textAlign='center';
+        ctx.fillText(diff>0?'← сдвинь правее →':'← сдвинь левее →',W/2,eqY-8);ctx.textAlign='left';
+      } else {
+        ctx.fillStyle='#3CA876';ctx.font='bold 13px Nunito,sans-serif';ctx.textAlign='center';
+        ctx.fillText('⚖️ РАВНОВЕСИЕ! Молодец!',W/2,eqY-8);ctx.textAlign='left';
+      }
+
+      raf.current=requestAnimationFrame(loop);
+    }
+    raf.current=requestAnimationFrame(loop);
+    return()=>cancelAnimationFrame(raf.current);
+  },[phase,pIdx]);
+
+  return(
+    <div className="ak" style={{position:'relative',width:'100%',height:'100vh',display:'flex',flexDirection:'column',overflow:'hidden',
+      background:'radial-gradient(70% 40% at 50% 0%,var(--ak-cta-1) 0%,transparent 70%),linear-gradient(180deg,#FFF8EA,var(--ak-bg))'}}>
+      <TopBar level={2} title="Закон рычага" onHome={onHome} step={pIdx} total={LVL2_PUZZLES.length}/>
+      <div style={{display:'flex',justifyContent:'center',padding:'2px 0'}}>
+        <TaskBadge>Найди равновесие! Уравнение меняется вживую 📐</TaskBadge>
+      </div>
+      <canvas ref={canRef} width={360} height={460} style={{width:'100%',flex:1,display:'block'}}/>
+      <div style={{padding:'10px 20px 14px',background:'rgba(255,255,255,.75)',backdropFilter:'blur(8px)',flexShrink:0}}>
+        <div style={{fontFamily:'var(--ak-display)',fontSize:13,color:'var(--ak-ink-2)',textAlign:'center',marginBottom:6}}>
+          Двигай <strong style={{color:'#4A9EFF'}}>{LVL2_PUZZLES[pIdx]?.e2}</strong> по рычагу:
+          d₂ = <strong style={{color:'var(--ak-phys-3)'}}>{Math.round(rDist)}</strong>
+        </div>
+        <input type="range" min="8" max={138} value={rDist}
+          onChange={e=>{const v=+e.target.value;setRDist(v);rDistRef.current=v;}}
+          style={{width:'100%'}}/>
+      </div>
+      {phase==='intro'&&<IntroModal emoji="⚖️"
+        title="Как работает рычаг?"
+        law={'Сила × Расстояние = Сила × Расстояние\n\nЛёгкий предмет ДАЛЕКО от опоры\nравен тяжёлому БЛИЗКО к опоре!\n\nЭто открыл Архимед 2200 лет назад!'}
+        diagram={null}
+        tip="Двигай ползунок чтобы передвинуть гирю. Смотри как меняется уравнение!"
+        onStart={()=>{setPhase('play');setRDist(50);rDistRef.current=50;wonRef.current=false;}}/>}
+      {phase==='win'&&<WinModal emoji="⚖️" title="Архимед гордится!"
+        law="Закон рычага — Архимед, 250 до н.э."
+        fact="F₁×d₁ = F₂×d₂. Маленькая сила далеко = большая сила близко. Краны, весы, качели, ножницы — всё это рычаги!"
+        cta="Уровень 3 →" onNext={onWin} onHome={onHome}/>}
+    </div>
+  );
+}
+
+/* ══════════════════════════════════════════════════════════════
+   LEVEL 3 — ЗЕРКАЛО И ОТРАЖЕНИЕ
+   Rotate mirror with slider → laser beam bounces → hit star
+   Shows angles live: angle_in = angle_out
+   ══════════════════════════════════════════════════════════════ */
+// ⚠️ ПРАВИЛО: геометрия ПРОВЕРЕНА — каждый ответ-угол лежит в [15°,165°]
+// Зеркало: mx=W*0.30, my=H*0.50. Лазер горизонтальный (dx=1,dy=0) от x=30.
+// Задача 1: θ≈30°, лазер вниз-вправо → цель внизу-справа
+// Задача 2: θ≈20°, лазер вниз-вправо → цель внизу-справа (ближе)
+// Задача 3: θ≈145°, лазер вверх-вправо → цель вверху
+const LVL3_PUZZLES=[
+  {srcY:.489, tgt:{x:.556, y:.876}},
+  {srcY:.478, tgt:{x:.694, y:.793}},
+  {srcY:.540, tgt:{x:.389, y:.187}},
+];
+
+function Level3({onWin,onHome}){
+  const [phase,setPhase]=useState('intro');
+  const [pIdx,setPIdx]=useState(0);
+  const [mAng,setMAng]=useState(100);
+  const mAngRef=useRef(100);
+  const canRef=useRef(null);
+  const raf=useRef(null);
+  const wonRef=useRef(false);
+
+  useEffect(()=>{
+    if(phase!=='intro') return;
+    const el=document.getElementById('intro-canvas');
+    if(!el) return;
+    const ctx=el.getContext('2d');
+    const W=el.width,H=el.height;
+    ctx.clearRect(0,0,W,H);
+    const mx=W/2,my=H/2+4;
+    // mirror (45 deg line)
+    const mar=Math.PI/4;
+    ctx.save();ctx.translate(mx,my);ctx.rotate(mar);
+    ctx.fillStyle='#B5A1FF';ctx.fillRect(-4,-44,8,88);
+    ctx.restore();
+    // normal dashed
+    ctx.strokeStyle='rgba(45,27,69,.2)';ctx.lineWidth=1.5;ctx.setLineDash([4,4]);
+    ctx.beginPath();ctx.moveTo(mx,my-50);ctx.lineTo(mx,my+50);ctx.stroke();ctx.setLineDash([]);
+    // incident ray (left->hit)
+    arrowLine(ctx,28,my,mx,my,'#FF6B35',2.5);
+    // reflected ray (hit->up-right)
+    arrowLine(ctx,mx,my,mx,my-62,'#7C5FE0',2.5);
+    // angle labels
+    ctx.fillStyle='#FF6B35';ctx.font='bold 12px Nunito,sans-serif';
+    ctx.fillText('45°',mx-44,my-12);
+    ctx.fillStyle='#7C5FE0';ctx.fillText('45°',mx+8,my-28);
+    ctx.fillStyle='var(--ak-ok-3)';ctx.font='bold 13px Nunito,sans-serif';ctx.textAlign='center';
+    ctx.fillText('угол падения = угол отражения',W/2,H-6);ctx.textAlign='left';
+  },[phase]);
+
+  useEffect(()=>{
+    if(phase!=='play') return;
+    wonRef.current=false;
+    const canvas=canRef.current;
+    const ctx=canvas.getContext('2d');
+    const W=canvas.width,H=canvas.height;
+
+    function traceRay(){
+      const pz=LVL3_PUZZLES[pIdx];
+      const srcX=30, srcY=pz.srcY*H;
+      const dx=1,dy=0; // laser goes right
+      const mx=W*.30, my=H*.50; // mirror on left-center (GEOMETRICALLY VERIFIED)
+      const ma=mAngRef.current*Math.PI/180;
+      // mirror normal (choose the one facing source)
+      const n1x=-Math.sin(ma),n1y=Math.cos(ma);
+      const n2x=Math.sin(ma),n2y=-Math.cos(ma);
+      const chosenN = (dx*n1x+dy*n1y) >= 0 ? {nx:n1x,ny:n1y} : {nx:n2x,ny:n2y};
+      const {nx,ny}=chosenN;
+      // intersect ray with mirror line:
+      // mirror line through (mx,my): nx*(x-mx)+ny*(y-my)=0
+      // t*(nx*dx+ny*dy) = nx*(mx-srcX)+ny*(my-srcY)
+      const denom=nx*dx+ny*dy;
+      if(Math.abs(denom)<0.001) return null; // parallel
+      const t=(nx*(mx-srcX)+ny*(my-srcY))/denom;
+      if(t<5) return null; // behind or too close
+      const hx=srcX+dx*t, hy=srcY+dy*t;
+      // check hit is on mirror segment (±50px from center)
+      const mDirX=Math.cos(ma),mDirY=Math.sin(ma);
+      const projOnMirror=(hx-mx)*mDirX+(hy-my)*mDirY;
+      if(Math.abs(projOnMirror)>52) return null;
+      // reflect
+      const dot=dx*nx+dy*ny;
+      const rx=dx-2*dot*nx, ry=dy-2*dot*ny;
+      // angle of incidence
+      const incDot=Math.abs(dx*nx+dy*ny); // cos(angle)
+      const incAng=Math.round(Math.acos(Math.min(1,incDot))*180/Math.PI);
+      // check hit on target
+      const tgt={x:pz.tgt.x*W, y:pz.tgt.y*H, r:26};
+      const dist2tgt=Math.abs((tgt.x-hx)*ry-(tgt.y-hy)*rx)/Math.hypot(rx,ry);
+      const proj2tgt=(tgt.x-hx)*rx+(tgt.y-hy)*ry;
+      const hits=dist2tgt<tgt.r+6&&proj2tgt>0;
+      return{srcX,srcY,hx,hy,rx,ry,incAng,hits,tgt,mx,my,ma};
+    }
+
+    function loop(){
+      const pz=LVL3_PUZZLES[pIdx];
+      const info=traceRay();
+      ctx.clearRect(0,0,W,H);
+      // warm bg (matching chemistry)
+      const bg=ctx.createLinearGradient(0,0,0,H);
+      bg.addColorStop(0,'#EEE8FF');bg.addColorStop(1,'#FFF3E2');
+      ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
+      // subtle grid
+      ctx.strokeStyle='rgba(124,95,224,.06)';ctx.lineWidth=1;
+      for(let x=0;x<W;x+=36){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}
+      for(let y=0;y<H;y+=36){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
+
+      const tgt=info?info.tgt:{x:pz.tgt.x*W,y:pz.tgt.y*H,r:26};
+      const hits=info?info.hits:false;
+
+      // target star
+      ctx.beginPath();ctx.arc(tgt.x,tgt.y,tgt.r+10,0,Math.PI*2);
+      ctx.fillStyle=hits?'rgba(93,217,160,.22)':'rgba(255,210,98,.15)';ctx.fill();
+      ctx.beginPath();ctx.arc(tgt.x,tgt.y,tgt.r,0,Math.PI*2);
+      ctx.fillStyle=hits?'rgba(93,217,160,.35)':'var(--ak-cta-1)';ctx.fill();
+      ctx.strokeStyle=hits?'#3CA876':'#D4A22B';ctx.lineWidth=3;ctx.stroke();
+      ctx.font='28px serif';ctx.textAlign='center';ctx.textBaseline='middle';
+      ctx.fillText('⭐',tgt.x,tgt.y);ctx.textAlign='left';ctx.textBaseline='alphabetic';
+
+      // laser source
+      ctx.save();ctx.shadowColor='#FF6B35';ctx.shadowBlur=10;
+      ctx.fillStyle='#FF6B35';ctx.beginPath();ctx.arc(30,pz.srcY*H,10,0,Math.PI*2);ctx.fill();
+      ctx.shadowBlur=0;ctx.restore();
+      ctx.font='22px serif';ctx.textAlign='center';ctx.textBaseline='middle';
+      ctx.fillText('🔦',30,pz.srcY*H);ctx.textAlign='left';ctx.textBaseline='alphabetic';
+
+      if(info){
+        const {srcX,srcY,hx,hy,rx,ry,incAng,mx,my,ma}=info;
+
+        // INCIDENT RAY
+        ctx.save();ctx.strokeStyle='#FF8B35';ctx.lineWidth=3;
+        ctx.shadowColor='#FF8B35';ctx.shadowBlur=8;
+        ctx.beginPath();ctx.moveTo(srcX,srcY);ctx.lineTo(hx,hy);ctx.stroke();
+        ctx.shadowBlur=0;ctx.restore();
+
+        // MIRROR
+        const mirLen=52;
+        ctx.save();ctx.translate(mx,my);ctx.rotate(ma);
+        const mg=ctx.createLinearGradient(0,-mirLen,0,mirLen);
+        mg.addColorStop(0,'rgba(181,161,255,.2)');mg.addColorStop(.5,'rgba(181,161,255,.9)');mg.addColorStop(1,'rgba(181,161,255,.2)');
+        ctx.fillStyle=mg;ctx.fillRect(-5,-mirLen,10,mirLen*2);
+        ctx.strokeStyle='#B5A1FF';ctx.lineWidth=2;ctx.strokeRect(-5,-mirLen,10,mirLen*2);
+        ctx.fillStyle='rgba(255,255,255,.4)';ctx.fillRect(-1,-mirLen,4,mirLen*2);
+        ctx.restore();
+
+        // NORMAL dashed line
+        const {nx,ny}=(Math.cos(ma)*1+Math.sin(ma)*0)>=0?{nx:-Math.sin(ma),ny:Math.cos(ma)}:{nx:Math.sin(ma),ny:-Math.cos(ma)};
+        ctx.save();ctx.strokeStyle='rgba(45,27,69,.2)';ctx.lineWidth=1.5;ctx.setLineDash([5,5]);
+        ctx.beginPath();ctx.moveTo(hx-nx*46,hy-ny*46);ctx.lineTo(hx+nx*46,hy+ny*46);
+        ctx.stroke();ctx.setLineDash([]);ctx.restore();
+
+        // REFLECTED RAY
+        ctx.save();ctx.strokeStyle=hits?'#3CA876':'#B5A1FF';ctx.lineWidth=3;
+        ctx.shadowColor=hits?'#3CA876':'#B5A1FF';ctx.shadowBlur=8;
+        ctx.beginPath();ctx.moveTo(hx,hy);ctx.lineTo(hx+rx*360,hy+ry*360);ctx.stroke();
+        ctx.shadowBlur=0;ctx.restore();
+
+        // HIT POINT dot
+        gBall(ctx,hx,hy,6,'#FFD262','#D4A22B');
+
+        // ANGLE ARCS + LABELS at bounce point
+        const RARC=38;
+        // incident angle arc
+        const incDir=Math.atan2(-dy,-dx); // pointing back toward source
+        const normDir=Math.atan2(ny,nx);
+        ctx.save();ctx.strokeStyle='#FF6B35';ctx.lineWidth=2;
+        ctx.beginPath();ctx.arc(hx,hy,RARC,Math.min(incDir,normDir),Math.max(incDir,normDir));ctx.stroke();
+        ctx.fillStyle='#FF6B35';ctx.font='bold 13px Nunito,sans-serif';
+        const ia=(incDir+normDir)/2;
+        ctx.fillText(`${incAng}°`,hx+Math.cos(ia)*52-8,hy+Math.sin(ia)*52+4);
+        // reflected angle arc
+        const refDir=Math.atan2(ry,rx);
+        ctx.strokeStyle=hits?'#3CA876':'#7C5FE0';ctx.lineWidth=2;
+        ctx.beginPath();ctx.arc(hx,hy,RARC,Math.min(normDir,refDir),Math.max(normDir,refDir));ctx.stroke();
+        ctx.fillStyle=hits?'#3CA876':'#7C5FE0';
+        const ra=(normDir+refDir)/2;
+        ctx.fillText(`${incAng}°`,hx+Math.cos(ra)*52-8,hy+Math.sin(ra)*52+4);
+        ctx.restore();
+      } else {
+        // draw mirror anyway (same position as traceRay)
+        const mx2=W*.30,my2=H*.50,ma2=mAngRef.current*Math.PI/180;
+        ctx.save();ctx.translate(mx2,my2);ctx.rotate(ma2);
+        const mg2=ctx.createLinearGradient(0,-52,0,52);
+        mg2.addColorStop(0,'rgba(181,161,255,.2)');mg2.addColorStop(.5,'rgba(181,161,255,.9)');mg2.addColorStop(1,'rgba(181,161,255,.2)');
+        ctx.fillStyle=mg2;ctx.fillRect(-5,-52,10,104);
+        ctx.strokeStyle='#B5A1FF';ctx.lineWidth=2;ctx.strokeRect(-5,-52,10,104);
+        ctx.restore();
+        // draw dashed line from source (no hit)
+        ctx.save();ctx.strokeStyle='rgba(255,107,53,.35)';ctx.lineWidth=2;ctx.setLineDash([6,5]);
+        ctx.beginPath();ctx.moveTo(30,pz.srcY*H);ctx.lineTo(W,pz.srcY*H);ctx.stroke();
+        ctx.setLineDash([]);ctx.restore();
+      }
+
+      // BOTTOM EQUATION BOX
+      const eqY=H-86;
+      ctx.fillStyle=hits?'rgba(93,217,160,.2)':'rgba(229,220,255,.55)';
+      rrect(ctx,18,eqY,W-36,56,14);ctx.fill();
+      ctx.strokeStyle=hits?'#3CA876':'rgba(181,161,255,.5)';ctx.lineWidth=2;
+      rrect(ctx,18,eqY,W-36,56,14);ctx.stroke();
+      if(info){
+        ctx.textAlign='center';
+        ctx.fillStyle='#FF6B35';ctx.font='bold 14px Nunito,sans-serif';
+        ctx.fillText(`угол падения: ${info.incAng}°`,W/2-70,eqY+20);
+        ctx.fillStyle=hits?'#3CA876':'#A797B8';ctx.font='bold 18px Nunito,sans-serif';
+        ctx.fillText(hits?'=':'≠',W/2,eqY+20);
+        ctx.fillStyle=hits?'#3CA876':'#7C5FE0';ctx.font='bold 14px Nunito,sans-serif';
+        ctx.fillText(`угол отражения: ${info.incAng}°`,W/2+70,eqY+20);
+        ctx.fillStyle=hits?'#3CA876':'#A797B8';ctx.font='bold 13px Nunito,sans-serif';
+        ctx.fillText(hits?'✓ Закон отражения работает!':'вращай зеркало → найди цель',W/2,eqY+44);
+        ctx.textAlign='left';
+      } else {
+        ctx.fillStyle='#A797B8';ctx.font='13px Nunito,sans-serif';ctx.textAlign='center';
+        ctx.fillText('Луч не попадает на зеркало — измени угол',W/2,eqY+30);ctx.textAlign='left';
+      }
+
+      if(hits&&!wonRef.current){
+        wonRef.current=true;
+        setTimeout(()=>{
+          if(pIdx<LVL3_PUZZLES.length-1){setPIdx(p=>p+1);setMAng(100);mAngRef.current=100;wonRef.current=false;}
+          else setPhase('win');
+        },900);
+      }
+      raf.current=requestAnimationFrame(loop);
+    }
+    raf.current=requestAnimationFrame(loop);
+    return()=>cancelAnimationFrame(raf.current);
+  },[phase,pIdx]);
+
+  return(
+    <div className="ak" style={{position:'relative',width:'100%',height:'100vh',display:'flex',flexDirection:'column',overflow:'hidden',
+      background:'radial-gradient(70% 40% at 50% 0%,var(--ak-ok-1) 0%,transparent 65%),linear-gradient(180deg,#FFF8EA,var(--ak-bg))'}}>
+      <TopBar level={3} title="Закон отражения" onHome={onHome} step={pIdx} total={LVL3_PUZZLES.length}/>
+      <div style={{display:'flex',justifyContent:'center',padding:'2px 0'}}>
+        <TaskBadge>Поверни зеркало — направь луч в ⭐. Углы покажут закон!</TaskBadge>
+      </div>
+      <canvas ref={canRef} width={360} height={450} style={{width:'100%',flex:1,display:'block'}}/>
+      <div style={{padding:'10px 20px 14px',background:'rgba(255,255,255,.75)',backdropFilter:'blur(8px)',flexShrink:0}}>
+        <div style={{fontFamily:'var(--ak-display)',fontSize:13,color:'var(--ak-ink-2)',textAlign:'center',marginBottom:6}}>
+          Угол зеркала: <strong style={{color:'var(--ak-phys-3)'}}>{mAng}°</strong> — вращай пока луч не попадёт в ⭐
+        </div>
+        <input type="range" min="15" max="165" value={mAng}
+          onChange={e=>{const v=+e.target.value;setMAng(v);mAngRef.current=v;}}
+          style={{width:'100%'}}/>
+      </div>
+      {phase==='intro'&&<IntroModal emoji="🔦"
+        title="Как работает зеркало?"
+        law={'Угол падения = Угол отражения\n\nЛуч ударяет в зеркало под 30° —\nи улетает тоже под 30°!\n\nЭто работает для любого зеркала,\nлюбого угла, всегда!'}
+        diagram={null}
+        tip="Двигай ползунок чтобы повернуть зеркало. Направь луч прямо в звезду!"
+        onStart={()=>{setPhase('play');wonRef.current=false;}}/>}
+      {phase==='win'&&<WinModal emoji="🔦" title="Мастер отражений!"
+        law="Закон отражения — Евклид, 300 до н.э."
+        fact="Угол падения = угол отражения. Это работает для света, звука и мяча об стену! Так устроены зеркала, перископы, телескопы и лазеры."
+        cta="Отлично! 🎉" onNext={onWin} onHome={onHome}/>}
+    </div>
+  );
+}
+
+/* ══════════════════════════════════════════════════════════════
+   HOME SCREEN
+   ══════════════════════════════════════════════════════════════ */
+function HomeScreen({onSelect}){
+  const lvls=[
+    {n:1,emoji:'💥',title:'Траектория',sub:'Гравитация и парабола',c:'var(--ak-phys-1)'},
+    {n:2,emoji:'⚖️',title:'Рычаг Архимеда',sub:'Сила × расстояние',c:'var(--ak-cta-1)'},
+    {n:3,emoji:'🔦',title:'Закон отражения',sub:'Угол падения = отражения',c:'var(--ak-ok-1)'},
+  ];
+  return(
+    <div className="ak" style={{minHeight:'100vh',height:'100vh',
+      background:'radial-gradient(120% 60% at 50% -10%,var(--ak-phys-1) 0%,transparent 60%),linear-gradient(180deg,var(--ak-bg-2),var(--ak-bg))',
+      display:'flex',flexDirection:'column',alignItems:'center',padding:'52px 20px 32px',
+      boxSizing:'border-box',overflowY:'auto'}}>
+      <div style={{width:64,height:64,borderRadius:20,
+        background:'linear-gradient(180deg,var(--ak-phys-1),var(--ak-phys-2))',
+        display:'flex',alignItems:'center',justifyContent:'center',fontSize:32,marginBottom:10,
+        boxShadow:'0 8px 0 var(--ak-phys-3),0 16px 28px -8px rgba(124,95,224,.35)'}}>⚡</div>
+      <div style={{fontFamily:'var(--ak-display)',fontSize:30,fontWeight:700,color:'var(--ak-ink)',marginBottom:2}}>КвантУм</div>
+      <div style={{fontFamily:'var(--ak-display)',fontSize:15,color:'var(--ak-ink-2)',marginBottom:32}}>Физика · 3 урока</div>
+      <div style={{display:'flex',flexDirection:'column',gap:12,width:'100%',maxWidth:340}}>
+        {lvls.map(l=>(
+          <button key={l.n} onClick={()=>onSelect(l.n)} style={{
+            display:'flex',alignItems:'center',gap:14,
+            background:'rgba(255,255,255,.88)',borderRadius:22,padding:'15px 18px',
+            border:'none',cursor:'pointer',textAlign:'left',
+            boxShadow:'0 6px 0 rgba(45,27,69,.08),0 12px 24px -8px rgba(45,27,69,.12),inset 0 2px 0 #fff',
+          }}>
+            <div style={{width:52,height:52,borderRadius:'50%',flexShrink:0,
+              background:`radial-gradient(circle at 35% 30%,#fff,${l.c} 70%)`,
+              display:'flex',alignItems:'center',justifyContent:'center',fontSize:24,
+              boxShadow:'0 4px 0 rgba(45,27,69,.08)'}}>
+              {l.emoji}
+            </div>
+            <div>
+              <div style={{fontFamily:'var(--ak-display)',fontSize:17,fontWeight:700,color:'var(--ak-ink)'}}>
+                {l.n}. {l.title}
+              </div>
+              <div style={{fontFamily:'var(--ak-display)',fontSize:13,color:'var(--ak-ink-2)',marginTop:2}}>{l.sub}</div>
+            </div>
+            <div style={{marginLeft:'auto',fontSize:18,color:'var(--ak-ink-3)'}}>→</div>
+          </button>
+        ))}
+      </div>
+      <div style={{marginTop:24,padding:'14px 18px',background:'rgba(255,255,255,.65)',borderRadius:18,maxWidth:340,width:'100%',
+        fontSize:13,color:'var(--ak-ink-2)',lineHeight:1.6,textAlign:'center',boxShadow:'inset 0 1px 0 rgba(255,255,255,.8)'}}>
+        Каждый уровень: мини-урок + игра +<br/>физика показана прямо в игре!
+      </div>
+    </div>
+  );
+}
+
+function App(){
+  const [s,setS]=useState('home');
+  return(
+    <div style={{width:'100%',height:'100vh',maxWidth:480,margin:'0 auto',position:'relative',overflow:'hidden'}}>
+      {s==='home'&&<HomeScreen onSelect={n=>setS(`l${n}`)}/>}
+      {s==='l1'&&<Level1 onWin={()=>setS('l2')} onHome={()=>setS('home')}/>}
+      {s==='l2'&&<Level2 onWin={()=>setS('l3')} onHome={()=>setS('home')}/>}
+      {s==='l3'&&<Level3 onWin={()=>setS('home')} onHome={()=>setS('home')}/>}
+    </div>
+  );
+}
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>

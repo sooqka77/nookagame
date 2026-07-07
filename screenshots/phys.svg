@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 480" font-family="'Space Grotesk','Arial Rounded MT Bold',sans-serif">
+<defs>
+<linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ede9fe"/><stop offset="1" stop-color="#c4b5fd"/></linearGradient>
+</defs>
+<rect width="800" height="480" fill="url(#bg)"/>
+<!-- траектория -->
+<path d="M110 380 Q 400 40 690 300" stroke="#7B2FFF" stroke-width="5" stroke-dasharray="2 14" fill="none" stroke-linecap="round"/>
+<!-- пушка -->
+<g transform="rotate(-40 120 380)">
+<rect x="105" y="345" width="90" height="36" rx="18" fill="#111118"/>
+</g>
+<circle cx="120" cy="395" r="34" fill="#3B82F6"/>
+<circle cx="120" cy="395" r="14" fill="#93c5fd"/>
+<!-- снаряд -->
+<circle cx="400" cy="185" r="20" fill="#FF5038"/>
+<path d="M370 195 q -25 8 -40 25" stroke="#FF5038" stroke-width="5" fill="none" opacity=".5" stroke-linecap="round"/>
+<!-- мишень -->
+<g>
+<circle cx="690" cy="330" r="46" fill="#fff"/><circle cx="690" cy="330" r="32" fill="#FF5038"/><circle cx="690" cy="330" r="18" fill="#fff"/><circle cx="690" cy="330" r="8" fill="#FF5038"/>
+<rect x="682" y="376" width="16" height="44" rx="6" fill="#111118"/>
+</g>
+<!-- слайдер угла -->
+<rect x="80" y="60" width="300" height="70" rx="18" fill="#fff" opacity=".92"/>
+<text x="104" y="90" font-size="14" font-weight="700" fill="#6B7280">Угол запуска</text>
+<rect x="104" y="102" width="252" height="10" rx="5" fill="#E5E7EB"/>
+<rect x="104" y="102" width="150" height="10" rx="5" fill="#7B2FFF"/>
+<circle cx="254" cy="107" r="13" fill="#7B2FFF" stroke="#fff" stroke-width="4"/>
+<text x="332" y="93" font-size="20" font-weight="800" fill="#111118">42°</text>
+<rect x="40" y="386" width="400" height="60" rx="18" fill="#4c1d95" opacity=".9"/>
+<text x="64" y="412" font-size="19" font-weight="800" fill="#fff">КвантУм</text>
+<text x="64" y="434" font-size="13" fill="#ddd6fe">Миссия: подбери угол и попади в цель с первого раза</text>
+<rect x="640" y="30" width="130" height="34" rx="17" fill="#111118"/>
+<text x="705" y="52" text-anchor="middle" font-size="14" font-weight="800" fill="#fff">3 уровня</text>
+</svg>

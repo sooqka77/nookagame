@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 480" font-family="'Space Grotesk','Arial Rounded MT Bold',sans-serif">
+<defs>
+<linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#dbeafe"/><stop offset="1" stop-color="#93c5fd"/></linearGradient>
+</defs>
+<rect width="800" height="480" fill="url(#bg)"/>
+<!-- планета -->
+<circle cx="300" cy="240" r="150" fill="#3B82F6"/>
+<path d="M220 160 q 40 -30 80 -10 q 30 15 10 45 q -25 30 -60 20 q -45 -15 -30 -55z" fill="#00C27C"/>
+<path d="M330 260 q 50 -20 80 10 q 20 25 -10 50 q -35 25 -70 5 q -30 -20 0 -65z" fill="#00C27C"/>
+<path d="M250 300 q 25 -10 35 10 q 8 20 -15 28 q -28 8 -35 -12 q -5 -18 15 -26z" fill="#FFE141"/>
+<circle cx="300" cy="240" r="150" fill="none" stroke="#fff" stroke-width="3" opacity=".4"/>
+<ellipse cx="300" cy="240" rx="150" ry="60" fill="none" stroke="#fff" stroke-width="2" opacity=".35"/>
+<!-- маркеры -->
+<g>
+<path d="M270 150 a18 18 0 0 1 36 0 c0 14 -18 34 -18 34 s-18 -20 -18 -34z" fill="#FF5038"/><circle cx="288" cy="150" r="7" fill="#fff"/>
+<path d="M370 280 a15 15 0 0 1 30 0 c0 12 -15 28 -15 28 s-15 -16 -15 -28z" fill="#FFE141"/><circle cx="385" cy="280" r="6" fill="#111118"/>
+</g>
+<!-- компас -->
+<circle cx="640" cy="140" r="64" fill="#fff" opacity=".95"/>
+<circle cx="640" cy="140" r="64" fill="none" stroke="#1E40AF" stroke-width="5"/>
+<path d="M640 92 l14 40 -14 56 -14 -56z" fill="#FF5038"/>
+<circle cx="640" cy="140" r="9" fill="#111118"/>
+<text x="640" y="80" text-anchor="middle" font-size="15" font-weight="800" fill="#1E40AF">N</text>
+<rect x="40" y="386" width="390" height="60" rx="18" fill="#1E40AF" opacity=".92"/>
+<text x="64" y="412" font-size="19" font-weight="800" fill="#fff">ГеоАтлас</text>
+<text x="64" y="434" font-size="13" fill="#bfdbfe">Квест по материкам: найди страну по трём подсказкам</text>
+<rect x="614" y="230" width="156" height="34" rx="17" fill="#111118"/>
+<text x="692" y="252" text-anchor="middle" font-size="14" font-weight="800" fill="#fff">в разработке</text>
+</svg>
