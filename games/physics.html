@@ -352,6 +352,7 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
 })();
 
 </script>
+<script src="nooka-core.js"></script>
 <script>
 const {
   useState,
@@ -2059,6 +2060,7 @@ function Level3({
 function HomeScreen({
   onSelect
 }) {
+  const doneSet = new Set(window.nooka ? window.nooka.getCompleted('phys') : []);
   const lvls = [{
     n: 1,
     emoji: '💥',
@@ -2175,7 +2177,7 @@ function HomeScreen({
       fontSize: 18,
       color: 'var(--ak-ink-3)'
     }
-  }, "→")))), /*#__PURE__*/React.createElement("div", {
+  }, doneSet.has(l.n) ? "✅" : "→")))), /*#__PURE__*/React.createElement("div", {
     style: {
       marginTop: 24,
       padding: '14px 18px',
@@ -2205,13 +2207,13 @@ function App() {
   }, s === 'home' && /*#__PURE__*/React.createElement(HomeScreen, {
     onSelect: n => setS(`l${n}`)
   }), s === 'l1' && /*#__PURE__*/React.createElement(Level1, {
-    onWin: () => setS('l2'),
+    onWin: () => { if (window.nooka) window.nooka.completeMission('phys1', 60); setS('l2'); },
     onHome: () => setS('home')
   }), s === 'l2' && /*#__PURE__*/React.createElement(Level2, {
-    onWin: () => setS('l3'),
+    onWin: () => { if (window.nooka) window.nooka.completeMission('phys2', 60); setS('l3'); },
     onHome: () => setS('home')
   }), s === 'l3' && /*#__PURE__*/React.createElement(Level3, {
-    onWin: () => setS('home'),
+    onWin: () => { if (window.nooka) window.nooka.completeMission('phys3', 60); setS('home'); },
     onHome: () => setS('home')
   }));
 }

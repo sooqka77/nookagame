@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Моя база — Nooka</title>
+<link rel="icon" href="../logo.svg">
+<link rel="preconnect" href="https://fonts.bunny.net">
+<link href="https://fonts.bunny.net/css?family=unbounded:700,900|space-grotesk:400,500,700" rel="stylesheet" media="print" onload="this.media='all'">
+<style>
+:root{--purple:#7B2FFF;--yellow:#FFE141;--black:#111118;--muted:#6B7280;--bg:#F4F1FA}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--black);min-height:100vh}
+h1,h2,.rank-name,.pl-name{font-family:'Unbounded',sans-serif;font-weight:900}
+.wrap{max-width:960px;margin:0 auto;padding:24px 20px 60px}
+.top{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px}
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--black)}
+.logo img{width:40px;height:40px}
+.logo b{font-family:'Unbounded',sans-serif;font-weight:900;font-size:20px}
+.logo b em{font-style:normal;color:var(--purple)}
+.back{font-size:14px;color:var(--muted);text-decoration:none}
+.back:hover{color:var(--purple)}
+
+.profile{background:var(--black);color:#fff;border-radius:28px;padding:32px 36px;display:flex;align-items:center;gap:28px;flex-wrap:wrap;margin-bottom:16px}
+.rank-emo{font-size:64px;line-height:1}
+.rank-name{font-size:30px}
+.rank-sub{color:#A5A0B8;font-size:14px;margin-top:4px}
+.xpbar{flex:1;min-width:220px}
+.xpbar .lbl{display:flex;justify-content:space-between;font-size:13px;color:#A5A0B8;margin-bottom:8px}
+.xpbar .lbl b{color:var(--yellow)}
+.bar{height:14px;background:rgba(255,255,255,.12);border-radius:10px;overflow:hidden}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--purple),#A855F7);border-radius:10px;transition:width .6s}
+.streak{background:var(--yellow);color:var(--black);border-radius:20px;padding:14px 22px;text-align:center}
+.streak .n{font-family:'Unbounded',sans-serif;font-weight:900;font-size:26px}
+.streak .t{font-size:12px;font-weight:700}
+
+h2{font-size:22px;margin:34px 0 16px}
+.planets{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
+.pl{background:#fff;border-radius:24px;padding:24px;box-shadow:0 8px 24px -12px rgba(45,27,69,.15);display:flex;flex-direction:column;gap:12px}
+.pl-head{display:flex;align-items:center;gap:14px}
+.pl-emo{width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0}
+.pl-name{font-size:18px}
+.pl-sub{font-size:13px;color:var(--muted)}
+.pl .bar{background:#EDE9FE}
+.pl .lbl{display:flex;justify-content:space-between;font-size:13px;color:var(--muted)}
+.pl .lbl b{color:var(--black)}
+.pl a.play{display:block;text-align:center;background:var(--purple);color:#fff;text-decoration:none;font-weight:700;border-radius:14px;padding:12px;margin-top:4px}
+.pl a.play:hover{background:#6B21D9}
+.pl.done a.play{background:var(--black)}
+.badge-done{background:#DCFCE7;color:#15803D;font-size:12px;font-weight:700;border-radius:20px;padding:3px 10px}
+
+.ranks{margin-top:34px;background:#fff;border-radius:24px;padding:22px 24px;box-shadow:0 8px 24px -12px rgba(45,27,69,.12)}
+.ranks .row{display:flex;align-items:center;gap:12px;padding:9px 0;border-bottom:1px solid #F0EDF7;font-size:15px}
+.ranks .row:last-child{border-bottom:none}
+.ranks .row.cur{font-weight:700}
+.ranks .row .xp{margin-left:auto;color:var(--muted);font-size:13px}
+.ranks .row.got .name{color:var(--purple)}
+@media(max-width:600px){.profile{padding:24px;gap:18px}.rank-emo{font-size:48px}.rank-name{font-size:22px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <a class="logo" href="../"><img src="../logo.svg" alt=""><b>Noo<em>ka</em></b></a>
+    <a class="back" href="../">← на главную</a>
+  </div>
+
+  <div class="profile">
+    <div class="rank-emo" id="rEmo">🎒</div>
+    <div>
+      <div class="rank-name" id="rName">Кадет</div>
+      <div class="rank-sub" id="rSub">Твоё звание на базе</div>
+    </div>
+    <div class="xpbar">
+      <div class="lbl"><span>Опыт</span><b id="xpText">0 XP</b></div>
+      <div class="bar"><i id="xpFill" style="width:0%"></i></div>
+    </div>
+    <div class="streak"><div class="n" id="stN">0</div><div class="t">дней подряд 🔥</div></div>
+  </div>
+
+  <h2>Карта базы</h2>
+  <div class="planets" id="planets"></div>
+
+  <div class="ranks">
+    <h2 style="margin:0 0 12px;font-size:18px">Путь до Капитана базы</h2>
+    <div id="ranksList"></div>
+  </div>
+</div>
+
+<script src="../games/nooka-core.js"></script>
+<script>
+var GAMES=[
+  {key:'ai',  name:'Нейро Академия', sub:'Искусственный интеллект', emoji:'🤖', bg:'#EDE9FE', total:9, src:'../games/ai.html'},
+  {key:'chem',name:'Хемо Лаб',       sub:'Химия',                  emoji:'🧪', bg:'#DBFCE7', total:3, src:'../games/chemistry.html'},
+  {key:'phys',name:'КвантУм',        sub:'Физика',                 emoji:'⚡', bg:'#FEF3C7', total:3, src:'../games/physics.html'}
+];
+var RANKS=[[0,'Кадет','🎒'],[150,'Пилот','🚀'],[400,'Инженер','🔧'],[900,'Командир','🎖️'],[1800,'Капитан базы','👑']];
+
+function aiDone(){
+  try{var g=JSON.parse(localStorage.getItem('aiq5_gs'));return g&&g.modules?g.modules.length:0}catch(e){return 0}
+}
+function doneCount(key){
+  if(key==='ai')return aiDone();
+  return nooka.getCompleted(key).length;
+}
+
+var xp=nooka.totalXP(), r=nooka.getRank(xp), st=nooka.streak();
+document.getElementById('rEmo').textContent=r.emoji;
+document.getElementById('rName').textContent=r.name;
+document.getElementById('stN').textContent=st;
+(function(){var n=st%100,w=(n>10&&n<20)?'дней':(n%10===1?'день':(n%10>=2&&n%10<=4?'дня':'дней'));
+document.querySelector('.streak .t').textContent=w+' подряд 🔥';})();
+if(r.next){
+  document.getElementById('rSub').textContent='До звания «'+r.next.name+'» — '+(r.next.at-xp)+' XP';
+  document.getElementById('xpFill').style.width=Math.min(100,Math.round((xp-r.at)/(r.next.at-r.at)*100))+'%';
+}else{
+  document.getElementById('rSub').textContent='Высшее звание базы!';
+  document.getElementById('xpFill').style.width='100%';
+}
+document.getElementById('xpText').textContent=xp+' XP';
+
+document.getElementById('planets').innerHTML=GAMES.map(function(g){
+  var d=doneCount(g.key), full=d>=g.total, pct=Math.min(100,Math.round(d/g.total*100));
+  return '<div class="pl'+(full?' done':'')+'">'+
+    '<div class="pl-head"><div class="pl-emo" style="background:'+g.bg+'">'+g.emoji+'</div>'+
+    '<div><div class="pl-name">'+g.name+(full?' <span class="badge-done">пройдено ✓</span>':'')+'</div>'+
+    '<div class="pl-sub">'+g.sub+'</div></div></div>'+
+    '<div class="lbl"><span>Миссии</span><b>'+d+' из '+g.total+'</b></div>'+
+    '<div class="bar"><i style="width:'+pct+'%"></i></div>'+
+    '<a class="play" href="'+g.src+'">'+(d>0&&!full?'Продолжить →':full?'Играть ещё →':'Начать →')+'</a></div>';
+}).join('');
+
+document.getElementById('ranksList').innerHTML=RANKS.map(function(k){
+  var got=xp>=k[0], cur=r.at===k[0];
+  return '<div class="row'+(got?' got':'')+(cur?' cur':'')+'">'+
+    '<span>'+k[2]+'</span><span class="name">'+k[1]+'</span>'+(cur?'<span class="badge-done">ты здесь</span>':'')+
+    '<span class="xp">'+k[0]+' XP</span></div>';
+}).join('');
+</script>
+</body>
+</html>

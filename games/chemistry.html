@@ -379,6 +379,7 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
 })();
 
 </script>
+<script src="nooka-core.js"></script>
 <script>
 /* ============================================================
    AK DESIGN TOKENS
@@ -3016,8 +3017,9 @@ function LevelSelect({
    ============================================================ */
 function App() {
   const [screen, setScreen] = React.useState('select');
-  const [completed, setCompleted] = React.useState(new Set());
+  const [completed, setCompleted] = React.useState(() => new Set(window.nooka ? window.nooka.getCompleted('chem') : []));
   const done = n => {
+    if (window.nooka) window.nooka.completeMission('chem' + n, 60);
     setCompleted(s => new Set([...s, n]));
     setScreen('select');
   };
