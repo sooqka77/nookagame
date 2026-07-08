@@ -1,26 +1,31 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 480" font-family="'Space Grotesk','Arial Rounded MT Bold',sans-serif">
 <defs>
-<linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fee2e2"/><stop offset="1" stop-color="#fca5a5"/></linearGradient>
+<linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FF5038"/><stop offset="1" stop-color="#7B2FFF"/></linearGradient>
 </defs>
 <rect width="800" height="480" fill="url(#bg)"/>
-<!-- сетка -->
-<g stroke="#fff" stroke-width="1.5" opacity=".5">
-<line x1="0" y1="120" x2="800" y2="120"/><line x1="0" y1="240" x2="800" y2="240"/><line x1="0" y1="360" x2="800" y2="360"/>
-<line x1="160" y1="0" x2="160" y2="480"/><line x1="320" y1="0" x2="320" y2="480"/><line x1="480" y1="0" x2="480" y2="480"/><line x1="640" y1="0" x2="640" y2="480"/>
+<g opacity=".18" fill="#fff" font-weight="800">
+<text x="60" y="100" font-size="44">π</text><text x="700" y="380" font-size="48">∞</text>
+<text x="640" y="120" font-size="40">√</text><text x="90" y="360" font-size="42">%</text>
 </g>
-<!-- фигуры -->
-<rect x="110" y="90" width="120" height="120" rx="20" fill="#FF5038" transform="rotate(-8 170 150)"/>
-<circle cx="420" cy="160" r="70" fill="#7B2FFF"/>
-<path d="M610 90 l70 122 h-140 z" fill="#FFE141"/>
-<text x="170" y="165" text-anchor="middle" font-size="44" font-weight="800" fill="#fff" transform="rotate(-8 170 150)">7</text>
-<text x="420" y="176" text-anchor="middle" font-size="44" font-weight="800" fill="#fff">×</text>
-<text x="645" y="185" text-anchor="middle" font-size="40" font-weight="800" fill="#111118">?</text>
-<!-- пример-пазл -->
-<rect x="200" y="280" width="400" height="76" rx="20" fill="#fff" opacity=".95"/>
-<text x="400" y="330" text-anchor="middle" font-size="36" font-weight="800" fill="#111118">7 × 8 = 5<tspan fill="#FF5038">?</tspan></text>
-<rect x="40" y="386" width="400" height="60" rx="18" fill="#991B1B" opacity=".92"/>
-<text x="64" y="412" font-size="19" font-weight="800" fill="#fff">МатрицаX</text>
-<text x="64" y="434" font-size="13" fill="#fecaca">Логические задачи, где ответ надо построить, а не угадать</text>
-<rect x="614" y="30" width="156" height="34" rx="17" fill="#111118"/>
-<text x="692" y="52" text-anchor="middle" font-size="14" font-weight="800" fill="#fff">в разработке</text>
+<!-- пирамидка из кубиков с числами -->
+<g font-weight="800" text-anchor="middle">
+<rect x="180" y="270" width="84" height="84" rx="18" fill="#FFE141"/><text x="222" y="325" font-size="38" fill="#111118">3</text>
+<rect x="274" y="270" width="84" height="84" rx="18" fill="#fff"/><text x="316" y="325" font-size="38" fill="#7B2FFF">5</text>
+<rect x="368" y="270" width="84" height="84" rx="18" fill="#FFE141"/><text x="410" y="325" font-size="38" fill="#111118">8</text>
+<rect x="227" y="176" width="84" height="84" rx="18" fill="#fff"/><text x="269" y="231" font-size="38" fill="#FF5038">?</text>
+<rect x="321" y="176" width="84" height="84" rx="18" fill="#111118"/><text x="363" y="231" font-size="38" fill="#FFE141">13</text>
+<rect x="274" y="82" width="84" height="84" rx="18" fill="#00C27C"/><text x="316" y="137" font-size="38" fill="#fff">21</text>
+</g>
+<!-- геометрия -->
+<g>
+<circle cx="600" cy="180" r="58" fill="none" stroke="#FFE141" stroke-width="8"/>
+<path d="M560 300 L680 300 L620 216z" fill="none" stroke="#fff" stroke-width="8" stroke-linejoin="round"/>
+<rect x="545" y="322" width="64" height="64" rx="12" fill="none" stroke="#4ADE80" stroke-width="8" transform="rotate(12 577 354)"/>
+</g>
+<text x="480" y="90" font-size="36">🧩</text>
+<rect x="40" y="386" width="440" height="60" rx="18" fill="#111118" opacity=".92"/>
+<text x="64" y="412" font-size="19" font-weight="800" fill="#fff">Цифрариум</text>
+<text x="64" y="434" font-size="13" fill="#FDBA74">Числа, фигуры и шифры — головоломки со вкусом</text>
+<rect x="614" y="30" width="156" height="34" rx="17" fill="#FFE141"/>
+<text x="692" y="52" text-anchor="middle" font-size="14" font-weight="800" fill="#111118">в разработке</text>
 </svg>

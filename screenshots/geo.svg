@@ -1,29 +1,30 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 480" font-family="'Space Grotesk','Arial Rounded MT Bold',sans-serif">
 <defs>
-<linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#dbeafe"/><stop offset="1" stop-color="#93c5fd"/></linearGradient>
+<radialGradient id="bg" cx=".5" cy=".2" r="1.2"><stop offset="0" stop-color="#0EA5E9"/><stop offset="1" stop-color="#0C4A6E"/></radialGradient>
+<radialGradient id="ocean" cx=".4" cy=".35" r="1"><stop offset="0" stop-color="#7DD3FC"/><stop offset="1" stop-color="#0284C7"/></radialGradient>
 </defs>
 <rect width="800" height="480" fill="url(#bg)"/>
+<g fill="#fff" opacity=".7"><circle cx="110" cy="60" r="2.5"/><circle cx="690" cy="50" r="2"/><circle cx="740" cy="150" r="2.5"/><circle cx="70" cy="200" r="2"/></g>
 <!-- планета -->
-<circle cx="300" cy="240" r="150" fill="#3B82F6"/>
-<path d="M220 160 q 40 -30 80 -10 q 30 15 10 45 q -25 30 -60 20 q -45 -15 -30 -55z" fill="#00C27C"/>
-<path d="M330 260 q 50 -20 80 10 q 20 25 -10 50 q -35 25 -70 5 q -30 -20 0 -65z" fill="#00C27C"/>
-<path d="M250 300 q 25 -10 35 10 q 8 20 -15 28 q -28 8 -35 -12 q -5 -18 15 -26z" fill="#FFE141"/>
-<circle cx="300" cy="240" r="150" fill="none" stroke="#fff" stroke-width="3" opacity=".4"/>
-<ellipse cx="300" cy="240" rx="150" ry="60" fill="none" stroke="#fff" stroke-width="2" opacity=".35"/>
-<!-- маркеры -->
-<g>
-<path d="M270 150 a18 18 0 0 1 36 0 c0 14 -18 34 -18 34 s-18 -20 -18 -34z" fill="#FF5038"/><circle cx="288" cy="150" r="7" fill="#fff"/>
-<path d="M370 280 a15 15 0 0 1 30 0 c0 12 -15 28 -15 28 s-15 -16 -15 -28z" fill="#FFE141"/><circle cx="385" cy="280" r="6" fill="#111118"/>
+<circle cx="330" cy="235" r="170" fill="url(#ocean)"/>
+<g fill="#4ADE80">
+<path d="M230 130 q 60 -24 110 4 q 20 40 -18 58 q -50 8 -78 -12 q -22 -26 -14 -50z"/>
+<path d="M395 250 q 52 -8 74 30 q 8 44 -34 58 q -46 4 -62 -30 q -6 -38 22 -58z"/>
+<path d="M215 280 q 36 -4 46 26 q 2 30 -30 34 q -34 -2 -38 -28 q 2 -24 22 -32z"/>
 </g>
-<!-- компас -->
-<circle cx="640" cy="140" r="64" fill="#fff" opacity=".95"/>
-<circle cx="640" cy="140" r="64" fill="none" stroke="#1E40AF" stroke-width="5"/>
-<path d="M640 92 l14 40 -14 56 -14 -56z" fill="#FF5038"/>
-<circle cx="640" cy="140" r="9" fill="#111118"/>
-<text x="640" y="80" text-anchor="middle" font-size="15" font-weight="800" fill="#1E40AF">N</text>
-<rect x="40" y="386" width="390" height="60" rx="18" fill="#1E40AF" opacity=".92"/>
+<circle cx="330" cy="235" r="170" fill="none" stroke="#fff" stroke-width="3" opacity=".4"/>
+<ellipse cx="330" cy="235" rx="170" ry="66" fill="none" stroke="#fff" stroke-width="2.5" opacity=".35"/>
+<ellipse cx="330" cy="235" rx="66" ry="170" fill="none" stroke="#fff" stroke-width="2.5" opacity=".35"/>
+<!-- маршрут и пин -->
+<path d="M330 100 q 130 -60 250 30 q 60 60 30 150" fill="none" stroke="#FFE141" stroke-width="6" stroke-dasharray="4 16" stroke-linecap="round"/>
+<g transform="translate(610 300)">
+<path d="M0 26 L-26 -18 a30 30 0 1 1 52 0z" fill="#FF5038"/>
+<circle cx="0" cy="-22" r="12" fill="#fff"/>
+</g>
+<text x="130" y="420" font-size="40">🧭</text><text x="480" y="110" font-size="34">✈️</text>
+<rect x="40" y="386" width="440" height="60" rx="18" fill="#111118" opacity=".92"/>
 <text x="64" y="412" font-size="19" font-weight="800" fill="#fff">ГеоАтлас</text>
-<text x="64" y="434" font-size="13" fill="#bfdbfe">Квест по материкам: найди страну по трём подсказкам</text>
-<rect x="614" y="230" width="156" height="34" rx="17" fill="#111118"/>
-<text x="692" y="252" text-anchor="middle" font-size="14" font-weight="800" fill="#fff">в разработке</text>
+<text x="64" y="434" font-size="13" fill="#7DD3FC">Квесты по всей планете — от океанов до вулканов</text>
+<rect x="614" y="30" width="156" height="34" rx="17" fill="#FFE141"/>
+<text x="692" y="52" text-anchor="middle" font-size="14" font-weight="800" fill="#111118">в разработке</text>
 </svg>
