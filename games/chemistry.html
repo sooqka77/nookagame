@@ -2785,6 +2785,1055 @@ function AKPlanet({
     strokeLinecap: "round"
   }));
 }
+/* ============================================================
+   LEVEL 4 — Зелье-хамелеон (кислоты, щёлочи, индикаторы)
+   ============================================================ */
+const L4_LIQUIDS = [{
+  id: 'lemon',
+  name: 'Лимонный сок',
+  emoji: '🍋',
+  ph: 2,
+  base: '#FDF6C9'
+}, {
+  id: 'cola',
+  name: 'Газировка',
+  emoji: '🥤',
+  ph: 3,
+  base: '#E8D5C0'
+}, {
+  id: 'water',
+  name: 'Вода',
+  emoji: '💧',
+  ph: 7,
+  base: '#DCEFFB'
+}, {
+  id: 'soap',
+  name: 'Мыльная вода',
+  emoji: '🧼',
+  ph: 10,
+  base: '#EDEAF5'
+}, {
+  id: 'soda',
+  name: 'Раствор соды',
+  emoji: '🥄',
+  ph: 9,
+  base: '#F0F0EA'
+}, {
+  id: 'secret',
+  name: 'Загадка Nooka',
+  emoji: '❓',
+  ph: 5,
+  base: '#E9E2F2'
+}];
+function l4PhColor(ph) {
+  if (ph <= 3) return '#FF6B8A';
+  if (ph <= 5) return '#FFA17A';
+  if (ph < 6.5) return '#FFD262';
+  if (ph <= 7.5) return '#5DD9A0';
+  if (ph <= 9) return '#8FCAF0';
+  return '#B5A1FF';
+}
+function l4PhWord(ph) {
+  if (ph < 6.5) return 'Кислота!';
+  if (ph <= 7.5) return 'Нейтрально';
+  return 'Щёлочь!';
+}
+function Level4Potion({
+  onDone
+}) {
+  const [phase, setPhase] = React.useState('intro'); // intro | sandbox | challenge | done
+  const [sel, setSel] = React.useState(null);
+  const [tested, setTested] = React.useState(new Set());
+  const [dropped, setDropped] = React.useState(false);
+  const [chPh, setChPh] = React.useState(2);
+  const [steps, setSteps] = React.useState(0);
+  const [overshoot, setOvershoot] = React.useState(false);
+  const liquid = L4_LIQUIDS.find(l => l.id === sel);
+  const testedEnough = tested.size >= 4;
+  const chColor = l4PhColor(chPh);
+  const chWin = chPh >= 6.5 && chPh <= 7.5;
+  const drop = () => {
+    if (!liquid || dropped) return;
+    setDropped(true);
+    setTested(s => new Set([...s, liquid.id]));
+  };
+  const addSoda = () => {
+    setSteps(s => s + 1);
+    setChPh(p => {
+      const n = Math.min(11, p + 1.5);
+      if (n > 7.5) setOvershoot(true);
+      return n;
+    });
+  };
+  const addLemon = () => {
+    setSteps(s => s + 1);
+    setChPh(p => Math.max(1.5, p - 1.5));
+  };
+  return /*#__PURE__*/React.createElement("div", {
+    className: "ak",
+    style: {
+      minHeight: '100vh',
+      background: 'radial-gradient(80% 50% at 50% 0%,#F3E8FF 0%,transparent 60%),linear-gradient(180deg,#FFF8EA,#FFF3E2)',
+      display: 'flex',
+      flexDirection: 'column',
+      padding: '14px 16px 24px',
+      boxSizing: 'border-box'
+    }
+  }, /*#__PURE__*/React.createElement(AKLessonHeader, {
+    progress: phase === 'sandbox' ? tested.size / 6 : phase === 'intro' ? 0 : 1,
+    stars: tested.size * 30,
+    onClose: onDone
+  }), phase === 'intro' && /*#__PURE__*/React.createElement("div", {
+    style: {
+      position: 'fixed',
+      inset: 0,
+      background: 'rgba(45,27,69,.5)',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      zIndex: 100,
+      padding: '0 24px'
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "ak-pop",
+    style: {
+      width: 320,
+      background: '#fff',
+      borderRadius: 32,
+      padding: '28px 24px 24px',
+      textAlign: 'center',
+      fontFamily: 'var(--ak-body)',
+      margin: '0 auto'
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 56
+    }
+  }, "🧙‍♂️"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontFamily: 'var(--ak-display)',
+      fontWeight: 700,
+      fontSize: 22,
+      color: 'var(--ak-ink)',
+      margin: '10px 0 8px'
+    }
+  }, "Зелье-хамелеон"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 15,
+      color: 'var(--ak-ink-2)',
+      lineHeight: 1.55,
+      marginBottom: 18
+    }
+  }, "У Nooka есть волшебный сок фиолетовой капусты — он раскрывает тайну любой жидкости. Капни его и смотри, какой цвет вспыхнет!"), /*#__PURE__*/React.createElement("button", {
+    className: "ak-btn ak-btn--ok",
+    style: {
+      width: '100%'
+    },
+    onClick: () => setPhase('sandbox')
+  }, "За дело! 🧪"))), phase === 'sandbox' && /*#__PURE__*/React.createElement("div", {
+    style: {
+      flex: 1,
+      display: 'flex',
+      flexDirection: 'column',
+      gap: 12,
+      maxWidth: 420,
+      margin: '0 auto',
+      width: '100%'
+    }
+  }, /*#__PURE__*/React.createElement(AKTaskBadge, null, testedEnough ? 'Отлично! Можешь идти на вызов — или проверь остальные' : 'Проверь 4 жидкости индикатором'), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: 'grid',
+      gridTemplateColumns: 'repeat(3,1fr)',
+      gap: 8
+    }
+  }, L4_LIQUIDS.map(l => /*#__PURE__*/React.createElement("button", {
+    key: l.id,
+    className: "ak-tap",
+    onClick: () => {
+      setSel(l.id);
+      setDropped(false);
+    },
+    style: {
+      padding: '10px 6px',
+      borderRadius: 18,
+      border: 'none',
+      cursor: 'pointer',
+      fontFamily: 'var(--ak-body)',
+      background: sel === l.id ? 'linear-gradient(160deg,#E5DCFF,#B5A1FF)' : 'rgba(255,255,255,.85)',
+      boxShadow: sel === l.id ? '0 4px 0 #7C5FE0' : '0 4px 0 rgba(45,27,69,.08)',
+      position: 'relative'
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 26
+    }
+  }, l.emoji), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 11.5,
+      fontWeight: 700,
+      color: 'var(--ak-ink)',
+      marginTop: 2
+    }
+  }, l.name), tested.has(l.id) && /*#__PURE__*/React.createElement("div", {
+    style: {
+      position: 'absolute',
+      top: 4,
+      right: 6,
+      fontSize: 13
+    }
+  }, "✅")))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      flex: 1,
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      justifyContent: 'center',
+      gap: 10
+    }
+  }, liquid ? /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
+    style: {
+      width: 120,
+      height: 150,
+      borderRadius: '14px 14px 28px 28px',
+      border: '5px solid rgba(45,27,69,.25)',
+      borderTop: 'none',
+      position: 'relative',
+      overflow: 'hidden',
+      background: 'rgba(255,255,255,.4)'
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      position: 'absolute',
+      bottom: 0,
+      left: 0,
+      right: 0,
+      height: '72%',
+      background: dropped ? l4PhColor(liquid.ph) : liquid.base,
+      transition: 'background 1s'
+    }
+  }), dropped && /*#__PURE__*/React.createElement("div", {
+    className: "ak-twinkle",
+    style: {
+      position: 'absolute',
+      top: 8,
+      left: 0,
+      right: 0,
+      textAlign: 'center',
+      fontSize: 22
+    }
+  }, "✨")), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontFamily: 'var(--ak-display)',
+      fontWeight: 700,
+      fontSize: 18,
+      color: dropped ? l4PhColor(liquid.ph) : 'var(--ak-ink-2)',
+      minHeight: 24
+    }
+  }, dropped ? `${l4PhWord(liquid.ph)} pH ${liquid.ph}` : liquid.name), !dropped ? /*#__PURE__*/React.createElement("button", {
+    className: "ak-btn ak-btn--ok",
+    onClick: drop
+  }, "💜 Капнуть индикатор") : /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 13.5,
+      color: 'var(--ak-ink-2)',
+      textAlign: 'center',
+      maxWidth: 280,
+      lineHeight: 1.5
+    }
+  }, liquid.id === 'secret' ? 'Загадка раскрыта: слабая кислота — это был яблочный сок!' : liquid.ph < 6.5 ? 'Розово-красный = кислота. Кислое на вкус — кислое по науке!' : liquid.ph <= 7.5 ? 'Зелёный = нейтральная. Ни кислота, ни щёлочь.' : 'Сине-фиолетовый = щёлочь. Мыло и сода — из этой команды!')) : /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 15,
+      color: 'var(--ak-ink-3)',
+      fontFamily: 'var(--ak-display)'
+    }
+  }, "👆 Выбери жидкость")), /*#__PURE__*/React.createElement("button", {
+    className: "ak-btn ak-btn--ok",
+    disabled: !testedEnough,
+    style: {
+      width: '100%',
+      opacity: testedEnough ? 1 : .45
+    },
+    onClick: () => testedEnough && setPhase('challenge')
+  }, testedEnough ? 'Вызов: свари зелёное зелье →' : `Проверено ${tested.size} из 4`)), phase === 'challenge' && /*#__PURE__*/React.createElement("div", {
+    style: {
+      flex: 1,
+      display: 'flex',
+      flexDirection: 'column',
+      gap: 12,
+      maxWidth: 420,
+      margin: '0 auto',
+      width: '100%'
+    }
+  }, /*#__PURE__*/React.createElement(AKTaskBadge, null, "Сделай зелье ровно зелёным (нейтральным)!"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      flex: 1,
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      justifyContent: 'center',
+      gap: 12
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      width: 140,
+      height: 170,
+      borderRadius: '14px 14px 30px 30px',
+      border: '5px solid rgba(45,27,69,.25)',
+      borderTop: 'none',
+      position: 'relative',
+      overflow: 'hidden',
+      background: 'rgba(255,255,255,.4)'
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      position: 'absolute',
+      bottom: 0,
+      left: 0,
+      right: 0,
+      height: '75%',
+      background: chColor,
+      transition: 'background .7s'
+    }
+  })), /*#__PURE__*/React.createElement("div", {
+    style: {
+      width: '100%',
+      maxWidth: 300
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: 'flex',
+      justifyContent: 'space-between',
+      fontSize: 12,
+      fontWeight: 700,
+      color: 'var(--ak-ink-2)',
+      marginBottom: 4
+    }
+  }, /*#__PURE__*/React.createElement("span", null, "кислота"), /*#__PURE__*/React.createElement("span", null, "нейтрально"), /*#__PURE__*/React.createElement("span", null, "щёлочь")), /*#__PURE__*/React.createElement("div", {
+    style: {
+      height: 12,
+      borderRadius: 8,
+      background: 'linear-gradient(90deg,#FF6B8A,#FFD262,#5DD9A0,#8FCAF0,#B5A1FF)',
+      position: 'relative'
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      position: 'absolute',
+      top: -4,
+      left: `${(chPh - 1) / 10.5 * 100}%`,
+      width: 6,
+      height: 20,
+      borderRadius: 3,
+      background: 'var(--ak-ink)',
+      transition: 'left .5s'
+    }
+  }))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontFamily: 'var(--ak-display)',
+      fontWeight: 700,
+      fontSize: 17,
+      color: chWin ? '#2BA873' : 'var(--ak-ink)'
+    }
+  }, chWin ? '🎯 Идеально зелёное!' : chPh < 6.5 ? 'Слишком кисло…' : 'Перелетел в щёлочь!'), overshoot && !chWin && /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 13,
+      color: 'var(--ak-ink-2)'
+    }
+  }, "Сода и кислота гасят друг друга — это нейтрализация"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: 'flex',
+      gap: 10
+    }
+  }, /*#__PURE__*/React.createElement("button", {
+    className: "ak-btn",
+    style: {
+      background: 'linear-gradient(160deg,#F0F0EA,#D9D9CB)',
+      boxShadow: '0 6px 0 #A8A890'
+    },
+    onClick: addSoda
+  }, "🥄 + сода"), /*#__PURE__*/React.createElement("button", {
+    className: "ak-btn",
+    style: {
+      background: 'linear-gradient(160deg,#FDF6C9,#F2E38A)',
+      boxShadow: '0 6px 0 #C9B75A'
+    },
+    onClick: addLemon
+  }, "🍋 + лимон")), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 12.5,
+      color: 'var(--ak-ink-3)'
+    }
+  }, "Ходов: ", steps)), chWin && /*#__PURE__*/React.createElement("button", {
+    className: "ak-btn ak-btn--ok",
+    style: {
+      width: '100%'
+    },
+    onClick: () => setPhase('done')
+  }, "Готово! 🎉")), phase === 'done' && /*#__PURE__*/React.createElement("div", {
+    style: {
+      position: 'fixed',
+      inset: 0,
+      background: 'rgba(45,27,69,.5)',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      zIndex: 100,
+      padding: '0 24px'
+    }
+  }, /*#__PURE__*/React.createElement(AKSuccessCard, {
+    stars: steps <= 6 ? 3 : steps <= 10 ? 2 : 1,
+    title: "Мастер зелий! 🧪",
+    fact: "Индикатор — вещество-шпион: меняет цвет от кислотности (Роберт Бойль, XVII век). А гортензия — живой индикатор: на кислой почве цветёт синим, на щелочной — розовым!",
+    onNext: onDone,
+    ctaLabel: "Забрать награду →"
+  })));
+}
+
+/* ============================================================
+   LEVEL 5 — Ферма кристаллов (растворы, насыщение)
+   ============================================================ */
+function Level5Crystal({
+  onDone
+}) {
+  const [phase, setPhase] = React.useState('intro'); // intro | lab | cooling | result | done
+  const [salt, setSalt] = React.useState(20);
+  const [temp, setTemp] = React.useState(30);
+  const [attempts, setAttempts] = React.useState(0);
+  const [crystal, setCrystal] = React.useState(null); // null | 'big' | 'small'
+  const solubility = 20 + temp; // сколько «влезает» при данной температуре
+  const saturated = salt >= solubility;
+  const sediment = Math.max(0, salt - solubility);
+  const readyToGrow = temp >= 70 && salt >= 85;
+  const cool = slow => {
+    setAttempts(a => a + 1);
+    setCrystal(slow ? 'big' : 'small');
+    setPhase('result');
+  };
+  const retry = () => {
+    setPhase('lab');
+    setCrystal(null);
+  };
+  return /*#__PURE__*/React.createElement("div", {
+    className: "ak",
+    style: {
+      minHeight: '100vh',
+      background: 'radial-gradient(80% 50% at 50% 0%,#DCEFFB 0%,transparent 60%),linear-gradient(180deg,#FFF8EA,#FFF3E2)',
+      display: 'flex',
+      flexDirection: 'column',
+      padding: '14px 16px 24px',
+      boxSizing: 'border-box'
+    }
+  }, /*#__PURE__*/React.createElement(AKLessonHeader, {
+    progress: phase === 'intro' ? 0 : phase === 'lab' ? .4 : 1,
+    stars: attempts ? 60 : 0,
+    onClose: onDone
+  }), phase === 'intro' && /*#__PURE__*/React.createElement("div", {
+    style: {
+      position: 'fixed',
+      inset: 0,
+      background: 'rgba(45,27,69,.5)',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      zIndex: 100,
+      padding: '0 24px'
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "ak-pop",
+    style: {
+      width: 320,
+      background: '#fff',
+      borderRadius: 32,
+      padding: '28px 24px 24px',
+      textAlign: 'center',
+      fontFamily: 'var(--ak-body)'
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 56
+    }
+  }, "💎"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontFamily: 'var(--ak-display)',
+      fontWeight: 700,
+      fontSize: 22,
+      color: 'var(--ak-ink)',
+      margin: '10px 0 8px'
+    }
+  }, "Ферма кристаллов"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 15,
+      color: 'var(--ak-ink-2)',
+      lineHeight: 1.55,
+      marginBottom: 18
+    }
+  }, "Nooka уронил сахар в чай — и он исчез! Куда? И можно ли вернуть его обратно… в виде кристалла-самоцвета?"), /*#__PURE__*/React.createElement("button", {
+    className: "ak-btn ak-btn--ok",
+    style: {
+      width: '100%'
+    },
+    onClick: () => setPhase('lab')
+  }, "Выращивать! 💎"))), (phase === 'lab' || phase === 'result') && /*#__PURE__*/React.createElement("div", {
+    style: {
+      flex: 1,
+      display: 'flex',
+      flexDirection: 'column',
+      gap: 12,
+      maxWidth: 420,
+      margin: '0 auto',
+      width: '100%'
+    }
+  }, /*#__PURE__*/React.createElement(AKTaskBadge, null, readyToGrow ? 'Раствор насыщен! Теперь — остудить…' : 'Сделай насыщенный раствор: много соли + горячая вода'), /*#__PURE__*/React.createElement("div", {
+    style: {
+      flex: 1,
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      justifyContent: 'center',
+      gap: 14
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      width: 150,
+      height: 170,
+      borderRadius: '14px 14px 30px 30px',
+      border: '5px solid rgba(45,27,69,.25)',
+      borderTop: 'none',
+      position: 'relative',
+      overflow: 'hidden',
+      background: 'rgba(255,255,255,.4)'
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      position: 'absolute',
+      bottom: 0,
+      left: 0,
+      right: 0,
+      height: '78%',
+      background: `rgba(143,202,240,${0.35 + Math.min(salt, solubility) / 220})`,
+      transition: 'background .5s'
+    }
+  }), sediment > 0 && phase === 'lab' && /*#__PURE__*/React.createElement("div", {
+    style: {
+      position: 'absolute',
+      bottom: 0,
+      left: 8,
+      right: 8,
+      height: Math.min(26, sediment / 3 + 6),
+      borderRadius: '0 0 22px 22px',
+      background: '#fff',
+      opacity: .95
+    }
+  }), phase === 'result' && crystal === 'big' && /*#__PURE__*/React.createElement("div", {
+    style: {
+      position: 'absolute',
+      bottom: 10,
+      left: 0,
+      right: 0,
+      textAlign: 'center',
+      fontSize: 54
+    },
+    className: "ak-pop"
+  }, "💎"), phase === 'result' && crystal === 'small' && /*#__PURE__*/React.createElement("div", {
+    style: {
+      position: 'absolute',
+      bottom: 8,
+      left: 0,
+      right: 0,
+      textAlign: 'center',
+      fontSize: 20,
+      letterSpacing: 4
+    },
+    className: "ak-pop"
+  }, "▫▫▫▫▫"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      position: 'absolute',
+      top: 6,
+      right: 10,
+      fontSize: 13,
+      fontWeight: 800,
+      color: temp > 55 ? '#D9523F' : '#4A93C9'
+    }
+  }, temp, "°C")), phase === 'lab' && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
+    style: {
+      width: '100%',
+      maxWidth: 300
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: 'flex',
+      justifyContent: 'space-between',
+      fontSize: 13,
+      fontWeight: 700,
+      color: 'var(--ak-ink)'
+    }
+  }, /*#__PURE__*/React.createElement("span", null, "🧂 Соль"), /*#__PURE__*/React.createElement("span", null, salt, " ложек")), /*#__PURE__*/React.createElement("input", {
+    type: "range",
+    min: "0",
+    max: "100",
+    value: salt,
+    onChange: e => setSalt(+e.target.value),
+    style: {
+      width: '100%'
+    }
+  }), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: 'flex',
+      justifyContent: 'space-between',
+      fontSize: 13,
+      fontWeight: 700,
+      color: 'var(--ak-ink)',
+      marginTop: 8
+    }
+  }, /*#__PURE__*/React.createElement("span", null, "🔥 Температура"), /*#__PURE__*/React.createElement("span", null, temp, "°C")), /*#__PURE__*/React.createElement("input", {
+    type: "range",
+    min: "20",
+    max: "80",
+    value: temp,
+    onChange: e => setTemp(+e.target.value),
+    style: {
+      width: '100%'
+    }
+  })), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 13.5,
+      color: 'var(--ak-ink-2)',
+      textAlign: 'center',
+      maxWidth: 300,
+      lineHeight: 1.5,
+      minHeight: 40
+    }
+  }, sediment > 0 ? 'Соль больше не растворяется — на дне осадок. Раствор насыщен!' : saturated ? 'Ровно на грани: раствор насыщен!' : temp > 55 ? 'Горячая вода — жадная: растворяет больше!' : 'Пока всё растворяется. Добавь ещё или нагрей.'), readyToGrow && /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: 'flex',
+      gap: 10
+    }
+  }, /*#__PURE__*/React.createElement("button", {
+    className: "ak-btn",
+    style: {
+      background: 'linear-gradient(160deg,#D6ECFA,#8FCAF0)',
+      boxShadow: '0 6px 0 #4A93C9'
+    },
+    onClick: () => cool(true)
+  }, "🐢 Остудить медленно"), /*#__PURE__*/React.createElement("button", {
+    className: "ak-btn",
+    style: {
+      background: 'linear-gradient(160deg,#E5DCFF,#B5A1FF)',
+      boxShadow: '0 6px 0 #7C5FE0'
+    },
+    onClick: () => cool(false)
+  }, "⚡ Остудить быстро"))), phase === 'result' && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontFamily: 'var(--ak-display)',
+      fontWeight: 700,
+      fontSize: 19,
+      color: crystal === 'big' ? '#2BA873' : 'var(--ak-ink)',
+      textAlign: 'center'
+    }
+  }, crystal === 'big' ? 'Вырос гигант! Медленно = крупно 💎' : 'Только крошка… Быстро = мелко'), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 13.5,
+      color: 'var(--ak-ink-2)',
+      textAlign: 'center',
+      maxWidth: 300,
+      lineHeight: 1.5
+    }
+  }, crystal === 'big' ? 'При медленном остывании частицы успевают выстроиться в идеальный порядок.' : 'Частицы спешили и слиплись как попало. Попробуй остудить медленно!'), crystal === 'big' ? /*#__PURE__*/React.createElement("button", {
+    className: "ak-btn ak-btn--ok",
+    onClick: () => setPhase('done')
+  }, "Забрать кристалл 🎉") : /*#__PURE__*/React.createElement("button", {
+    className: "ak-btn ak-btn--ok",
+    onClick: retry
+  }, "Ещё попытка 🔁")))), phase === 'done' && /*#__PURE__*/React.createElement("div", {
+    style: {
+      position: 'fixed',
+      inset: 0,
+      background: 'rgba(45,27,69,.5)',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      zIndex: 100,
+      padding: '0 24px'
+    }
+  }, /*#__PURE__*/React.createElement(AKSuccessCard, {
+    stars: attempts <= 1 ? 3 : attempts <= 2 ? 2 : 1,
+    title: "Фермер кристаллов! 💎",
+    fact: "Самые большие кристаллы Земли — 11-метровые гиганты пещеры Найка в Мексике. Они росли полмиллиона лет — очень-очень медленно!",
+    onNext: onDone,
+    ctaLabel: "Забрать награду →"
+  })));
+}
+
+/* ============================================================
+   LEVEL 6 — Тайна свечи (горение, кислород, CO₂)
+   ============================================================ */
+const L6_JARS = [{
+  id: 's',
+  name: 'Маленькая',
+  vol: 3,
+  h: 64
+}, {
+  id: 'm',
+  name: 'Средняя',
+  vol: 6,
+  h: 84
+}, {
+  id: 'l',
+  name: 'Большая',
+  vol: 10,
+  h: 104
+}];
+const L6_METHODS = [{
+  id: 'blow',
+  name: 'Задуть',
+  emoji: '💨',
+  why: 'поток воздуха уносит жар'
+}, {
+  id: 'jar',
+  name: 'Накрыть банкой',
+  emoji: '🫙',
+  why: 'кислород кончился'
+}, {
+  id: 'co2',
+  name: 'Перелить CO₂',
+  emoji: '🥤',
+  why: 'газ-призрак вытеснил кислород'
+}];
+function Level6Candle({
+  onDone
+}) {
+  const [phase, setPhase] = React.useState('intro'); // intro | jars | challenge | done
+  const [covered, setCovered] = React.useState(null); // jar id
+  const [countdown, setCountdown] = React.useState(null);
+  const [triedJars, setTriedJars] = React.useState(new Set());
+  const [assigned, setAssigned] = React.useState({}); // candleIdx -> methodId
+  const [pick, setPick] = React.useState(null); // выбранная свеча в вызове
+  const timerRef = React.useRef(null);
+  const coverJar = jar => {
+    if (countdown != null) return;
+    setCovered(jar.id);
+    setCountdown(jar.vol);
+    let t = jar.vol;
+    timerRef.current = setInterval(() => {
+      t -= 1;
+      setCountdown(t);
+      if (t <= 0) {
+        clearInterval(timerRef.current);
+        setTriedJars(s => new Set([...s, jar.id]));
+        setTimeout(() => {
+          setCovered(null);
+          setCountdown(null);
+        }, 900);
+      }
+    }, 550);
+  };
+  React.useEffect(() => () => clearInterval(timerRef.current), []);
+  const usedMethods = new Set(Object.values(assigned));
+  const challengeWin = Object.keys(assigned).length === 3 && usedMethods.size === 3;
+  const assign = mid => {
+    if (pick == null) return;
+    if (usedMethods.has(mid)) return;
+    setAssigned(a => ({
+      ...a,
+      [pick]: mid
+    }));
+    setPick(null);
+  };
+  return /*#__PURE__*/React.createElement("div", {
+    className: "ak",
+    style: {
+      minHeight: '100vh',
+      background: 'radial-gradient(80% 50% at 50% 0%,#FFEDA8 0%,transparent 55%),linear-gradient(180deg,#FFF8EA,#FFF3E2)',
+      display: 'flex',
+      flexDirection: 'column',
+      padding: '14px 16px 24px',
+      boxSizing: 'border-box'
+    }
+  }, /*#__PURE__*/React.createElement(AKLessonHeader, {
+    progress: phase === 'intro' ? 0 : phase === 'jars' ? triedJars.size / 3 : 1,
+    stars: triedJars.size * 40,
+    onClose: onDone
+  }), phase === 'intro' && /*#__PURE__*/React.createElement("div", {
+    style: {
+      position: 'fixed',
+      inset: 0,
+      background: 'rgba(45,27,69,.5)',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      zIndex: 100,
+      padding: '0 24px'
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "ak-pop",
+    style: {
+      width: 320,
+      background: '#fff',
+      borderRadius: 32,
+      padding: '28px 24px 24px',
+      textAlign: 'center',
+      fontFamily: 'var(--ak-body)'
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 56
+    }
+  }, "🎂"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontFamily: 'var(--ak-display)',
+      fontWeight: 700,
+      fontSize: 22,
+      color: 'var(--ak-ink)',
+      margin: '10px 0 8px'
+    }
+  }, "Тайна свечи"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 15,
+      color: 'var(--ak-ink-2)',
+      lineHeight: 1.55,
+      marginBottom: 18
+    }
+  }, "У Nooka день рождения! Он накрыл одну свечку банкой. Спорим, не угадаешь, что случится через 5 секунд?"), /*#__PURE__*/React.createElement("button", {
+    className: "ak-btn ak-btn--ok",
+    style: {
+      width: '100%'
+    },
+    onClick: () => setPhase('jars')
+  }, "Проверить! 🕯️"))), phase === 'jars' && /*#__PURE__*/React.createElement("div", {
+    style: {
+      flex: 1,
+      display: 'flex',
+      flexDirection: 'column',
+      gap: 12,
+      maxWidth: 420,
+      margin: '0 auto',
+      width: '100%'
+    }
+  }, /*#__PURE__*/React.createElement(AKTaskBadge, null, triedJars.size >= 2 ? 'Заметил закономерность? Больше банка — дольше огонёк!' : 'Накрой свечу разными банками и следи за временем'), /*#__PURE__*/React.createElement("div", {
+    style: {
+      flex: 1,
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      justifyContent: 'center',
+      gap: 16
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      position: 'relative',
+      height: 150,
+      display: 'flex',
+      alignItems: 'flex-end',
+      justifyContent: 'center'
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      textAlign: 'center'
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: countdown != null && countdown <= 0 ? 20 : 40,
+      transition: 'font-size .6s'
+    }
+  }, countdown != null && countdown <= 0 ? '💤' : '🔥'), /*#__PURE__*/React.createElement("div", {
+    style: {
+      width: 22,
+      height: 62,
+      background: 'linear-gradient(180deg,#FFF,#FFE49E)',
+      borderRadius: 6,
+      margin: '0 auto',
+      boxShadow: '0 4px 0 rgba(45,27,69,.12)'
+    }
+  })), covered && /*#__PURE__*/React.createElement("div", {
+    style: {
+      position: 'absolute',
+      bottom: 0,
+      left: '50%',
+      transform: 'translateX(-50%)',
+      width: 84,
+      height: L6_JARS.find(j => j.id === covered).h + 40,
+      border: '4px solid rgba(143,202,240,.8)',
+      borderBottom: 'none',
+      borderRadius: '18px 18px 0 0',
+      background: 'rgba(214,236,250,.25)'
+    }
+  })), /*#__PURE__*/React.createElement("div", {
+    style: {
+      minHeight: 30,
+      fontFamily: 'var(--ak-display)',
+      fontWeight: 700,
+      fontSize: 17,
+      color: 'var(--ak-ink)'
+    }
+  }, countdown == null ? 'Выбери банку 👇' : countdown > 0 ? `Кислорода на ${countdown} сек…` : 'Огонёк уснул — кислород кончился!'), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: 'flex',
+      gap: 10,
+      alignItems: 'flex-end'
+    }
+  }, L6_JARS.map(j => /*#__PURE__*/React.createElement("button", {
+    key: j.id,
+    className: "ak-tap",
+    onClick: () => coverJar(j),
+    disabled: countdown != null,
+    style: {
+      border: 'none',
+      cursor: 'pointer',
+      background: 'transparent',
+      opacity: countdown != null ? .5 : 1,
+      position: 'relative'
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      width: 64,
+      height: j.h,
+      border: '4px solid #8FCAF0',
+      borderBottom: 'none',
+      borderRadius: '14px 14px 0 0',
+      background: 'rgba(214,236,250,.35)'
+    }
+  }), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 11.5,
+      fontWeight: 700,
+      color: 'var(--ak-ink-2)',
+      marginTop: 4
+    }
+  }, j.name), triedJars.has(j.id) && /*#__PURE__*/React.createElement("div", {
+    style: {
+      position: 'absolute',
+      top: 2,
+      right: 2,
+      fontSize: 14
+    }
+  }, "✅"))))), /*#__PURE__*/React.createElement("button", {
+    className: "ak-btn ak-btn--ok",
+    disabled: triedJars.size < 2,
+    style: {
+      width: '100%',
+      opacity: triedJars.size >= 2 ? 1 : .45
+    },
+    onClick: () => triedJars.size >= 2 && setPhase('challenge')
+  }, triedJars.size >= 2 ? 'Вызов: торт Nooka →' : `Попробуй банки: ${triedJars.size} из 2`)), phase === 'challenge' && /*#__PURE__*/React.createElement("div", {
+    style: {
+      flex: 1,
+      display: 'flex',
+      flexDirection: 'column',
+      gap: 12,
+      maxWidth: 420,
+      margin: '0 auto',
+      width: '100%'
+    }
+  }, /*#__PURE__*/React.createElement(AKTaskBadge, null, "Погаси 3 свечки тремя РАЗНЫМИ способами"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      flex: 1,
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      justifyContent: 'center',
+      gap: 16
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: 'flex',
+      gap: 18
+    }
+  }, [0, 1, 2].map(i => /*#__PURE__*/React.createElement("button", {
+    key: i,
+    className: "ak-tap",
+    onClick: () => !assigned[i] && setPick(i),
+    style: {
+      border: 'none',
+      background: pick === i ? 'rgba(255,210,98,.4)' : 'transparent',
+      borderRadius: 16,
+      padding: 8,
+      cursor: assigned[i] ? 'default' : 'pointer'
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 30
+    }
+  }, assigned[i] ? '💤' : '🔥'), /*#__PURE__*/React.createElement("div", {
+    style: {
+      width: 18,
+      height: 46,
+      background: ['#FFB3C1', '#B5E3FF', '#C9F2C7'][i],
+      borderRadius: 5,
+      margin: '0 auto'
+    }
+  }), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 10.5,
+      fontWeight: 700,
+      color: 'var(--ak-ink-2)',
+      marginTop: 3,
+      minHeight: 13
+    }
+  }, assigned[i] ? L6_METHODS.find(m => m.id === assigned[i]).emoji : pick === i ? 'выбрана' : '')))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      width: 210,
+      height: 40,
+      background: 'linear-gradient(180deg,#FFD262,#FFA17A)',
+      borderRadius: '12px 12px 20px 20px',
+      boxShadow: '0 6px 0 #D4A22B',
+      marginTop: -8
+    }
+  }), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 14,
+      fontWeight: 700,
+      fontFamily: 'var(--ak-display)',
+      color: 'var(--ak-ink)',
+      minHeight: 20
+    }
+  }, challengeWin ? '🎉 Все три способа сработали!' : pick != null ? 'Каким способом погасить?' : 'Тапни свечку'), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: 'flex',
+      gap: 8,
+      flexWrap: 'wrap',
+      justifyContent: 'center'
+    }
+  }, L6_METHODS.map(m => /*#__PURE__*/React.createElement("button", {
+    key: m.id,
+    className: "ak-btn",
+    disabled: usedMethods.has(m.id) || pick == null,
+    onClick: () => assign(m.id),
+    style: {
+      background: usedMethods.has(m.id) ? '#E5E0D8' : 'linear-gradient(160deg,#FFEDA8,#FFD262)',
+      boxShadow: usedMethods.has(m.id) ? 'none' : '0 6px 0 #D4A22B',
+      opacity: pick == null && !usedMethods.has(m.id) ? .6 : 1
+    }
+  }, m.emoji, " ", m.name, usedMethods.has(m.id) ? ' ✓' : ''))), Object.keys(assigned).length > 0 && !challengeWin && /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 12.5,
+      color: 'var(--ak-ink-2)',
+      textAlign: 'center',
+      maxWidth: 300
+    }
+  }, L6_METHODS.find(m => m.id === assigned[Object.keys(assigned).pop()]) ? `Сработало: ${L6_METHODS.find(m => m.id === assigned[Object.keys(assigned).pop()]).why}` : '')), challengeWin && /*#__PURE__*/React.createElement("button", {
+    className: "ak-btn ak-btn--ok",
+    style: {
+      width: '100%'
+    },
+    onClick: () => setPhase('done')
+  }, "С днём рождения, Nooka! 🎉")), phase === 'done' && /*#__PURE__*/React.createElement("div", {
+    style: {
+      position: 'fixed',
+      inset: 0,
+      background: 'rgba(45,27,69,.5)',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      zIndex: 100,
+      padding: '0 24px'
+    }
+  }, /*#__PURE__*/React.createElement(AKSuccessCard, {
+    stars: 3,
+    title: "Тайна свечи раскрыта! 🕯️",
+    fact: "Треугольник огня: топливо + кислород + жар. Убери любую сторону — огонь уснёт. А на МКС пламя круглое и синее! Настоящие опыты с огнём — только со взрослыми.",
+    onNext: onDone,
+    ctaLabel: "Забрать награду →"
+  })));
+}
 const LEVEL_DATA = [{
   n: 1,
   title: 'Машина температур',
@@ -2816,6 +3865,37 @@ const LEVEL_DATA = [{
     bubbles: false
   }),
   desc: 'Проводи опыты и различай химические и физические изменения'
+}, {
+  n: 4,
+  title: 'Зелье-хамелеон',
+  sub: 'Капни · Смотри · Разгадай',
+  icon: /*#__PURE__*/React.createElement(AKFlask, {
+    size: 80,
+    tone: "phys",
+    fillLevel: 0.6
+  }),
+  desc: 'Волшебный индикатор раскрывает тайну любой жидкости'
+}, {
+  n: 5,
+  title: 'Ферма кристаллов',
+  sub: 'Растворяй · Насыщай · Выращивай',
+  icon: /*#__PURE__*/React.createElement(AKFlask, {
+    size: 80,
+    tone: "geo",
+    fillLevel: 0.7
+  }),
+  desc: 'Вырасти кристалл-самоцвет из обычной соли'
+}, {
+  n: 6,
+  title: 'Тайна свечи',
+  sub: 'Накрой · Считай · Разгадай',
+  icon: /*#__PURE__*/React.createElement(AKFlask, {
+    size: 80,
+    tone: "cta",
+    fillLevel: 0.4,
+    bubbles: false
+  }),
+  desc: 'Почему огонёк засыпает под банкой? День рождения Nooka!'
 }];
 function LevelSelect({
   onStart,
@@ -2895,7 +3975,7 @@ function LevelSelect({
       margin: '16px auto 0'
     }
   }, /*#__PURE__*/React.createElement(AKProgress, {
-    value: completed.size / 3,
+    value: completed.size / 6,
     tone: "ok",
     height: 14,
     label: "Прогресс"
@@ -2908,10 +3988,10 @@ function LevelSelect({
       margin: '0 auto'
     }
   }, LEVEL_DATA.map((lv, li) => {
-    const tone = lv.n === 3 ? 'ok' : 'chem';
+    const tone = ['chem','chem','ok','phys','geo','cta'][lv.n - 1] || 'chem';
     const [l, m, d] = AK_TONES[tone];
     const isDone = completed.has(lv.n);
-    const isLocked = lv.n === 2 ? false : lv.n === 3 ? !completed.has(2) : false;
+    const isLocked = lv.n <= 2 ? false : !completed.has(lv.n - 1);
     return /*#__PURE__*/React.createElement("button", {
       key: lv.n,
       onClick: isLocked ? undefined : () => onStart(lv.n),
@@ -3035,6 +4115,15 @@ function App() {
   });
   if (screen === 'l3') return /*#__PURE__*/React.createElement(Level3Lab, {
     onDone: () => done(3)
+  });
+  if (screen === 'l4') return /*#__PURE__*/React.createElement(Level4Potion, {
+    onDone: () => done(4)
+  });
+  if (screen === 'l5') return /*#__PURE__*/React.createElement(Level5Crystal, {
+    onDone: () => done(5)
+  });
+  if (screen === 'l6') return /*#__PURE__*/React.createElement(Level6Candle, {
+    onDone: () => done(6)
   });
   return null;
 }
