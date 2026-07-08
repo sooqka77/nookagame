@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 480" font-family="'Space Grotesk','Arial Rounded MT Bold',sans-serif">
+<defs>
+<radialGradient id="bg" cx=".3" cy=".2" r="1.2"><stop offset="0" stop-color="#1e3a8a"/><stop offset="1" stop-color="#0b1026"/></radialGradient>
+<linearGradient id="rk" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#DBEAFE"/></linearGradient>
+<linearGradient id="fl" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFE141"/><stop offset="1" stop-color="#FF5038"/></linearGradient>
+</defs>
+<rect width="800" height="480" fill="url(#bg)"/>
+<g fill="#fff"><circle cx="90" cy="70" r="2.5"/><circle cx="200" cy="140" r="2"/><circle cx="320" cy="60" r="3"/><circle cx="480" cy="110" r="2"/><circle cx="700" cy="70" r="2.5"/><circle cx="740" cy="200" r="2"/><circle cx="120" cy="300" r="2"/><circle cx="60" cy="180" r="2"/><circle cx="600" cy="40" r="2"/><circle cx="660" cy="330" r="2.5"/></g>
+<!-- планета с кольцом -->
+<circle cx="640" cy="150" r="64" fill="#FF9F43"/>
+<circle cx="618" cy="130" r="14" fill="#FFBE76" opacity=".8"/><circle cx="662" cy="168" r="10" fill="#E17055" opacity=".6"/>
+<ellipse cx="640" cy="150" rx="100" ry="26" fill="none" stroke="#FFE141" stroke-width="8" opacity=".85" transform="rotate(-14 640 150)"/>
+<!-- орбитальная траектория -->
+<path d="M120 400 Q 380 140 640 150" fill="none" stroke="#7B2FFF" stroke-width="4" stroke-dasharray="4 14" stroke-linecap="round" opacity=".9"/>
+<!-- ракета -->
+<g transform="rotate(38 250 300)">
+<path d="M250 220 q 34 40 34 96 l -68 0 q 0 -56 34 -96z" fill="url(#rk)"/>
+<circle cx="250" cy="284" r="15" fill="#3B82F6"/><circle cx="250" cy="284" r="9" fill="#93C5FD"/>
+<path d="M216 316 l -22 34 30 -6z" fill="#FF5038"/><path d="M284 316 l 22 34 -30 -6z" fill="#FF5038"/>
+<path d="M236 322 q 14 44 14 44 q 0 0 14 -44z" fill="url(#fl)"/>
+</g>
+<!-- луна -->
+<circle cx="150" cy="120" r="34" fill="#E5E7EB"/><circle cx="140" cy="112" r="8" fill="#9CA3AF" opacity=".7"/><circle cx="162" cy="132" r="6" fill="#9CA3AF" opacity=".6"/>
+<rect x="40" y="386" width="440" height="60" rx="18" fill="#111118" opacity=".92"/>
+<text x="64" y="412" font-size="19" font-weight="800" fill="#fff">КосмоПорт</text>
+<text x="64" y="434" font-size="13" fill="#93C5FD">Собери ракету и выведи её на орбиту Сатурна</text>
+<rect x="614" y="30" width="156" height="34" rx="17" fill="#FFE141"/>
+<text x="692" y="52" text-anchor="middle" font-size="14" font-weight="800" fill="#111118">в разработке</text>
+</svg>

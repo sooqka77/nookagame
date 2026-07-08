@@ -137,12 +137,20 @@ h1 .line-coral{color:var(--coral);display:block}
 .pl-geo .p-body{background:#FFE141;color:#111118}
 .pl-math .p-body{background:#FF5038;color:#fff}
 .pl-phys .p-body{background:#3B82F6;color:#fff}
+.pl-code .p-body{background:#4C1D95;color:#fff}
+.pl-space .p-body{background:#0B1026;color:#fff}
+.pl-robo .p-body{background:#FF9F43;color:#111118}
+.pl-eco .p-body{background:#16A34A;color:#fff}
 .pl-ai .p-img-wrap{background:linear-gradient(145deg,#1e1b4b,#312e81)}
 .pl-chem .p-img-wrap{background:linear-gradient(145deg,#d1fae5,#6ee7b7)}
 .pl-phys .p-img-wrap{background:linear-gradient(145deg,#ede9fe,#c4b5fd)}
 .pl-bio .p-img-wrap{background:linear-gradient(145deg,#dcfce7,#86efac)}
 .pl-geo .p-img-wrap{background:linear-gradient(145deg,#dbeafe,#93c5fd)}
 .pl-math .p-img-wrap{background:linear-gradient(145deg,#fee2e2,#fca5a5)}
+.pl-code .p-img-wrap{background:linear-gradient(145deg,#2e1065,#4c1d95)}
+.pl-space .p-img-wrap{background:linear-gradient(145deg,#1e3a8a,#0b1026)}
+.pl-robo .p-img-wrap{background:linear-gradient(145deg,#ffedd5,#fdba74)}
+.pl-eco .p-img-wrap{background:linear-gradient(145deg,#d9f99d,#86efac)}
 .p-name{font-size:20px;font-weight:800;margin-bottom:4px;letter-spacing:-.4px}
 .p-subject{font-size:12px;font-weight:700;opacity:.6;margin-bottom:8px;text-transform:uppercase;letter-spacing:.9px}
 .p-desc{font-size:14px;line-height:1.7;opacity:.82}
@@ -530,14 +538,22 @@ const PLANET_COLORS = {
   geo:  {bg:'pl-geo',  chip:'soon-dark', chipClass:'soon-dark'},
   math: {bg:'pl-math', chip:'soon',      chipClass:'soon'},
   phys: {bg:'pl-phys', chip:'open',      chipClass:'open'},
+  code: {bg:'pl-code', chip:'soon',      chipClass:'soon'},
+  space:{bg:'pl-space',chip:'soon',      chipClass:'soon'},
+  robo: {bg:'pl-robo', chip:'soon-dark', chipClass:'soon-dark'},
+  eco:  {bg:'pl-eco',  chip:'soon',      chipClass:'soon'},
 };
 const PL=[
   {key:'ai',  img:'screenshots/ai.jpg',  name:'Нейро Академия',subject:'Искусственный интеллект',desc:'Построй нейросеть, напиши промпт, поймай ИИ на выдумке. 9 уровней.',active:true,levels:9,src:'games/ai.html'},
   {key:'chem',img:'screenshots/chem.jpg',name:'Хемо Лаб',subject:'Химия',desc:'Реакции, молекулы и опыты, которые дома никто не разрешит.',active:true,levels:3,src:'games/chemistry.html'},
+  {key:'phys',img:'screenshots/phys.jpg',name:'КвантУм',subject:'Физика',desc:'Рычаги, траектории, равновесие: физика, которую можно потрогать.',active:true,levels:3,src:'games/physics.html'},
+  {key:'code', img:'screenshots/code.svg', name:'КодБот',subject:'Программирование',desc:'Составь программу из блоков — и робот дойдёт до звезды.',active:false,levels:6},
+  {key:'space',img:'screenshots/space.svg',name:'КосмоПорт',subject:'Астрономия',desc:'Собери ракету, рассчитай топливо и выйди на орбиту.',active:false,levels:6},
+  {key:'robo', img:'screenshots/robo.svg', name:'РобоЛаб',subject:'Инженерия',desc:'Шестерёнки, рычаги и моторы: собери машину, которая едет сама.',active:false,levels:6},
   {key:'bio', img:'screenshots/bio.svg', name:'БиоМир',subject:'Биология',desc:'Клетки, ДНК, экосистемы: собери живой мир своими руками.',active:false,levels:8},
-  {key:'geo', img:'screenshots/geo.svg', name:'ГеоАтлас',subject:'География',desc:'Материки, климаты, страны: квесты по всей планете.',active:false,levels:7},
+  {key:'eco', img:'screenshots/eco.svg', name:'ЭкоСфера',subject:'Экология и энергия',desc:'Запитай целый город чистой энергией — и не устрой блэкаут.',active:false,levels:6},
   {key:'math',img:'screenshots/math.svg',name:'МатрицаX',subject:'Математика',desc:'Числа, геометрия, логика: задачи, за которые берёшься сам.',active:false,levels:10},
-  {key:'phys',img:'screenshots/phys.jpg',name:'КвантУм',subject:'Физика',desc:'Рычаги, траектории, равновесие: физика, которую можно потрогать.',active:true,levels:3,src:'games/physics.html'}
+  {key:'geo', img:'screenshots/geo.svg', name:'ГеоАтлас',subject:'География',desc:'Материки, климаты, страны: квесты по всей планете.',active:false,levels:7}
 ];
 const pg=document.getElementById('planetsGrid');
 PL.forEach(p=>{

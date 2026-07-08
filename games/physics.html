@@ -2207,13 +2207,13 @@ function App() {
   }, s === 'home' && /*#__PURE__*/React.createElement(HomeScreen, {
     onSelect: n => setS(`l${n}`)
   }), s === 'l1' && /*#__PURE__*/React.createElement(Level1, {
-    onWin: () => { if (window.nooka) window.nooka.completeMission('phys1', 60); setS('l2'); },
+    onWin: () => { if (window.nooka) window.nooka.missionWin('phys1', 60, { nextLabel: 'Следующий уровень →', onNext: () => setS('l2') }); else setS('l2'); },
     onHome: () => setS('home')
   }), s === 'l2' && /*#__PURE__*/React.createElement(Level2, {
-    onWin: () => { if (window.nooka) window.nooka.completeMission('phys2', 60); setS('l3'); },
+    onWin: () => { if (window.nooka) window.nooka.missionWin('phys2', 60, { nextLabel: 'Следующий уровень →', onNext: () => setS('l3') }); else setS('l3'); },
     onHome: () => setS('home')
   }), s === 'l3' && /*#__PURE__*/React.createElement(Level3, {
-    onWin: () => { if (window.nooka) window.nooka.completeMission('phys3', 60); setS('home'); },
+    onWin: () => { if (window.nooka) window.nooka.missionWin('phys3', 60, { nextLabel: 'На главную →', onNext: () => setS('home') }); else setS('home'); },
     onHome: () => setS('home')
   }));
 }

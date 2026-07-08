@@ -3019,7 +3019,7 @@ function App() {
   const [screen, setScreen] = React.useState('select');
   const [completed, setCompleted] = React.useState(() => new Set(window.nooka ? window.nooka.getCompleted('chem') : []));
   const done = n => {
-    if (window.nooka) window.nooka.completeMission('chem' + n, 60);
+    if (window.nooka) window.nooka.missionWin('chem' + n, 60, { nextLabel: 'К выбору миссий →' });
     setCompleted(s => new Set([...s, n]));
     setScreen('select');
   };

@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 480" font-family="'Space Grotesk','Arial Rounded MT Bold',sans-serif">
+<defs>
+<linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFF7ED"/><stop offset="1" stop-color="#FFEDD5"/></linearGradient>
+</defs>
+<rect width="800" height="480" fill="url(#bg)"/>
+<!-- большая шестерёнка -->
+<g transform="translate(260 210)">
+<g fill="#FF9F43">
+<circle r="92"/>
+<g><rect x="-14" y="-124" width="28" height="40" rx="8"/><rect x="-14" y="84" width="28" height="40" rx="8"/>
+<rect x="-124" y="-14" width="40" height="28" rx="8"/><rect x="84" y="-14" width="40" height="28" rx="8"/>
+<g transform="rotate(45)"><rect x="-14" y="-124" width="28" height="40" rx="8"/><rect x="-14" y="84" width="28" height="40" rx="8"/><rect x="-124" y="-14" width="40" height="28" rx="8"/><rect x="84" y="-14" width="40" height="28" rx="8"/></g></g>
+</g>
+<circle r="58" fill="#FB923C"/><circle r="26" fill="#FFF7ED"/>
+</g>
+<!-- малая шестерёнка -->
+<g transform="translate(430 120)">
+<g fill="#7B2FFF">
+<circle r="52"/>
+<g><rect x="-10" y="-74" width="20" height="28" rx="6"/><rect x="-10" y="46" width="20" height="28" rx="6"/>
+<rect x="-74" y="-10" width="28" height="20" rx="6"/><rect x="46" y="-10" width="28" height="20" rx="6"/>
+<g transform="rotate(45)"><rect x="-10" y="-74" width="20" height="28" rx="6"/><rect x="-10" y="46" width="20" height="28" rx="6"/><rect x="-74" y="-10" width="28" height="20" rx="6"/><rect x="46" y="-10" width="28" height="20" rx="6"/></g></g>
+</g>
+<circle r="30" fill="#A855F7"/><circle r="13" fill="#FFF7ED"/>
+</g>
+<!-- рычаг и мячик -->
+<circle cx="560" cy="330" r="22" fill="#111118"/>
+<rect x="450" y="308" width="260" height="16" rx="8" fill="#3B82F6" transform="rotate(-9 580 316)"/>
+<circle cx="700" cy="272" r="26" fill="#FF5038"/>
+<path d="M700 236 q 6 -26 30 -34" stroke="#FF5038" stroke-width="4" fill="none" stroke-dasharray="2 10" stroke-linecap="round"/>
+<!-- гайки -->
+<text x="120" y="90" font-size="40">🔧</text><text x="640" y="120" font-size="34">⚙️</text>
+<rect x="40" y="386" width="430" height="60" rx="18" fill="#111118" opacity=".92"/>
+<text x="64" y="412" font-size="19" font-weight="800" fill="#fff">РобоЛаб</text>
+<text x="64" y="434" font-size="13" fill="#FDBA74">Шестерёнки, рычаги, моторы — собери машину сам</text>
+<rect x="614" y="30" width="156" height="34" rx="17" fill="#111118"/>
+<text x="692" y="52" text-anchor="middle" font-size="14" font-weight="800" fill="#fff">в разработке</text>
+</svg>
