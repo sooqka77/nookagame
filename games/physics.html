@@ -2057,6 +2057,759 @@ function Level3({
 /* ══════════════════════════════════════════════════════════════
    HOME SCREEN
    ══════════════════════════════════════════════════════════════ */
+/* ============================================================
+   LEVEL 4 — Магнит-детектив (магнетизм)
+   ============================================================ */
+const L4_ITEMS = [{
+  id: 'clip',
+  name: 'Скрепка',
+  emoji: '📎',
+  mag: true
+}, {
+  id: 'nail',
+  name: 'Гвоздь',
+  emoji: '🔩',
+  mag: true
+}, {
+  id: 'key',
+  name: 'Железный ключ',
+  emoji: '🗝️',
+  mag: true
+}, {
+  id: 'eraser',
+  name: 'Ластик',
+  emoji: '🩹',
+  mag: false
+}, {
+  id: 'duck',
+  name: 'Утка (пластик)',
+  emoji: '🦆',
+  mag: false
+}, {
+  id: 'spoon',
+  name: 'Ложка (алюминий)',
+  emoji: '🥄',
+  mag: false
+}];
+const L4_WELL = [{
+  id: 'key',
+  name: 'Ключ',
+  emoji: '🗝️',
+  mag: true
+}, {
+  id: 'coin',
+  name: 'Ластик',
+  emoji: '🩹',
+  mag: false
+}, {
+  id: 'bolt',
+  name: 'Болт',
+  emoji: '🔩',
+  mag: true
+}, {
+  id: 'duck',
+  name: 'Утка',
+  emoji: '🦆',
+  mag: false
+}];
+function Level4Magnet({
+  onWin,
+  onHome
+}) {
+  const [phase, setPhase] = useState('intro'); // intro | sandbox | challenge | win
+  const [tested, setTested] = useState({}); // id -> true/false (притянулся?)
+  const [cur, setCur] = useState(null); // анимируемый предмет
+  const [picked, setPicked] = useState({}); // well: id -> guess bool
+  const [fail, setFail] = useState(false);
+  const testedCount = Object.keys(tested).length;
+  const tryItem = it => {
+    if (cur) return;
+    setCur(it.id);
+    setTimeout(() => {
+      setTested(t => ({
+        ...t,
+        [it.id]: it.mag
+      }));
+      setCur(null);
+    }, 800);
+  };
+  const pick = it => {
+    const p = {
+      ...picked,
+      [it.id]: !picked[it.id]
+    };
+    setPicked(p);
+  };
+  const checkWell = () => {
+    const ok = L4_WELL.every(it => !!picked[it.id] === it.mag);
+    if (ok) setPhase('win');else setFail(true);
+  };
+  return /*#__PURE__*/React.createElement("div", {
+    className: "ak",
+    style: {
+      minHeight: '100vh',
+      height: '100vh',
+      display: 'flex',
+      flexDirection: 'column',
+      background: 'radial-gradient(120% 60% at 50% -10%,#E5DCFF 0%,transparent 60%),linear-gradient(180deg,var(--ak-bg-2),var(--ak-bg))',
+      overflow: 'hidden'
+    }
+  }, /*#__PURE__*/React.createElement(TopBar, {
+    level: 4,
+    title: "Магнит-детектив",
+    onHome: onHome,
+    step: phase === 'challenge' ? 2 : 1,
+    total: 2
+  }), phase === 'intro' && /*#__PURE__*/React.createElement(IntroModal, {
+    emoji: "🧲",
+    title: "Магнит-детектив",
+    law: 'Магнит притягивает железо, никель и кобальт.\nНе всякий металл! Алюминиевая ложка\nостанется на месте.\n\nПроверь всё — и найди закономерность',
+    diagram: null,
+    tip: "Тапай предметы — Nooka поднесёт к ним магнит",
+    onStart: () => setPhase('sandbox')
+  }), phase === 'sandbox' && /*#__PURE__*/React.createElement("div", {
+    style: {
+      flex: 1,
+      display: 'flex',
+      flexDirection: 'column',
+      gap: 14,
+      padding: '10px 18px 24px',
+      alignItems: 'center',
+      overflowY: 'auto'
+    }
+  }, /*#__PURE__*/React.createElement(TaskBadge, null, testedCount >= 4 ? 'Видишь закономерность? К колодцу!' : 'Проверь минимум 4 предмета магнитом'), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 56,
+      marginTop: 6,
+      transform: cur ? 'translateY(14px) rotate(-12deg)' : 'none',
+      transition: 'transform .5s'
+    }
+  }, "🧲"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: 'grid',
+      gridTemplateColumns: 'repeat(3,1fr)',
+      gap: 10,
+      width: '100%',
+      maxWidth: 360
+    }
+  }, L4_ITEMS.map(it => /*#__PURE__*/React.createElement("button", {
+    key: it.id,
+    className: "ak-tap",
+    onClick: () => tryItem(it),
+    style: {
+      border: 'none',
+      cursor: 'pointer',
+      borderRadius: 18,
+      padding: '12px 6px',
+      fontFamily: 'var(--ak-body)',
+      background: 'rgba(255,255,255,.9)',
+      boxShadow: '0 5px 0 rgba(45,27,69,.1)',
+      position: 'relative',
+      transform: cur === it.id && it.mag ? 'translateY(-16px)' : 'none',
+      transition: 'transform .5s'
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 28
+    }
+  }, it.emoji), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 11,
+      fontWeight: 700,
+      color: 'var(--ak-ink)',
+      marginTop: 2
+    }
+  }, it.name), it.id in tested && /*#__PURE__*/React.createElement("div", {
+    style: {
+      position: 'absolute',
+      top: 4,
+      right: 6,
+      fontSize: 13
+    }
+  }, tested[it.id] ? '🧲' : '✋')))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 13.5,
+      color: 'var(--ak-ink-2)',
+      textAlign: 'center',
+      maxWidth: 300,
+      lineHeight: 1.5,
+      minHeight: 40,
+      fontFamily: 'var(--ak-display)'
+    }
+  }, cur ? 'Подносим магнит…' : testedCount === 0 ? '' : Object.entries(tested).slice(-1).map(([id, m]) => {
+    const it = L4_ITEMS.find(x => x.id === id);
+    return m ? `${it.name} — прыг к магниту! Внутри железо.` : it.id === 'spoon' ? 'Ложка металлическая, но НЕ железная — магниту неинтересно!' : `${it.name} — даже не шевельнулся.`;
+  })[0]), /*#__PURE__*/React.createElement("button", {
+    className: "ak-btn ak-btn--ok",
+    disabled: testedCount < 4,
+    style: {
+      width: '100%',
+      maxWidth: 360,
+      opacity: testedCount >= 4 ? 1 : .45
+    },
+    onClick: () => testedCount >= 4 && setPhase('challenge')
+  }, testedCount >= 4 ? 'К колодцу! 🪣' : `Проверено ${testedCount} из 4`)), phase === 'challenge' && /*#__PURE__*/React.createElement("div", {
+    style: {
+      flex: 1,
+      display: 'flex',
+      flexDirection: 'column',
+      gap: 14,
+      padding: '10px 18px 24px',
+      alignItems: 'center',
+      overflowY: 'auto'
+    }
+  }, /*#__PURE__*/React.createElement(TaskBadge, null, "Отметь, что магнит ДОСТАНЕТ из колодца"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      width: '100%',
+      maxWidth: 340,
+      background: 'linear-gradient(180deg,#4A3B63,#2D1B45)',
+      borderRadius: 24,
+      padding: '18px 16px 22px',
+      boxShadow: 'inset 0 6px 18px rgba(0,0,0,.35)'
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      textAlign: 'center',
+      fontSize: 30,
+      marginBottom: 8
+    }
+  }, "🧲🪢"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: 'grid',
+      gridTemplateColumns: '1fr 1fr',
+      gap: 10
+    }
+  }, L4_WELL.map(it => /*#__PURE__*/React.createElement("button", {
+    key: it.id,
+    className: "ak-tap",
+    onClick: () => pick(it),
+    style: {
+      border: picked[it.id] ? '3px solid #FFD262' : '3px solid transparent',
+      cursor: 'pointer',
+      borderRadius: 16,
+      padding: '10px 8px',
+      fontFamily: 'var(--ak-body)',
+      background: 'rgba(255,255,255,.14)',
+      color: '#fff'
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 26
+    }
+  }, it.emoji), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 12,
+      fontWeight: 700,
+      marginTop: 2
+    }
+  }, it.name), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 11,
+      minHeight: 14
+    }
+  }, picked[it.id] ? 'достанем!' : ''))))), /*#__PURE__*/React.createElement("button", {
+    className: "ak-btn ak-btn--ok",
+    style: {
+      width: '100%',
+      maxWidth: 340
+    },
+    onClick: checkWell
+  }, "Опускаем магнит! 🎣")), fail && /*#__PURE__*/React.createElement(FailModal, {
+    tip: "Вспомни: магнит любит железо. Ластик и утка — мимо, а вот всё железное — наше!",
+    onRetry: () => {
+      setFail(false);
+      setPicked({});
+    }
+  }), phase === 'win' && /*#__PURE__*/React.createElement(WinModal, {
+    emoji: "🗝️",
+    title: "Ключ спасён!",
+    law: "Магнит притягивает железо, никель и кобальт — не всякий металл",
+    fact: "Наша Земля — гигантский магнит! Поэтому стрелка компаса всегда знает, где север.",
+    cta: "Дальше →",
+    onNext: onWin,
+    onHome: onHome
+  }));
+}
+
+/* ============================================================
+   LEVEL 5 — Замкни цепь (электричество)
+   ============================================================ */
+const L5_PLUGS = [{
+  id: 'spoon',
+  name: 'Ложка',
+  emoji: '🥄',
+  kind: 'metal'
+}, {
+  id: 'eraser',
+  name: 'Ластик',
+  emoji: '🩹',
+  kind: 'insulator'
+}, {
+  id: 'pencil',
+  name: 'Грифель',
+  emoji: '✏️',
+  kind: 'semi'
+}];
+const L5_PARTS = ['🔋 Батарейка', '🔘 Выключатель', '💡 Лампочка'];
+function Level5Circuit({
+  onWin,
+  onHome
+}) {
+  const [phase, setPhase] = useState('intro'); // intro | sandbox | challenge | win
+  const [plug, setPlug] = useState(null);
+  const [tried, setTried] = useState(new Set());
+  const [slots, setSlots] = useState([null, null, null]);
+  const [fail, setFail] = useState(false);
+  const lit = plug === 'spoon' ? 1 : plug === 'pencil' ? 0.45 : 0;
+  const usePlug = p => {
+    setPlug(p.id);
+    setTried(s => new Set([...s, p.id]));
+  };
+  const place = part => {
+    const i = slots.indexOf(null);
+    if (i < 0) return;
+    const ns = [...slots];
+    ns[i] = part;
+    setSlots(ns);
+  };
+  const checkChain = () => {
+    if (slots[0] === L5_PARTS[0] && slots[1] === L5_PARTS[1] && slots[2] === L5_PARTS[2]) setPhase('win');else setFail(true);
+  };
+  return /*#__PURE__*/React.createElement("div", {
+    className: "ak",
+    style: {
+      minHeight: '100vh',
+      height: '100vh',
+      display: 'flex',
+      flexDirection: 'column',
+      background: 'radial-gradient(120% 60% at 50% -10%,#FFEDA8 0%,transparent 55%),linear-gradient(180deg,var(--ak-bg-2),var(--ak-bg))',
+      overflow: 'hidden'
+    }
+  }, /*#__PURE__*/React.createElement(TopBar, {
+    level: 5,
+    title: "Замкни цепь",
+    onHome: onHome,
+    step: phase === 'challenge' ? 2 : 1,
+    total: 2
+  }), phase === 'intro' && /*#__PURE__*/React.createElement(IntroModal, {
+    emoji: "🔦",
+    title: "Замкни цепь",
+    law: 'Ток бежит только по замкнутому кругу:\nбатарейка → провод → лампа → назад.\n\nМеталлы пропускают ток (проводники),\nрезина и пластик — нет (изоляторы)',
+    diagram: null,
+    tip: "В цепи фонарика — разрыв. Попробуй заткнуть его разными предметами!",
+    onStart: () => setPhase('sandbox')
+  }), phase === 'sandbox' && /*#__PURE__*/React.createElement("div", {
+    style: {
+      flex: 1,
+      display: 'flex',
+      flexDirection: 'column',
+      gap: 14,
+      padding: '10px 18px 24px',
+      alignItems: 'center',
+      overflowY: 'auto'
+    }
+  }, /*#__PURE__*/React.createElement(TaskBadge, null, tried.size >= 3 ? 'Заметил? Металл проводит, резина — нет!' : 'Заткни разрыв цепи каждым предметом'), /*#__PURE__*/React.createElement("div", {
+    style: {
+      width: '100%',
+      maxWidth: 340,
+      background: 'rgba(255,255,255,.85)',
+      borderRadius: 24,
+      padding: 18,
+      boxShadow: '0 6px 0 rgba(45,27,69,.08)'
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'space-around'
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 34
+    }
+  }, "🔋"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      flex: 1,
+      height: 5,
+      background: '#4A3B63',
+      margin: '0 4px'
+    }
+  }), /*#__PURE__*/React.createElement("div", {
+    style: {
+      width: 54,
+      height: 40,
+      borderRadius: 10,
+      border: '2.5px dashed #B5A1FF',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      fontSize: 22,
+      background: 'rgba(229,220,255,.5)'
+    }
+  }, plug ? L5_PLUGS.find(p => p.id === plug).emoji : '❔'), /*#__PURE__*/React.createElement("div", {
+    style: {
+      flex: 1,
+      height: 5,
+      background: '#4A3B63',
+      margin: '0 4px'
+    }
+  }), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 34,
+      filter: lit ? `drop-shadow(0 0 ${12 * lit}px rgba(255,210,98,${lit}))` : 'grayscale(.9) opacity(.55)',
+      transition: 'filter .4s'
+    }
+  }, "💡")), /*#__PURE__*/React.createElement("div", {
+    style: {
+      textAlign: 'center',
+      fontFamily: 'var(--ak-display)',
+      fontWeight: 700,
+      fontSize: 15,
+      marginTop: 10,
+      color: 'var(--ak-ink)',
+      minHeight: 40
+    }
+  }, !plug ? 'Разрыв в цепи — лампа спит' : plug === 'spoon' ? 'Горит! Металл — проводник ⚡' : plug === 'pencil' ? 'Тускло горит! Грифель проводит ток, но слабо — полупроводник!' : 'Не горит. Резина — изолятор, ток не пройдёт')), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: 'flex',
+      gap: 10
+    }
+  }, L5_PLUGS.map(p => /*#__PURE__*/React.createElement("button", {
+    key: p.id,
+    className: "ak-tap",
+    onClick: () => usePlug(p),
+    style: {
+      border: 'none',
+      cursor: 'pointer',
+      borderRadius: 16,
+      padding: '10px 14px',
+      fontFamily: 'var(--ak-body)',
+      background: plug === p.id ? 'linear-gradient(160deg,#FFEDA8,#FFD262)' : 'rgba(255,255,255,.9)',
+      boxShadow: '0 5px 0 rgba(45,27,69,.1)',
+      position: 'relative'
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 24
+    }
+  }, p.emoji), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 11.5,
+      fontWeight: 700,
+      marginTop: 2
+    }
+  }, p.name), tried.has(p.id) && /*#__PURE__*/React.createElement("div", {
+    style: {
+      position: 'absolute',
+      top: 3,
+      right: 5,
+      fontSize: 12
+    }
+  }, "✅")))), /*#__PURE__*/React.createElement("button", {
+    className: "ak-btn ak-btn--ok",
+    disabled: tried.size < 3,
+    style: {
+      width: '100%',
+      maxWidth: 340,
+      opacity: tried.size >= 3 ? 1 : .45
+    },
+    onClick: () => tried.size >= 3 && setPhase('challenge')
+  }, tried.size >= 3 ? 'Собрать цепь целиком →' : `Испытано ${tried.size} из 3`)), phase === 'challenge' && /*#__PURE__*/React.createElement("div", {
+    style: {
+      flex: 1,
+      display: 'flex',
+      flexDirection: 'column',
+      gap: 14,
+      padding: '10px 18px 24px',
+      alignItems: 'center',
+      overflowY: 'auto'
+    }
+  }, /*#__PURE__*/React.createElement(TaskBadge, null, "Собери цепь по порядку: от батарейки и обратно"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: 'flex',
+      gap: 8,
+      alignItems: 'center'
+    }
+  }, slots.map((s, i) => /*#__PURE__*/React.createElement(React.Fragment, {
+    key: i
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      width: 92,
+      height: 58,
+      borderRadius: 14,
+      border: '2.5px dashed #B5A1FF',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      fontSize: 13,
+      fontWeight: 700,
+      background: s ? 'rgba(255,255,255,.95)' : 'rgba(229,220,255,.4)',
+      textAlign: 'center',
+      fontFamily: 'var(--ak-body)',
+      color: 'var(--ak-ink)'
+    }
+  }, s || `${i + 1}`), i < 2 && /*#__PURE__*/React.createElement("div", {
+    style: {
+      width: 16,
+      height: 4,
+      background: '#4A3B63'
+    }
+  })))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 12.5,
+      color: 'var(--ak-ink-2)',
+      fontFamily: 'var(--ak-display)'
+    }
+  }, "…и провод бежит назад к батарейке ↩"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: 'flex',
+      gap: 8,
+      flexWrap: 'wrap',
+      justifyContent: 'center'
+    }
+  }, L5_PARTS.filter(p => !slots.includes(p)).map(p => /*#__PURE__*/React.createElement("button", {
+    key: p,
+    className: "ak-btn",
+    style: {
+      background: 'linear-gradient(160deg,#E5DCFF,#B5A1FF)',
+      boxShadow: '0 6px 0 #7C5FE0'
+    },
+    onClick: () => place(p)
+  }, p))), slots.every(Boolean) && /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: 'flex',
+      gap: 10
+    }
+  }, /*#__PURE__*/React.createElement("button", {
+    className: "ak-btn ak-btn--ok",
+    onClick: checkChain
+  }, "Включаем! ⚡"), /*#__PURE__*/React.createElement("button", {
+    className: "ak-btn",
+    style: {
+      background: 'rgba(255,255,255,.9)',
+      boxShadow: '0 6px 0 rgba(45,27,69,.12)'
+    },
+    onClick: () => setSlots([null, null, null])
+  }, "Сброс"))), fail && /*#__PURE__*/React.createElement(FailModal, {
+    tip: "Ток выходит из батарейки, проходит через выключатель, зажигает лампу — и возвращается. Начни с батарейки!",
+    onRetry: () => {
+      setFail(false);
+      setSlots([null, null, null]);
+    }
+  }), phase === 'win' && /*#__PURE__*/React.createElement(WinModal, {
+    emoji: "💡",
+    title: "Да будет свет!",
+    law: "Ток течёт только по замкнутой цепи — из батарейки и обратно",
+    fact: "Молния — гигантская искра между тучей и землёй. А настоящие розетки — не для опытов: тренируйся на батарейках!",
+    cta: "Дальше →",
+    onNext: onWin,
+    onHome: onHome
+  }));
+}
+
+/* ============================================================
+   LEVEL 6 — Фабрика звука (колебания, частота) + WebAudio
+   ============================================================ */
+function l6Play(freq) {
+  try {
+    if (!window.__nkAC) window.__nkAC = new (window.AudioContext || window.webkitAudioContext)();
+    const ac = window.__nkAC;
+    if (ac.state === 'suspended') ac.resume();
+    const o = ac.createOscillator();
+    const g = ac.createGain();
+    o.type = 'sine';
+    o.frequency.value = freq;
+    g.gain.setValueAtTime(0.001, ac.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.25, ac.currentTime + 0.03);
+    g.gain.exponentialRampToValueAtTime(0.001, ac.currentTime + 0.55);
+    o.connect(g);
+    g.connect(ac.destination);
+    o.start();
+    o.stop(ac.currentTime + 0.6);
+  } catch (e) {}
+}
+function L6Wave({
+  freq
+}) {
+  const ref = useRef(null);
+  useEffect(() => {
+    const cv = ref.current;
+    if (!cv) return;
+    const ctx = cv.getContext('2d');
+    const W = cv.width,
+      H = cv.height;
+    ctx.clearRect(0, 0, W, H);
+    ctx.strokeStyle = '#7C5FE0';
+    ctx.lineWidth = 3.5;
+    ctx.lineCap = 'round';
+    ctx.beginPath();
+    const waves = 1.5 + (freq - 80) / 1120 * 10;
+    for (let x = 0; x <= W; x += 2) {
+      const y = H / 2 + Math.sin(x / W * waves * Math.PI * 2) * (H / 2 - 10);
+      x === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+  }, [freq]);
+  return /*#__PURE__*/React.createElement("canvas", {
+    ref: ref,
+    width: 300,
+    height: 90,
+    style: {
+      width: '100%',
+      maxWidth: 300
+    }
+  });
+}
+function Level6Sound({
+  onWin,
+  onHome
+}) {
+  const [phase, setPhase] = useState('intro'); // intro | sandbox | challenge | win
+  const [freq, setFreq] = useState(400);
+  const [plays, setPlays] = useState(0);
+  const [taskIdx, setTaskIdx] = useState(0);
+  const [okFlash, setOkFlash] = useState(false);
+  const tasks = [{
+    name: 'Комар',
+    emoji: '🦟',
+    hint: 'пищит ВЫСОКО',
+    min: 900,
+    max: 1200
+  }, {
+    name: 'Шмель',
+    emoji: '🐝',
+    hint: 'гудит НИЗКО',
+    min: 80,
+    max: 220
+  }];
+  const t = tasks[taskIdx];
+  const playSand = () => {
+    l6Play(freq);
+    setPlays(p => p + 1);
+  };
+  const playTask = () => {
+    l6Play(freq);
+    setPlays(p => p + 1);
+    if (freq >= t.min && freq <= t.max) {
+      setOkFlash(true);
+      setTimeout(() => {
+        setOkFlash(false);
+        if (taskIdx === 0) setTaskIdx(1);else setPhase('win');
+      }, 900);
+    }
+  };
+  return /*#__PURE__*/React.createElement("div", {
+    className: "ak",
+    style: {
+      minHeight: '100vh',
+      height: '100vh',
+      display: 'flex',
+      flexDirection: 'column',
+      background: 'radial-gradient(120% 60% at 50% -10%,#D6ECFA 0%,transparent 60%),linear-gradient(180deg,var(--ak-bg-2),var(--ak-bg))',
+      overflow: 'hidden'
+    }
+  }, /*#__PURE__*/React.createElement(TopBar, {
+    level: 6,
+    title: "Фабрика звука",
+    onHome: onHome,
+    step: phase === 'challenge' ? 2 : 1,
+    total: 2
+  }), phase === 'intro' && /*#__PURE__*/React.createElement(IntroModal, {
+    emoji: "🎵",
+    title: "Фабрика звука",
+    law: 'Звук — это колебания воздуха.\nЧем ЧАЩЕ колебания — тем ВЫШЕ звук.\n\nКомар машет крыльями ~1000 раз в секунду,\nшмель — всего ~150. Вот и вся разница!',
+    diagram: null,
+    tip: "Двигай слайдер и жми «Сыграть» — телефон зазвучит по-настоящему! (включи звук 🔊)",
+    onStart: () => setPhase('sandbox')
+  }), (phase === 'sandbox' || phase === 'challenge') && /*#__PURE__*/React.createElement("div", {
+    style: {
+      flex: 1,
+      display: 'flex',
+      flexDirection: 'column',
+      gap: 14,
+      padding: '10px 18px 24px',
+      alignItems: 'center',
+      overflowY: 'auto'
+    }
+  }, /*#__PURE__*/React.createElement(TaskBadge, null, phase === 'sandbox' ? 'Покрути частоту и послушай, как меняется звук' : `${t.emoji} Настрой звук как у: ${t.name} (${t.hint})`), /*#__PURE__*/React.createElement("div", {
+    style: {
+      width: '100%',
+      maxWidth: 340,
+      background: okFlash ? 'linear-gradient(160deg,#C8F2DD,#5DD9A0)' : 'rgba(255,255,255,.9)',
+      borderRadius: 24,
+      padding: 18,
+      boxShadow: '0 6px 0 rgba(45,27,69,.08)',
+      transition: 'background .4s'
+    }
+  }, /*#__PURE__*/React.createElement(L6Wave, {
+    freq: freq
+  }), /*#__PURE__*/React.createElement("div", {
+    style: {
+      textAlign: 'center',
+      fontFamily: 'var(--ak-display)',
+      fontWeight: 700,
+      fontSize: 22,
+      color: 'var(--ak-ink)'
+    }
+  }, freq, " Гц"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      textAlign: 'center',
+      fontSize: 12.5,
+      color: 'var(--ak-ink-2)'
+    }
+  }, freq, " колебаний в секунду"), /*#__PURE__*/React.createElement("input", {
+    type: "range",
+    min: "80",
+    max: "1200",
+    step: "10",
+    value: freq,
+    onChange: e => setFreq(+e.target.value),
+    style: {
+      width: '100%',
+      marginTop: 10
+    }
+  }), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: 'flex',
+      justifyContent: 'space-between',
+      fontSize: 11.5,
+      fontWeight: 700,
+      color: 'var(--ak-ink-3)'
+    }
+  }, /*#__PURE__*/React.createElement("span", null, "🐝 низко"), /*#__PURE__*/React.createElement("span", null, "высоко 🦟"))), /*#__PURE__*/React.createElement("button", {
+    className: "ak-btn ak-btn--ok",
+    style: {
+      width: '100%',
+      maxWidth: 340
+    },
+    onClick: phase === 'sandbox' ? playSand : playTask
+  }, okFlash ? '🎯 Точно!' : '🔊 Сыграть'), phase === 'sandbox' && /*#__PURE__*/React.createElement("button", {
+    className: "ak-btn",
+    disabled: plays < 3,
+    style: {
+      width: '100%',
+      maxWidth: 340,
+      background: 'linear-gradient(160deg,#E5DCFF,#B5A1FF)',
+      boxShadow: '0 6px 0 #7C5FE0',
+      opacity: plays >= 3 ? 1 : .45
+    },
+    onClick: () => plays >= 3 && setPhase('challenge')
+  }, plays >= 3 ? 'Вызов: озвучь насекомых →' : `Сыграй ещё ${3 - plays} раз(а)`), phase === 'challenge' && /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 12.5,
+      color: 'var(--ak-ink-2)',
+      fontFamily: 'var(--ak-display)'
+    }
+  }, "Задание ", taskIdx + 1, " из 2")), phase === 'win' && /*#__PURE__*/React.createElement(WinModal, {
+    emoji: "🎼",
+    title: "Дирижёр частот!",
+    law: "Звук — колебания воздуха. Частота колебаний = высота звука",
+    fact: "Слон общается инфразвуком — таким низким, что человек его не слышит. А слон слышит… ногами, через землю!",
+    cta: "На главную →",
+    onNext: onWin,
+    onHome: onHome
+  }));
+}
 function HomeScreen({
   onSelect
 }) {
@@ -2078,6 +2831,24 @@ function HomeScreen({
     emoji: '🔦',
     title: 'Закон отражения',
     sub: 'Угол падения = отражения',
+    c: 'var(--ak-ok-1)'
+  }, {
+    n: 4,
+    emoji: '🧲',
+    title: 'Магнит-детектив',
+    sub: 'Что притянется?',
+    c: 'var(--ak-phys-1)'
+  }, {
+    n: 5,
+    emoji: '💡',
+    title: 'Замкни цепь',
+    sub: 'Почини фонарик Nooka',
+    c: 'var(--ak-cta-1)'
+  }, {
+    n: 6,
+    emoji: '🎵',
+    title: 'Фабрика звука',
+    sub: 'Комар против шмеля',
     c: 'var(--ak-ok-1)'
   }];
   return /*#__PURE__*/React.createElement("div", {
@@ -2121,7 +2892,7 @@ function HomeScreen({
       color: 'var(--ak-ink-2)',
       marginBottom: 32
     }
-  }, "Физика · 3 урока"), /*#__PURE__*/React.createElement("div", {
+  }, "Физика · 6 уроков"), /*#__PURE__*/React.createElement("div", {
     style: {
       display: 'flex',
       flexDirection: 'column',
@@ -2207,13 +2978,22 @@ function App() {
   }, s === 'home' && /*#__PURE__*/React.createElement(HomeScreen, {
     onSelect: n => setS(`l${n}`)
   }), s === 'l1' && /*#__PURE__*/React.createElement(Level1, {
-    onWin: () => { if (window.nooka) window.nooka.missionWin('phys1', 60, { nextLabel: 'Следующий уровень →', onNext: () => setS('l2') }); else setS('l2'); },
+    onWin: () => { setS('l2'); if (window.nooka) window.nooka.missionWin('phys1', 60, { nextLabel: 'Дальше →' }); },
     onHome: () => setS('home')
   }), s === 'l2' && /*#__PURE__*/React.createElement(Level2, {
-    onWin: () => { if (window.nooka) window.nooka.missionWin('phys2', 60, { nextLabel: 'Следующий уровень →', onNext: () => setS('l3') }); else setS('l3'); },
+    onWin: () => { setS('l3'); if (window.nooka) window.nooka.missionWin('phys2', 60, { nextLabel: 'Дальше →' }); },
     onHome: () => setS('home')
   }), s === 'l3' && /*#__PURE__*/React.createElement(Level3, {
-    onWin: () => { if (window.nooka) window.nooka.missionWin('phys3', 60, { nextLabel: 'На главную →', onNext: () => setS('home') }); else setS('home'); },
+    onWin: () => { setS('l4'); if (window.nooka) window.nooka.missionWin('phys3', 60, { nextLabel: 'Дальше →' }); },
+    onHome: () => setS('home')
+  }), s === 'l4' && /*#__PURE__*/React.createElement(Level4Magnet, {
+    onWin: () => { setS('l5'); if (window.nooka) window.nooka.missionWin('phys4', 60, { nextLabel: 'Дальше →' }); },
+    onHome: () => setS('home')
+  }), s === 'l5' && /*#__PURE__*/React.createElement(Level5Circuit, {
+    onWin: () => { setS('l6'); if (window.nooka) window.nooka.missionWin('phys5', 60, { nextLabel: 'Дальше →' }); },
+    onHome: () => setS('home')
+  }), s === 'l6' && /*#__PURE__*/React.createElement(Level6Sound, {
+    onWin: () => { setS('home'); if (window.nooka) window.nooka.missionWin('phys6', 60, { nextLabel: 'Дальше →' }); },
     onHome: () => setS('home')
   }));
 }
