@@ -791,7 +791,7 @@ function Level1({
         x: 46,
         y: H - 78
       },
-      SPEED: 8.5,
+      SPEED: 12.5,
       ball: null,
       targets: [{
         x: Math.round(W * .57),
@@ -1003,7 +1003,7 @@ function Level1({
           ctx.lineWidth = 1.5;
           rrect(ctx, b.x - 92, b.y - 56, 128, 40, 10);
           ctx.stroke();
-          ctx.fillStyle = 'var(--ak-ink)';
+          ctx.fillStyle = '#2D1B45';
           ctx.font = 'bold 11px Nunito,sans-serif';
           ctx.fillText('→ vx не меняется!', b.x - 85, b.y - 38);
           ctx.fillText('↓ g нарастает!', b.x - 85, b.y - 20);
@@ -1239,7 +1239,7 @@ function Level2({
     ctx.fillText('🐭', cx + 100, cy);
     ctx.textAlign = 'left';
     ctx.textBaseline = 'alphabetic';
-    ctx.fillStyle = 'var(--ak-ok-3)';
+    ctx.fillStyle = '#2BA873';
     ctx.font = 'bold 12px Nunito,sans-serif';
     ctx.textAlign = 'center';
     ctx.fillText('80 × 55 = 20 × 220 ← это равновесие!', cx, H - 6);
@@ -1267,7 +1267,7 @@ function Level2({
       // bg
       const bg = ctx.createLinearGradient(0, 0, 0, H);
       bg.addColorStop(0, '#FFF8EA');
-      bg.addColorStop(1, 'var(--ak-bg)');
+      bg.addColorStop(1, '#FFF3E2');
       ctx.fillStyle = '#FFF8EA';
       ctx.fillRect(0, 0, W, H);
       // sky dots
@@ -1634,7 +1634,7 @@ function Level3({
     ctx.fillText('45°', mx - 44, my - 12);
     ctx.fillStyle = '#7C5FE0';
     ctx.fillText('45°', mx + 8, my - 28);
-    ctx.fillStyle = 'var(--ak-ok-3)';
+    ctx.fillStyle = '#2BA873';
     ctx.font = 'bold 13px Nunito,sans-serif';
     ctx.textAlign = 'center';
     ctx.fillText('угол падения = угол отражения', W / 2, H - 6);
