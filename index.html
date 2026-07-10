@@ -138,6 +138,7 @@ h1 .line-coral{color:var(--coral);display:block}
 .pl-math .p-body{background:#FF5038;color:#fff}
 .pl-phys .p-body{background:#3B82F6;color:#fff}
 .pl-code .p-body{background:#4C1D95;color:#fff}
+.pl-prompt .p-body{background:#A855F7;color:#fff}
 .pl-space .p-body{background:#0B1026;color:#fff}
 .pl-robo .p-body{background:#FF9F43;color:#111118}
 .pl-eco .p-body{background:#16A34A;color:#fff}
@@ -148,6 +149,7 @@ h1 .line-coral{color:var(--coral);display:block}
 .pl-geo .p-img-wrap{background:linear-gradient(145deg,#dbeafe,#93c5fd)}
 .pl-math .p-img-wrap{background:linear-gradient(145deg,#fee2e2,#fca5a5)}
 .pl-code .p-img-wrap{background:linear-gradient(145deg,#2e1065,#4c1d95)}
+.pl-prompt .p-img-wrap{background:linear-gradient(145deg,#4c1d95,#1e1b4b)}
 .pl-space .p-img-wrap{background:linear-gradient(145deg,#1e3a8a,#0b1026)}
 .pl-robo .p-img-wrap{background:linear-gradient(145deg,#ffedd5,#fdba74)}
 .pl-eco .p-img-wrap{background:linear-gradient(145deg,#d9f99d,#86efac)}
@@ -314,7 +316,7 @@ footer{border-top:2px solid #F3F4F6;padding:32px 0;background:#fff}
   <div class="deco d5">⚛️</div>
   <div class="deco d6">🗺️</div>
 
-  <div class="hero-badge"><span class="dot"></span>Бета · 4 предмета · 24 уровня</div>
+  <div class="hero-badge"><span class="dot"></span>Бета · 5 игр · 27 уровней</div>
 
   <h1>
     Настоящие игры,
@@ -473,7 +475,7 @@ footer{border-top:2px solid #F3F4F6;padding:32px 0;background:#fff}
       <div class="price-amt">0 <span style="font-size:22px;font-weight:600;color:var(--muted)">₽</span></div>
       <div class="price-mo">навсегда</div>
       <div class="price-sep"></div>
-      <div class="pf"><span class="ok">✓</span> ИИ, химия, физика — 24 уровня</div>
+      <div class="pf"><span class="ok">✓</span> ИИ, химия, физика — 27 уровней</div>
       <div class="pf"><span class="ok">✓</span> Сохранение прогресса</div>
       <div class="pf"><span class="no">—</span> Биология, география и другие</div>
       <div class="pf"><span class="no">—</span> Новые уровни при выходе</div>
@@ -539,15 +541,17 @@ const PLANET_COLORS = {
   math: {bg:'pl-math', chip:'soon',      chipClass:'soon'},
   phys: {bg:'pl-phys', chip:'open',      chipClass:'open'},
   code: {bg:'pl-code', chip:'open',      chipClass:'open'},
+  prompt:{bg:'pl-prompt',chip:'open',   chipClass:'open'},
   space:{bg:'pl-space',chip:'soon',      chipClass:'soon'},
   robo: {bg:'pl-robo', chip:'soon-dark', chipClass:'soon-dark'},
   eco:  {bg:'pl-eco',  chip:'soon',      chipClass:'soon'},
 };
 const PL=[
-  {key:'ai',  img:'screenshots/ai.jpg',  name:'Нейро Академия',subject:'Искусственный интеллект',desc:'Построй нейросеть, напиши промпт, поймай ИИ на выдумке. 9 уровней.',active:true,levels:9,src:'games/ai.html?v=202607091934'},
-  {key:'chem',img:'screenshots/chem.jpg',name:'Хемо Лаб',subject:'Химия',desc:'Реакции, молекулы и опыты, которые дома никто не разрешит.',active:true,levels:6,src:'games/chemistry.html?v=202607091934'},
-  {key:'phys',img:'screenshots/phys.jpg',name:'КвантУм',subject:'Физика',desc:'Рычаги, траектории, равновесие: физика, которую можно потрогать.',active:true,levels:6,src:'games/physics.html?v=202607091934'},
-  {key:'code', img:'screenshots/codebot.jpg', name:'КодБот',subject:'Программирование',desc:'Составь программу из блоков — и робот дойдёт до звезды.',active:true,levels:3,src:'games/code.html?v=202607091934'},
+  {key:'ai',  img:'screenshots/ai.jpg',  name:'Нейро Академия',subject:'Искусственный интеллект',desc:'Построй нейросеть, напиши промпт, поймай ИИ на выдумке. 9 уровней.',active:true,levels:9,src:'games/ai.html?v=202607101336'},
+  {key:'prompt',img:'screenshots/prompt.svg',name:'ПромптЛаб',subject:'Искусственный интеллект',desc:'Научись говорить с ИИ: точный промпт, роли, итерации.',active:true,levels:3,src:'games/prompt.html?v=202607101336'},
+  {key:'chem',img:'screenshots/chem.jpg',name:'Хемо Лаб',subject:'Химия',desc:'Реакции, молекулы и опыты, которые дома никто не разрешит.',active:true,levels:6,src:'games/chemistry.html?v=202607101336'},
+  {key:'phys',img:'screenshots/phys.jpg',name:'КвантУм',subject:'Физика',desc:'Рычаги, траектории, равновесие: физика, которую можно потрогать.',active:true,levels:6,src:'games/physics.html?v=202607101336'},
+  {key:'code', img:'screenshots/codebot.jpg', name:'КодБот',subject:'Программирование',desc:'Составь программу из блоков — и робот дойдёт до звезды.',active:true,levels:3,src:'games/code.html?v=202607101336'},
   {key:'space',img:'screenshots/space.svg',name:'КосмоПорт',subject:'Астрономия',desc:'Собери ракету, рассчитай топливо и выйди на орбиту.',active:false,levels:6},
   {key:'robo', img:'screenshots/robo.svg', name:'РобоЛаб',subject:'Инженерия',desc:'Шестерёнки, рычаги и моторы: собери машину, которая едет сама.',active:false,levels:6},
   {key:'bio', img:'screenshots/bio.svg', name:'БиоМир',subject:'Биология',desc:'Клетки, ДНК, экосистемы: собери живой мир своими руками.',active:false,levels:8},
@@ -578,7 +582,7 @@ PL.forEach(p=>{
   pg.appendChild(d);
 });
 
-function openModal(src){src=src||'games/ai.html?v=202607091934';document.getElementById('gframe').src=src;document.getElementById('modal').classList.add('open');document.body.style.overflow='hidden'}
+function openModal(src){src=src||'games/ai.html?v=202607101336';document.getElementById('gframe').src=src;document.getElementById('modal').classList.add('open');document.body.style.overflow='hidden'}
 function closeModal(){document.getElementById('modal').classList.remove('open');document.getElementById('gframe').src='';document.body.style.overflow=''}
 function closeOut(e){if(e.target===document.getElementById('modal'))closeModal()}
 let _t;
