@@ -23,11 +23,11 @@ html,body{background:var(--ak-bg);margin:0;overflow:hidden;}
 #root{height:100vh;overflow:hidden;}
 body{margin:0;font-family:var(--ak-body);color:var(--ak-ink);}
 .ak{font-family:var(--ak-body);color:var(--ak-ink);-webkit-font-smoothing:antialiased;}
-.ak-clay{background:var(--ak-surface);border-radius:28px;box-shadow:0 10px 22px -8px rgba(45,27,69,.22),0 4px 10px -4px rgba(45,27,69,.10),inset 0 2px 0 rgba(16,28,50,.92),inset 0 -3px 0 rgba(45,27,69,.06);}
+.ak-clay{background:var(--ak-surface);border-radius:28px;box-shadow:0 10px 22px -8px rgba(45,27,69,.22),0 4px 10px -4px rgba(45,27,69,.10),inset 0 2px 0 rgba(255,255,255,.9),inset 0 -3px 0 rgba(45,27,69,.06);}
 .ak-btn{font-family:var(--ak-display);font-size:17px;border:none;cursor:pointer;transition:transform .08s,box-shadow .08s;user-select:none;display:inline-flex;align-items:center;justify-content:center;gap:8px;line-height:1;padding:15px 26px;border-radius:999px;color:var(--ak-ink);}
 .ak-btn--phys{color:#fff;background:linear-gradient(180deg,#C4B5FF,#B5A1FF 55%,#9C83FF);box-shadow:0 6px 0 var(--ak-phys-3),0 12px 24px -6px rgba(124,95,224,.5),inset 0 2px 0 rgba(255,255,255,.5);}
 .ak-btn--phys:active{transform:translateY(4px);box-shadow:0 2px 0 var(--ak-phys-3);}
-.ak-btn--cta{color:var(--ak-ink);background:linear-gradient(180deg,#FFEDA8,#FFD262 55%,#FFC03A);box-shadow:0 6px 0 var(--ak-cta-3),0 12px 24px -6px rgba(212,162,43,.55),inset 0 2px 0 rgba(16,28,50,.92);}
+.ak-btn--cta{color:var(--ak-ink);background:linear-gradient(180deg,#FFEDA8,#FFD262 55%,#FFC03A);box-shadow:0 6px 0 var(--ak-cta-3),0 12px 24px -6px rgba(212,162,43,.55),inset 0 2px 0 rgba(255,255,255,.85);}
 .ak-btn--cta:active{transform:translateY(4px);}
 .ak-btn--soft{color:var(--ak-ink);background:linear-gradient(180deg,#fff,#FFF7E8);box-shadow:0 4px 0 rgba(45,27,69,.10),0 8px 18px -6px rgba(45,27,69,.12),inset 0 2px 0 #fff,inset 0 0 0 1px rgba(45,27,69,.06);}
 .ak-btn--soft:active{transform:translateY(3px);}
@@ -45,6 +45,20 @@ body{margin:0;font-family:var(--ak-body);color:var(--ak-ink);}
 input[type=range]{-webkit-appearance:none;width:100%;height:20px;border-radius:999px;background:transparent;cursor:pointer;outline:none;}
 input[type=range]::-webkit-slider-runnable-track{height:20px;border-radius:999px;background:linear-gradient(180deg,var(--ak-phys-1),var(--ak-phys-2));}
 input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:38px;height:38px;border-radius:50%;margin-top:-9px;cursor:pointer;background:linear-gradient(180deg,#fff,#FFF7E8);box-shadow:0 4px 0 rgba(45,27,69,.15),0 8px 16px -6px rgba(45,27,69,.2);}
+
+/* ==== NK bridge: прелюд-компоненты в новой палитре ==== */
+:root{
+  --ak-bg:#FFF4E4;--ak-bg-2:#FFE9CF;--ak-surface:#FFFDF8;
+  --ak-ink:#2D1B45;--ak-ink-2:#6B5680;--ak-ink-3:#A797B8;
+  --ak-phys-1:#E4D9FF;--ak-phys-2:#A98BFF;--ak-phys-3:#7B4FF2;
+  --ak-cta-1:#FFF1B4;--ak-cta-2:#FFD84D;--ak-cta-3:#E8AE1F;
+  --ak-ok-1:#C9F4DE;--ak-ok-2:#4ED99B;--ak-ok-3:#1FA76E;
+  --ak-warn-1:#FFD6CC;--ak-warn-2:#FF7A64;--ak-warn-3:#D94A34;
+  --ak-star-1:#FFF1B4;--ak-star-2:#FFC63F;--ak-star-3:#D4972B;
+  --ak-display:'Nunito',system-ui,sans-serif;--ak-body:'Nunito',system-ui,sans-serif;
+}
+.ak-btn{border-radius:999px;font-weight:900;}
+
 /* Nooka Design System — из Claude Design проекта (2026-07-11). Источник истины: claude.ai/design p/9b060603 */
 :root{
   --nk-bg:#FFF4E4;--nk-bg-2:#FFE9CF;--nk-surface:#FFFDF8;
@@ -64,14 +78,14 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:38px;heigh
 .nk-t-h1{font-family:var(--nk-display);font-weight:900;font-size:28px;line-height:1.15;letter-spacing:-.01em;}
 .nk-t-h2{font-family:var(--nk-display);font-weight:900;font-size:20px;line-height:1.2;}
 .nk-t-caption{font-weight:700;font-size:13px;line-height:1.35;color:var(--nk-ink-2);}
-.nk-clay{background:var(--nk-surface);border-radius:var(--nk-r-l);box-shadow:var(--nk-shadow-card),inset 0 2px 0 rgba(16,28,50,.92),inset 0 -3px 0 rgba(45,27,69,.05);}
+.nk-clay{background:var(--nk-surface);border-radius:var(--nk-r-l);box-shadow:var(--nk-shadow-card),inset 0 2px 0 rgba(255,255,255,.9),inset 0 -3px 0 rgba(45,27,69,.05);}
 .nk-btn{font-family:var(--nk-display);font-weight:900;font-size:17px;letter-spacing:.01em;border:none;cursor:pointer;user-select:none;line-height:1;display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:16px 28px;border-radius:999px;color:var(--nk-ink);transition:transform .1s cubic-bezier(.2,.8,.3,1),box-shadow .1s,filter .15s;}
 .nk-btn:hover{filter:brightness(1.04);transform:translateY(-1px);}
 .nk-btn:focus-visible{outline:4px solid var(--nk-pri-2);outline-offset:3px;}
 .nk-btn:disabled{cursor:default;filter:saturate(.25) brightness(1.02);opacity:.6;transform:none;}
 .nk-btn--pri{color:#fff;background:linear-gradient(180deg,#9B78FF,#7B4FF2 60%,#6E41E4);box-shadow:0 6px 0 var(--nk-pri-4),0 14px 26px -8px rgba(123,79,242,.5),inset 0 2px 0 rgba(255,255,255,.45);}
 .nk-btn--pri:active{transform:translateY(4px);box-shadow:0 2px 0 var(--nk-pri-4);}
-.nk-btn--cta{color:var(--nk-ink);background:linear-gradient(180deg,#FFF1B4,#FFD84D 60%,#FFC53A);box-shadow:0 6px 0 var(--nk-sun-3),0 14px 26px -8px rgba(232,174,31,.5),inset 0 2px 0 rgba(16,28,50,.92);}
+.nk-btn--cta{color:var(--nk-ink);background:linear-gradient(180deg,#FFF1B4,#FFD84D 60%,#FFC53A);box-shadow:0 6px 0 var(--nk-sun-3),0 14px 26px -8px rgba(232,174,31,.5),inset 0 2px 0 rgba(255,255,255,.85);}
 .nk-btn--cta:active{transform:translateY(4px);box-shadow:0 2px 0 var(--nk-sun-3);}
 .nk-btn--ok{color:#fff;background:linear-gradient(180deg,#77E9B3,#4ED99B 60%,#38C687);box-shadow:0 6px 0 var(--nk-ok-3),0 14px 26px -8px rgba(31,167,110,.45),inset 0 2px 0 rgba(255,255,255,.5);}
 .nk-btn--ok:active{transform:translateY(4px);box-shadow:0 2px 0 var(--nk-ok-3);}
@@ -79,7 +93,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:38px;heigh
 .nk-btn--soft:active{transform:translateY(3px);box-shadow:0 2px 0 rgba(45,27,69,.10);}
 .nk-btn--sm{padding:11px 20px;font-size:14px;}
 .nk-btn--lg{padding:20px 36px;font-size:20px;}
-.nk-coin{display:inline-flex;align-items:center;justify-content:center;width:52px;height:52px;border-radius:50%;font-size:26px;line-height:1;background:radial-gradient(circle at 35% 28%,#fff 0%,var(--nk-pri-1) 75%);box-shadow:0 4px 0 rgba(45,27,69,.08),inset 0 2px 0 rgba(16,28,50,.92);}
+.nk-coin{display:inline-flex;align-items:center;justify-content:center;width:52px;height:52px;border-radius:50%;font-size:26px;line-height:1;background:radial-gradient(circle at 35% 28%,#fff 0%,var(--nk-pri-1) 75%);box-shadow:0 4px 0 rgba(45,27,69,.08),inset 0 2px 0 rgba(255,255,255,.9);}
 .nk-coin--sun{background:radial-gradient(circle at 35% 28%,#fff 0%,var(--nk-sun-1) 75%);}
 .nk-coin--ok{background:radial-gradient(circle at 35% 28%,#fff 0%,var(--nk-ok-1) 75%);}
 .nk-coin--warn{background:radial-gradient(circle at 35% 28%,#fff 0%,var(--nk-warn-1) 75%);}
@@ -117,42 +131,6 @@ input[type=range].nk-range::-webkit-slider-thumb{-webkit-appearance:none;width:4
 .nk-shake{animation:nk-shake .4s ease-in-out;}
 .nk-pulse{animation:nk-pulse 1.4s ease-in-out infinite;}
 @media (prefers-reduced-motion: reduce){.nk-bob,.nk-pop,.nk-shake,.nk-pulse{animation:none;}}
-
-/* ==== NOOKA DARK (палитра Нейро Академии) ==== */
-:root{
-  --ak-bg:#080C18;--ak-bg-2:#0D1427;--ak-surface:#101C32;
-  --ak-ink:#F0F4FF;--ak-ink-2:#C4D4EE;--ak-ink-3:#738AAA;
-  --ak-phys-1:#1A2D48;--ak-phys-2:#7B4FF2;--ak-phys-3:#C44DFF;
-  --ak-cta-1:#2A2410;--ak-cta-2:#FFD60A;--ak-cta-3:#B89A07;
-  --ak-ok-1:#0E2A24;--ak-ok-2:#06D6A0;--ak-ok-3:#059677;
-  --ak-warn-1:#33161A;--ak-warn-2:#FF6B6B;--ak-warn-3:#D94A4A;
-  --ak-star-1:#332B08;--ak-star-2:#FFD60A;--ak-star-3:#B89A07;
-  --ak-display:'Nunito',system-ui,sans-serif;--ak-body:'Nunito',system-ui,sans-serif;
-  --nk-bg:#080C18;--nk-bg-2:#0D1427;--nk-surface:#101C32;
-  --nk-ink:#F0F4FF;--nk-ink-2:#C4D4EE;--nk-ink-3:#738AAA;
-  --nk-pri-0:#141B33;--nk-pri-1:#1A2D48;--nk-pri-2:#A98BFF;--nk-pri-3:#7B4FF2;--nk-pri-4:#3D2688;
-  --nk-sun-1:#332B08;--nk-sun-2:#FFD60A;--nk-sun-3:#8F7A06;
-  --nk-ok-1:#0E2A24;--nk-ok-2:#06D6A0;--nk-ok-3:#04725A;
-  --nk-warn-1:#33161A;--nk-warn-2:#FF6B6B;--nk-warn-3:#A83636;
-}
-body{background:#080C18;}
-.ak-btn{border-radius:999px;font-weight:900;}
-.nk-clay,.nk-level{background:#101C32;box-shadow:0 0 0 1.5px #1A2D48,0 10px 24px -12px rgba(0,0,0,.8);color:var(--nk-ink);}
-.nk-level:hover{box-shadow:0 0 0 1.5px #7B4FF2,0 0 22px rgba(123,79,242,.25);transform:translateY(-2px);}
-.nk-level--done{background:linear-gradient(180deg,#0F2430,#0E2A24);}
-.nk-choice{background:#101C32;box-shadow:0 0 0 1.5px #1A2D48;color:var(--nk-ink);}
-.nk-choice:hover{box-shadow:0 0 0 1.5px #7B4FF2;}
-.nk-choice--sel,.nk-choice[aria-pressed="true"]{background:linear-gradient(180deg,#9B78FF,#7B4FF2 60%,#6E41E4);box-shadow:0 0 18px rgba(123,79,242,.5),0 4px 0 var(--nk-pri-4);color:#fff;}
-.nk-btn--soft{background:#101C32;box-shadow:0 0 0 1.5px #1A2D48,0 5px 0 rgba(0,0,0,.4);color:var(--nk-ink);}
-.nk-btn--ok{box-shadow:0 6px 0 #04725A,0 0 26px rgba(6,214,160,.35),inset 0 2px 0 rgba(255,255,255,.25);}
-.nk-btn--pri{box-shadow:0 6px 0 #3D2688,0 0 26px rgba(123,79,242,.4),inset 0 2px 0 rgba(255,255,255,.25);}
-.nk-btn--cta{box-shadow:0 6px 0 #8F7A06,0 0 26px rgba(255,214,10,.3),inset 0 2px 0 rgba(255,255,255,.4);}
-.nk-bar{background:#141B33;}
-.nk-modal{background:linear-gradient(180deg,#101C32,#0D1427);box-shadow:0 0 0 1.5px #1A2D48,0 30px 60px -20px rgba(0,0,0,.9);color:var(--nk-ink);}
-/* звёздное небо */
-html::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
- background-image:radial-gradient(1.5px 1.5px at 12% 20%,rgba(240,244,255,.5) 50%,transparent 51%),radial-gradient(1px 1px at 68% 12%,rgba(240,244,255,.4) 50%,transparent 51%),radial-gradient(1.5px 1.5px at 84% 40%,rgba(196,77,255,.4) 50%,transparent 51%),radial-gradient(1px 1px at 30% 68%,rgba(0,229,255,.35) 50%,transparent 51%),radial-gradient(1.5px 1.5px at 55% 86%,rgba(240,244,255,.35) 50%,transparent 51%),radial-gradient(1px 1px at 92% 74%,rgba(255,214,10,.3) 50%,transparent 51%);}
-
 
 </style>
 </head>
@@ -600,7 +578,7 @@ function TaskBadge({
       gap: 10,
       padding: '11px 18px 11px 14px',
       borderRadius: 999,
-      background: '#101C32',
+      background: '#fff',
       fontFamily: 'var(--ak-display)',
       fontSize: 14,
       fontWeight: 600,
@@ -631,7 +609,7 @@ function WinModal({
     style: {
       position: 'absolute',
       inset: 0,
-      background: 'rgba(4,8,20,.72)',
+      background: 'rgba(45,27,69,.5)',
       backdropFilter: 'blur(10px)',
       display: 'flex',
       alignItems: 'center',
@@ -702,7 +680,7 @@ function FailModal({
     style: {
       position: 'absolute',
       inset: 0,
-      background: 'rgba(4,8,20,.72)',
+      background: 'rgba(45,27,69,.5)',
       backdropFilter: 'blur(10px)',
       display: 'flex',
       alignItems: 'center',
@@ -754,7 +732,7 @@ function IntroModal({
     style: {
       position: 'absolute',
       inset: 0,
-      background: 'linear-gradient(160deg,#182A4A 0%,#0D1427 55%)',
+      background: 'linear-gradient(160deg,var(--ak-phys-1) 0%,var(--ak-bg) 55%)',
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',
@@ -790,14 +768,14 @@ function IntroModal({
     style: {
       width: '100%',
       borderRadius: 18,
-      background: 'rgba(16,28,50,.85)',
+      background: 'rgba(255,255,255,.7)',
       display: 'block'
     }
   })), /*#__PURE__*/React.createElement("div", {
     style: {
       width: '100%',
       maxWidth: 320,
-      background: 'rgba(16,28,50,.92)',
+      background: 'rgba(255,255,255,.8)',
       borderRadius: 20,
       padding: '14px 18px',
       marginBottom: 12,
@@ -847,16 +825,6 @@ function IntroModal({
    ПромптЛаб — учимся говорить с ИИ. Nooka.
    ============================================================ */
 
-const NKM = (n, sz) => /*#__PURE__*/React.createElement("img", {
-  src: '../mascot/' + n + '.jpg',
-  alt: "Nooka",
-  style: {
-    width: sz,
-    height: sz,
-    borderRadius: sz * 0.28,
-    boxShadow: '0 0 24px rgba(196,77,255,.35)'
-  }
-});
 /* ---------- Уровень 1: Джинн-буквалист ---------- */
 const P1_SLOTS = [{
   id: 'adj',
@@ -995,7 +963,7 @@ function Level1Genie({
       height: '100vh',
       display: 'flex',
       flexDirection: 'column',
-      background: 'radial-gradient(120% 60% at 50% -10%,rgba(123,79,242,.25) 0%,transparent 60%),linear-gradient(180deg,var(--ak-bg-2),var(--ak-bg))',
+      background: 'radial-gradient(120% 60% at 50% -10%,#E5DCFF 0%,transparent 60%),linear-gradient(180deg,var(--ak-bg-2),var(--ak-bg))',
       overflow: 'hidden'
     }
   }, /*#__PURE__*/React.createElement(TopBar, {
@@ -1005,7 +973,7 @@ function Level1Genie({
     step: oIdx + 1,
     total: P1_ORDERS.length
   }), phase === 'intro' && /*#__PURE__*/React.createElement(IntroModal, {
-    emoji: NKM("think", 88),
+    emoji: "🧞",
     title: "Джинн-буквалист",
     law: 'Джинн-ИИ рисует РОВНО то, что сказано.\nСкажешь «нарисуй кота» — получишь\nкота-грузовика. Он не угадывает!\n\nПромпт — это точная инструкция для ИИ.',
     diagram: null,
@@ -1025,7 +993,7 @@ function Level1Genie({
     style: {
       width: '100%',
       maxWidth: 360,
-      background: 'rgba(16,28,50,.92)',
+      background: 'rgba(255,255,255,.85)',
       borderRadius: 22,
       padding: '14px 14px 10px',
       textAlign: 'center',
@@ -1109,7 +1077,7 @@ function Level1Genie({
     },
     onClick: draw
   }, "🪄 Джинн, рисуй!"))), phase === 'win' && /*#__PURE__*/React.createElement(WinModal, {
-    emoji: NKM("win", 96),
+    emoji: "🧞",
     title: "Джинн приручён!",
     law: "Промпт — точная инструкция для ИИ: чем точнее слова, тем ближе результат",
     fact: "Промпт-инженер — настоящая профессия: люди зарабатывают тем, что умеют правильно просить ИИ!",
@@ -1209,7 +1177,7 @@ function Level2Roles({
       height: '100vh',
       display: 'flex',
       flexDirection: 'column',
-      background: 'radial-gradient(120% 60% at 50% -10%,rgba(255,214,10,.15) 0%,transparent 55%),linear-gradient(180deg,var(--ak-bg-2),var(--ak-bg))',
+      background: 'radial-gradient(120% 60% at 50% -10%,#FFEDA8 0%,transparent 55%),linear-gradient(180deg,var(--ak-bg-2),var(--ak-bg))',
       overflow: 'hidden'
     }
   }, /*#__PURE__*/React.createElement(TopBar, {
@@ -1219,7 +1187,7 @@ function Level2Roles({
     step: phase === 'task' ? tIdx + 2 : 1,
     total: P2_TASKS.length + 1
   }), phase === 'intro' && /*#__PURE__*/React.createElement(IntroModal, {
-    emoji: NKM("think", 88),
+    emoji: "🎭",
     title: "Примерь роль",
     law: 'Один и тот же ИИ может говорить\nкак профессор, пират или сказочник.\n\nСкажи ему РОЛЬ — и ответ изменится\nпод того, кто будет слушать!',
     diagram: null,
@@ -1254,7 +1222,7 @@ function Level2Roles({
       width: '100%',
       maxWidth: 380,
       minHeight: 150,
-      background: 'rgba(16,28,50,.92)',
+      background: 'rgba(255,255,255,.9)',
       borderRadius: 22,
       padding: 18,
       boxShadow: '0 6px 0 rgba(45,27,69,.08)',
@@ -1324,7 +1292,7 @@ function Level2Roles({
     style: {
       width: '100%',
       maxWidth: 360,
-      background: verdict.ok ? 'linear-gradient(160deg,#C8F2DD,#8FE3BC)' : 'rgba(16,28,50,.95)',
+      background: verdict.ok ? 'linear-gradient(160deg,#C8F2DD,#8FE3BC)' : 'rgba(255,255,255,.92)',
       borderRadius: 18,
       padding: 16,
       textAlign: 'center',
@@ -1344,7 +1312,7 @@ function Level2Roles({
     },
     onClick: () => verdict.ok ? nextTask() : setVerdict(null)
   }, verdict.ok ? tIdx < P2_TASKS.length - 1 ? 'Следующий клиент →' : 'Все клиенты довольны! 🎉' : 'Попробовать другую роль 🔁'))), phase === 'win' && /*#__PURE__*/React.createElement(WinModal, {
-    emoji: NKM("win", 96),
+    emoji: "🎭",
     title: "Мастер ролей!",
     law: "Роль в промпте меняет стиль ответа. Скажи ИИ, для кого он говорит",
     fact: "«Объясни, как будто мне 5 лет» — настоящий приём, которым пользуются даже взрослые программисты!",
@@ -1454,7 +1422,7 @@ function Level3Iterate({
       height: '100vh',
       display: 'flex',
       flexDirection: 'column',
-      background: 'radial-gradient(120% 60% at 50% -10%,rgba(0,229,255,.15) 0%,transparent 60%),linear-gradient(180deg,var(--ak-bg-2),var(--ak-bg))',
+      background: 'radial-gradient(120% 60% at 50% -10%,#D6ECFA 0%,transparent 60%),linear-gradient(180deg,var(--ak-bg-2),var(--ak-bg))',
       overflow: 'hidden'
     }
   }, /*#__PURE__*/React.createElement(TopBar, {
@@ -1464,7 +1432,7 @@ function Level3Iterate({
     step: Math.min(applied.filter(id => P3_FIXES.find(f => f.id === id).good).length + 1, 4),
     total: 4
   }), phase === 'intro' && /*#__PURE__*/React.createElement(IntroModal, {
-    emoji: NKM("think", 88),
+    emoji: "🎨",
     title: "Докрути до идеала",
     law: 'С ИИ не нужно угадывать с первого раза!\n\nПолучил результат → сказал, что поправить →\nполучил лучше. Это называется ИТЕРАЦИЯ.\n\nШаг назад ничего не стоит.',
     diagram: null,
@@ -1528,7 +1496,7 @@ function Level3Iterate({
     },
     onClick: () => setPhase('win')
   }, "Сдать постер клиенту! 🎉")), phase === 'win' && /*#__PURE__*/React.createElement(WinModal, {
-    emoji: NKM("win", 96),
+    emoji: "🎨",
     title: "Идеальный постер!",
     law: "Итерация — шаг улучшения. Результат ИИ докручивают шагами, а не угадывают с первого раза",
     fact: "Художники постеров к фильмам генерируют с ИИ СОТНИ вариантов — и выбирают один лучший!",
@@ -1564,7 +1532,7 @@ function PLHome({
     style: {
       minHeight: '100vh',
       height: '100vh',
-      background: 'radial-gradient(120% 60% at 50% -10%,rgba(123,79,242,.3) 0%,transparent 60%),linear-gradient(180deg,var(--ak-bg-2),var(--ak-bg))',
+      background: 'radial-gradient(120% 60% at 50% -10%,var(--ak-phys-1) 0%,transparent 60%),linear-gradient(180deg,var(--ak-bg-2),var(--ak-bg))',
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',
@@ -1573,11 +1541,11 @@ function PLHome({
       overflowY: 'auto'
     }
   }, /*#__PURE__*/React.createElement("div", {
-    className: "nk-bob",
+    className: "nk-coin nk-coin--lg nk-bob",
     style: {
       marginBottom: 10
     }
-  }, NKM("hello", 108)), /*#__PURE__*/React.createElement("div", {
+  }, "🧞"), /*#__PURE__*/React.createElement("div", {
     style: {
       fontFamily: 'var(--ak-display)',
       fontSize: 30,
@@ -1605,20 +1573,13 @@ function PLHome({
     className: doneSet.has(l.n) ? 'nk-level nk-level--done' : 'nk-level',
     onClick: () => onSelect(l.n)
   }, /*#__PURE__*/React.createElement("span", {
-    className: "nk-coin",
-    style: {
-      fontFamily: 'var(--nk-display)',
-      fontWeight: 900,
-      fontSize: 22,
-      color: '#7B4FF2',
-      textShadow: '0 0 14px rgba(123,79,242,.8)'
-    }
-  }, l.n), /*#__PURE__*/React.createElement("span", null, /*#__PURE__*/React.createElement("span", {
+    className: "nk-coin"
+  }, l.emoji), /*#__PURE__*/React.createElement("span", null, /*#__PURE__*/React.createElement("span", {
     className: "nk-level__title",
     style: {
       display: 'block'
     }
-  }, l.title), /*#__PURE__*/React.createElement("span", {
+  }, l.n, ". ", l.title), /*#__PURE__*/React.createElement("span", {
     className: "nk-level__sub",
     style: {
       display: 'block'
@@ -1629,7 +1590,7 @@ function PLHome({
     style: {
       marginTop: 24,
       padding: '14px 18px',
-      background: 'rgba(16,28,50,.7)',
+      background: 'rgba(255,255,255,.65)',
       borderRadius: 18,
       maxWidth: 340,
       fontFamily: 'var(--ak-display)',
