@@ -170,3 +170,18 @@
     }
   };
 })();
+
+/* Отладочный автопилот для скриншотов: ?nkauto=Текст1|Текст2 — кликает кнопки по тексту с шагом 700мс. В обычной игре не активируется. */
+(function () {
+  try {
+    var q = new URLSearchParams(location.search);
+    var seq = q.get('nkauto');
+    if (!seq) return;
+    seq.split('|').forEach(function (txt, i) {
+      setTimeout(function () {
+        var bs = Array.prototype.slice.call(document.querySelectorAll('button')).filter(function (b) { return b.textContent.indexOf(txt) >= 0 && !b.disabled; });
+        if (bs.length) bs[bs.length - 1].click();
+      }, 700 * (i + 1));
+    });
+  } catch (e) {}
+})();
