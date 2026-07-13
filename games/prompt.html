@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no"/>
 <title>ПромптЛаб — Искусственный интеллект</title>
 <link rel="preconnect" href="https://fonts.bunny.net">
-<link href="https://fonts.bunny.net/css?family=fredoka-one:400|nunito:500,700,800" rel="stylesheet" media="print" onload="this.media='all'">
+<link href="https://fonts.bunny.net/css?family=unbounded:700,900|nunito:500,700,800,900" rel="stylesheet" media="print" onload="this.media='all'">
 <style>
 
 :root{
@@ -45,6 +45,93 @@ body{margin:0;font-family:var(--ak-body);color:var(--ak-ink);}
 input[type=range]{-webkit-appearance:none;width:100%;height:20px;border-radius:999px;background:transparent;cursor:pointer;outline:none;}
 input[type=range]::-webkit-slider-runnable-track{height:20px;border-radius:999px;background:linear-gradient(180deg,var(--ak-phys-1),var(--ak-phys-2));}
 input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:38px;height:38px;border-radius:50%;margin-top:-9px;cursor:pointer;background:linear-gradient(180deg,#fff,#FFF7E8);box-shadow:0 4px 0 rgba(45,27,69,.15),0 8px 16px -6px rgba(45,27,69,.2);}
+
+/* ==== NK bridge: прелюд-компоненты в новой палитре ==== */
+:root{
+  --ak-bg:#FFF4E4;--ak-bg-2:#FFE9CF;--ak-surface:#FFFDF8;
+  --ak-ink:#2D1B45;--ak-ink-2:#6B5680;--ak-ink-3:#A797B8;
+  --ak-phys-1:#E4D9FF;--ak-phys-2:#A98BFF;--ak-phys-3:#7B4FF2;
+  --ak-cta-1:#FFF1B4;--ak-cta-2:#FFD84D;--ak-cta-3:#E8AE1F;
+  --ak-ok-1:#C9F4DE;--ak-ok-2:#4ED99B;--ak-ok-3:#1FA76E;
+  --ak-warn-1:#FFD6CC;--ak-warn-2:#FF7A64;--ak-warn-3:#D94A34;
+  --ak-star-1:#FFF1B4;--ak-star-2:#FFC63F;--ak-star-3:#D4972B;
+  --ak-display:'Nunito',system-ui,sans-serif;--ak-body:'Nunito',system-ui,sans-serif;
+}
+.ak-btn{border-radius:999px;font-weight:900;}
+
+/* Nooka Design System — из Claude Design проекта (2026-07-11). Источник истины: claude.ai/design p/9b060603 */
+:root{
+  --nk-bg:#FFF4E4;--nk-bg-2:#FFE9CF;--nk-surface:#FFFDF8;
+  --nk-ink:#2D1B45;--nk-ink-2:#6B5680;--nk-ink-3:#A797B8;
+  --nk-pri-0:#F3EEFF;--nk-pri-1:#E4D9FF;--nk-pri-2:#A98BFF;--nk-pri-3:#7B4FF2;--nk-pri-4:#5836BD;
+  --nk-sun-1:#FFF1B4;--nk-sun-2:#FFD84D;--nk-sun-3:#E8AE1F;
+  --nk-ok-1:#C9F4DE;--nk-ok-2:#4ED99B;--nk-ok-3:#1FA76E;
+  --nk-warn-1:#FFD6CC;--nk-warn-2:#FF7A64;--nk-warn-3:#D94A34;
+  --nk-star:#FFC63F;--nk-star-deep:#D4972B;
+  --nk-brand:'Unbounded','Nunito',system-ui,sans-serif;
+  --nk-display:'Nunito',system-ui,sans-serif;
+  --nk-body:'Nunito',system-ui,sans-serif;
+  --nk-r-s:14px;--nk-r-m:22px;--nk-r-l:28px;--nk-r-xl:36px;
+  --nk-shadow-card:0 10px 22px -8px rgba(45,27,69,.18),0 4px 10px -4px rgba(45,27,69,.08);
+  --nk-shadow-float:0 24px 48px -16px rgba(45,27,69,.28),0 8px 18px -8px rgba(45,27,69,.12);
+}
+.nk-t-h1{font-family:var(--nk-display);font-weight:900;font-size:28px;line-height:1.15;letter-spacing:-.01em;}
+.nk-t-h2{font-family:var(--nk-display);font-weight:900;font-size:20px;line-height:1.2;}
+.nk-t-caption{font-weight:700;font-size:13px;line-height:1.35;color:var(--nk-ink-2);}
+.nk-clay{background:var(--nk-surface);border-radius:var(--nk-r-l);box-shadow:var(--nk-shadow-card),inset 0 2px 0 rgba(255,255,255,.9),inset 0 -3px 0 rgba(45,27,69,.05);}
+.nk-btn{font-family:var(--nk-display);font-weight:900;font-size:17px;letter-spacing:.01em;border:none;cursor:pointer;user-select:none;line-height:1;display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:16px 28px;border-radius:999px;color:var(--nk-ink);transition:transform .1s cubic-bezier(.2,.8,.3,1),box-shadow .1s,filter .15s;}
+.nk-btn:hover{filter:brightness(1.04);transform:translateY(-1px);}
+.nk-btn:focus-visible{outline:4px solid var(--nk-pri-2);outline-offset:3px;}
+.nk-btn:disabled{cursor:default;filter:saturate(.25) brightness(1.02);opacity:.6;transform:none;}
+.nk-btn--pri{color:#fff;background:linear-gradient(180deg,#9B78FF,#7B4FF2 60%,#6E41E4);box-shadow:0 6px 0 var(--nk-pri-4),0 14px 26px -8px rgba(123,79,242,.5),inset 0 2px 0 rgba(255,255,255,.45);}
+.nk-btn--pri:active{transform:translateY(4px);box-shadow:0 2px 0 var(--nk-pri-4);}
+.nk-btn--cta{color:var(--nk-ink);background:linear-gradient(180deg,#FFF1B4,#FFD84D 60%,#FFC53A);box-shadow:0 6px 0 var(--nk-sun-3),0 14px 26px -8px rgba(232,174,31,.5),inset 0 2px 0 rgba(255,255,255,.85);}
+.nk-btn--cta:active{transform:translateY(4px);box-shadow:0 2px 0 var(--nk-sun-3);}
+.nk-btn--ok{color:#fff;background:linear-gradient(180deg,#77E9B3,#4ED99B 60%,#38C687);box-shadow:0 6px 0 var(--nk-ok-3),0 14px 26px -8px rgba(31,167,110,.45),inset 0 2px 0 rgba(255,255,255,.5);}
+.nk-btn--ok:active{transform:translateY(4px);box-shadow:0 2px 0 var(--nk-ok-3);}
+.nk-btn--soft{color:var(--nk-ink);background:linear-gradient(180deg,#fff,#FFF6E9);box-shadow:0 5px 0 rgba(45,27,69,.10),0 10px 20px -8px rgba(45,27,69,.12),inset 0 2px 0 #fff,inset 0 0 0 1.5px rgba(45,27,69,.06);}
+.nk-btn--soft:active{transform:translateY(3px);box-shadow:0 2px 0 rgba(45,27,69,.10);}
+.nk-btn--sm{padding:11px 20px;font-size:14px;}
+.nk-btn--lg{padding:20px 36px;font-size:20px;}
+.nk-coin{display:inline-flex;align-items:center;justify-content:center;width:52px;height:52px;border-radius:50%;font-size:26px;line-height:1;background:radial-gradient(circle at 35% 28%,#fff 0%,var(--nk-pri-1) 75%);box-shadow:0 4px 0 rgba(45,27,69,.08),inset 0 2px 0 rgba(255,255,255,.9);}
+.nk-coin--sun{background:radial-gradient(circle at 35% 28%,#fff 0%,var(--nk-sun-1) 75%);}
+.nk-coin--ok{background:radial-gradient(circle at 35% 28%,#fff 0%,var(--nk-ok-1) 75%);}
+.nk-coin--warn{background:radial-gradient(circle at 35% 28%,#fff 0%,var(--nk-warn-1) 75%);}
+.nk-coin--lg{width:72px;height:72px;font-size:38px;}
+.nk-chip{display:inline-flex;align-items:center;gap:6px;font-family:var(--nk-display);font-weight:900;font-size:18px;color:var(--nk-ink);background:linear-gradient(180deg,#FFF1B4,#FFD84D);border-radius:999px;padding:9px 20px;box-shadow:0 4px 0 var(--nk-sun-3),inset 0 2px 0 rgba(255,255,255,.8);}
+.nk-bar{height:14px;background:var(--nk-pri-0);border-radius:999px;overflow:hidden;box-shadow:inset 0 2px 4px rgba(45,27,69,.08);}
+.nk-bar i{display:block;height:100%;border-radius:999px;background:linear-gradient(90deg,var(--nk-pri-2),var(--nk-pri-3));box-shadow:inset 0 2px 0 rgba(255,255,255,.35);transition:width .6s cubic-bezier(.2,.8,.3,1);}
+.nk-bar--ok i{background:linear-gradient(90deg,#77E9B3,var(--nk-ok-2));}
+.nk-stars{display:inline-flex;gap:4px;font-size:22px;line-height:1;}
+.nk-stars .off{filter:grayscale(1) opacity(.35);}
+.nk-level{display:flex;align-items:center;gap:14px;text-align:left;width:100%;background:var(--nk-surface);border:none;cursor:pointer;border-radius:var(--nk-r-m);padding:14px 18px;color:var(--nk-ink);font-family:var(--nk-body);box-shadow:0 6px 0 rgba(45,27,69,.08),0 12px 24px -10px rgba(45,27,69,.12),inset 0 2px 0 #fff;transition:transform .1s,box-shadow .1s;}
+.nk-level:hover{transform:translateY(-2px);box-shadow:0 8px 0 rgba(45,27,69,.08),0 16px 28px -10px rgba(45,27,69,.16),inset 0 2px 0 #fff;}
+.nk-level:active{transform:translateY(3px);box-shadow:0 3px 0 rgba(45,27,69,.08),inset 0 2px 0 #fff;}
+.nk-level:focus-visible{outline:4px solid var(--nk-pri-2);outline-offset:3px;}
+.nk-level__title{font-weight:900;font-size:17px;}
+.nk-level__sub{font-weight:700;font-size:13px;color:var(--nk-ink-2);margin-top:2px;}
+.nk-level__end{margin-left:auto;display:flex;flex-direction:column;align-items:flex-end;gap:4px;}
+.nk-level--done{background:linear-gradient(180deg,#FDFFF9,#F0FBF4);}
+.nk-level--locked{cursor:default;background:#FBF6EE;box-shadow:inset 0 0 0 2px rgba(45,27,69,.05);}
+.nk-overlay{position:fixed;inset:0;background:rgba(45,27,69,.55);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;padding:24px;}
+.nk-modal{background:linear-gradient(180deg,#FFFDF8,#FFF6E9);border-radius:var(--nk-r-xl);padding:32px 30px 26px;max-width:360px;width:100%;text-align:center;box-shadow:var(--nk-shadow-float),inset 0 2px 0 rgba(255,255,255,.95),inset 0 -4px 0 rgba(45,27,69,.05);}
+input[type=range].nk-range{-webkit-appearance:none;appearance:none;width:100%;height:20px;border-radius:999px;background:transparent;cursor:pointer;outline:none;}
+input[type=range].nk-range::-webkit-slider-runnable-track{height:20px;border-radius:999px;background:linear-gradient(180deg,var(--nk-pri-1),var(--nk-pri-2));box-shadow:inset 0 2px 4px rgba(45,27,69,.12);}
+input[type=range].nk-range::-webkit-slider-thumb{-webkit-appearance:none;width:40px;height:40px;border-radius:50%;margin-top:-10px;background:linear-gradient(180deg,#fff,#FFF6E9);box-shadow:0 4px 0 rgba(45,27,69,.15),0 8px 16px -6px rgba(45,27,69,.2),inset 0 2px 0 #fff;}
+.nk-choice{font-family:var(--nk-display);font-weight:900;font-size:16px;color:var(--nk-ink);background:linear-gradient(180deg,#fff,#FFF6E9);border:none;cursor:pointer;border-radius:999px;padding:13px 24px;box-shadow:0 4px 0 rgba(45,27,69,.10),inset 0 2px 0 #fff,inset 0 0 0 1.5px rgba(45,27,69,.06);transition:transform .1s,box-shadow .1s;}
+.nk-choice:hover{transform:translateY(-1px);}
+.nk-choice:active{transform:translateY(3px);box-shadow:0 1px 0 rgba(45,27,69,.10);}
+.nk-choice[aria-pressed="true"],.nk-choice--sel{color:#fff;background:linear-gradient(180deg,#9B78FF,#7B4FF2 60%,#6E41E4);box-shadow:0 4px 0 var(--nk-pri-4),inset 0 2px 0 rgba(255,255,255,.45);}
+@keyframes nk-bob{0%,100%{transform:translateY(0) rotate(-1deg);}50%{transform:translateY(-5px) rotate(1deg);}}
+@keyframes nk-pop{0%{transform:scale(.6);opacity:0;}65%{transform:scale(1.08);}100%{transform:scale(1);opacity:1;}}
+@keyframes nk-shake{0%,100%{transform:translateX(0);}20%{transform:translateX(-8px);}40%{transform:translateX(8px);}60%{transform:translateX(-5px);}80%{transform:translateX(5px);}}
+@keyframes nk-pulse{0%,100%{opacity:1;}50%{opacity:.45;}}
+.nk-bob{animation:nk-bob 3s ease-in-out infinite;}
+.nk-pop{animation:nk-pop .38s cubic-bezier(.2,.8,.3,1) both;}
+.nk-shake{animation:nk-shake .4s ease-in-out;}
+.nk-pulse{animation:nk-pulse 1.4s ease-in-out infinite;}
+@media (prefers-reduced-motion: reduce){.nk-bob,.nk-pop,.nk-shake,.nk-pulse{animation:none;}}
+
 </style>
 </head>
 <body><div id="root"></div>
@@ -940,14 +1027,10 @@ function Level1Genie({
       margin: '4px 0 8px'
     }
   }, drawn.verdict === 'ok' ? '🎉 Клиент в восторге! Точный промпт!' : drawn.full ? 'Нарисовано точно… но клиент хотел другого. Перечитай заказ!' : 'Клиент чешет затылок… Уточни запрос!'), drawn.verdict === 'ok' ? /*#__PURE__*/React.createElement("button", {
-    className: "ak-btn ak-btn--ok",
+    className: "nk-btn nk-btn--ok",
     onClick: next
   }, oIdx < P1_ORDERS.length - 1 ? 'Следующий заказ →' : 'Смена окончена! 🎉') : /*#__PURE__*/React.createElement("button", {
-    className: "ak-btn",
-    style: {
-      background: 'linear-gradient(160deg,#E5DCFF,#B5A1FF)',
-      boxShadow: '0 6px 0 #7C5FE0'
-    },
+    className: "nk-btn nk-btn--pri",
     onClick: () => setDrawn(null)
   }, "Исправить промпт ✏️")) : /*#__PURE__*/React.createElement("div", {
     style: {
@@ -976,26 +1059,18 @@ function Level1Genie({
     }
   }, s.opts.map(o => /*#__PURE__*/React.createElement("button", {
     key: o.t,
-    className: "ak-tap",
+    className: pick[s.id] === o.t ? 'nk-choice nk-choice--sel' : 'nk-choice',
     onClick: () => setPick(p => ({
       ...p,
       [s.id]: p[s.id] === o.t ? undefined : o.t
     })),
     style: {
       flex: 1,
-      border: 'none',
-      cursor: 'pointer',
-      borderRadius: 12,
-      padding: '8px 4px',
-      fontSize: 12.5,
-      fontWeight: 800,
-      fontFamily: 'var(--ak-body)',
-      color: '#2D1B45',
-      background: pick[s.id] === o.t ? 'linear-gradient(160deg,#FFEDA8,#FFD262)' : 'rgba(255,255,255,.9)',
-      boxShadow: pick[s.id] === o.t ? '0 4px 0 #D4A22B' : '0 4px 0 rgba(45,27,69,.1)'
+      padding: '11px 6px',
+      fontSize: 12.5
     }
   }, o.e, " ", o.t))))), /*#__PURE__*/React.createElement("button", {
-    className: "ak-btn ak-btn--ok",
+    className: "nk-btn nk-btn--ok",
     style: {
       width: '100%',
       maxWidth: 360
@@ -1137,20 +1212,10 @@ function Level2Roles({
     }
   }, P2_ROLES.map(r => /*#__PURE__*/React.createElement("button", {
     key: r.id,
-    className: "ak-tap",
+    className: role === r.id ? 'nk-choice nk-choice--sel' : 'nk-choice',
     onClick: () => tryRole(r.id),
     style: {
-      border: 'none',
-      cursor: 'pointer',
-      borderRadius: 14,
-      padding: '10px 12px',
-      fontSize: 13.5,
-      fontWeight: 800,
-      fontFamily: 'var(--ak-body)',
-      color: '#2D1B45',
-      background: role === r.id ? 'linear-gradient(160deg,#FFEDA8,#FFD262)' : 'rgba(255,255,255,.9)',
-      boxShadow: role === r.id ? '0 4px 0 #D4A22B' : '0 4px 0 rgba(45,27,69,.1)',
-      position: 'relative'
+      fontSize: 13.5
     }
   }, r.e, " ", r.name, seen.has(r.id) ? ' ✓' : ''))), /*#__PURE__*/React.createElement("div", {
     style: {
@@ -1178,7 +1243,7 @@ function Level2Roles({
       color: 'var(--ak-ink-3)'
     }
   }, "👆 Выбери роль — джинн ответит в её стиле")), /*#__PURE__*/React.createElement("button", {
-    className: "ak-btn ak-btn--ok",
+    className: "nk-btn nk-btn--ok",
     disabled: seen.size < 2,
     style: {
       width: '100%',
@@ -1213,24 +1278,17 @@ function Level2Roles({
     }
   }, P2_ROLES.map(r => /*#__PURE__*/React.createElement("button", {
     key: r.id,
-    className: "ak-tap",
+    className: "nk-level",
     disabled: !!verdict,
     onClick: () => answer(r.id),
     style: {
-      border: 'none',
-      cursor: 'pointer',
-      borderRadius: 16,
-      padding: '13px 16px',
-      fontSize: 15,
-      fontWeight: 800,
-      fontFamily: 'var(--ak-body)',
-      color: '#2D1B45',
-      textAlign: 'left',
-      background: 'rgba(255,255,255,.9)',
-      boxShadow: '0 5px 0 rgba(45,27,69,.1)',
       opacity: verdict ? .6 : 1
     }
-  }, r.e, " ", r.name))), verdict && /*#__PURE__*/React.createElement("div", {
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "nk-coin"
+  }, r.e), /*#__PURE__*/React.createElement("span", {
+    className: "nk-level__title"
+  }, r.name)))), verdict && /*#__PURE__*/React.createElement("div", {
     style: {
       width: '100%',
       maxWidth: 360,
@@ -1248,13 +1306,9 @@ function Level2Roles({
       lineHeight: 1.5
     }
   }, verdict.text), /*#__PURE__*/React.createElement("button", {
-    className: verdict.ok ? 'ak-btn ak-btn--ok' : 'ak-btn',
-    style: verdict.ok ? {
+    className: verdict.ok ? 'nk-btn nk-btn--ok' : 'nk-btn nk-btn--pri',
+    style: {
       marginTop: 10
-    } : {
-      marginTop: 10,
-      background: 'linear-gradient(160deg,#E5DCFF,#B5A1FF)',
-      boxShadow: '0 6px 0 #7C5FE0'
     },
     onClick: () => verdict.ok ? nextTask() : setVerdict(null)
   }, verdict.ok ? tIdx < P2_TASKS.length - 1 ? 'Следующий клиент →' : 'Все клиенты довольны! 🎉' : 'Попробовать другую роль 🔁'))), phase === 'win' && /*#__PURE__*/React.createElement(WinModal, {
@@ -1420,38 +1474,22 @@ function Level3Iterate({
     }
   }, P3_FIXES.map(f => applied.includes(f.id) ? /*#__PURE__*/React.createElement("button", {
     key: f.id,
-    className: "ak-tap",
+    className: "nk-choice nk-choice--sel",
     onClick: () => undo(f.id),
     style: {
-      border: 'none',
-      cursor: 'pointer',
-      borderRadius: 14,
-      padding: '10px 8px',
       fontSize: 12.5,
-      fontWeight: 800,
-      fontFamily: 'var(--ak-body)',
-      background: 'linear-gradient(160deg,#FFEDA8,#FFD262)',
-      boxShadow: '0 4px 0 #D4A22B',
-      color: '#2D1B45'
+      padding: '12px 8px'
     }
-  }, f.e, " ", f.name, " ↩ отменить") : /*#__PURE__*/React.createElement("button", {
+  }, f.e, " ", f.name, " ↩") : /*#__PURE__*/React.createElement("button", {
     key: f.id,
-    className: "ak-tap",
+    className: "nk-choice",
     onClick: () => apply(f),
     style: {
-      border: 'none',
-      cursor: 'pointer',
-      borderRadius: 14,
-      padding: '10px 8px',
       fontSize: 12.5,
-      fontWeight: 800,
-      fontFamily: 'var(--ak-body)',
-      background: 'rgba(255,255,255,.9)',
-      boxShadow: '0 4px 0 rgba(45,27,69,.1)',
-      color: '#2D1B45'
+      padding: '12px 8px'
     }
   }, f.e, " ", f.name))), done && /*#__PURE__*/React.createElement("button", {
-    className: "ak-btn ak-btn--ok",
+    className: "nk-btn nk-btn--ok",
     style: {
       width: '100%',
       maxWidth: 340
@@ -1503,17 +1541,9 @@ function PLHome({
       overflowY: 'auto'
     }
   }, /*#__PURE__*/React.createElement("div", {
+    className: "nk-coin nk-coin--lg nk-bob",
     style: {
-      width: 64,
-      height: 64,
-      borderRadius: 20,
-      background: 'linear-gradient(180deg,var(--ak-phys-1),var(--ak-phys-2))',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      fontSize: 32,
-      marginBottom: 10,
-      boxShadow: '0 8px 0 var(--ak-phys-3),0 16px 28px -8px rgba(124,95,224,.35)'
+      marginBottom: 10
     }
   }, "🧞"), /*#__PURE__*/React.createElement("div", {
     style: {
@@ -1540,53 +1570,23 @@ function PLHome({
     }
   }, PL_LEVELS.map(l => /*#__PURE__*/React.createElement("button", {
     key: l.n,
-    onClick: () => onSelect(l.n),
+    className: doneSet.has(l.n) ? 'nk-level nk-level--done' : 'nk-level',
+    onClick: () => onSelect(l.n)
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "nk-coin"
+  }, l.emoji), /*#__PURE__*/React.createElement("span", null, /*#__PURE__*/React.createElement("span", {
+    className: "nk-level__title",
     style: {
-      display: 'flex',
-      alignItems: 'center',
-      gap: 14,
-      background: 'rgba(255,255,255,.88)',
-      borderRadius: 22,
-      padding: '15px 18px',
-      border: 'none',
-      cursor: 'pointer',
-      textAlign: 'left',
-      boxShadow: '0 6px 0 rgba(45,27,69,.08),0 12px 24px -8px rgba(45,27,69,.12),inset 0 2px 0 #fff'
+      display: 'block'
     }
-  }, /*#__PURE__*/React.createElement("div", {
+  }, l.n, ". ", l.title), /*#__PURE__*/React.createElement("span", {
+    className: "nk-level__sub",
     style: {
-      width: 52,
-      height: 52,
-      borderRadius: '50%',
-      flexShrink: 0,
-      background: 'radial-gradient(circle at 35% 30%,#fff,var(--ak-phys-1) 70%)',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      fontSize: 24,
-      boxShadow: '0 4px 0 rgba(45,27,69,.08)'
+      display: 'block'
     }
-  }, l.emoji), /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontFamily: 'var(--ak-display)',
-      fontSize: 17,
-      fontWeight: 700,
-      color: 'var(--ak-ink)'
-    }
-  }, l.n, ". ", l.title), /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontFamily: 'var(--ak-display)',
-      fontSize: 13,
-      color: 'var(--ak-ink-2)',
-      marginTop: 2
-    }
-  }, l.sub)), /*#__PURE__*/React.createElement("div", {
-    style: {
-      marginLeft: 'auto',
-      fontSize: 18,
-      color: 'var(--ak-ink-3)'
-    }
-  }, doneSet.has(l.n) ? '✅' : '→')))), /*#__PURE__*/React.createElement("div", {
+  }, l.sub)), /*#__PURE__*/React.createElement("span", {
+    className: "nk-level__end"
+  }, doneSet.has(l.n) ? '⭐' : '→')))), /*#__PURE__*/React.createElement("div", {
     style: {
       marginTop: 24,
       padding: '14px 18px',
