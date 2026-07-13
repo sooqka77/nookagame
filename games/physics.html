@@ -1869,9 +1869,13 @@ function Level3({
 
         // ANGLE ARCS + LABELS at bounce point
         const RARC = 38;
-        // incident angle arc
-        const incDir = Math.atan2(-dy, -dx); // pointing back toward source
-        const normDir = Math.atan2(ny, nx);
+        // incident angle arc (фикс: dx/dy/nx/ny жили только внутри traceRay)
+        const _dx = 1, _dy = 0; // лазер всегда летит вправо
+        const _n1x = -Math.sin(info.ma), _n1y = Math.cos(info.ma);
+        const _nx = _dx * _n1x >= 0 ? _n1x : -_n1x;
+        const _ny = _dx * _n1x >= 0 ? _n1y : -_n1y;
+        const incDir = Math.atan2(-_dy, -_dx); // pointing back toward source
+        const normDir = Math.atan2(_ny, _nx);
         ctx.save();
         ctx.strokeStyle = '#FF6B35';
         ctx.lineWidth = 2;
