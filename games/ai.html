@@ -8327,11 +8327,14 @@ function App() {
       setScreen("level_done");
     }
   };
+  const FREE_TEST = true; // ВРЕМЕННО (2026-07-13): все уровни открыты для тестов. Вернуть гейтинг: FREE_TEST = false
   const isPaidLocked = mod => {
+    if (FREE_TEST) return false;
     const i = MODULES.findIndex(m => m.id === mod.id);
     return i >= 4 && !paid;
   };
   const canOpen = mod => {
+    if (FREE_TEST) return true;
     const i = MODULES.findIndex(m => m.id === mod.id);
     if (i >= 4 && !paid) return false;
     return i === 0 || gs.modules.includes(MODULES[i - 1].id);
