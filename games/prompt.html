@@ -857,62 +857,26 @@ const NKM = (n, sz) => /*#__PURE__*/React.createElement("img", {
     boxShadow: '0 0 24px rgba(196,77,255,.35)'
   }
 });
-/* ---------- Уровень 1: Джинн-буквалист ---------- */
+/* ---------- Уровень 1: Джинн-буквалист (v2 — живая сцена) ---------- */
 const P1_SLOTS = [{
   id: 'adj',
   name: 'какой?',
-  opts: [{
-    t: 'рыжий',
-    e: '🟠'
-  }, {
-    t: 'фиолетовый',
-    e: '🟣'
-  }, {
-    t: 'полосатый',
-    e: '🦓'
-  }]
+  opts: ['рыжий', 'фиолетовый', 'полосатый']
 }, {
   id: 'who',
   name: 'кто?',
-  opts: [{
-    t: 'кот',
-    e: '🐱'
-  }, {
-    t: 'кит',
-    e: '🐳'
-  }, {
-    t: 'дракон',
-    e: '🐲'
-  }]
+  opts: ['кот', 'кит', 'дракон']
 }, {
   id: 'act',
   name: 'что делает?',
-  opts: [{
-    t: 'спит',
-    e: '😴'
-  }, {
-    t: 'танцует',
-    e: '💃'
-  }, {
-    t: 'летает',
-    e: '🎈'
-  }]
+  opts: ['спит', 'танцует', 'летает']
 }, {
   id: 'where',
   name: 'где?',
-  opts: [{
-    t: 'на диване',
-    e: '🛋️'
-  }, {
-    t: 'на крыше',
-    e: '🏠'
-  }, {
-    t: 'в космосе',
-    e: '🌌'
-  }]
+  opts: ['на диване', 'на крыше', 'в космосе']
 }];
 const P1_ORDERS = [{
-  brief: 'Хочу РЫЖЕГО кота, который СПИТ на ДИВАНЕ',
+  brief: 'Рыжий кот спит на диване',
   want: {
     adj: 'рыжий',
     who: 'кот',
@@ -921,43 +885,436 @@ const P1_ORDERS = [{
   },
   client: '👩'
 }, {
-  brief: 'Мне ФИОЛЕТОВОГО дракона, чтобы ЛЕТАЛ В КОСМОСЕ',
+  brief: 'Фиолетовый дракон летает в космосе',
   want: {
     adj: 'фиолетовый',
     who: 'дракон',
     act: 'летает',
     where: 'в космосе'
   },
-  client: '👨‍🚀'
+  client: '👨\u200d🚀'
 }, {
-  brief: 'ПОЛОСАТОГО кита, который ТАНЦУЕТ НА КРЫШЕ',
+  brief: 'Полосатый кит танцует на крыше',
   want: {
     adj: 'полосатый',
     who: 'кит',
     act: 'танцует',
     where: 'на крыше'
   },
-  client: '🧑‍🎤'
+  client: '🧑\u200d🎤'
 }];
-const P1_RANDOM = {
-  adj: ['зелёный', 'клетчатый'],
-  who: ['огурец', 'грузовик'],
-  act: ['чихает', 'поёт оперу'],
-  where: ['в холодильнике', 'на Луне']
+const P1_COLORS = {
+  'рыжий': ['#FF9F43', '#E8842A'],
+  'фиолетовый': ['#A98BFF', '#7B4FF2'],
+  'полосатый': ['#E8E0D0', '#B8AE98']
 };
-function P1Scene({
-  pick
+function P1Char({
+  who,
+  adj,
+  act,
+  t
 }) {
-  const g = id => {
-    const o = P1_SLOTS.find(s => s.id === id).opts.find(o => o.t === pick[id]);
-    return o ? o.e : null;
-  };
-  return /*#__PURE__*/React.createElement("div", {
+  const [c1, c2] = P1_COLORS[adj] || ['#8FA3BF', '#66799A'];
+  const striped = adj === 'полосатый';
+  const sleeping = act === 'спит';
+  const Eyes = () => sleeping ? /*#__PURE__*/React.createElement("g", {
+    stroke: "#1B2340",
+    strokeWidth: "2.5",
+    fill: "none",
+    strokeLinecap: "round"
+  }, /*#__PURE__*/React.createElement("path", {
+    d: "M-13 -4 q 5 4 10 0"
+  }), /*#__PURE__*/React.createElement("path", {
+    d: "M3 -4 q 5 4 10 0"
+  })) : /*#__PURE__*/React.createElement("g", null, /*#__PURE__*/React.createElement("circle", {
+    cx: "-8",
+    cy: "-5",
+    r: "4.6",
+    fill: "#fff"
+  }), /*#__PURE__*/React.createElement("circle", {
+    cx: "8",
+    cy: "-5",
+    r: "4.6",
+    fill: "#fff"
+  }), /*#__PURE__*/React.createElement("circle", {
+    cx: "-7",
+    cy: "-4",
+    r: "2.4",
+    fill: "#1B2340"
+  }), /*#__PURE__*/React.createElement("circle", {
+    cx: "9",
+    cy: "-4",
+    r: "2.4",
+    fill: "#1B2340"
+  }));
+  const Stripes = ({
+    w,
+    h
+  }) => striped ? /*#__PURE__*/React.createElement("g", {
+    fill: c2,
+    opacity: ".8"
+  }, /*#__PURE__*/React.createElement("rect", {
+    x: -w / 2,
+    y: -h / 6,
+    width: w,
+    height: h / 9,
+    rx: h / 18
+  }), /*#__PURE__*/React.createElement("rect", {
+    x: -w / 2,
+    y: h / 8,
+    width: w,
+    height: h / 9,
+    rx: h / 18
+  })) : null;
+  let body = null;
+  if (who === 'кот') body = /*#__PURE__*/React.createElement("g", null, /*#__PURE__*/React.createElement("ellipse", {
+    cx: "0",
+    cy: "16",
+    rx: "26",
+    ry: "18",
+    fill: c1
+  }), /*#__PURE__*/React.createElement(Stripes, {
+    w: 48,
+    h: 36
+  }), /*#__PURE__*/React.createElement("path", {
+    d: "M 24 16 q 20 -4 16 -20",
+    stroke: c1,
+    strokeWidth: "7",
+    fill: "none",
+    strokeLinecap: "round"
+  }), /*#__PURE__*/React.createElement("g", {
+    transform: "translate(0,-14)"
+  }, /*#__PURE__*/React.createElement("circle", {
+    r: "17",
+    fill: c1
+  }), /*#__PURE__*/React.createElement("path", {
+    d: "M-14 -10 l -5 -12 l 12 4 z",
+    fill: c1
+  }), /*#__PURE__*/React.createElement("path", {
+    d: "M14 -10 l 5 -12 l -12 4 z",
+    fill: c1
+  }), /*#__PURE__*/React.createElement(Eyes, null), /*#__PURE__*/React.createElement("path", {
+    d: "M-3 4 q 3 3 6 0",
+    stroke: "#1B2340",
+    strokeWidth: "2",
+    fill: "none",
+    strokeLinecap: "round"
+  })));else if (who === 'кит') body = /*#__PURE__*/React.createElement("g", null, /*#__PURE__*/React.createElement("path", {
+    d: "M-32 10 q 0 -26 32 -26 q 32 0 32 24 q 0 14 -18 14 l -28 0 q -18 0 -18 -12z",
+    fill: c1
+  }), /*#__PURE__*/React.createElement(Stripes, {
+    w: 58,
+    h: 30
+  }), /*#__PURE__*/React.createElement("path", {
+    d: "M 30 14 q 14 2 18 -10 q 4 12 -2 18 q -10 4 -16 -8z",
+    fill: c2
+  }), /*#__PURE__*/React.createElement("g", {
+    transform: "translate(-8,-4)"
+  }, /*#__PURE__*/React.createElement(Eyes, null)), !sleeping && /*#__PURE__*/React.createElement("g", {
+    stroke: "#9BD8FF",
+    strokeWidth: "3",
+    strokeLinecap: "round"
+  }, /*#__PURE__*/React.createElement("path", {
+    d: "M-14 -18 q -2 -8 3 -12"
+  }), /*#__PURE__*/React.createElement("path", {
+    d: "M-8 -18 q 0 -10 6 -14"
+  })));else if (who === 'дракон') body = /*#__PURE__*/React.createElement("g", null, /*#__PURE__*/React.createElement("ellipse", {
+    cx: "0",
+    cy: "12",
+    rx: "24",
+    ry: "17",
+    fill: c1
+  }), /*#__PURE__*/React.createElement(Stripes, {
+    w: 44,
+    h: 34
+  }), /*#__PURE__*/React.createElement("path", {
+    d: "M-22 2 q -16 -10 -10 -24 q 12 4 16 16z",
+    fill: c2
+  }), /*#__PURE__*/React.createElement("path", {
+    d: "M22 2 q 16 -10 10 -24 q -12 4 -16 16z",
+    fill: c2
+  }), /*#__PURE__*/React.createElement("path", {
+    d: "M 22 16 q 18 0 20 -12",
+    stroke: c1,
+    strokeWidth: "6",
+    fill: "none",
+    strokeLinecap: "round"
+  }), /*#__PURE__*/React.createElement("g", {
+    transform: "translate(0,-16)"
+  }, /*#__PURE__*/React.createElement("circle", {
+    r: "15",
+    fill: c1
+  }), /*#__PURE__*/React.createElement("path", {
+    d: "M-8 -13 l -3 -9 l 8 3z",
+    fill: c2
+  }), /*#__PURE__*/React.createElement("path", {
+    d: "M8 -13 l 3 -9 l -8 3z",
+    fill: c2
+  }), /*#__PURE__*/React.createElement(Eyes, null)));
+  const anim = act === 'танцует' ? 'plDance 1.1s ease-in-out infinite' : act === 'летает' ? 'plFly 2s ease-in-out infinite' : 'none';
+  const y = act === 'летает' ? 96 : 148;
+  return /*#__PURE__*/React.createElement("g", {
+    transform: `translate(170 ${y})`
+  }, /*#__PURE__*/React.createElement("g", {
     style: {
-      fontSize: 44,
-      letterSpacing: 6
+      animation: anim,
+      transformOrigin: '0px 10px'
     }
-  }, g('adj') || '❓', g('who') || '❓', g('act') || '❓', g('where') || '❓');
+  }, body, sleeping && /*#__PURE__*/React.createElement("text", {
+    x: "26",
+    y: "-30",
+    fontSize: "15",
+    fill: "#9BD8FF",
+    style: {
+      animation: 'plZzz 2s ease-in-out infinite'
+    }
+  }, "z z Z"), act === 'летает' && /*#__PURE__*/React.createElement("g", null, /*#__PURE__*/React.createElement("line", {
+    x1: "0",
+    y1: "34",
+    x2: "0",
+    y2: "52",
+    stroke: "#C4D4EE",
+    strokeWidth: "1.5"
+  }), /*#__PURE__*/React.createElement("circle", {
+    cx: "0",
+    cy: "60",
+    r: "9",
+    fill: "#FF6B6B"
+  }))));
+}
+function P1Bg({
+  where
+}) {
+  if (where === 'на диване') return /*#__PURE__*/React.createElement("g", null, /*#__PURE__*/React.createElement("rect", {
+    width: "340",
+    height: "240",
+    fill: "#1A2338"
+  }), /*#__PURE__*/React.createElement("rect", {
+    y: "170",
+    width: "340",
+    height: "70",
+    fill: "#141B2C"
+  }), /*#__PURE__*/React.createElement("rect", {
+    x: "252",
+    y: "60",
+    width: "52",
+    height: "82",
+    rx: "8",
+    fill: "#0E1524"
+  }), /*#__PURE__*/React.createElement("circle", {
+    cx: "278",
+    cy: "86",
+    r: "14",
+    fill: "#FFD60A",
+    opacity: ".85"
+  }), /*#__PURE__*/React.createElement("g", null, /*#__PURE__*/React.createElement("rect", {
+    x: "60",
+    y: "150",
+    width: "220",
+    height: "46",
+    rx: "14",
+    fill: "#7B4FF2"
+  }), /*#__PURE__*/React.createElement("rect", {
+    x: "48",
+    y: "130",
+    width: "34",
+    height: "62",
+    rx: "12",
+    fill: "#6B41D8"
+  }), /*#__PURE__*/React.createElement("rect", {
+    x: "258",
+    y: "130",
+    width: "34",
+    height: "62",
+    rx: "12",
+    fill: "#6B41D8"
+  }), /*#__PURE__*/React.createElement("rect", {
+    x: "70",
+    y: "132",
+    width: "96",
+    height: "28",
+    rx: "10",
+    fill: "#8F65FF"
+  }), /*#__PURE__*/React.createElement("rect", {
+    x: "174",
+    y: "132",
+    width: "96",
+    height: "28",
+    rx: "10",
+    fill: "#8F65FF"
+  })));
+  if (where === 'на крыше') return /*#__PURE__*/React.createElement("g", null, /*#__PURE__*/React.createElement("rect", {
+    width: "340",
+    height: "240",
+    fill: "#0D1427"
+  }), /*#__PURE__*/React.createElement("circle", {
+    cx: "284",
+    cy: "46",
+    r: "20",
+    fill: "#F0F4FF",
+    opacity: ".9"
+  }), /*#__PURE__*/React.createElement("circle", {
+    cx: "277",
+    cy: "41",
+    r: "17",
+    fill: "#0D1427"
+  }), /*#__PURE__*/React.createElement("g", {
+    fill: "#131E38"
+  }, /*#__PURE__*/React.createElement("rect", {
+    x: "8",
+    y: "90",
+    width: "46",
+    height: "150"
+  }), /*#__PURE__*/React.createElement("rect", {
+    x: "290",
+    y: "104",
+    width: "42",
+    height: "136"
+  })), /*#__PURE__*/React.createElement("g", {
+    fill: "#FFD60A",
+    opacity: ".7"
+  }, /*#__PURE__*/React.createElement("rect", {
+    x: "16",
+    y: "100",
+    width: "8",
+    height: "8"
+  }), /*#__PURE__*/React.createElement("rect", {
+    x: "34",
+    y: "118",
+    width: "8",
+    height: "8"
+  }), /*#__PURE__*/React.createElement("rect", {
+    x: "298",
+    y: "116",
+    width: "8",
+    height: "8"
+  }), /*#__PURE__*/React.createElement("rect", {
+    x: "314",
+    y: "140",
+    width: "8",
+    height: "8"
+  })), /*#__PURE__*/React.createElement("rect", {
+    x: "58",
+    y: "176",
+    width: "224",
+    height: "64",
+    rx: "4",
+    fill: "#1A2338"
+  }), /*#__PURE__*/React.createElement("rect", {
+    x: "58",
+    y: "170",
+    width: "224",
+    height: "10",
+    rx: "5",
+    fill: "#26334F"
+  }));
+  if (where === 'в космосе') return /*#__PURE__*/React.createElement("g", null, /*#__PURE__*/React.createElement("rect", {
+    width: "340",
+    height: "240",
+    fill: "#080C18"
+  }), /*#__PURE__*/React.createElement("g", {
+    fill: "#F0F4FF"
+  }, /*#__PURE__*/React.createElement("circle", {
+    cx: "40",
+    cy: "34",
+    r: "1.6"
+  }), /*#__PURE__*/React.createElement("circle", {
+    cx: "120",
+    cy: "70",
+    r: "1.2"
+  }), /*#__PURE__*/React.createElement("circle", {
+    cx: "210",
+    cy: "30",
+    r: "1.8"
+  }), /*#__PURE__*/React.createElement("circle", {
+    cx: "300",
+    cy: "80",
+    r: "1.3"
+  }), /*#__PURE__*/React.createElement("circle", {
+    cx: "70",
+    cy: "180",
+    r: "1.4"
+  }), /*#__PURE__*/React.createElement("circle", {
+    cx: "280",
+    cy: "190",
+    r: "1.6"
+  }), /*#__PURE__*/React.createElement("circle", {
+    cx: "180",
+    cy: "210",
+    r: "1.2"
+  })), /*#__PURE__*/React.createElement("circle", {
+    cx: "60",
+    cy: "60",
+    r: "24",
+    fill: "#FF8E53"
+  }), /*#__PURE__*/React.createElement("ellipse", {
+    cx: "60",
+    cy: "60",
+    rx: "38",
+    ry: "9",
+    fill: "none",
+    stroke: "#FFD60A",
+    strokeWidth: "3",
+    opacity: ".8",
+    transform: "rotate(-14 60 60)"
+  }));
+  return /*#__PURE__*/React.createElement("g", null, /*#__PURE__*/React.createElement("rect", {
+    width: "340",
+    height: "240",
+    fill: "#0D1427"
+  }), /*#__PURE__*/React.createElement("rect", {
+    x: "6",
+    y: "6",
+    width: "328",
+    height: "228",
+    rx: "14",
+    fill: "none",
+    stroke: "#26334F",
+    strokeWidth: "2",
+    strokeDasharray: "6 8"
+  }));
+}
+function P1Scene({
+  vals,
+  ghost
+}) {
+  return /*#__PURE__*/React.createElement("svg", {
+    viewBox: "0 0 340 240",
+    style: {
+      width: '100%',
+      borderRadius: 16,
+      display: 'block'
+    }
+  }, /*#__PURE__*/React.createElement("style", null, `
+        @keyframes plDance{0%,100%{transform:rotate(-8deg)}50%{transform:rotate(8deg)}}
+        @keyframes plFly{0%,100%{transform:translateY(0)}50%{transform:translateY(-14px)}}
+        @keyframes plZzz{0%,100%{opacity:.3}50%{opacity:1}}
+        @keyframes plPop{0%{opacity:0;transform:scale(.6)}100%{opacity:1;transform:scale(1)}}
+      `), /*#__PURE__*/React.createElement(P1Bg, {
+    where: vals.where
+  }), vals.who && vals.adj && vals.act && /*#__PURE__*/React.createElement("g", {
+    style: {
+      animation: 'plPop .5s cubic-bezier(.2,.8,.3,1) both'
+    }
+  }, /*#__PURE__*/React.createElement(P1Char, {
+    who: vals.who,
+    adj: vals.adj,
+    act: vals.act
+  })), ghost && ghost.length > 0 && /*#__PURE__*/React.createElement("g", null, /*#__PURE__*/React.createElement("rect", {
+    x: "8",
+    y: "8",
+    width: "180",
+    height: "22",
+    rx: "11",
+    fill: "rgba(255,107,107,.18)"
+  }), /*#__PURE__*/React.createElement("text", {
+    x: "18",
+    y: "23",
+    fontSize: "11",
+    fontWeight: "800",
+    fill: "#FF6B6B",
+    fontFamily: "Nunito"
+  }, "джинн добавил сам: ", ghost.join(', '))));
 }
 function Level1Genie({
   onWin,
@@ -966,19 +1323,26 @@ function Level1Genie({
   const [phase, setPhase] = useState('intro');
   const [oIdx, setOIdx] = useState(0);
   const [pick, setPick] = useState({});
-  const [drawn, setDrawn] = useState(null); // {pick, verdict:'ok'|'miss', fantasy:{}}
+  const [drawn, setDrawn] = useState(null);
   const order = P1_ORDERS[oIdx];
   const draw = () => {
     const fantasy = {};
-    P1_SLOTS.forEach(s => {
-      if (!pick[s.id]) fantasy[s.id] = P1_RANDOM[s.id][Math.random() < .5 ? 0 : 1];
+    P1_SLOTS.forEach(sl => {
+      if (!pick[sl.id]) {
+        const pool = sl.opts.filter(o => o !== order.want[sl.id]);
+        fantasy[sl.id] = pool[Math.floor(Math.random() * pool.length)];
+      }
     });
-    const full = P1_SLOTS.every(s => pick[s.id]);
-    const exact = full && P1_SLOTS.every(s => pick[s.id] === order.want[s.id]);
+    const full = P1_SLOTS.every(sl => pick[sl.id]);
+    const exact = full && P1_SLOTS.every(sl => pick[sl.id] === order.want[sl.id]);
     setDrawn({
       verdict: exact ? 'ok' : 'miss',
       fantasy,
-      full
+      full,
+      vals: {
+        ...fantasy,
+        ...pick
+      }
     });
   };
   const next = () => {
@@ -1007,9 +1371,9 @@ function Level1Genie({
   }), phase === 'intro' && /*#__PURE__*/React.createElement(IntroModal, {
     emoji: NKM("think", 88),
     title: "Джинн-буквалист",
-    law: 'Джинн-ИИ рисует РОВНО то, что сказано.\nСкажешь «нарисуй кота» — получишь\nкота-грузовика. Он не угадывает!\n\nПромпт — это точная инструкция для ИИ.',
+    law: 'Джинн рисует РОВНО то, что сказано.\nПропустишь слово — он придумает сам!',
     diagram: null,
-    tip: "Собирай запрос из карточек. Пустая карточка = джинн придумает сам (и это будет странно!)",
+    tip: "Собери заказ клиента из карточек",
     onStart: () => setPhase('play')
   }), phase === 'play' && /*#__PURE__*/React.createElement("div", {
     style: {
@@ -1024,95 +1388,68 @@ function Level1Genie({
   }, /*#__PURE__*/React.createElement(TaskBadge, null, order.client, " «", order.brief, "»"), /*#__PURE__*/React.createElement("div", {
     style: {
       width: '100%',
-      maxWidth: 360,
-      background: 'rgba(16,28,50,.92)',
-      borderRadius: 22,
-      padding: '14px 14px 10px',
-      textAlign: 'center',
-      boxShadow: '0 6px 0 rgba(45,27,69,.08)'
+      maxWidth: 380
     }
-  }, /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 13,
-      fontWeight: 700,
-      color: 'var(--ak-ink-2)',
-      fontFamily: 'var(--ak-display)',
-      marginBottom: 6
-    }
-  }, "🧞 Джинн нарисовал:"), drawn ? /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(P1Scene, {
-    pick: {
-      ...Object.fromEntries(P1_SLOTS.map(s => [s.id, pick[s.id] || null]))
-    }
-  }), Object.keys(drawn.fantasy).length > 0 && /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 13,
-      color: 'var(--ak-warn-3, #D9523F)',
-      lineHeight: 1.5,
-      margin: '6px 0'
-    }
-  }, "Ты не сказал ", Object.keys(drawn.fantasy).map(id => P1_SLOTS.find(s => s.id === id).name).join(', '), " — джинн придумал сам: ", Object.values(drawn.fantasy).join(', '), "! 🙃"), /*#__PURE__*/React.createElement("div", {
+  }, /*#__PURE__*/React.createElement(P1Scene, {
+    vals: drawn ? drawn.vals : pick,
+    ghost: drawn ? Object.values(drawn.fantasy) : null
+  })), drawn ? /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
     style: {
       fontFamily: 'var(--ak-display)',
-      fontWeight: 700,
+      fontWeight: 900,
       fontSize: 16,
-      color: drawn.verdict === 'ok' ? '#2BA873' : 'var(--ak-ink)',
-      margin: '4px 0 8px'
+      color: drawn.verdict === 'ok' ? '#06D6A0' : 'var(--ak-ink)',
+      textAlign: 'center'
     }
-  }, drawn.verdict === 'ok' ? '🎉 Клиент в восторге! Точный промпт!' : drawn.full ? 'Нарисовано точно… но клиент хотел другого. Перечитай заказ!' : 'Клиент чешет затылок… Уточни запрос!'), drawn.verdict === 'ok' ? /*#__PURE__*/React.createElement("button", {
+  }, drawn.verdict === 'ok' ? '🎉 Точный промпт — точный рисунок!' : drawn.full ? 'Нарисовано чётко… но заказ был другой!' : 'Джинн дорисовал за тебя — и мимо!'), drawn.verdict === 'ok' ? /*#__PURE__*/React.createElement("button", {
     className: "nk-btn nk-btn--ok",
     onClick: next
   }, oIdx < P1_ORDERS.length - 1 ? 'Следующий заказ →' : 'Смена окончена! 🎉') : /*#__PURE__*/React.createElement("button", {
     className: "nk-btn nk-btn--pri",
     onClick: () => setDrawn(null)
-  }, "Исправить промпт ✏️")) : /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 36,
-      opacity: .35,
-      padding: '8px 0'
-    }
-  }, "💭")), !drawn && /*#__PURE__*/React.createElement(React.Fragment, null, P1_SLOTS.map(s => /*#__PURE__*/React.createElement("div", {
-    key: s.id,
+  }, "Исправить промпт ✏️")) : /*#__PURE__*/React.createElement(React.Fragment, null, P1_SLOTS.map(sl => /*#__PURE__*/React.createElement("div", {
+    key: sl.id,
     style: {
       width: '100%',
-      maxWidth: 360
-    }
-  }, /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 12,
-      fontWeight: 700,
-      color: 'var(--ak-ink-2)',
-      fontFamily: 'var(--ak-display)',
-      marginBottom: 4
-    }
-  }, s.name), /*#__PURE__*/React.createElement("div", {
-    style: {
+      maxWidth: 380,
       display: 'flex',
-      gap: 6
+      gap: 6,
+      alignItems: 'center'
     }
-  }, s.opts.map(o => /*#__PURE__*/React.createElement("button", {
-    key: o.t,
-    className: pick[s.id] === o.t ? 'nk-choice nk-choice--sel' : 'nk-choice',
+  }, /*#__PURE__*/React.createElement("span", {
+    style: {
+      width: 86,
+      fontSize: 12,
+      fontWeight: 800,
+      color: 'var(--ak-ink-3)',
+      fontFamily: 'var(--ak-display)',
+      textAlign: 'right',
+      flexShrink: 0
+    }
+  }, sl.name), sl.opts.map(o => /*#__PURE__*/React.createElement("button", {
+    key: o,
+    className: pick[sl.id] === o ? 'nk-choice nk-choice--sel' : 'nk-choice',
     onClick: () => setPick(p => ({
       ...p,
-      [s.id]: p[s.id] === o.t ? undefined : o.t
+      [sl.id]: p[sl.id] === o ? undefined : o
     })),
     style: {
       flex: 1,
-      padding: '11px 6px',
-      fontSize: 12.5
+      padding: '10px 4px',
+      fontSize: 12
     }
-  }, o.e, " ", o.t))))), /*#__PURE__*/React.createElement("button", {
+  }, o)))), /*#__PURE__*/React.createElement("button", {
     className: "nk-btn nk-btn--ok",
     style: {
       width: '100%',
-      maxWidth: 360
+      maxWidth: 380
     },
     onClick: draw
   }, "🪄 Джинн, рисуй!"))), phase === 'win' && /*#__PURE__*/React.createElement(WinModal, {
     emoji: NKM("win", 96),
     title: "Джинн приручён!",
-    law: "Промпт — точная инструкция для ИИ: чем точнее слова, тем ближе результат",
-    fact: "Промпт-инженер — настоящая профессия: люди зарабатывают тем, что умеют правильно просить ИИ!",
+    law: "Точный промпт = точный результат",
+    fact: "Промпт-инженер — настоящая профессия: люди зарабатывают тем, что умеют просить ИИ!",
     cta: "Дальше →",
     onNext: onWin,
     onHome: onHome
