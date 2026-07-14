@@ -1274,10 +1274,58 @@ function P1Bg({
     strokeDasharray: "6 8"
   }));
 }
+const P1_KEY = {
+  'рыжий': 'orange',
+  'фиолетовый': 'purple',
+  'полосатый': 'striped',
+  'кот': 'cat',
+  'кит': 'whale',
+  'дракон': 'dragon',
+  'спит': 'sleep',
+  'танцует': 'dance',
+  'летает': 'fly',
+  'на диване': 'sofa',
+  'на крыше': 'roof',
+  'в космосе': 'space'
+};
 function P1Scene({
   vals,
   ghost
 }) {
+  const full = vals.adj && vals.who && vals.act && vals.where;
+  const imgKey = full ? [vals.adj, vals.who, vals.act, vals.where].map(v => P1_KEY[v]).join('-') : null;
+  const [broken, setBroken] = useState({});
+  if (imgKey && !broken[imgKey]) return /*#__PURE__*/React.createElement("div", {
+    style: {
+      position: 'relative'
+    }
+  }, /*#__PURE__*/React.createElement("img", {
+    src: '../genie/' + imgKey + '.jpg',
+    alt: "",
+    onError: () => setBroken(b => ({
+      ...b,
+      [imgKey]: true
+    })),
+    style: {
+      width: '100%',
+      borderRadius: 16,
+      display: 'block',
+      animation: 'plPop .5s cubic-bezier(.2,.8,.3,1) both'
+    }
+  }), /*#__PURE__*/React.createElement("style", null, '@keyframes plPop{0%{opacity:0;transform:scale(.6)}100%{opacity:1;transform:scale(1)}}'), ghost && ghost.length > 0 && /*#__PURE__*/React.createElement("div", {
+    style: {
+      position: 'absolute',
+      top: 8,
+      left: 8,
+      background: 'rgba(255,107,107,.85)',
+      color: '#fff',
+      borderRadius: 12,
+      padding: '4px 12px',
+      fontSize: 12,
+      fontWeight: 800,
+      fontFamily: 'Nunito'
+    }
+  }, "джинн добавил сам: ", ghost.join(', ')));
   return /*#__PURE__*/React.createElement("svg", {
     viewBox: "0 0 340 240",
     style: {
