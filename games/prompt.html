@@ -2417,7 +2417,7 @@ function Level3Iterate({
       overflow: 'hidden'
     }
   }, /*#__PURE__*/React.createElement(TopBar, {
-    level: 3,
+    level: 4,
     title: "Докрути до идеала",
     onHome: onHome,
     step: Math.min(applied.filter(id => P3_FIXES.find(f => f.id === id).good).length + 1, 4),
@@ -2497,6 +2497,488 @@ function Level3Iterate({
   }));
 }
 
+/* ---------- Уровень 3: Скажи числом (слайдеры, живое рисование) ---------- */
+const P3N_ROUNDS = [{
+  id: 0,
+  vague: false,
+  brief: '«5 звёзд и БОЛЬШАЯ ракета!»',
+  want: {
+    stars: 5,
+    rocket: 3,
+    moon: 1
+  },
+  lock: ['moon']
+}, {
+  id: 1,
+  vague: true,
+  vagueBrief: '«Хочу НЕСКОЛЬКО звёзд и ракету ПОБОЛЬШЕ»',
+  brief: '«Ладно: РОВНО 6 звёзд, ракета СРЕДНЯЯ»',
+  want: {
+    stars: 6,
+    rocket: 2,
+    moon: 1
+  },
+  lock: ['moon']
+}, {
+  id: 2,
+  vague: true,
+  vagueBrief: '«Звёзд — МНОГО! Ракету — ОГРОМНУЮ! Луну — ЯРЧЕ!»',
+  brief: '«Точный заказ: 8 звёзд, ракета 3, луна 3»',
+  want: {
+    stars: 8,
+    rocket: 3,
+    moon: 3
+  },
+  lock: []
+}];
+const P3N_STARPOS = [[28, 26], [62, 16], [104, 30], [146, 18], [176, 34], [44, 52], [130, 52], [86, 44], [164, 60]];
+const P3N_CHECK = [{
+  q: 'Джинн нарисовал РОВНО 7 звёзд. Что было в промпте?',
+  a: ['«семь звёзд»', '«много звёзд»'],
+  right: 0,
+  why: 'Число — всегда точно. «Много» джинн понимает как хочет!'
+}, {
+  q: 'Клиент ждал огромную ракету, а получил крошку. Почему?',
+  a: ['В промпте не было размера', 'Джинн вредничал'],
+  right: 0,
+  why: 'Нет размера в промпте — джинн выбирает сам. ИИ не вредничает — он угадывает!'
+}];
+function P3NScene({
+  v,
+  dream
+}) {
+  const op = dream ? .55 : 1;
+  return /*#__PURE__*/React.createElement("svg", {
+    viewBox: "0 0 200 150",
+    style: {
+      width: '100%',
+      height: 'auto',
+      aspectRatio: '200/150',
+      display: 'block',
+      borderRadius: 18,
+      background: 'linear-gradient(180deg,#0D1427,#080C18)',
+      outline: dream ? '2px dashed #738AAA' : 'none',
+      opacity: op
+    }
+  }, /*#__PURE__*/React.createElement("style", null, `@keyframes p3Tw{0%,100%{opacity:.4}50%{opacity:1}}@keyframes p3Fl{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}`), /*#__PURE__*/React.createElement("circle", {
+    cx: "168",
+    cy: "28",
+    r: 16 + v.moon * 3,
+    fill: "#FFE066",
+    opacity: .06 * v.moon
+  }), /*#__PURE__*/React.createElement("circle", {
+    cx: "168",
+    cy: "28",
+    r: "13",
+    fill: "#FFE066",
+    opacity: .45 + v.moon * .18
+  }), /*#__PURE__*/React.createElement("circle", {
+    cx: "163",
+    cy: "24",
+    r: "2.6",
+    fill: "#D9B84A",
+    opacity: ".5"
+  }), /*#__PURE__*/React.createElement("circle", {
+    cx: "171",
+    cy: "32",
+    r: "1.8",
+    fill: "#D9B84A",
+    opacity: ".5"
+  }), P3N_STARPOS.slice(0, v.stars).map((p, i) => /*#__PURE__*/React.createElement("g", {
+    key: i,
+    transform: `translate(${p[0]} ${p[1]})`
+  }, /*#__PURE__*/React.createElement("path", {
+    d: "M0 -4 L1.2 -1.2 L4 0 L1.2 1.2 L0 4 L-1.2 1.2 L-4 0 L-1.2 -1.2 Z",
+    fill: "#F0F4FF",
+    style: {
+      animation: `p3Tw ${1.2 + i % 3 * .5}s ease-in-out ${i * .2}s infinite`
+    }
+  }))), /*#__PURE__*/React.createElement("ellipse", {
+    cx: "100",
+    cy: "164",
+    rx: "120",
+    ry: "28",
+    fill: "#101C32"
+  }), /*#__PURE__*/React.createElement("g", {
+    transform: `translate(100 ${128 - v.rocket * 8}) scale(${.55 + v.rocket * .3})`
+  }, /*#__PURE__*/React.createElement("g", {
+    style: {
+      animation: 'p3Fl 2.2s ease-in-out infinite'
+    }
+  }, /*#__PURE__*/React.createElement("path", {
+    d: "M0 -26 Q10 -12 10 4 L-10 4 Q-10 -12 0 -26",
+    fill: "#E6EAF5"
+  }), /*#__PURE__*/React.createElement("path", {
+    d: "M-10 4 L-16 14 L-8 10 Z",
+    fill: "#C44DFF"
+  }), /*#__PURE__*/React.createElement("path", {
+    d: "M10 4 L16 14 L8 10 Z",
+    fill: "#C44DFF"
+  }), /*#__PURE__*/React.createElement("circle", {
+    cx: "0",
+    cy: "-8",
+    r: "4.5",
+    fill: "#00E5FF"
+  }), /*#__PURE__*/React.createElement("rect", {
+    x: "-4",
+    y: "10",
+    width: "8",
+    height: "7",
+    rx: "3",
+    fill: "#FFD60A",
+    opacity: ".9"
+  }))));
+}
+function P3NSlider({
+  label,
+  val,
+  max,
+  onChange,
+  accent
+}) {
+  return /*#__PURE__*/React.createElement("div", {
+    style: {
+      width: '100%',
+      display: 'flex',
+      alignItems: 'center',
+      gap: 10
+    }
+  }, /*#__PURE__*/React.createElement("span", {
+    style: {
+      width: 92,
+      fontSize: 12.5,
+      fontWeight: 800,
+      color: 'var(--ak-ink-2)',
+      fontFamily: 'var(--ak-display)',
+      textAlign: 'right',
+      flexShrink: 0
+    }
+  }, label), /*#__PURE__*/React.createElement("input", {
+    type: "range",
+    min: max === 9 ? 0 : 1,
+    max: max,
+    value: val,
+    onChange: e => onChange(+e.target.value),
+    style: {
+      flex: 1,
+      accentColor: accent
+    }
+  }), /*#__PURE__*/React.createElement("span", {
+    style: {
+      width: 26,
+      fontSize: 16,
+      fontWeight: 900,
+      color: accent,
+      fontFamily: 'var(--ak-display)',
+      textAlign: 'center'
+    }
+  }, val));
+}
+function Level3Numbers({
+  onWin,
+  onHome
+}) {
+  const [phase, setPhase] = useState('intro'); // intro | vague | play | check | win
+  const [rIdx, setRIdx] = useState(0);
+  const [v, setV] = useState({
+    stars: 2,
+    rocket: 1,
+    moon: 1
+  });
+  const [vagueDraw, setVagueDraw] = useState(null);
+  const [result, setResult] = useState(null); // 'ok' | 'miss'
+  const [cIdx, setCIdx] = useState(0);
+  const [cPick, setCPick] = useState(null);
+  const round = P3N_ROUNDS[rIdx];
+  const startRound = i => {
+    const r = P3N_ROUNDS[i];
+    setRIdx(i);
+    setV({
+      stars: 2,
+      rocket: 1,
+      moon: 1
+    });
+    setResult(null);
+    setVagueDraw(null);
+    setPhase(r.vague ? 'vague' : 'play');
+  };
+  const genieVague = () => {
+    const rnd = {
+      stars: 1 + Math.floor(Math.random() * 9),
+      rocket: 1 + Math.floor(Math.random() * 3),
+      moon: 1 + Math.floor(Math.random() * 3)
+    };
+    if (rnd.stars === round.want.stars) rnd.stars = rnd.stars % 9 + 1;
+    setVagueDraw(rnd);
+  };
+  const submit = () => {
+    const keys = ['stars', 'rocket', 'moon'].filter(k => !round.lock.includes(k));
+    const ok = keys.every(k => v[k] === round.want[k]);
+    setResult(ok ? 'ok' : 'miss');
+  };
+  const nextRound = () => {
+    if (rIdx < P3N_ROUNDS.length - 1) startRound(rIdx + 1);else {
+      setPhase('check');
+      setCIdx(0);
+      setCPick(null);
+    }
+  };
+  const answerCheck = i => setCPick(i);
+  const nextCheck = () => {
+    if (cIdx < P3N_CHECK.length - 1) {
+      setCIdx(c => c + 1);
+      setCPick(null);
+    } else setPhase('win');
+  };
+  const diffHint = () => {
+    const d = [];
+    if (!round.lock.includes('stars') && v.stars !== round.want.stars) d.push(v.stars < round.want.stars ? 'звёзд мало!' : 'звёзд слишком много!');
+    if (!round.lock.includes('rocket') && v.rocket !== round.want.rocket) d.push(v.rocket < round.want.rocket ? 'ракета мелковата!' : 'ракета великовата!');
+    if (!round.lock.includes('moon') && v.moon !== round.want.moon) d.push(v.moon < round.want.moon ? 'луна тусклая!' : 'луна слепит!');
+    return d.join(' ');
+  };
+  const check = P3N_CHECK[cIdx];
+  return /*#__PURE__*/React.createElement("div", {
+    className: "ak",
+    style: {
+      minHeight: '100vh',
+      height: '100vh',
+      display: 'flex',
+      flexDirection: 'column',
+      background: 'radial-gradient(120% 60% at 50% -10%,rgba(0,229,255,.14) 0%,transparent 60%),linear-gradient(180deg,var(--ak-bg-2),var(--ak-bg))',
+      overflow: 'hidden'
+    }
+  }, /*#__PURE__*/React.createElement(TopBar, {
+    level: 3,
+    title: "Скажи числом",
+    onHome: onHome,
+    step: phase === 'check' ? 4 : phase === 'win' ? 4 : rIdx + 1,
+    total: 4
+  }), phase === 'intro' && /*#__PURE__*/React.createElement(IntroModal, {
+    emoji: NKM('think', 88),
+    title: "Скажи числом",
+    law: '«Много» и «побольше» джинн понимает\nкак хочет. ЧИСЛО — понимает точно!',
+    diagram: null,
+    tip: "Крути ползунки — джинн рисует сразу",
+    onStart: () => startRound(0)
+  }), phase === 'vague' && /*#__PURE__*/React.createElement("div", {
+    style: {
+      flex: 1,
+      display: 'flex',
+      flexDirection: 'column',
+      gap: 10,
+      padding: '6px 16px 20px',
+      alignItems: 'center',
+      overflowY: 'auto'
+    }
+  }, /*#__PURE__*/React.createElement(TaskBadge, null, round.vagueBrief), /*#__PURE__*/React.createElement("div", {
+    style: {
+      width: '100%',
+      maxWidth: 380
+    }
+  }, /*#__PURE__*/React.createElement(P3NScene, {
+    v: vagueDraw || {
+      stars: 0,
+      rocket: 1,
+      moon: 1
+    },
+    dream: !vagueDraw
+  })), !vagueDraw ? /*#__PURE__*/React.createElement("button", {
+    className: "nk-btn nk-btn--ok",
+    style: {
+      width: '100%',
+      maxWidth: 380
+    },
+    onClick: genieVague
+  }, "🪄 Джинн, рисуй!") : /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 14,
+      fontWeight: 800,
+      color: '#FF6B6B',
+      fontFamily: 'var(--ak-display)',
+      textAlign: 'center',
+      maxWidth: 380
+    }
+  }, "Джинн: «Несколько — это ", vagueDraw.stars, "?» Клиент: «НЕТ!»"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 13,
+      color: 'var(--ak-ink-2)',
+      fontFamily: 'var(--ak-display)',
+      textAlign: 'center'
+    }
+  }, "Размытые слова не работают. Проси числом!"), /*#__PURE__*/React.createElement("button", {
+    className: "nk-btn nk-btn--pri",
+    style: {
+      width: '100%',
+      maxWidth: 380
+    },
+    onClick: () => setPhase('play')
+  }, "Уточнить числами →"))), phase === 'play' && /*#__PURE__*/React.createElement("div", {
+    style: {
+      flex: 1,
+      display: 'flex',
+      flexDirection: 'column',
+      gap: 10,
+      padding: '6px 16px 20px',
+      alignItems: 'center',
+      overflowY: 'auto'
+    }
+  }, /*#__PURE__*/React.createElement(TaskBadge, null, round.brief), /*#__PURE__*/React.createElement("div", {
+    style: {
+      width: '100%',
+      maxWidth: 380
+    }
+  }, /*#__PURE__*/React.createElement(P3NScene, {
+    v: v
+  })), /*#__PURE__*/React.createElement("div", {
+    style: {
+      width: '100%',
+      maxWidth: 380,
+      display: 'flex',
+      flexDirection: 'column',
+      gap: 8,
+      background: 'rgba(16,28,50,.7)',
+      borderRadius: 16,
+      padding: '12px 14px'
+    }
+  }, /*#__PURE__*/React.createElement(P3NSlider, {
+    label: "звёзды",
+    val: v.stars,
+    max: 9,
+    accent: "#00E5FF",
+    onChange: x => {
+      setV(s => ({
+        ...s,
+        stars: x
+      }));
+      setResult(null);
+    }
+  }), /*#__PURE__*/React.createElement(P3NSlider, {
+    label: "ракета",
+    val: v.rocket,
+    max: 3,
+    accent: "#C44DFF",
+    onChange: x => {
+      setV(s => ({
+        ...s,
+        rocket: x
+      }));
+      setResult(null);
+    }
+  }), !round.lock.includes('moon') && /*#__PURE__*/React.createElement(P3NSlider, {
+    label: "луна",
+    val: v.moon,
+    max: 3,
+    accent: "#FFD60A",
+    onChange: x => {
+      setV(s => ({
+        ...s,
+        moon: x
+      }));
+      setResult(null);
+    }
+  })), result === 'miss' && /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 13.5,
+      fontWeight: 800,
+      color: '#FF6B6B',
+      fontFamily: 'var(--ak-display)',
+      textAlign: 'center'
+    }
+  }, "Клиент щурится: ", diffHint()), result === 'ok' ? /*#__PURE__*/React.createElement("button", {
+    className: "nk-btn nk-btn--ok",
+    style: {
+      width: '100%',
+      maxWidth: 380
+    },
+    onClick: nextRound
+  }, rIdx < P3N_ROUNDS.length - 1 ? '🎉 Принято! Следующий заказ →' : '🎉 Принято! Проверка связи →') : /*#__PURE__*/React.createElement("button", {
+    className: "nk-btn nk-btn--pri",
+    style: {
+      width: '100%',
+      maxWidth: 380
+    },
+    onClick: submit
+  }, "Сдать заказ 📦")), phase === 'check' && /*#__PURE__*/React.createElement("div", {
+    style: {
+      flex: 1,
+      display: 'flex',
+      flexDirection: 'column',
+      gap: 12,
+      padding: '10px 16px 20px',
+      alignItems: 'center',
+      overflowY: 'auto'
+    }
+  }, /*#__PURE__*/React.createElement(TaskBadge, null, "Проверка связи · ", cIdx + 1, " из ", P3N_CHECK.length), /*#__PURE__*/React.createElement("div", {
+    style: {
+      width: '100%',
+      maxWidth: 380
+    }
+  }, /*#__PURE__*/React.createElement(P3NScene, {
+    v: cIdx === 0 ? {
+      stars: 7,
+      rocket: 2,
+      moon: 1
+    } : {
+      stars: 3,
+      rocket: 1,
+      moon: 1
+    }
+  })), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 15,
+      fontWeight: 800,
+      color: 'var(--ak-ink)',
+      fontFamily: 'var(--ak-display)',
+      textAlign: 'center',
+      maxWidth: 360,
+      lineHeight: 1.45
+    }
+  }, check.q), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: 'flex',
+      flexDirection: 'column',
+      gap: 8,
+      width: '100%',
+      maxWidth: 380
+    }
+  }, check.a.map((a, i) => /*#__PURE__*/React.createElement("button", {
+    key: i,
+    disabled: cPick !== null,
+    className: cPick === null ? 'nk-choice' : i === check.right ? 'nk-choice nk-choice--sel' : 'nk-choice',
+    style: {
+      padding: '13px 10px',
+      fontSize: 14.5,
+      opacity: cPick !== null && i !== check.right ? .4 : 1
+    },
+    onClick: () => answerCheck(i)
+  }, a))), cPick !== null && /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 13.5,
+      fontWeight: 800,
+      fontFamily: 'var(--ak-display)',
+      textAlign: 'center',
+      maxWidth: 360,
+      lineHeight: 1.5,
+      color: cPick === check.right ? '#06D6A0' : '#FF6B6B'
+    }
+  }, cPick === check.right ? '✓ Именно! ' : 'Не совсем. ', check.why), /*#__PURE__*/React.createElement("button", {
+    className: "nk-btn nk-btn--ok",
+    style: {
+      width: '100%',
+      maxWidth: 380
+    },
+    onClick: nextCheck
+  }, cIdx < P3N_CHECK.length - 1 ? 'Дальше →' : 'Готово! 🎉'))), phase === 'win' && /*#__PURE__*/React.createElement(WinModal, {
+    emoji: NKM('win', 96),
+    title: "Мастер точности!",
+    law: "Числа в промпте работают точно, размытые слова — как повезёт",
+    fact: "Настоящим нейросетям тоже пишут числа: «4K», «16:9», «3 варианта» — иначе они выбирают сами!",
+    cta: "Дальше →",
+    onNext: onWin,
+    onHome: onHome
+  }));
+}
 /* ---------- Home + App ---------- */
 const PL_LEVELS = [{
   n: 1,
@@ -2510,6 +2992,11 @@ const PL_LEVELS = [{
   sub: 'Один ИИ — тысяча голосов'
 }, {
   n: 3,
+  emoji: '🔢',
+  title: 'Скажи числом',
+  sub: 'Числа точнее слов'
+}, {
+  n: 4,
   emoji: '🎨',
   title: 'Докрути до идеала',
   sub: 'Итерации: улучшай шагами'
@@ -2551,7 +3038,7 @@ function PLHome({
       color: 'var(--ak-ink-2)',
       marginBottom: 32
     }
-  }, "Искусственный интеллект · 3 урока"), /*#__PURE__*/React.createElement("div", {
+  }, "Искусственный интеллект · 4 урока"), /*#__PURE__*/React.createElement("div", {
     style: {
       display: 'flex',
       flexDirection: 'column',
@@ -2628,10 +3115,18 @@ function App() {
       });
     },
     onHome: () => setS('home')
-  }), s === 'l3' && /*#__PURE__*/React.createElement(Level3Iterate, {
+  }), s === 'l3' && /*#__PURE__*/React.createElement(Level3Numbers, {
+    onWin: () => {
+      setS('l4');
+      if (window.nooka) window.nooka.missionWin('prompt3', 80, {
+        nextLabel: 'Дальше →'
+      });
+    },
+    onHome: () => setS('home')
+  }), s === 'l4' && /*#__PURE__*/React.createElement(Level3Iterate, {
     onWin: () => {
       setS('home');
-      if (window.nooka) window.nooka.missionWin('prompt3', 60, {
+      if (window.nooka) window.nooka.missionWin('prompt4', 60, {
         nextLabel: 'На главную →'
       });
     },
