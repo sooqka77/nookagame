@@ -1504,85 +1504,678 @@ function Level1Genie({
   }));
 }
 
-/* ---------- Уровень 2: Примерь роль ---------- */
+/* ---------- Уровень 2: Примерь роль (живая сцена) ---------- */
 const P2_ROLES = [{
   id: 'prof',
   name: 'Профессор',
-  e: '🎓'
+  bubble: 'Синие волны света рассеиваются в воздухе сильнее всех.'
 }, {
   id: 'pirate',
   name: 'Пират',
-  e: '🏴‍☠️'
+  bubble: 'Небо-разбойник крадёт у солнца синие ядра! Йо-хо-хо!'
 }, {
   id: 'baby',
   name: 'Сказочник',
-  e: '🧸'
+  bubble: 'Небо любит синий и сыплет его как конфетти.'
 }, {
   id: 'sport',
   name: 'Комментатор',
-  e: '🎤'
+  bubble: 'Синий обходит все цвета на повороте! Чемпио-о-он!'
 }];
-const P2_SANDBOX = {
-  q: 'Почему небо синее?',
-  answers: {
-    prof: 'Солнечный свет рассеивается в атмосфере; короткие синие волны рассеиваются сильнее прочих. Это называется рэлеевское рассеяние.',
-    pirate: 'Йо-хо-хо! Солнце палит из всех пушек белым светом, а небо-разбойник крадёт из него синие ядра и раскидывает по всему куполу! Потому и синее, разрази меня гром!',
-    baby: 'Солнышко дарит небу лучики всех цветов. А небо больше всего любит синий — и разбрасывает его повсюду, как конфетти. Вот и получается синяя крыша для всей Земли!',
-    sport: 'Свет врывается в атмосферу — и-и-и-и синие волны обходят всех на повороте! Они рассеиваются по всему стадиону неба! Синий цвет — чемпион! Трибуны ликуют!'
-  }
-};
 const P2_TASKS = [{
-  brief: 'Объясни про дождь МЛАДШЕЙ СЕСТРЁНКЕ (ей 4 года)',
-  client: '👧',
+  brief: 'Сестрёнке 4 года. Объясни про дождь',
+  who: 'sister',
   right: 'baby',
-  why: {
-    baby: 'Сестрёнка слушает с открытым ртом! 🎉',
-    prof: 'Сестрёнка уснула на слове «конденсация»…',
-    pirate: 'Сестрёнка испугалась грома, разрази его гром…',
-    sport: 'Слишком громко — сестрёнка убежала!'
+  react: {
+    baby: 'ok',
+    prof: 'sleep',
+    pirate: 'scare',
+    sport: 'cover'
+  },
+  say: {
+    baby: 'Сестрёнка слушает с открытым ртом!',
+    prof: 'Уснула на слове «конденсация»…',
+    pirate: 'Испугалась грома!',
+    sport: 'Слишком громко — закрыла уши!'
   }
 }, {
-  brief: 'Расскажи про динозавров так, чтобы СКУЧАЮЩИЙ ПОДРОСТОК заслушался',
-  client: '🧑',
+  brief: 'Скучающий подросток. Зацепи рассказом про динозавров',
+  who: 'teen',
   right: 'sport',
-  why: {
-    sport: 'Подросток снял наушники и слушает! 🎉',
-    prof: 'Подросток: «это и в школе рассказывают…»',
-    baby: 'Подросток закатил глаза: «я не маленький»',
-    pirate: 'Смешно, но подросток уже видел этот мем'
+  react: {
+    sport: 'ok',
+    prof: 'sleep',
+    baby: 'eyeroll',
+    pirate: 'eyeroll'
+  },
+  say: {
+    sport: 'Снял наушники и слушает!',
+    prof: '«Это и в школе рассказывают…»',
+    baby: '«Я не маленький!»',
+    pirate: '«Этот мем я уже видел»'
   }
 }, {
-  brief: 'Поздравь ДЕДУШКУ-МОРЯКА с днём рождения',
-  client: '👴',
+  brief: 'Дедушка-моряк. Поздравь с днём рождения',
+  who: 'grandpa',
   right: 'pirate',
-  why: {
-    pirate: 'Дедушка смахнул слезу: «наш человек!» 🎉',
-    prof: 'Дедушка: «спасибо за доклад…»',
-    baby: 'Дедушка улыбнулся, но ждал другого',
-    sport: 'Дедушка попросил не кричать'
+  react: {
+    pirate: 'ok',
+    prof: 'sleep',
+    baby: 'meh',
+    sport: 'cover'
+  },
+  say: {
+    pirate: '«Наш человек!» — смахнул слезу',
+    prof: '«Спасибо за доклад…»',
+    baby: 'Улыбнулся, но ждал другого',
+    sport: 'Попросил не кричать'
   }
 }];
+
+/* Джинн на сцене: меняет костюм под роль */
+function P2Genie({
+  role,
+  talking
+}) {
+  return /*#__PURE__*/React.createElement("g", {
+    style: {
+      animation: talking ? 'p2Bob 1.6s ease-in-out infinite' : 'none'
+    }
+  }, /*#__PURE__*/React.createElement("path", {
+    d: "M62 128 Q54 140 64 146 Q56 150 66 154 L72 132 Z",
+    fill: "#7B4FF2",
+    opacity: ".7"
+  }), /*#__PURE__*/React.createElement("path", {
+    d: "M48 92 Q48 70 70 70 Q92 70 92 92 L92 122 Q92 134 70 134 Q48 134 48 122 Z",
+    fill: "url(#p2body)"
+  }), /*#__PURE__*/React.createElement("circle", {
+    cx: "62",
+    cy: "94",
+    r: "4",
+    fill: "#080C18"
+  }), /*#__PURE__*/React.createElement("circle", {
+    cx: "78",
+    cy: "94",
+    r: "4",
+    fill: "#080C18"
+  }), /*#__PURE__*/React.createElement("path", {
+    d: talking ? 'M63 108 Q70 116 77 108' : 'M64 109 Q70 112 76 109',
+    stroke: "#080C18",
+    strokeWidth: "2.5",
+    fill: "none",
+    strokeLinecap: "round"
+  }), /*#__PURE__*/React.createElement("circle", {
+    cx: "44",
+    cy: "106",
+    r: "6",
+    fill: "#A98BFF"
+  }), /*#__PURE__*/React.createElement("circle", {
+    cx: "96",
+    cy: "106",
+    r: "6",
+    fill: "#A98BFF"
+  }), /*#__PURE__*/React.createElement("circle", {
+    cx: "93",
+    cy: "86",
+    r: "2.5",
+    fill: "#FFD60A"
+  }), role === 'prof' && /*#__PURE__*/React.createElement("g", {
+    style: {
+      animation: 'p2Pop .4s both'
+    }
+  }, /*#__PURE__*/React.createElement("rect", {
+    x: "50",
+    y: "60",
+    width: "40",
+    height: "7",
+    rx: "2",
+    fill: "#101C32",
+    stroke: "#00E5FF",
+    strokeWidth: "1"
+  }), /*#__PURE__*/React.createElement("path", {
+    d: "M44 60 L70 48 L96 60 L70 68 Z",
+    fill: "#101C32",
+    stroke: "#00E5FF",
+    strokeWidth: "1"
+  }), /*#__PURE__*/React.createElement("line", {
+    x1: "94",
+    y1: "62",
+    x2: "94",
+    y2: "74",
+    stroke: "#FFD60A",
+    strokeWidth: "2"
+  }), /*#__PURE__*/React.createElement("circle", {
+    cx: "94",
+    cy: "76",
+    r: "2.5",
+    fill: "#FFD60A"
+  }), /*#__PURE__*/React.createElement("circle", {
+    cx: "62",
+    cy: "94",
+    r: "7",
+    fill: "none",
+    stroke: "#00E5FF",
+    strokeWidth: "1.6"
+  }), /*#__PURE__*/React.createElement("circle", {
+    cx: "78",
+    cy: "94",
+    r: "7",
+    fill: "none",
+    stroke: "#00E5FF",
+    strokeWidth: "1.6"
+  }), /*#__PURE__*/React.createElement("line", {
+    x1: "69",
+    y1: "94",
+    x2: "71",
+    y2: "94",
+    stroke: "#00E5FF",
+    strokeWidth: "1.6"
+  })), role === 'pirate' && /*#__PURE__*/React.createElement("g", {
+    style: {
+      animation: 'p2Pop .4s both'
+    }
+  }, /*#__PURE__*/React.createElement("path", {
+    d: "M44 78 Q70 52 96 78 L92 66 Q70 46 48 66 Z",
+    fill: "#0D1427",
+    stroke: "#FF6B6B",
+    strokeWidth: "1.5"
+  }), /*#__PURE__*/React.createElement("circle", {
+    cx: "70",
+    cy: "62",
+    r: "5",
+    fill: "#F0F4FF"
+  }), /*#__PURE__*/React.createElement("path", {
+    d: "M67 60 L73 65 M73 60 L67 65",
+    stroke: "#0D1427",
+    strokeWidth: "1.4"
+  }), /*#__PURE__*/React.createElement("path", {
+    d: "M70 88 L86 88 L86 100 Q78 103 70 100 Z",
+    fill: "#0D1427"
+  }), /*#__PURE__*/React.createElement("circle", {
+    cx: "78",
+    cy: "94",
+    r: "3.4",
+    fill: "#F0F4FF",
+    opacity: ".15"
+  })), role === 'baby' && /*#__PURE__*/React.createElement("g", {
+    style: {
+      animation: 'p2Pop .4s both'
+    }
+  }, /*#__PURE__*/React.createElement("path", {
+    d: "M46 76 Q54 52 84 56 Q98 58 92 72 L88 66 Q66 56 52 76 Z",
+    fill: "#C44DFF"
+  }), /*#__PURE__*/React.createElement("circle", {
+    cx: "94",
+    cy: "70",
+    r: "5",
+    fill: "#FFD60A"
+  }), /*#__PURE__*/React.createElement("path", {
+    d: "M40 118 q-8 -2 -8 6 q0 8 9 6",
+    fill: "#FF9F43"
+  }), /*#__PURE__*/React.createElement("circle", {
+    cx: "36",
+    cy: "122",
+    r: "7",
+    fill: "#FF9F43"
+  }), /*#__PURE__*/React.createElement("circle", {
+    cx: "34",
+    cy: "120",
+    r: "1.6",
+    fill: "#080C18"
+  })), role === 'sport' && /*#__PURE__*/React.createElement("g", {
+    style: {
+      animation: 'p2Pop .4s both'
+    }
+  }, /*#__PURE__*/React.createElement("path", {
+    d: "M48 88 Q48 66 70 66 Q92 66 92 88",
+    fill: "none",
+    stroke: "#06D6A0",
+    strokeWidth: "5",
+    strokeLinecap: "round"
+  }), /*#__PURE__*/React.createElement("rect", {
+    x: "42",
+    y: "84",
+    width: "10",
+    height: "16",
+    rx: "4",
+    fill: "#06D6A0"
+  }), /*#__PURE__*/React.createElement("rect", {
+    x: "88",
+    y: "84",
+    width: "10",
+    height: "16",
+    rx: "4",
+    fill: "#06D6A0"
+  }), /*#__PURE__*/React.createElement("line", {
+    x1: "93",
+    y1: "100",
+    x2: "86",
+    y2: "112",
+    stroke: "#06D6A0",
+    strokeWidth: "3",
+    strokeLinecap: "round"
+  }), /*#__PURE__*/React.createElement("circle", {
+    cx: "84",
+    cy: "114",
+    r: "4.5",
+    fill: "#FFD60A"
+  })));
+}
+/* Слушатель: sister / teen / grandpa, mood: idle|ok|sleep|scare|cover|eyeroll|meh */
+function P2Listener({
+  who,
+  mood
+}) {
+  const happy = mood === 'ok';
+  const anim = happy ? 'p2Jump .6s ease-in-out infinite' : mood === 'scare' ? 'p2Shake .3s linear infinite' : 'none';
+  const skin = '#FFD9B0';
+  return /*#__PURE__*/React.createElement("g", {
+    style: {
+      animation: anim
+    }
+  }, /*#__PURE__*/React.createElement("path", {
+    d: "M134 108 Q134 96 150 96 Q166 96 166 108 L166 130 Q166 138 150 138 Q134 138 134 130 Z",
+    fill: who === 'sister' ? '#FF7BAC' : who === 'teen' ? '#38506E' : '#2E4A66'
+  }), /*#__PURE__*/React.createElement("circle", {
+    cx: "150",
+    cy: "82",
+    r: "16",
+    fill: skin
+  }), who === 'sister' && /*#__PURE__*/React.createElement("g", null, /*#__PURE__*/React.createElement("path", {
+    d: "M134 80 Q134 62 150 62 Q166 62 166 80 Q158 70 150 72 Q142 70 134 80 Z",
+    fill: "#8A5A2B"
+  }), /*#__PURE__*/React.createElement("circle", {
+    cx: "136",
+    cy: "70",
+    r: "4",
+    fill: "#FF2E88"
+  }), /*#__PURE__*/React.createElement("circle", {
+    cx: "164",
+    cy: "70",
+    r: "4",
+    fill: "#FF2E88"
+  })), who === 'teen' && /*#__PURE__*/React.createElement("g", null, /*#__PURE__*/React.createElement("path", {
+    d: "M135 76 Q138 62 154 63 Q166 64 165 76 Q156 68 135 76 Z",
+    fill: "#1E2B3E"
+  }), /*#__PURE__*/React.createElement("path", {
+    d: "M132 82 Q132 62 150 62 Q168 62 168 82",
+    fill: "none",
+    stroke: "#00E5FF",
+    strokeWidth: "3.4",
+    strokeLinecap: "round"
+  }), /*#__PURE__*/React.createElement("rect", {
+    x: "128",
+    y: "78",
+    width: "8",
+    height: "12",
+    rx: "4",
+    fill: "#00E5FF"
+  }), /*#__PURE__*/React.createElement("rect", {
+    x: "164",
+    y: "78",
+    width: "8",
+    height: "12",
+    rx: "4",
+    fill: "#00E5FF"
+  })), who === 'grandpa' && /*#__PURE__*/React.createElement("g", null, /*#__PURE__*/React.createElement("path", {
+    d: "M136 70 Q136 62 150 62 Q164 62 164 70 L164 66 Q164 58 150 58 Q136 58 136 66 Z",
+    fill: "#F0F4FF"
+  }), /*#__PURE__*/React.createElement("rect", {
+    x: "134",
+    y: "66",
+    width: "32",
+    height: "6",
+    rx: "3",
+    fill: "#0D1427",
+    stroke: "#FFD60A",
+    strokeWidth: "1"
+  }), /*#__PURE__*/React.createElement("path", {
+    d: "M140 90 Q150 102 160 90 L160 96 Q150 106 140 96 Z",
+    fill: "#E6EAF5"
+  })), mood === 'sleep' ? /*#__PURE__*/React.createElement("g", null, /*#__PURE__*/React.createElement("path", {
+    d: "M142 82 h6 M152 82 h6",
+    stroke: "#5B4632",
+    strokeWidth: "2",
+    strokeLinecap: "round"
+  }), /*#__PURE__*/React.createElement("text", {
+    x: "168",
+    y: "66",
+    fontSize: "11",
+    fontWeight: "800",
+    fill: "#738AAA",
+    style: {
+      animation: 'p2Zz 1.4s ease-in-out infinite'
+    }
+  }, "z-z-z")) : mood === 'eyeroll' ? /*#__PURE__*/React.createElement("g", null, /*#__PURE__*/React.createElement("circle", {
+    cx: "145",
+    cy: "80",
+    r: "2.6",
+    fill: "#5B4632"
+  }), /*#__PURE__*/React.createElement("circle", {
+    cx: "155",
+    cy: "80",
+    r: "2.6",
+    fill: "#5B4632"
+  }), /*#__PURE__*/React.createElement("path", {
+    d: "M144 90 h12",
+    stroke: "#5B4632",
+    strokeWidth: "2",
+    strokeLinecap: "round"
+  })) : mood === 'scare' ? /*#__PURE__*/React.createElement("g", null, /*#__PURE__*/React.createElement("circle", {
+    cx: "145",
+    cy: "82",
+    r: "3.4",
+    fill: "#5B4632"
+  }), /*#__PURE__*/React.createElement("circle", {
+    cx: "155",
+    cy: "82",
+    r: "3.4",
+    fill: "#5B4632"
+  }), /*#__PURE__*/React.createElement("ellipse", {
+    cx: "150",
+    cy: "91",
+    rx: "3.4",
+    ry: "4.4",
+    fill: "#5B4632"
+  })) : mood === 'cover' ? /*#__PURE__*/React.createElement("g", null, /*#__PURE__*/React.createElement("path", {
+    d: "M143 82 l4 2 M147 82 l-4 2 M153 82 l4 2 M157 82 l-4 2",
+    stroke: "#5B4632",
+    strokeWidth: "1.8",
+    strokeLinecap: "round"
+  }), /*#__PURE__*/React.createElement("path", {
+    d: "M144 90 q6 -3 12 0",
+    stroke: "#5B4632",
+    strokeWidth: "2",
+    fill: "none",
+    strokeLinecap: "round"
+  }), /*#__PURE__*/React.createElement("circle", {
+    cx: "132",
+    cy: "80",
+    r: "6.5",
+    fill: skin
+  }), /*#__PURE__*/React.createElement("circle", {
+    cx: "168",
+    cy: "80",
+    r: "6.5",
+    fill: skin
+  })) : happy ? /*#__PURE__*/React.createElement("g", null, /*#__PURE__*/React.createElement("path", {
+    d: "M142 80 q3 -3.4 6 0 M152 80 q3 -3.4 6 0",
+    stroke: "#5B4632",
+    strokeWidth: "2",
+    fill: "none",
+    strokeLinecap: "round"
+  }), /*#__PURE__*/React.createElement("path", {
+    d: "M143 88 q7 7 14 0",
+    stroke: "#5B4632",
+    strokeWidth: "2.4",
+    fill: "none",
+    strokeLinecap: "round"
+  })) : mood === 'meh' ? /*#__PURE__*/React.createElement("g", null, /*#__PURE__*/React.createElement("circle", {
+    cx: "145",
+    cy: "81",
+    r: "2.6",
+    fill: "#5B4632"
+  }), /*#__PURE__*/React.createElement("circle", {
+    cx: "155",
+    cy: "81",
+    r: "2.6",
+    fill: "#5B4632"
+  }), /*#__PURE__*/React.createElement("path", {
+    d: "M144 90 q6 2 12 0",
+    stroke: "#5B4632",
+    strokeWidth: "2",
+    fill: "none",
+    strokeLinecap: "round"
+  })) : /*#__PURE__*/React.createElement("g", null, /*#__PURE__*/React.createElement("circle", {
+    cx: "145",
+    cy: "81",
+    r: "2.6",
+    fill: "#5B4632"
+  }), /*#__PURE__*/React.createElement("circle", {
+    cx: "155",
+    cy: "81",
+    r: "2.6",
+    fill: "#5B4632"
+  }), /*#__PURE__*/React.createElement("path", {
+    d: "M145 89 h10",
+    stroke: "#5B4632",
+    strokeWidth: "2",
+    strokeLinecap: "round"
+  })), happy && /*#__PURE__*/React.createElement("g", {
+    style: {
+      animation: 'p2Zz 1s ease-in-out infinite'
+    }
+  }, /*#__PURE__*/React.createElement("path", {
+    d: "M172 62 a4 4 0 0 1 8 0 q0 4 -4 7 q-4 -3 -4 -7",
+    fill: "#FF2E88"
+  }), /*#__PURE__*/React.createElement("path", {
+    d: "M124 58 a3 3 0 0 1 6 0 q0 3 -3 5.4 q-3 -2.4 -3 -5.4",
+    fill: "#FF2E88"
+  })));
+}
+/* Спецэффекты роли вокруг пузыря */
+function P2Fx({
+  role
+}) {
+  if (role === 'prof') return /*#__PURE__*/React.createElement("g", {
+    style: {
+      animation: 'p2Rise 2.4s linear infinite'
+    },
+    fill: "#00E5FF",
+    fontSize: "11",
+    fontWeight: "700",
+    fontFamily: "Nunito"
+  }, /*#__PURE__*/React.createElement("text", {
+    x: "16",
+    y: "40"
+  }, "λ"), /*#__PURE__*/React.createElement("text", {
+    x: "30",
+    y: "26"
+  }, "∑"), /*#__PURE__*/React.createElement("text", {
+    x: "180",
+    y: "34"
+  }, "π"));
+  if (role === 'pirate') return /*#__PURE__*/React.createElement("g", {
+    style: {
+      animation: 'p2Rise 2.4s linear infinite'
+    }
+  }, /*#__PURE__*/React.createElement("circle", {
+    cx: "24",
+    cy: "34",
+    r: "4",
+    fill: "#0D1427",
+    stroke: "#FF6B6B"
+  }), /*#__PURE__*/React.createElement("circle", {
+    cx: "186",
+    cy: "30",
+    r: "3",
+    fill: "#0D1427",
+    stroke: "#FF6B6B"
+  }), /*#__PURE__*/React.createElement("path", {
+    d: "M36 22 l6 6 M42 22 l-6 6",
+    stroke: "#FF6B6B",
+    strokeWidth: "2",
+    strokeLinecap: "round"
+  }));
+  if (role === 'baby') return /*#__PURE__*/React.createElement("g", {
+    style: {
+      animation: 'p2Rise 2.4s linear infinite'
+    }
+  }, /*#__PURE__*/React.createElement("circle", {
+    cx: "22",
+    cy: "30",
+    r: "2.6",
+    fill: "#C44DFF"
+  }), /*#__PURE__*/React.createElement("circle", {
+    cx: "34",
+    cy: "20",
+    r: "2",
+    fill: "#FFD60A"
+  }), /*#__PURE__*/React.createElement("circle", {
+    cx: "182",
+    cy: "26",
+    r: "2.6",
+    fill: "#00E5FF"
+  }), /*#__PURE__*/React.createElement("circle", {
+    cx: "192",
+    cy: "38",
+    r: "2",
+    fill: "#FF7BAC"
+  }));
+  if (role === 'sport') return /*#__PURE__*/React.createElement("g", {
+    style: {
+      animation: 'p2Rise 1.6s linear infinite'
+    },
+    stroke: "#06D6A0",
+    strokeWidth: "2",
+    strokeLinecap: "round",
+    fill: "none"
+  }, /*#__PURE__*/React.createElement("path", {
+    d: "M18 30 q4 -6 8 0 q4 6 8 0"
+  }), /*#__PURE__*/React.createElement("path", {
+    d: "M176 26 q4 -6 8 0 q4 6 8 0"
+  }));
+  return null;
+}
+/* Сцена целиком */
+function P2Scene({
+  role,
+  mood,
+  who,
+  bubble
+}) {
+  return /*#__PURE__*/React.createElement("svg", {
+    viewBox: "0 0 200 160",
+    style: {
+      width: '100%',
+      display: 'block',
+      borderRadius: 18,
+      background: 'linear-gradient(180deg,#0D1427,#080C18)'
+    }
+  }, /*#__PURE__*/React.createElement("defs", null, /*#__PURE__*/React.createElement("linearGradient", {
+    id: "p2body",
+    x1: "0",
+    y1: "0",
+    x2: "0",
+    y2: "1"
+  }, /*#__PURE__*/React.createElement("stop", {
+    offset: "0",
+    stopColor: "#A98BFF"
+  }), /*#__PURE__*/React.createElement("stop", {
+    offset: "1",
+    stopColor: "#7B4FF2"
+  }))), /*#__PURE__*/React.createElement("style", null, `
+        @keyframes p2Bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+        @keyframes p2Pop{0%{opacity:0;transform:scale(.5)}100%{opacity:1;transform:scale(1)}}
+        @keyframes p2Jump{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+        @keyframes p2Shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-2.5px)}75%{transform:translateX(2.5px)}}
+        @keyframes p2Zz{0%,100%{opacity:.25}50%{opacity:1}}
+        @keyframes p2Rise{0%{transform:translateY(8px);opacity:0}30%{opacity:1}100%{transform:translateY(-14px);opacity:0}}
+        @keyframes p2BubIn{0%{opacity:0;transform:translateY(6px)}100%{opacity:1;transform:translateY(0)}}
+      `), /*#__PURE__*/React.createElement("circle", {
+    cx: "18",
+    cy: "14",
+    r: "1.2",
+    fill: "#F0F4FF",
+    opacity: ".7"
+  }), /*#__PURE__*/React.createElement("circle", {
+    cx: "105",
+    cy: "10",
+    r: "1",
+    fill: "#F0F4FF",
+    opacity: ".5"
+  }), /*#__PURE__*/React.createElement("circle", {
+    cx: "188",
+    cy: "14",
+    r: "1.3",
+    fill: "#F0F4FF",
+    opacity: ".8"
+  }), /*#__PURE__*/React.createElement("circle", {
+    cx: "62",
+    cy: "20",
+    r: "1",
+    fill: "#00E5FF",
+    opacity: ".6"
+  }), /*#__PURE__*/React.createElement("ellipse", {
+    cx: "70",
+    cy: "150",
+    rx: "46",
+    ry: "7",
+    fill: "#C44DFF",
+    opacity: ".22"
+  }), /*#__PURE__*/React.createElement("ellipse", {
+    cx: "150",
+    cy: "146",
+    rx: "34",
+    ry: "6",
+    fill: "#00E5FF",
+    opacity: ".15"
+  }), /*#__PURE__*/React.createElement(P2Genie, {
+    role: role,
+    talking: !!bubble
+  }), who && /*#__PURE__*/React.createElement(P2Listener, {
+    who: who,
+    mood: mood || 'idle'
+  }), role && bubble && /*#__PURE__*/React.createElement(P2Fx, {
+    role: role
+  }), bubble && /*#__PURE__*/React.createElement("g", {
+    style: {
+      animation: 'p2BubIn .3s both'
+    }
+  }, /*#__PURE__*/React.createElement("rect", {
+    x: "8",
+    y: "8",
+    width: "184",
+    height: bubble.length > 46 ? 34 : 24,
+    rx: "11",
+    fill: "#101C32",
+    stroke: "#1A2D48"
+  }), /*#__PURE__*/React.createElement("path", {
+    d: "M60 41 l6 8 l4 -8",
+    fill: "#101C32",
+    transform: `translate(0 ${bubble.length > 46 ? 1 : -9})`
+  }), (() => {
+    const words = bubble.split(' ');
+    const lines = [];
+    let cur = '';
+    words.forEach(w => {
+      if ((cur + ' ' + w).trim().length > 30) {
+        lines.push(cur.trim());
+        cur = w;
+      } else cur += ' ' + w;
+    });
+    if (cur.trim()) lines.push(cur.trim());
+    return lines.map((l, i) => /*#__PURE__*/React.createElement("text", {
+      key: i,
+      x: "100",
+      y: 22 + i * 12 - (lines.length > 1 ? 3 : 0),
+      fontSize: "10.5",
+      fontWeight: "800",
+      fill: "#F0F4FF",
+      fontFamily: "Nunito",
+      textAnchor: "middle"
+    }, l));
+  })()));
+}
 function Level2Roles({
   onWin,
   onHome
 }) {
   const [phase, setPhase] = useState('intro'); // intro | sandbox | task | win
   const [role, setRole] = useState(null);
-  const [seen, setSeen] = useState(new Set());
+  const [seen, setSeen] = useState([]);
   const [tIdx, setTIdx] = useState(0);
-  const [verdict, setVerdict] = useState(null);
+  const [verdict, setVerdict] = useState(null); // {ok, text, role}
   const task = P2_TASKS[tIdx];
   const tryRole = id => {
     setRole(id);
-    setSeen(s => new Set([...s, id]));
+    setSeen(s => s.includes(id) ? s : [...s, id]);
   };
-  const answer = id => {
-    const ok = id === task.right;
-    setVerdict({
-      ok,
-      text: task.why[id]
-    });
-  };
+  const answer = id => setVerdict({
+    ok: id === task.right,
+    text: task.say[id],
+    role: id
+  });
   const nextTask = () => {
     setVerdict(null);
     if (tIdx < P2_TASKS.length - 1) setTIdx(i => i + 1);else setPhase('win');
@@ -1594,7 +2187,7 @@ function Level2Roles({
       height: '100vh',
       display: 'flex',
       flexDirection: 'column',
-      background: 'radial-gradient(120% 60% at 50% -10%,rgba(255,214,10,.15) 0%,transparent 55%),linear-gradient(180deg,var(--ak-bg-2),var(--ak-bg))',
+      background: 'radial-gradient(120% 60% at 50% -10%,rgba(196,77,255,.22) 0%,transparent 60%),linear-gradient(180deg,var(--ak-bg-2),var(--ak-bg))',
       overflow: 'hidden'
     }
   }, /*#__PURE__*/React.createElement(TopBar, {
@@ -1604,11 +2197,11 @@ function Level2Roles({
     step: phase === 'task' ? tIdx + 2 : 1,
     total: P2_TASKS.length + 1
   }), phase === 'intro' && /*#__PURE__*/React.createElement(IntroModal, {
-    emoji: NKM("think", 88),
+    emoji: NKM('think', 88),
     title: "Примерь роль",
-    law: 'Один и тот же ИИ может говорить\nкак профессор, пират или сказочник.\n\nСкажи ему РОЛЬ — и ответ изменится\nпод того, кто будет слушать!',
+    law: 'Дай джинну РОЛЬ —\nи он заговорит по-другому!',
     diagram: null,
-    tip: "Сначала поиграй с ролями на одном вопросе — потом подбери роли клиентам",
+    tip: "Примерь на джинна все костюмы",
     onStart: () => setPhase('sandbox')
   }), phase === 'sandbox' && /*#__PURE__*/React.createElement("div", {
     style: {
@@ -1620,55 +2213,40 @@ function Level2Roles({
       alignItems: 'center',
       overflowY: 'auto'
     }
-  }, /*#__PURE__*/React.createElement(TaskBadge, null, "Вопрос: «", P2_SANDBOX.q, "» — послушай 2+ роли"), /*#__PURE__*/React.createElement("div", {
+  }, /*#__PURE__*/React.createElement(TaskBadge, null, "«Почему небо синее?» — спроси у 2+ ролей"), /*#__PURE__*/React.createElement("div", {
     style: {
-      display: 'flex',
+      width: '100%',
+      maxWidth: 380
+    }
+  }, /*#__PURE__*/React.createElement(P2Scene, {
+    role: role,
+    bubble: role ? P2_ROLES.find(r => r.id === role).bubble : null
+  })), /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: 'grid',
+      gridTemplateColumns: '1fr 1fr',
       gap: 8,
-      flexWrap: 'wrap',
-      justifyContent: 'center'
+      width: '100%',
+      maxWidth: 380
     }
   }, P2_ROLES.map(r => /*#__PURE__*/React.createElement("button", {
     key: r.id,
     className: role === r.id ? 'nk-choice nk-choice--sel' : 'nk-choice',
     onClick: () => tryRole(r.id),
     style: {
+      padding: '11px 6px',
       fontSize: 13.5
     }
-  }, r.e, " ", r.name, seen.has(r.id) ? ' ✓' : ''))), /*#__PURE__*/React.createElement("div", {
-    style: {
-      width: '100%',
-      maxWidth: 380,
-      minHeight: 150,
-      background: 'rgba(16,28,50,.92)',
-      borderRadius: 22,
-      padding: 18,
-      boxShadow: '0 6px 0 rgba(45,27,69,.08)',
-      fontSize: 15,
-      lineHeight: 1.65,
-      color: 'var(--ak-ink)'
-    }
-  }, role ? /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 12.5,
-      fontWeight: 800,
-      color: 'var(--ak-ink-2)',
-      fontFamily: 'var(--ak-display)',
-      marginBottom: 8
-    }
-  }, P2_ROLES.find(r => r.id === role).e, " отвечает ", P2_ROLES.find(r => r.id === role).name, ":"), P2_SANDBOX.answers[role]) : /*#__PURE__*/React.createElement("span", {
-    style: {
-      color: 'var(--ak-ink-3)'
-    }
-  }, "👆 Выбери роль — джинн ответит в её стиле")), /*#__PURE__*/React.createElement("button", {
+  }, r.name, seen.includes(r.id) ? ' ✓' : ''))), /*#__PURE__*/React.createElement("button", {
     className: "nk-btn nk-btn--ok",
-    disabled: seen.size < 2,
+    disabled: seen.length < 2,
     style: {
       width: '100%',
       maxWidth: 380,
-      opacity: seen.size >= 2 ? 1 : .45
+      opacity: seen.length >= 2 ? 1 : .45
     },
-    onClick: () => seen.size >= 2 && setPhase('task')
-  }, seen.size >= 2 ? 'К клиентам! →' : `Послушай роли: ${seen.size} из 2`)), phase === 'task' && /*#__PURE__*/React.createElement("div", {
+    onClick: () => seen.length >= 2 && setPhase('task')
+  }, seen.length >= 2 ? 'К клиентам! →' : `Костюмы: ${seen.length} из 2`)), phase === 'task' && /*#__PURE__*/React.createElement("div", {
     style: {
       flex: 1,
       display: 'flex',
@@ -1678,67 +2256,63 @@ function Level2Roles({
       alignItems: 'center',
       overflowY: 'auto'
     }
-  }, /*#__PURE__*/React.createElement(TaskBadge, null, task.client, " «", task.brief, "»"), /*#__PURE__*/React.createElement("div", {
+  }, /*#__PURE__*/React.createElement(TaskBadge, null, task.brief), /*#__PURE__*/React.createElement("div", {
     style: {
-      fontSize: 14,
+      width: '100%',
+      maxWidth: 380
+    }
+  }, /*#__PURE__*/React.createElement(P2Scene, {
+    role: verdict ? verdict.role : null,
+    who: task.who,
+    mood: verdict ? task.react[verdict.role] : 'idle',
+    bubble: verdict ? verdict.text : null
+  })), !verdict && /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 13.5,
       color: 'var(--ak-ink-2)',
       fontFamily: 'var(--ak-display)',
-      fontWeight: 700
+      fontWeight: 800
     }
-  }, "Какую роль дать джинну?"), /*#__PURE__*/React.createElement("div", {
+  }, "Какую роль дать джинну?"), !verdict && /*#__PURE__*/React.createElement("div", {
     style: {
-      display: 'flex',
-      flexDirection: 'column',
+      display: 'grid',
+      gridTemplateColumns: '1fr 1fr',
       gap: 8,
       width: '100%',
-      maxWidth: 360
+      maxWidth: 380
     }
   }, P2_ROLES.map(r => /*#__PURE__*/React.createElement("button", {
     key: r.id,
-    className: "nk-level",
-    disabled: !!verdict,
+    className: "nk-choice",
     onClick: () => answer(r.id),
     style: {
-      opacity: verdict ? .6 : 1
+      padding: '12px 6px',
+      fontSize: 13.5
     }
-  }, /*#__PURE__*/React.createElement("span", {
-    className: "nk-coin"
-  }, r.e), /*#__PURE__*/React.createElement("span", {
-    className: "nk-level__title"
-  }, r.name)))), verdict && /*#__PURE__*/React.createElement("div", {
+  }, r.name))), verdict && (verdict.ok ? /*#__PURE__*/React.createElement("button", {
+    className: "nk-btn nk-btn--ok",
     style: {
       width: '100%',
-      maxWidth: 360,
-      background: verdict.ok ? 'linear-gradient(160deg,#C8F2DD,#8FE3BC)' : 'rgba(16,28,50,.95)',
-      borderRadius: 18,
-      padding: 16,
-      textAlign: 'center',
-      boxShadow: '0 6px 0 rgba(45,27,69,.08)'
-    }
-  }, /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 15,
-      fontWeight: 700,
-      color: 'var(--ak-ink)',
-      lineHeight: 1.5
-    }
-  }, verdict.text), /*#__PURE__*/React.createElement("button", {
-    className: verdict.ok ? 'nk-btn nk-btn--ok' : 'nk-btn nk-btn--pri',
-    style: {
-      marginTop: 10
+      maxWidth: 380
     },
-    onClick: () => verdict.ok ? nextTask() : setVerdict(null)
-  }, verdict.ok ? tIdx < P2_TASKS.length - 1 ? 'Следующий клиент →' : 'Все клиенты довольны! 🎉' : 'Попробовать другую роль 🔁'))), phase === 'win' && /*#__PURE__*/React.createElement(WinModal, {
-    emoji: NKM("win", 96),
+    onClick: nextTask
+  }, tIdx < P2_TASKS.length - 1 ? 'Следующий клиент →' : 'Все клиенты довольны! 🎉') : /*#__PURE__*/React.createElement("button", {
+    className: "nk-btn nk-btn--pri",
+    style: {
+      width: '100%',
+      maxWidth: 380
+    },
+    onClick: () => setVerdict(null)
+  }, "Сменить роль 🔁"))), phase === 'win' && /*#__PURE__*/React.createElement(WinModal, {
+    emoji: NKM('win', 96),
     title: "Мастер ролей!",
-    law: "Роль в промпте меняет стиль ответа. Скажи ИИ, для кого он говорит",
-    fact: "«Объясни, как будто мне 5 лет» — настоящий приём, которым пользуются даже взрослые программисты!",
+    law: "Роль в промпте меняет стиль ответа ИИ",
+    fact: "«Объясни, как будто мне 5 лет» — приём, которым пользуются даже взрослые программисты!",
     cta: "Дальше →",
     onNext: onWin,
     onHome: onHome
   }));
 }
-
 /* ---------- Уровень 3: Докрути до идеала ---------- */
 const P3_FIXES = [{
   id: 'rocket',
