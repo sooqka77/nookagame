@@ -67,6 +67,49 @@ footer-note{display:block;position:absolute;bottom:26px;left:72px;font-size:12px
 .ctab .rn td:last-child{border-radius:0 14px 14px 0}
 .ctab .rn .yes{color:var(--yellow)}
 .ctab-note{margin-top:16px;font-size:14px;color:var(--muted);line-height:1.6;max-width:900px}
+
+/* manifesto */
+.manifesto{background:var(--black);color:#fff;justify-content:center}
+.manifesto h1{font-family:'Unbounded',sans-serif;font-weight:900;font-size:clamp(32px,5.2vw,64px);line-height:1.1;max-width:1120px;letter-spacing:-1.5px}
+.manifesto h1 em{font-style:normal;color:var(--yellow)}
+.manifesto .msub{margin-top:30px;font-size:clamp(16px,1.7vw,23px);color:rgba(255,255,255,.72);max-width:860px;line-height:1.55}
+/* flow (как это работает) */
+.flow{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:18px}
+.fstep{background:#fff;border-radius:22px;padding:16px;box-shadow:0 8px 28px rgba(17,17,24,.08);display:flex;flex-direction:column}
+.fstep .fn{width:28px;height:28px;border-radius:50%;background:var(--purple);color:#fff;font-family:'Unbounded',sans-serif;font-weight:900;font-size:13px;display:flex;align-items:center;justify-content:center;margin-bottom:10px}
+.fstep img{width:100%;height:158px;object-fit:cover;object-position:center top;border-radius:12px;margin-bottom:10px;background:#0D1427}
+.fstep b{font-family:'Unbounded',sans-serif;font-size:14px;display:block;margin-bottom:4px;line-height:1.25}
+.fstep span{font-size:12.5px;color:var(--muted);line-height:1.5}
+.flow-note{margin-top:18px;background:var(--yellow);border-radius:18px;padding:16px 24px;font-family:'Unbounded',sans-serif;font-weight:700;font-size:clamp(15px,1.7vw,21px)}
+/* directions */
+.dirs{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
+.dir{border:2px solid #E9E4FB;border-radius:16px;padding:11px 18px;font-weight:700;font-size:15px;color:var(--muted)}
+.dir.on{background:var(--purple);color:#fff;border-color:var(--purple)}
+/* audience */
+.aud{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:16px}
+.acard{background:#fff;border-radius:22px;padding:22px 24px;box-shadow:0 8px 28px rgba(17,17,24,.07)}
+.acard .age{font-family:'Unbounded',sans-serif;font-weight:900;font-size:25px;color:var(--purple)}
+.acard .cls{font-size:12.5px;color:var(--muted);margin-bottom:10px;font-weight:700}
+.acard p{font-size:13.5px;line-height:1.55}
+.acard .core{display:inline-block;background:var(--yellow);border-radius:20px;padding:2px 10px;font-size:11px;font-weight:800;margin-left:6px;vertical-align:middle}
+.buyer{margin-top:18px;background:var(--black);color:#fff;border-radius:22px;padding:20px 26px;font-size:14.5px;line-height:1.6}
+.buyer b{color:var(--yellow);font-family:'Unbounded',sans-serif}
+/* score table */
+.stab{width:100%;border-collapse:separate;border-spacing:0;margin-top:12px;font-size:13px}
+.stab th{padding:9px 6px;font-family:'Unbounded',sans-serif;font-size:11.5px;text-align:center;color:var(--muted);line-height:1.25}
+.stab th.us{background:var(--purple);color:#fff;border-radius:12px 12px 0 0}
+.stab td{padding:7px 6px;text-align:center;border-bottom:1px solid #EDEBF5}
+.stab td.crit{text-align:left;font-weight:700;font-size:13px}
+.stab td.us{background:#F3EDFF}
+.stab tr.total td{border-bottom:none;font-family:'Unbounded',sans-serif;font-weight:900;font-size:15px;padding-top:11px}
+.stab tr.total td.us{background:var(--purple);color:#fff;border-radius:0 0 12px 12px}
+.sc{display:inline-block;min-width:23px;padding:3px 6px;border-radius:8px;font-weight:800;font-size:12.5px}
+/* trend */
+.trend{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:16px}
+.tr{background:var(--black);color:#fff;border-radius:18px;padding:16px 20px}
+.tr b{display:block;font-family:'Unbounded',sans-serif;font-weight:900;font-size:22px;color:var(--yellow);margin-bottom:4px;line-height:1.15}
+.tr span{font-size:12.5px;color:rgba(255,255,255,.72);line-height:1.45}
+.src{margin-top:12px;font-size:11px;color:#9CA3AF}
 /* whynow */
 .wn{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:10px}
 .wn-card{border:2px solid #E9E4FB;border-radius:24px;padding:34px 30px}
@@ -128,7 +171,7 @@ footer-note{display:block;position:absolute;bottom:26px;left:72px;font-size:12px
 .ag{border:1.5px solid rgba(255,255,255,.18);border-radius:22px;padding:28px}
 .ag b{display:block;font-size:17px;margin-bottom:8px;color:var(--yellow)}
 .ag span{font-size:14px;color:rgba(255,255,255,.65);line-height:1.6}
-@media(max-width:860px){.slide{padding:56px 24px}.pain-grid,.wn,.model-grid,.stages,.team,.ask-grid{grid-template-columns:1fr}.sol-shots{flex-direction:column}.sol-shots img{width:100%}.comp{height:520px}footer-note{left:24px}}
+@media(max-width:860px){.slide{padding:56px 24px}.pain-grid,.wn,.model-grid,.stages,.team,.ask-grid,.aud,.trend,.flow{grid-template-columns:1fr}.sol-shots{flex-direction:column}.sol-shots img{width:100%}.comp{height:520px}footer-note{left:24px}}
 @media print{
   @page{size:1440px 810px;margin:0}
   html{scroll-snap-type:none}
@@ -136,7 +179,9 @@ footer-note{display:block;position:absolute;bottom:26px;left:72px;font-size:12px
   .slide{min-height:0;height:810px;overflow:hidden;page-break-after:always;break-after:page;padding:48px 64px!important}
   .cover h1{font-size:72px!important;letter-spacing:-2px}
   h2{font-size:44px!important}
-  .pain-grid,.wn,.model-grid,.ask-grid{grid-template-columns:repeat(3,1fr)!important}
+  .pain-grid,.wn,.model-grid,.ask-grid,.aud,.trend{grid-template-columns:repeat(3,1fr)!important}
+  .flow{grid-template-columns:repeat(4,1fr)!important}
+  .fstep img{height:130px!important}
   .stages,.team{grid-template-columns:1fr 1fr!important}
   .sol-shots{flex-direction:row!important}
   .sol-shots img{width:33%!important;max-height:300px}
@@ -183,72 +228,78 @@ footer-note{display:block;position:absolute;bottom:26px;left:72px;font-size:12px
       <div class="pain-d">К 3-му классу «почему?» превращается в «а это будет на контрольной?». Репетиторы за 5–10 тыс ₽/мес лечат симптом — мотивацию не возвращают.</div>
     </div>
     <div class="pain-card">
-      <span class="pain-emo">🤖</span>
-      <div class="pain-big">К миру ИИ <b>никто не готовит</b></div>
-      <div class="pain-d">Родитель на своей работе видит, как ИИ переписывает профессии. Умение работать с ИИ будет базовым, как чтение. Школа не успеет.</div>
+      <span class="pain-emo">🧠</span>
+      <div class="pain-big">Домашку делает <b>нейросеть</b></div>
+      <div class="pain-d">Ребёнок скидывает задание боту и получает готовый ответ. Думать больше не нужно — и мышление останавливается: меньше креативности, меньше умения рассуждать самому.</div>
     </div>
   </div>
-  <div class="pain-quote">«Ребёнок залипает в телефон, теряет интерес к учёбе — <span>и его никто не готовит к миру, в котором ему жить»</span></div>
+  <div class="pain-quote">«Ребёнок залипает в телефон, теряет интерес к учёбе — <span>а домашку за него уже делает нейросеть»</span></div>
 </section>
 
-<!-- 3. SOLUTION -->
+
+<!-- MANIFESTO -->
+<section class="slide manifesto">
+  <div class="num" style="color:rgba(255,255,255,.35)">03 · Позиция</div>
+  <h1>Если нельзя остановить революцию —<br><em>её нужно возглавить</em></h1>
+  <p class="msub">ИИ у ребёнка уже в руках, и запретами это не отменить. Вопрос только один: он будет с ним <strong style="color:#fff">тупеть</strong> — или <strong style="color:var(--yellow)">расти</strong>.</p>
+</section>
+
+<!-- 3. SOLUTION / HOW IT WORKS -->
 <section class="slide">
-  <div class="num">03 · Решение</div>
-  <div class="kicker">Nooka</div>
-  <h2>Настоящие образовательные игры.<br><em>Миссии по 15 минут</em></h2>
-  <p class="sub">Ребёнок строит нейросеть, собирает молекулы, испытывает законы физики. С любого телефона, без установки и регистрации. Экранное время начинает работать на родителя.</p>
-  <div class="sol-shots">
-    <img src="ai.jpg" alt="Нейро Академия">
-    <img src="chem.jpg" alt="Хемо Лаб">
-    <img src="phys.jpg" alt="КвантУм">
+  <div class="num">04 · Продукт</div>
+  <div class="kicker">Как это работает</div>
+  <h2>Открыл ссылку — и через 15 минут<br><em>ребёнок понял, как думает ИИ</em></h2>
+  <div class="flow">
+    <div class="fstep">
+      <div class="fn">1</div>
+      <img src="platform.jpg" alt="Платформа">
+      <b>Открывает ссылку</b>
+      <span>С любого телефона. Без установки, без регистрации, без пароля.</span>
+    </div>
+    <div class="fstep">
+      <div class="fn">2</div>
+      <img src="hub.jpg" alt="Карта базы">
+      <b>Выбирает миссию</b>
+      <span>Своя база с прогрессом, званием и картой игр. Видно, что пройдено и что дальше.</span>
+    </div>
+    <div class="fstep">
+      <div class="fn">3</div>
+      <img src="ai.jpg" alt="Геймплей">
+      <b>Делает сам, а не смотрит</b>
+      <span>Собирает нейросеть, двигает рычаг, кормит ИИ данными. Не видео и не тест — настоящая механика.</span>
+    </div>
+    <div class="fstep">
+      <div class="fn">4</div>
+      <img src="chem.jpg" alt="Результат">
+      <b>Уносит понимание</b>
+      <span>В конце объясняет своими словами, что понял. Плюс опыт и звание — чтобы вернуться завтра.</span>
+    </div>
   </div>
-  <div class="chips">
-    <div class="chip">🧠 ИИ — локомотив</div><div class="chip">⚗️ Химия</div><div class="chip">⚛️ Физика</div><div class="chip">🔬 +3 предмета в 2026</div>
-  </div>
+  <div class="flow-note">15 минут — и есть результат, который ребёнок может объяснить за ужином</div>
 </section>
 
-<!-- 4. WHY NOW -->
+<!-- 4. VALUE -->
 <section class="slide" style="background:var(--bg)">
-  <div class="num">04 · Почему сейчас</div>
-  <div class="kicker">Why now</div>
-  <h2>Это окно открылось<br><em>только что</em></h2>
+  <div class="num">05 · Ценность</div>
+  <div class="kicker">Из проблемы — в ценность</div>
+  <h2>Мы не отнимаем телефон.<br><em>Мы меняем, что в нём происходит</em></h2>
   <div class="wn">
     <div class="wn-card" style="background:#fff">
       <div class="wn-n">01</div>
-      <div class="wn-t">ИИ-грамотность = новая грамотность</div>
-      <div class="wn-d">Родительский спрос уже здесь. Google и Stanford выпустили AI Quests для подростков — тема валидирована гигантами. Игровой платформы для 6–12 нет ни в РФ, ни в мире.</div>
+      <div class="wn-t">Залипание → вовлечённость</div>
+      <div class="wn-d">В школе ребёнка надо заставлять. Здесь он сам просит ещё один уровень. То же экранное время — но оно начинает работать на родителя.</div>
     </div>
     <div class="wn-card" style="background:#fff">
       <div class="wn-n">02</div>
-      <div class="wn-t">Стоимость производства игр рухнула</div>
-      <div class="wn-d">Генеративный ИИ снизил себестоимость обучающей игры на порядки. Цикл выпуска — дни, а не месяцы. Первые, кто строит на этом конвейер, забирают рынок.</div>
+      <div class="wn-t">Производство игр подешевело в разы</div>
+      <div class="wn-d">Генеративный ИИ обрушил себестоимость обучающей игры. Цикл выпуска — дни, а не месяцы. Кто первым построит на этом конвейер — заберёт рынок.</div>
     </div>
     <div class="wn-card" style="background:#fff">
       <div class="wn-n">03</div>
-      <div class="wn-t">Родители платят за «будущее»</div>
-      <div class="wn-d">Сегмент курсов «ребёнок в IT» вырос в индустрию со средним чеком 47 000 ₽ (Алгоритмика, Kodland). Мы даём тот же мотив в 10 раз дешевле и без расписания.</div>
+      <div class="wn-t">Нейросеть → не костыль, а мир возможностей</div>
+      <div class="wn-d">Ребёнок знает один сценарий: скинуть домашку и получить ответ. Мы показываем другой — как ИИ устроен, как им управлять и что с ним можно создавать.</div>
     </div>
   </div>
-</section>
-
-<!-- 5. PRODUCT -->
-<section class="slide">
-  <div class="num">05 · Продукт</div>
-  <div class="kicker">Уже работает</div>
-  <h2>Live-платформа,<br>собранная <em>за 2 месяца</em></h2>
-  <p class="sub">Производство игр автоматизировано на базе ИИ: новая игра выходит за неделю. Это путь к платформе с сотнями и тысячами игр. Каждая игра — один самодостаточный файл: с любого телефона, без установки, без сбора данных (готовое COPPA-преимущество для глобального рынка).</p>
-  <div class="stat-row">
-    <div class="stat"><b>5</b><span>игр в проде</span></div>
-    <div class="stat"><b>28</b><span>уровней-миссий</span></div>
-    <div class="stat"><b>1</b><span>игра в неделю — темп конвейера</span></div>
-    <div class="stat"><b>0 ₽</b><span>костов на разработку и хостинг</span></div>
-  </div>
-  <div class="chips" style="margin-top:24px">
-    <div class="chip">Потенциал: 1000+ игр</div>
-    <div class="chip">Любые темы — под запросы родителей и школ</div>
-    <div class="chip">Игры под заказ: бренды, госпрограммы</div>
-  </div>
-  <a class="link-pill" href="https://nookagame.ru">nookagame.ru →</a>
 </section>
 
 <!-- GAMES GALLERY -->
@@ -277,9 +328,61 @@ footer-note{display:block;position:absolute;bottom:26px;left:72px;font-size:12px
   <p class="gal-note">Плюс <b>ПромптЛаб</b> — учит говорить с ИИ: точный промпт, роли, итерации. <b>Проверка «за ужином»:</b> после каждой миссии ребёнок объясняет родителю, что понял, своими словами — знание, а не «прошёл тест».</p>
 </section>
 
+<!-- 7. CONVEYOR -->
+<section class="slide">
+  <div class="num">07 · Конвейер</div>
+  <div class="kicker">Нечестное преимущество</div>
+  <h2>Новая игра — за неделю.<br><em>Производство собрано на ИИ</em></h2>
+  <p class="sub">Себестоимость новой миссии стремится к нулю: сценарий, механика, графика и сборка идут через ИИ-конвейер. Это путь к платформе с сотнями игр, а не к студии, которая делает одну игру полгода.</p>
+  <div class="stat-row">
+    <div class="stat"><b>1</b><span>игра в неделю — текущий темп</span></div>
+    <div class="stat"><b>0 ₽</b><span>костов на разработку и хостинг</span></div>
+    <div class="stat"><b>1000+</b><span>игр — потолок модели</span></div>
+  </div>
+  <div style="font-family:'Unbounded',sans-serif;font-weight:700;font-size:15px;margin-top:26px">Один конвейер — любые предметы:</div>
+  <div class="dirs">
+    <div class="dir on">🧠 ИИ</div>
+    <div class="dir on">⚛️ Физика</div>
+    <div class="dir on">⚗️ Химия</div>
+    <div class="dir on">🕹️ Программирование</div>
+    <div class="dir">🧬 Биология</div>
+    <div class="dir">📐 Математика</div>
+    <div class="dir">🔭 Астрономия</div>
+    <div class="dir">⚙️ Инженерия</div>
+  </div>
+  <div style="font-size:13.5px;color:var(--muted);margin-top:12px">Закрашенные — уже в проде. Остальные открываются тем же конвейером, без новой команды.</div>
+</section>
+
+<!-- 8. AUDIENCE -->
+<section class="slide" style="background:var(--bg)">
+  <div class="num">08 · Аудитория</div>
+  <div class="kicker">Для кого это</div>
+  <h2>Играет ребёнок.<br><em>Платит родитель</em></h2>
+  <div class="aud">
+    <div class="acard">
+      <div class="age">6–8 лет</div>
+      <div class="cls">1–2 класс</div>
+      <p>Читает плохо — всё через действие и картинку. Узнаёт, что такое ИИ и где он вокруг: Face ID, рекомендации, голосовой помощник.</p>
+    </div>
+    <div class="acard" style="border:2px solid var(--purple)">
+      <div class="age">8–10 лет<span class="core">ЯДРО</span></div>
+      <div class="cls">3–4 класс</div>
+      <p>Основной игрок. Собирает нейросеть, учит её на данных, пишет первые промпты, ставит опыты по физике и химии.</p>
+    </div>
+    <div class="acard">
+      <div class="age">10–12 лет</div>
+      <div class="cls">5–6 класс</div>
+      <p>Работает с параметрами и стратегией. Ловит ИИ на ошибках и подделках, разбирается, почему нейросеть ответила именно так.</p>
+    </div>
+  </div>
+  <div class="buyer">
+    <b>Покупатель — родитель 30–45 лет</b> из города, уже платит за доп. образование ребёнка. Его мотив: «не хочу, чтобы ребёнок отстал и разучился думать». <b>Третий контур</b> — учитель и кружок: бесплатный аккаунт, назначает классу, родители конвертируются в подписку.
+  </div>
+</section>
+
 <!-- 6. TRACTION -->
 <section class="slide">
-  <div class="num">07 · Трекшн</div>
+  <div class="num">09 · Трекшн</div>
   <div class="kicker">Уже проверено на семьях</div>
   <h2>50 родителей протестировали.<br><em>Есть первые оплаты</em></h2>
   <div class="team" style="max-width:1040px">
@@ -301,7 +404,7 @@ footer-note{display:block;position:absolute;bottom:26px;left:72px;font-size:12px
 
 <!-- 7. MODEL -->
 <section class="slide" style="background:var(--bg)">
-  <div class="num">08 · Модель</div>
+  <div class="num">10 · Модель</div>
   <div class="kicker">Бизнес-модель</div>
   <h2>Freemium, доказанный<br><em>Prodigy: 100 млн юзеров</em></h2>
   <div class="model-grid">
@@ -326,7 +429,7 @@ footer-note{display:block;position:absolute;bottom:26px;left:72px;font-size:12px
 
 <!-- 7. MARKET -->
 <section class="slide">
-  <div class="num">09 · Рынок</div>
+  <div class="num">11 · Рынок</div>
   <div class="kicker">Россия сейчас · мир на горизонте</div>
   <h2>Считаем снизу вверх —<br><em>и в рублях, и в долларах</em></h2>
   <div style="display:grid;grid-template-columns:1.35fr 1fr;gap:28px;align-items:start;margin-top:14px">
@@ -334,7 +437,7 @@ footer-note{display:block;position:absolute;bottom:26px;left:72px;font-size:12px
       <div style="font-family:'Unbounded';font-weight:700;font-size:14px;color:var(--muted);margin-bottom:12px">РОССИЯ · старт</div>
       <div class="funnel">
         <div class="fr fr1"><span>Дети 6–12 лет в России</span><b>~10 млн</b></div>
-        <div class="fr fr2"><span>Семьи, платящие за доп. образование (~30%)</span><b>~3 млн</b></div>
+        <div class="fr fr2"><span>Из них покупают доп. образование — ~30%</span><b>~3 млн</b></div>
         <div class="fr fr3"><span>SAM: 3 млн × 490 ₽ × 12 мес</span><b>~17,6 млрд ₽</b></div>
         <div class="fr fr4"><span>Цель 1-й год: 0,5% рынка</span><b>~90 млн ₽ ARR</b></div>
       </div>
@@ -351,33 +454,50 @@ footer-note{display:block;position:absolute;bottom:26px;left:72px;font-size:12px
       </div>
     </div>
   </div>
-  <p class="mkt-note">Одна и та же технология (один HTML-файл, без сбора данных) работает на обоих рынках — сначала монетизируем РФ, затем почти бесплатно раскрываем глобальный TAM.</p>
+  <div class="trend">
+    <div class="tr"><b>Только дети</b><span>Весь рост российского EdTech в 2026 обеспечивает детский сегмент. ДПО и бизнес-образование падают.</span></div>
+    <div class="tr"><b>+32%</b><span>рост детского онлайн-образования в РФ год к году (I кв. 2025). Сегмент обогнал взрослое обучение.</span></div>
+    <div class="tr"><b>38% в год</b><span>темп мирового рынка ИИ в школьном образовании до 2036. Драйвер №1 в РФ на 2026 — обучение работе с ИИ.</span></div>
+  </div>
+  <p class="src">Источники: SmartRanking / EdTechs (рынок РФ, I кв. 2025–2026), Fortune Business Insights (game-based learning, $29,6 млрд, CAGR ~22%), Future Market Insights (AI in K-12, CAGR 38,1%).</p>
 </section>
 
 <!-- 8. COMPETITORS -->
 <section class="slide" style="background:var(--bg)">
-  <div class="num">10 · Конкуренты</div>
-  <div class="kicker">Тщательная карта: РФ + мир</div>
-  <h2>Никто не совмещает<br><em>игры × ИИ × цену подписки</em></h2>
-  <table class="ctab">
+  <div class="num">12 · Конкуренты</div>
+  <div class="kicker">Ранжирование ценности · оценка 1–5</div>
+  <h2>Почему мы, <em>а не они</em></h2>
+  <table class="stab">
     <thead>
-      <tr><th>Игрок</th><th>Формат</th><th>Темы</th><th>ИИ-грамотность</th><th>Цена</th></tr>
+      <tr>
+        <th style="text-align:left">Критерий</th>
+        <th class="us">🚀 Nooka</th>
+        <th>Учи.ру<br>ЯКласс</th>
+        <th>ЛогикЛайк<br>Умназия</th>
+        <th>Алгоритмика<br>Kodland</th>
+        <th>Prodigy<br><span style="font-weight:400">(мир)</span></th>
+      </tr>
     </thead>
     <tbody>
-      <tr><td>Учи.ру, ЯКласс</td><td>Тесты-карточки</td><td>Школьная программа</td><td class="no">— нет</td><td>~300–800 ₽/мес</td></tr>
-      <tr><td>ЛогикЛайк, Умназия</td><td>Задачки с наградой</td><td>Логика, мышление</td><td class="no">— нет</td><td>~300–700 ₽/мес</td></tr>
-      <tr><td>Алгоритмика, Kodland</td><td>Курсы с педагогом</td><td>Программирование</td><td class="no">— нет</td><td>~47 000 ₽/курс</td></tr>
-      <tr><td>Prodigy <span style="color:#9CA3AF">(мир)</span></td><td class="yes">Настоящие игры</td><td>Математика</td><td class="no">— нет</td><td>$9,95/мес</td></tr>
-      <tr><td>AI Quests <span style="color:#9CA3AF">(Google+Stanford)</span></td><td>Разовый модуль</td><td class="yes">ИИ</td><td class="yes">✓ есть</td><td>бесплатно · не бизнес</td></tr>
-      <tr class="rn"><td>🚀 Nooka</td><td class="yes">Настоящие игры</td><td class="yes">ИИ + науки</td><td class="yes">✓ ядро продукта</td><td>490 ₽/мес</td></tr>
+      <tr><td class="crit">ИИ как предмет обучения</td><td class="us"><span class="sc" style="background:#DCFCE7;color:#15803D">5</span></td><td><span class="sc" style="background:#F5F5F7;color:#C4C4CC">1</span></td><td><span class="sc" style="background:#F5F5F7;color:#C4C4CC">1</span></td><td><span class="sc" style="background:#F3F4F6;color:#9CA3AF">2</span></td><td><span class="sc" style="background:#F5F5F7;color:#C4C4CC">1</span></td></tr>
+      <tr><td class="crit">Возраст 6–12</td><td class="us"><span class="sc" style="background:#DCFCE7;color:#15803D">5</span></td><td><span class="sc" style="background:#E9F7EF;color:#2E7D5B">4</span></td><td><span class="sc" style="background:#DCFCE7;color:#15803D">5</span></td><td><span class="sc" style="background:#FFF4D6;color:#A97B00">3</span></td><td><span class="sc" style="background:#E9F7EF;color:#2E7D5B">4</span></td></tr>
+      <tr><td class="crit">Образовательная ценность</td><td class="us"><span class="sc" style="background:#E9F7EF;color:#2E7D5B">4</span></td><td><span class="sc" style="background:#E9F7EF;color:#2E7D5B">4</span></td><td><span class="sc" style="background:#FFF4D6;color:#A97B00">3</span></td><td><span class="sc" style="background:#DCFCE7;color:#15803D">5</span></td><td><span class="sc" style="background:#E9F7EF;color:#2E7D5B">4</span></td></tr>
+      <tr><td class="crit">Лёгкость старта</td><td class="us"><span class="sc" style="background:#DCFCE7;color:#15803D">5</span></td><td><span class="sc" style="background:#E9F7EF;color:#2E7D5B">4</span></td><td><span class="sc" style="background:#E9F7EF;color:#2E7D5B">4</span></td><td><span class="sc" style="background:#F3F4F6;color:#9CA3AF">2</span></td><td><span class="sc" style="background:#DCFCE7;color:#15803D">5</span></td></tr>
+      <tr><td class="crit">Цена</td><td class="us"><span class="sc" style="background:#DCFCE7;color:#15803D">5</span></td><td><span class="sc" style="background:#E9F7EF;color:#2E7D5B">4</span></td><td><span class="sc" style="background:#E9F7EF;color:#2E7D5B">4</span></td><td><span class="sc" style="background:#F5F5F7;color:#C4C4CC">1</span></td><td><span class="sc" style="background:#FFF4D6;color:#A97B00">3</span></td></tr>
+      <tr><td class="crit">Вовлечённость — ребёнок сам просит</td><td class="us"><span class="sc" style="background:#DCFCE7;color:#15803D">5</span></td><td><span class="sc" style="background:#F3F4F6;color:#9CA3AF">2</span></td><td><span class="sc" style="background:#FFF4D6;color:#A97B00">3</span></td><td><span class="sc" style="background:#FFF4D6;color:#A97B00">3</span></td><td><span class="sc" style="background:#DCFCE7;color:#15803D">5</span></td></tr>
+      <tr><td class="crit">Урок 15 минут</td><td class="us"><span class="sc" style="background:#DCFCE7;color:#15803D">5</span></td><td><span class="sc" style="background:#FFF4D6;color:#A97B00">3</span></td><td><span class="sc" style="background:#E9F7EF;color:#2E7D5B">4</span></td><td><span class="sc" style="background:#F5F5F7;color:#C4C4CC">1</span></td><td><span class="sc" style="background:#E9F7EF;color:#2E7D5B">4</span></td></tr>
+      <tr><td class="crit">Результат за один урок</td><td class="us"><span class="sc" style="background:#E9F7EF;color:#2E7D5B">4</span></td><td><span class="sc" style="background:#FFF4D6;color:#A97B00">3</span></td><td><span class="sc" style="background:#FFF4D6;color:#A97B00">3</span></td><td><span class="sc" style="background:#E9F7EF;color:#2E7D5B">4</span></td><td><span class="sc" style="background:#FFF4D6;color:#A97B00">3</span></td></tr>
+      <tr><td class="crit">Барьер входа</td><td class="us"><span class="sc" style="background:#DCFCE7;color:#15803D">5</span></td><td><span class="sc" style="background:#E9F7EF;color:#2E7D5B">4</span></td><td><span class="sc" style="background:#E9F7EF;color:#2E7D5B">4</span></td><td><span class="sc" style="background:#F5F5F7;color:#C4C4CC">1</span></td><td><span class="sc" style="background:#E9F7EF;color:#2E7D5B">4</span></td></tr>
+      <tr><td class="crit">Без расписания и преподавателя</td><td class="us"><span class="sc" style="background:#DCFCE7;color:#15803D">5</span></td><td><span class="sc" style="background:#DCFCE7;color:#15803D">5</span></td><td><span class="sc" style="background:#DCFCE7;color:#15803D">5</span></td><td><span class="sc" style="background:#F5F5F7;color:#C4C4CC">1</span></td><td><span class="sc" style="background:#DCFCE7;color:#15803D">5</span></td></tr>
+      <tr class="total"><td class="crit">ИТОГО</td><td class="us">48</td><td>34</td><td>36</td><td>23</td><td>38</td></tr>
     </tbody>
   </table>
-  <p class="ctab-note"><b style="color:var(--purple)">Вывод:</b> игровые платформы есть (Prodigy), ИИ-модули есть (Google), но <b>подписочной игровой платформы ИИ-грамотности для детей 6–12 нет ни в РФ, ни в мире.</b> Prodigy доказал модель на математике — мы делаем «Prodigy для ИИ и наук».</p>
+  <p class="ctab-note"><b style="color:var(--purple)">Читается за 5 секунд:</b> сильные игроки есть в каждой отдельной колонке — но никто не собирает вместе <b>ИИ как предмет, настоящую игру, цену подписки и результат за 15 минут</b>. Именно это пересечение мы и занимаем.</p>
 </section>
 
 <!-- 9. GTM -->
 <section class="slide">
-  <div class="num">11 · Go-to-market</div>
+  <div class="num">13 · Go-to-market</div>
   <div class="kicker">Стратегия выхода</div>
   <h2>Сначала Россия.<br><em>Потом — мир</em></h2>
   <div class="stages">
@@ -403,7 +523,7 @@ footer-note{display:block;position:absolute;bottom:26px;left:72px;font-size:12px
 
 <!-- 10. TEAM -->
 <section class="slide" style="background:var(--bg)">
-  <div class="num">12 · Команда</div>
+  <div class="num">14 · Команда</div>
   <div class="kicker">Кто делает</div>
   <h2>13 лет в детском образовании<br><em>+ ИИ-конвейер</em></h2>
   <div class="team">
@@ -427,7 +547,7 @@ footer-note{display:block;position:absolute;bottom:26px;left:72px;font-size:12px
 
 <!-- 11. ASK -->
 <section class="slide ask">
-  <div class="num">13 · Предложение</div>
+  <div class="num">15 · Предложение</div>
   <div class="kicker" style="background:var(--yellow);color:var(--black)">Что дальше</div>
   <h2>Ищем партнёра<br>на <em>раунд роста</em></h2>
   <div class="ask-grid">
