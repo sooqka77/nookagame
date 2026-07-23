@@ -316,7 +316,7 @@ footer{border-top:2px solid #F3F4F6;padding:32px 0;background:#fff}
   <div class="deco d5">⚛️</div>
   <div class="deco d6">🗺️</div>
 
-  <div class="hero-badge"><span class="dot"></span>Бета · 5 игр · 28 уровней</div>
+  <div class="hero-badge"><span class="dot"></span>Бета · 5 игр · 25 уровней</div>
 
   <h1>
     Настоящие игры,
@@ -475,7 +475,7 @@ footer{border-top:2px solid #F3F4F6;padding:32px 0;background:#fff}
       <div class="price-amt">0 <span style="font-size:22px;font-weight:600;color:var(--muted)">₽</span></div>
       <div class="price-mo">навсегда</div>
       <div class="price-sep"></div>
-      <div class="pf"><span class="ok">✓</span> ИИ, химия, физика — 28 уровней</div>
+      <div class="pf"><span class="ok">✓</span> ИИ, химия, физика — 25 уровней</div>
       <div class="pf"><span class="ok">✓</span> Сохранение прогресса</div>
       <div class="pf"><span class="no">—</span> Биология, география и другие</div>
       <div class="pf"><span class="no">—</span> Новые уровни при выходе</div>
@@ -547,7 +547,7 @@ const PLANET_COLORS = {
   eco:  {bg:'pl-eco',  chip:'soon',      chipClass:'soon'},
 };
 const PL=[
-  {key:'ai',  img:'screenshots/ai.jpg',  name:'Нейро Академия',subject:'Искусственный интеллект',desc:'Построй нейросеть, напиши промпт, поймай ИИ на выдумке. 9 уровней.',active:true,levels:9,src:'games/ai.html?v=202607211709'},
+  {key:'ai',  img:'screenshots/ai.jpg',  name:'Нейро Академия',subject:'Искусственный интеллект',desc:'Построй нейросеть, напиши промпт, поймай ИИ на выдумке. 6 уровней.',active:true,levels:6,src:'games/ai.html?v=202607231131'},
   {key:'prompt',img:'screenshots/prompt.jpg?i=202607131648',name:'ПромптЛаб',subject:'Искусственный интеллект',desc:'Научись говорить с ИИ: точный промпт, роли, итерации.',active:true,levels:4,src:'games/prompt.html?v=202607201835'},
   {key:'chem',img:'screenshots/chem.jpg?i=202607131648',name:'Хемо Лаб',subject:'Химия',desc:'Реакции, молекулы и опыты, которые дома никто не разрешит.',active:true,levels:6,src:'games/chemistry.html?v=202607141232'},
   {key:'phys',img:'screenshots/phys.jpg?i=202607131648',name:'КвантУм',subject:'Физика',desc:'Рычаги, траектории, равновесие: физика, которую можно потрогать.',active:true,levels:6,src:'games/physics.html?v=202607141232'},
@@ -582,7 +582,7 @@ PL.forEach(p=>{
   pg.appendChild(d);
 });
 
-function openModal(src){src=src||'games/ai.html?v=202607211709';document.getElementById('gframe').src=src;document.getElementById('modal').classList.add('open');document.body.style.overflow='hidden'}
+function openModal(src){src=src||'games/ai.html?v=202607231131';document.getElementById('gframe').src=src;document.getElementById('modal').classList.add('open');document.body.style.overflow='hidden'}
 function closeModal(){document.getElementById('modal').classList.remove('open');document.getElementById('gframe').src='';document.body.style.overflow=''}
 function closeOut(e){if(e.target===document.getElementById('modal'))closeModal()}
 let _t;

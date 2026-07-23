@@ -8676,6 +8676,7 @@ const MODULES = [{
 },{
 // ─── УРОВЕНЬ 7: ДЕКОДЕР (платный) ────────────────────────────────────────────
   id: "decoder",
+  soon: true,  // уровень не реализован: файл levels/ отсутствует (аудит 21.07)
   title: "ДЕКОДЕР",
   subtitle: "Расшифруй сигнал с орбиты",
   icon: "📡",
@@ -8694,6 +8695,7 @@ const MODULES = [{
 },{
 // ─── УРОВЕНЬ 8: БИПО (платный) ───────────────────────────────────────────────
   id: "bipo",
+  soon: true,  // уровень не реализован: файл levels/ отсутствует (аудит 21.07)
   title: "БИПО",
   subtitle: "Запрограммируй робота-помощника",
   icon: "🤖",
@@ -8712,6 +8714,7 @@ const MODULES = [{
 },{
 // ─── УРОВЕНЬ 9: ЧИП (платный) ────────────────────────────────────────────────
   id: "chip",
+  soon: true,  // уровень не реализован: файл levels/ отсутствует (аудит 21.07)
   title: "ЧИП",
   subtitle: "Помоги роботу собрать знания",
   icon: "🧠",
@@ -9143,7 +9146,7 @@ function App() {
     const unlocked = canOpen(mod);
     return /*#__PURE__*/React.createElement("button", {
       key: mod.id,
-      onClick: () => locked ? setScreen("paywall") : unlocked ? openLevel(mod) : null,
+      onClick: () => mod.soon ? null : locked ? setScreen("paywall") : unlocked ? openLevel(mod) : null,
       style: {
         display: "flex",
         alignItems: "center",
@@ -9152,10 +9155,10 @@ function App() {
         background: installed ? `linear-gradient(135deg,${mod.color}12,${mod.color}06)` : locked ? `${C.purple}06` : unlocked ? `linear-gradient(135deg,${mod.color}18,${mod.color}0a)` : C.card,
         border: `1.5px solid ${installed ? `${mod.color}45` : locked ? `${C.purple}30` : unlocked ? `${mod.color}70` : C.cardBorder}`,
         borderRadius: 18,
-        cursor: locked || unlocked ? "pointer" : "default",
+        cursor: mod.soon ? "default" : (locked || unlocked) ? "pointer" : "default",
         outline: "none",
         textAlign: "left",
-        opacity: !unlocked && !locked ? .3 : 1,
+        opacity: mod.soon ? .55 : (!unlocked && !locked ? .3 : 1),
         transition: "all .3s",
         width: "100%",
         boxShadow: installed ? `0 4px 20px ${mod.color}40` : unlocked ? `0 4px 16px ${mod.color}25` : "none"
@@ -9194,14 +9197,14 @@ function App() {
         marginTop: 3,
         lineHeight: 1.4
       }
-    }, mod.subtitle), /*#__PURE__*/React.createElement("div", {
+    }, mod.soon ? "Скоро откроем — уровень в разработке" : mod.subtitle), /*#__PURE__*/React.createElement("div", {
       style: {
         color: installed ? mod.color : locked ? C.purple : C.textMuted,
         fontSize: 10,
         marginTop: 4,
         fontFamily: "'Orbitron'"
       }
-    }, installed ? `✓ +${mod.xp} XP` : locked ? "💎 250 ⭐" : `${mod.xp} XP`)), !installed && unlocked && !locked && /*#__PURE__*/React.createElement("div", {
+    }, mod.soon ? "🛠 СКОРО" : installed ? `✓ +${mod.xp} XP` : locked ? "💎 250 ⭐" : `${mod.xp} XP`)), !installed && unlocked && !locked && !mod.soon && /*#__PURE__*/React.createElement("div", {
       style: {
         width: 36,
         height: 36,
