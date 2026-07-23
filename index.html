@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Nooka — игры, в которых ребёнок осваивает ИИ и науки</title>
-<meta name="description" content="Игры про ИИ, химию и физику для детей 6–12 лет. Миссии по 15 минут: ребёнок строит нейросети и собирает молекулы. С телефона, без установки. Бесплатно.">
+<title>Nooka — игровая образовательная платформа про ИИ и науки</title>
+<meta name="description" content="Игровая образовательная платформа для детей 6–12 лет: ИИ, физика, химия, программирование. Миссии по 15 минут, с телефона, без установки. Бесплатно.">
 <meta property="og:title" content="Nooka — игры, в которых ребёнок осваивает ИИ и науки">
 <meta property="og:description" content="Игры про ИИ, химию и физику для детей 6–12 лет. С телефона, без установки. Начните бесплатно.">
 <meta property="og:type" content="website">
@@ -71,6 +71,12 @@ img{max-width:100%}
 .nk-coin--ok{background:radial-gradient(circle at 35% 28%,#fff 0%,var(--nk-ok-1) 75%)}
 .nk-coin--warn{background:radial-gradient(circle at 35% 28%,#fff 0%,var(--nk-warn-1) 75%)}
 .nk-coin--lg{width:72px;height:72px;font-size:38px}
+.ic{width:26px;height:26px;display:block;color:var(--nk-pri-3)}
+.nk-coin .ic{width:54%;height:54%}
+.nk-coin--sun .ic{color:var(--nk-sun-3)}
+.nk-coin--ok .ic{color:var(--nk-ok-3)}
+.nk-coin--warn .ic{color:var(--nk-warn-3)}
+.band-feat .nk-coin .ic{color:var(--nk-pri-4)}
 
 .nk-chip{display:inline-flex;align-items:center;gap:6px;font-family:var(--nk-display);font-weight:900;font-size:18px;
   color:var(--nk-ink);background:linear-gradient(180deg,#FFF1B4,#FFD84D);border-radius:999px;padding:9px 20px;
@@ -111,7 +117,7 @@ h1 .p{color:var(--nk-pri-3)} h1 .s{color:var(--nk-sun-3)}
 .hero-deco .nk-coin{position:absolute}
 .hero-frame{padding:16px;border-radius:var(--nk-r-xl);position:relative;z-index:1}
 .hero-frame-inner{border-radius:var(--nk-r-l);overflow:hidden;aspect-ratio:4/3;display:flex;align-items:center;justify-content:center;
-  background:radial-gradient(circle at 50% 32%,var(--nk-pri-1),var(--nk-pri-0))}
+  background:radial-gradient(circle at 50% 38%,#fff,var(--nk-pri-0) 78%)}
 .hero-frame-inner img{width:100%;height:100%;object-fit:contain;display:block}
 
 .section{padding-top:72px;padding-bottom:8px}
@@ -251,22 +257,22 @@ footer{border-top:2px solid rgba(123,79,242,.12);background:#FFF6E9}
     <div class="hero-copy">
       <div class="nk-chip hero-badge"><span class="dot"></span>Бета · 5 игр · 25 уровней</div>
       <h1 class="nk-t-brand">Экранное время,<br><span class="p">за которое</span><br><span class="s">не стыдно</span></h1>
-      <p class="nk-t-body hero-sub">Игры для детей <strong>6–12 лет</strong>: ребёнок строит нейросеть, ставит опыты и программирует робота. <strong>15 минут — и он объяснит это сам.</strong></p>
+      <p class="nk-t-body hero-sub"><strong>Игровая образовательная платформа</strong> для детей 6–12 лет: ребёнок строит нейросеть, ставит опыты и программирует робота. <strong>15 минут — и он объяснит это сам.</strong></p>
       <div class="hero-ctas">
         <button class="nk-btn nk-btn--cta nk-btn--lg" data-play>Играть бесплатно</button>
         <a class="nk-btn nk-btn--soft nk-btn--lg" href="#how">Как это работает</a>
       </div>
-      <div class="hero-safe"><span class="nk-coin nk-coin--ok" style="width:38px;height:38px;font-size:19px">✓</span>Без рекламы, регистрации и чужих ссылок · открывается с телефона</div>
+      <div class="hero-safe"><span class="nk-coin nk-coin--ok" style="width:38px;height:38px"><svg class="ic" aria-hidden="true"><use href="icons.svg#nk-check"></use></svg></span>Без рекламы, регистрации и чужих ссылок · открывается с телефона</div>
     </div>
     <div class="hero-visual">
       <div class="hero-deco">
-        <div class="nk-coin" style="top:2%;left:-2%;animation:kb-float 6s ease-in-out infinite">🧠</div>
-        <div class="nk-coin nk-coin--sun" style="top:-4%;right:12%;animation:kb-float 7s ease-in-out infinite .8s">⚛️</div>
-        <div class="nk-coin nk-coin--ok" style="bottom:6%;left:-4%;animation:kb-float 6.5s ease-in-out infinite 1.4s">🧪</div>
-        <div class="nk-coin nk-coin--warn" style="bottom:-2%;right:4%;animation:kb-float 7.5s ease-in-out infinite .4s">🕹️</div>
+        <div class="nk-coin" style="top:2%;left:-2%;animation:kb-float 6s ease-in-out infinite"><svg class="ic" aria-hidden="true"><use href="icons.svg#nk-ai"></use></svg></div>
+        <div class="nk-coin nk-coin--sun" style="top:-4%;right:12%;animation:kb-float 7s ease-in-out infinite .8s"><svg class="ic" aria-hidden="true"><use href="icons.svg#nk-phys"></use></svg></div>
+        <div class="nk-coin nk-coin--ok" style="bottom:6%;left:-4%;animation:kb-float 6.5s ease-in-out infinite 1.4s"><svg class="ic" aria-hidden="true"><use href="icons.svg#nk-chem"></use></svg></div>
+        <div class="nk-coin nk-coin--warn" style="bottom:-2%;right:4%;animation:kb-float 7.5s ease-in-out infinite .4s"><svg class="ic" aria-hidden="true"><use href="icons.svg#nk-code"></use></svg></div>
       </div>
       <div class="nk-clay hero-frame">
-        <div class="hero-frame-inner"><img src="mascot/hello.jpg" alt="Маскот Nooka"></div>
+        <div class="hero-frame-inner"><img src="mascot/hello.webp" alt="Маскот Nooka"></div>
       </div>
     </div>
   </section>
@@ -276,9 +282,9 @@ footer{border-top:2px solid rgba(123,79,242,.12);background:#FFF6E9}
       <h2 class="nk-t-brand">Не тесты с картинками —<br><span>настоящие игры</span></h2>
       <p>То, что раньше было скучным параграфом, здесь — миссия, механика и маленькая победа.</p>
       <div class="band-grid">
-        <div class="band-feat"><span class="nk-coin nk-coin--sun">🎓</span><div><h3>Методика, а не набор мини-игр</h3><p>У каждого уровня есть «ага!» — научный закон, который ребёнок открывает сам.</p></div></div>
-        <div class="band-feat"><span class="nk-coin nk-coin--ok">🛡️</span><div><h3>Безопасно</h3><p>Без рекламы, чатов и внешних ссылок. Регистрация не нужна вообще.</p></div></div>
-        <div class="band-feat"><span class="nk-coin">📊</span><div><h3>Виден прогресс</h3><p>Опыт, звания и streak — вы видите, чем ребёнок занят и что уже прошёл.</p></div></div>
+        <div class="band-feat"><span class="nk-coin nk-coin--sun"><svg class="ic" aria-hidden="true"><use href="icons.svg#nk-method"></use></svg></span><div><h3>Методика, а не набор мини-игр</h3><p>У каждого уровня есть «ага!» — научный закон, который ребёнок открывает сам.</p></div></div>
+        <div class="band-feat"><span class="nk-coin nk-coin--ok"><svg class="ic" aria-hidden="true"><use href="icons.svg#nk-shield"></use></svg></span><div><h3>Безопасно</h3><p>Без рекламы, чатов и внешних ссылок. Регистрация не нужна вообще.</p></div></div>
+        <div class="band-feat"><span class="nk-coin"><svg class="ic" aria-hidden="true"><use href="icons.svg#nk-progress"></use></svg></span><div><h3>Виден прогресс</h3><p>Опыт, звания и streak — вы видите, чем ребёнок занят и что уже прошёл.</p></div></div>
       </div>
     </div>
   </section>
@@ -295,9 +301,9 @@ footer{border-top:2px solid rgba(123,79,242,.12);background:#FFF6E9}
     <h2 class="nk-t-h1 sec-h">Три шага — <span>и ребёнок уже играет</span></h2>
     <p class="nk-t-body sec-sub">Никаких лекций и домашних заданий. Открыл ссылку — и сразу в миссии.</p>
     <div class="steps">
-      <div class="nk-clay step"><div class="step-num" style="color:var(--nk-pri-1)">01</div><span class="nk-coin">🪐</span><h3 class="nk-t-h2">Выбираете игру</h3><p>Каждая — отдельный мир с уровнями и прогрессом. Ничего не нужно устанавливать.</p></div>
-      <div class="nk-clay step"><div class="step-num" style="color:var(--nk-sun-1)">02</div><span class="nk-coin nk-coin--sun">🎮</span><h3 class="nk-t-h2">Проходите миссию</h3><p>Собрать нейросеть, сдвинуть рычаг, написать промпт — у каждого уровня своя механика.</p></div>
-      <div class="nk-clay step"><div class="step-num" style="color:var(--nk-ok-1)">03</div><span class="nk-coin nk-coin--ok">📈</span><h3 class="nk-t-h2">Видите результат</h3><p>15 минут — и ребёнок объясняет за ужином, как думает нейросеть. Плюс опыт и звание.</p></div>
+      <div class="nk-clay step"><div class="step-num" style="color:var(--nk-pri-1)">01</div><span class="nk-coin"><svg class="ic" aria-hidden="true"><use href="icons.svg#nk-world"></use></svg></span><h3 class="nk-t-h2">Выбираете игру</h3><p>Каждая — отдельный мир с уровнями и прогрессом. Ничего не нужно устанавливать.</p></div>
+      <div class="nk-clay step"><div class="step-num" style="color:var(--nk-sun-1)">02</div><span class="nk-coin nk-coin--sun"><svg class="ic" aria-hidden="true"><use href="icons.svg#nk-play"></use></svg></span><h3 class="nk-t-h2">Проходите миссию</h3><p>Собрать нейросеть, сдвинуть рычаг, написать промпт — у каждого уровня своя механика.</p></div>
+      <div class="nk-clay step"><div class="step-num" style="color:var(--nk-ok-1)">03</div><span class="nk-coin nk-coin--ok"><svg class="ic" aria-hidden="true"><use href="icons.svg#nk-progress"></use></svg></span><h3 class="nk-t-h2">Видите результат</h3><p>15 минут — и ребёнок объясняет за ужином, как думает нейросеть. Плюс опыт и звание.</p></div>
     </div>
   </section>
 
@@ -346,7 +352,7 @@ footer{border-top:2px solid rgba(123,79,242,.12);background:#FFF6E9}
 
   <section class="wrap final">
     <div class="final-block">
-      <div style="display:flex;justify-content:center;margin-bottom:22px"><span class="nk-coin nk-coin--sun nk-coin--lg nk-bob">🚀</span></div>
+      <div style="display:flex;justify-content:center;margin-bottom:22px"><span class="nk-coin nk-coin--sun nk-coin--lg nk-bob"><svg class="ic" aria-hidden="true"><use href="icons.svg#nk-rocket"></use></svg></span></div>
       <h2>Готовы к первой <span>миссии?</span></h2>
       <p>Бесплатно, без регистрации и без карты. Просто откройте на телефоне.</p>
       <div class="final-ctas">
@@ -358,7 +364,7 @@ footer{border-top:2px solid rgba(123,79,242,.12);background:#FFF6E9}
 
   <footer>
     <div class="wrap ft">
-      <div class="ft-logo">Noo<span>ka</span> · © 2026</div>
+      <div><div class="ft-logo">Noo<span>ka</span> · © 2026</div><div class="nk-t-caption" style="margin-top:4px">Игровая образовательная платформа для детей 6–12 лет</div></div>
       <div class="ft-links">
         <a href="base/">Моя база</a>
         <a href="#subjects">Игры</a>
@@ -383,17 +389,17 @@ var WAITLIST_URL = 'https://t.me/NookaGame';
 var V = '?v=202607211900';
 
 var PLANETS = [
-  {key:'ai',    emoji:'🧠', coin:'',              subject:'Искусственный интеллект', name:'Нейро Академия', desc:'Собери нейросеть, обучи её на данных и поймай ИИ на выдумке.', active:true,  levels:6,  img:'screenshots/ai.jpg',     src:'games/ai.html'},
-  {key:'prompt',emoji:'🧞', coin:'nk-coin--sun',  subject:'Искусственный интеллект', name:'ПромптЛаб',      desc:'Научись говорить с ИИ: точный промпт, роли, числа и итерации.', active:true,  levels:4,  img:'screenshots/prompt.jpg', src:'games/prompt.html'},
-  {key:'phys',  emoji:'⚛️', coin:'nk-coin--sun',  subject:'Физика',                  name:'КвантУм',        desc:'Рычаги, траектории, равновесие: физика, которую можно потрогать.', active:true,  levels:6,  img:'screenshots/phys.jpg',   src:'games/physics.html'},
-  {key:'chem',  emoji:'🧪', coin:'nk-coin--ok',   subject:'Химия',                   name:'Хемо Лаб',       desc:'Реакции, плотность и опыты, которые дома никто не разрешит.', active:true,  levels:6,  img:'screenshots/chem.jpg',   src:'games/chemistry.html'},
-  {key:'code',  emoji:'🕹️', coin:'',              subject:'Программирование',        name:'КодБот',         desc:'Составь программу из блоков — и робот дойдёт до звезды.', active:true,  levels:3,  img:'screenshots/code.jpg',   src:'games/code.html'},
-  {key:'space', emoji:'🪐', coin:'nk-coin--warn', subject:'Астрономия',              name:'КосмоПорт',      desc:'Собери ракету, рассчитай топливо и выйди на орбиту.', active:false, levels:6,  img:'screenshots/space.svg'},
-  {key:'robo',  emoji:'⚙️', coin:'',              subject:'Инженерия',               name:'РобоЛаб',        desc:'Шестерёнки, рычаги и моторы: собери машину, которая едет сама.', active:false, levels:6,  img:'screenshots/robo.svg'},
-  {key:'bio',   emoji:'🔬', coin:'nk-coin--ok',   subject:'Биология',                name:'БиоМир',         desc:'Клетки, ДНК, экосистемы: собери живой мир своими руками.', active:false, levels:8,  img:'screenshots/bio.svg'},
-  {key:'eco',   emoji:'🌿', coin:'nk-coin--ok',   subject:'Экология и энергия',      name:'ЭкоСфера',       desc:'Запитай целый город чистой энергией — и не устрой блэкаут.', active:false, levels:6,  img:'screenshots/eco.svg'},
-  {key:'math',  emoji:'📐', coin:'nk-coin--warn', subject:'Математика',              name:'Цифрариум',      desc:'Числа, фигуры и шифры: головоломки, за которые берёшься сам.', active:false, levels:10, img:'screenshots/math.svg'},
-  {key:'geo',   emoji:'🗺️', coin:'',              subject:'География',               name:'ГеоАтлас',       desc:'Материки, климаты, страны: квесты по всей планете.', active:false, levels:7,  img:'screenshots/geo.svg'}
+  {key:'ai',    icon:'ai', coin:'',              subject:'Искусственный интеллект', name:'Нейро Академия', desc:'Собери нейросеть, обучи её на данных и поймай ИИ на выдумке.', active:true,  levels:6,  img:'screenshots/ai.jpg',     src:'games/ai.html'},
+  {key:'prompt',icon:'prompt', coin:'nk-coin--sun',  subject:'Искусственный интеллект', name:'ПромптЛаб',      desc:'Научись говорить с ИИ: точный промпт, роли, числа и итерации.', active:true,  levels:4,  img:'screenshots/prompt.jpg', src:'games/prompt.html'},
+  {key:'phys',  icon:'phys', coin:'nk-coin--sun',  subject:'Физика',                  name:'КвантУм',        desc:'Рычаги, траектории, равновесие: физика, которую можно потрогать.', active:true,  levels:6,  img:'screenshots/phys.jpg',   src:'games/physics.html'},
+  {key:'chem',  icon:'chem', coin:'nk-coin--ok',   subject:'Химия',                   name:'Хемо Лаб',       desc:'Реакции, плотность и опыты, которые дома никто не разрешит.', active:true,  levels:6,  img:'screenshots/chem.jpg',   src:'games/chemistry.html'},
+  {key:'code',  icon:'code', coin:'',              subject:'Программирование',        name:'КодБот',         desc:'Составь программу из блоков — и робот дойдёт до звезды.', active:true,  levels:3,  img:'screenshots/code.jpg',   src:'games/code.html'},
+  {key:'space', icon:'space', coin:'nk-coin--warn', subject:'Астрономия',              name:'КосмоПорт',      desc:'Собери ракету, рассчитай топливо и выйди на орбиту.', active:false, levels:6,  img:'screenshots/space.svg'},
+  {key:'robo',  icon:'robo', coin:'',              subject:'Инженерия',               name:'РобоЛаб',        desc:'Шестерёнки, рычаги и моторы: собери машину, которая едет сама.', active:false, levels:6,  img:'screenshots/robo.svg'},
+  {key:'bio',   icon:'bio', coin:'nk-coin--ok',   subject:'Биология',                name:'БиоМир',         desc:'Клетки, ДНК, экосистемы: собери живой мир своими руками.', active:false, levels:8,  img:'screenshots/bio.svg'},
+  {key:'eco',   icon:'eco', coin:'nk-coin--ok',   subject:'Экология и энергия',      name:'ЭкоСфера',       desc:'Запитай целый город чистой энергией — и не устрой блэкаут.', active:false, levels:6,  img:'screenshots/eco.svg'},
+  {key:'math',  icon:'math', coin:'nk-coin--warn', subject:'Математика',              name:'Цифрариум',      desc:'Числа, фигуры и шифры: головоломки, за которые берёшься сам.', active:false, levels:10, img:'screenshots/math.svg'},
+  {key:'geo',   icon:'geo', coin:'',              subject:'География',               name:'ГеоАтлас',       desc:'Материки, климаты, страны: квесты по всей планете.', active:false, levels:7,  img:'screenshots/geo.svg'}
 ];
 
 var grid = document.getElementById('planets');
@@ -406,7 +412,7 @@ PLANETS.forEach(function(p){
       '<img src="'+p.img+(p.active?V:'')+'" alt="'+p.name+'" loading="lazy">' +
       (p.active ? '' : '<div class="p-dim"><span>В разработке</span></div>') +
       '<span class="p-chip '+(p.active?'open':'soon')+'">'+status+'</span>' +
-      '<span class="nk-coin '+p.coin+' p-coin">'+p.emoji+'</span>' +
+      '<span class="nk-coin '+p.coin+' p-coin"><svg class="ic" aria-hidden="true"><use href="icons.svg#nk-'+p.icon+'"></use></svg></span>' +
     '</div>' +
     '<div class="p-body">' +
       '<div class="nk-t-caption p-subject">'+p.subject+'</div>' +
