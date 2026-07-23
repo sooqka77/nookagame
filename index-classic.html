@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Nooka — игры, в которых ребёнок осваивает ИИ и науки</title>
+<meta name="description" content="Игры про ИИ, химию и физику для детей 6–12 лет. Миссии по 15 минут: ребёнок строит нейросети и собирает молекулы. С телефона, без установки. Бесплатно.">
+<meta property="og:title" content="Nooka — игры, в которых ребёнок осваивает ИИ и науки">
+<meta property="og:description" content="Игры про ИИ, химию и физику для детей 6–12 лет. С телефона, без установки. Начните бесплатно.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://nookagame.ru/">
+<meta property="og:image" content="https://nookagame.ru/screenshots/og.png">
+<link rel="icon" type="image/svg+xml" href="logo.svg">
+<link rel="preconnect" href="https://fonts.bunny.net">
+<link href="https://fonts.bunny.net/css?family=space-grotesk:400,500,600,700,800" rel="stylesheet" media="print" onload="this.media='all'">
+<noscript><link href="https://fonts.bunny.net/css?family=space-grotesk:400,500,600,700,800" rel="stylesheet"></noscript>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{
+  --black:#111118;
+  --purple:#7B2FFF;
+  --purple-d:#5B10E8;
+  --yellow:#FFE141;
+  --coral:#FF5038;
+  --mint:#00C27C;
+  --blue:#3B82F6;
+  --bg:#F7F4FF;
+  --white:#FFFFFF;
+  --text:#111118;
+  --muted:#6B7280;
+}
+html,body{width:100%;min-height:100vh;background:var(--white);color:var(--text);font-family:'Space Grotesk',sans-serif;overflow-x:hidden}
+
+/* ── HEADER ── */
+header{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.95);backdrop-filter:blur(20px);border-bottom:2px solid #F0ECFF}
+.hdr{display:flex;align-items:center;justify-content:space-between;padding:14px 40px;max-width:1200px;margin:0 auto}
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none}
+.logo-mark{width:38px;height:38px;display:flex;align-items:center;justify-content:center}
+.logo-mark img{width:38px;height:38px;display:block}
+.logo-name{font-size:20px;font-weight:800;letter-spacing:-.5px;color:var(--black)}
+.logo-name em{color:var(--purple);font-style:normal}
+nav{display:flex;align-items:center;gap:10px}
+.btn-ghost{padding:9px 22px;border-radius:40px;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:14px;cursor:pointer;background:transparent;color:var(--black);border:2px solid #E5E7EB;transition:all .18s}
+.btn-ghost:hover{border-color:var(--purple);color:var(--purple)}
+.btn-dark{padding:9px 22px;border-radius:40px;font-family:'Space Grotesk',sans-serif;font-weight:800;font-size:14px;cursor:pointer;background:var(--black);color:#fff;border:none;transition:all .18s}
+.btn-dark:hover{background:#2D2D3A;transform:translateY(-1px)}
+
+/* ── HERO ── */
+.hero{padding:48px 40px 40px;max-width:1200px;margin:0 auto;text-align:center;position:relative;overflow:hidden}
+
+/* floating deco circles */
+.deco{position:absolute;border-radius:50%;pointer-events:none;display:flex;align-items:center;justify-content:center;font-size:28px;animation:floatDeco 6s ease-in-out infinite}
+@keyframes floatDeco{0%,100%{transform:translateY(0) rotate(0deg)}50%{transform:translateY(-14px) rotate(5deg)}}
+.d1{width:80px;height:80px;background:#EDE9FE;top:60px;left:6%;animation-delay:0s}
+.d2{width:68px;height:68px;background:#FEF3C7;top:30px;right:8%;animation-delay:1s}
+.d3{width:60px;height:60px;background:#DCFCE7;bottom:120px;left:3%;animation-delay:2s}
+.d4{width:72px;height:72px;background:#FEE2E2;bottom:80px;right:5%;animation-delay:.7s}
+.d5{width:56px;height:56px;background:#DBEAFE;top:50%;left:1%;animation-delay:1.5s}
+.d6{width:64px;height:64px;background:#FCE7F3;top:45%;right:2%;animation-delay:.4s}
+
+.hero-badge{display:inline-flex;align-items:center;gap:8px;background:var(--yellow);color:var(--black);padding:7px 18px;border-radius:40px;font-size:13px;font-weight:800;letter-spacing:.3px;margin-bottom:20px}
+.hero-badge .dot{width:8px;height:8px;border-radius:50%;background:var(--coral);animation:blink 2s ease-in-out infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+
+h1{font-size:clamp(42px,6vw,88px);font-weight:800;line-height:.95;letter-spacing:-4px;margin-bottom:20px;color:var(--black)}
+h1 .line-purple{color:var(--purple);display:block}
+h1 .line-coral{color:var(--coral);display:block}
+.hero-sub{font-size:clamp(16px,1.6vw,20px);color:var(--muted);margin-bottom:24px;font-weight:500;line-height:1.5;max-width:600px;margin-left:auto;margin-right:auto}
+.hero-sub strong{color:var(--black)}
+
+.subjects-row{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-bottom:28px}
+.subj-tag{display:inline-flex;align-items:center;gap:8px;padding:10px 20px;border-radius:40px;font-size:15px;font-weight:700;border:2px solid transparent;transition:transform .2s}
+.subj-tag:hover{transform:translateY(-3px)}
+.st-ai{background:#EDE9FE;color:#5B21B6;border-color:#DDD6FE}
+.st-chem{background:#FEF3C7;color:#92400E;border-color:#FDE68A}
+.st-bio{background:#DCFCE7;color:#065F46;border-color:#BBF7D0}
+.st-geo{background:#DBEAFE;color:#1E40AF;border-color:#BFDBFE}
+.st-math{background:#FEE2E2;color:#991B1B;border-color:#FECACA}
+.st-phys{background:#FCE7F3;color:#9D174D;border-color:#FBCFE8}
+
+.hero-ctas{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+.cta-main{padding:18px 56px;border-radius:40px;font-family:'Space Grotesk',sans-serif;font-size:18px;font-weight:800;cursor:pointer;border:none;background:var(--black);color:#fff;box-shadow:0 8px 32px rgba(17,17,24,.2);transition:all .22s;letter-spacing:-.3px}
+.cta-main:hover{background:#2D2D3A;transform:translateY(-2px);box-shadow:0 14px 40px rgba(17,17,24,.28)}
+.cta-sec{padding:18px 36px;border-radius:40px;font-family:'Space Grotesk',sans-serif;font-size:18px;font-weight:700;cursor:pointer;background:transparent;color:var(--black);border:2px solid #D1D5DB;transition:all .22s}
+.cta-sec:hover{border-color:var(--black)}
+
+/* ── STATS BAR ── фиолетовый full-width */
+.stats-bar{background:var(--purple);padding:28px 40px;margin:0;text-align:center}
+.stats-title{font-size:clamp(26px,2.8vw,42px);font-weight:800;color:#fff;letter-spacing:-1.5px;line-height:1.1;margin-bottom:20px}
+.stats-title em{font-style:normal;color:#FFE141}
+.stats-feats{display:flex;align-items:stretch;max-width:860px;margin:0 auto;background:rgba(255,255,255,.1);border-radius:22px;overflow:hidden;backdrop-filter:blur(4px)}
+.feat{flex:1;padding:22px 28px;display:flex;align-items:flex-start;gap:16px;text-align:left}
+.feat-ic{flex-shrink:0;width:44px;height:44px}
+.feat-t{font-size:20px;font-weight:800;margin-bottom:8px;letter-spacing:-.4px}
+.feat-1 .feat-t{color:#FFE141}
+.feat-2 .feat-t{color:#FF8A6A}
+.feat-d{color:rgba(255,255,255,.88);font-size:17px;line-height:1.7}
+.feat-sep{width:1px;background:rgba(255,255,255,.18);flex-shrink:0}
+@media(max-width:600px){.stats-feats{flex-direction:column}.feat-sep{width:100%;height:1px}}
+
+/* ── HOW IT WORKS ── */
+.sec{padding:60px 40px;max-width:1200px;margin:0 auto}
+.sec-tag{display:inline-block;background:var(--yellow);color:var(--black);font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:2px;padding:6px 16px;border-radius:40px;margin-bottom:20px}
+.sec-h{font-size:clamp(32px,4vw,56px);font-weight:800;letter-spacing:-2px;margin-bottom:14px;color:var(--black);line-height:1.05}
+.sec-h span{color:var(--purple)}
+.sec-sub{font-size:17px;color:var(--muted);max-width:500px;line-height:1.7;margin-bottom:48px}
+
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.step{border-radius:24px;padding:40px 32px;position:relative;overflow:hidden}
+.step-1{background:#7B2FFF;color:#fff}
+.step-2{background:#FFE141;color:#111118}
+.step-3{background:#111118;color:#fff}
+.step-num{font-size:72px;font-weight:800;opacity:.18;line-height:1;margin-bottom:16px;letter-spacing:-4px}
+.step-ic{font-size:36px;margin-bottom:16px;display:block}
+.step-t{font-size:21px;font-weight:800;margin-bottom:10px;letter-spacing:-.4px}
+.step-d{font-size:14px;line-height:1.75;opacity:.75}
+
+/* ── PLANETS ── */
+.planets-bg{background:var(--bg);padding:80px 40px}
+.planets-inner{max-width:1200px;margin:0 auto}
+.planets{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:48px}
+.planet{border-radius:22px;overflow:hidden;cursor:pointer;transition:all .28s;display:flex;flex-direction:column;box-shadow:0 4px 20px rgba(0,0,0,.08)}
+.planet:hover{transform:translateY(-6px);box-shadow:0 20px 50px rgba(0,0,0,.18)}
+.p-img-wrap{position:relative;height:240px;overflow:hidden;flex-shrink:0;display:flex;align-items:flex-start;justify-content:center;padding-top:20px}
+.p-img{width:88%;height:auto;border-radius:14px;box-shadow:0 10px 32px rgba(0,0,0,.25);display:block;flex-shrink:0;transition:transform .2s ease}
+.planet:hover .p-img{transform:scale(1.03) translateY(-4px)}
+.p-chip{position:absolute;top:14px;right:14px;display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:800;padding:6px 14px;border-radius:40px;letter-spacing:.3px;backdrop-filter:blur(10px)}
+.p-chip.open{background:rgba(255,255,255,.92);color:#111118}
+.p-chip.soon{background:rgba(0,0,0,.52);color:rgba(255,255,255,.88)}
+.p-chip.soon-dark{background:rgba(0,0,0,.45);color:rgba(255,255,255,.82)}
+.p-img-dim{position:absolute;inset:0;background:rgba(0,0,0,.38);display:flex;align-items:flex-end;padding:10px 14px}
+.p-img-dim-label{font-size:11px;font-weight:500;color:rgba(255,255,255,.55);letter-spacing:.4px}
+.p-body{padding:20px 22px 22px;flex:1;display:flex;flex-direction:column;justify-content:space-between;gap:10px}
+.pl-ai .p-body{background:#7B2FFF;color:#fff}
+.pl-chem .p-body{background:#111118;color:#fff}
+.pl-bio .p-body{background:#00C27C;color:#fff}
+.pl-geo .p-body{background:#FFE141;color:#111118}
+.pl-math .p-body{background:#FF5038;color:#fff}
+.pl-phys .p-body{background:#3B82F6;color:#fff}
+.pl-code .p-body{background:#4C1D95;color:#fff}
+.pl-prompt .p-body{background:#A855F7;color:#fff}
+.pl-space .p-body{background:#0B1026;color:#fff}
+.pl-robo .p-body{background:#FF9F43;color:#111118}
+.pl-eco .p-body{background:#16A34A;color:#fff}
+.pl-ai .p-img-wrap{background:linear-gradient(145deg,#1e1b4b,#312e81)}
+.pl-chem .p-img-wrap{background:linear-gradient(145deg,#d1fae5,#6ee7b7)}
+.pl-phys .p-img-wrap{background:linear-gradient(145deg,#ede9fe,#c4b5fd)}
+.pl-bio .p-img-wrap{background:linear-gradient(145deg,#dcfce7,#86efac)}
+.pl-geo .p-img-wrap{background:linear-gradient(145deg,#dbeafe,#93c5fd)}
+.pl-math .p-img-wrap{background:linear-gradient(145deg,#fee2e2,#fca5a5)}
+.pl-code .p-img-wrap{background:linear-gradient(145deg,#2e1065,#4c1d95)}
+.pl-prompt .p-img-wrap{background:linear-gradient(145deg,#4c1d95,#1e1b4b)}
+.pl-space .p-img-wrap{background:linear-gradient(145deg,#1e3a8a,#0b1026)}
+.pl-robo .p-img-wrap{background:linear-gradient(145deg,#ffedd5,#fdba74)}
+.pl-eco .p-img-wrap{background:linear-gradient(145deg,#d9f99d,#86efac)}
+.p-name{font-size:20px;font-weight:800;margin-bottom:4px;letter-spacing:-.4px}
+.p-subject{font-size:12px;font-weight:700;opacity:.6;margin-bottom:8px;text-transform:uppercase;letter-spacing:.9px}
+.p-desc{font-size:14px;line-height:1.7;opacity:.82}
+
+/* ── MANIFESTO ── */
+.mani{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:40px}
+.mani-card{background:#fff;border:2px solid #F0ECFF;border-radius:24px;padding:36px 30px;transition:all .2s}
+.mani-card:hover{transform:translateY(-4px);box-shadow:0 16px 40px rgba(123,47,255,.1);border-color:#DDD6FE}
+.mani-num{display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;border-radius:14px;font-size:22px;margin-bottom:18px}
+.mani-1 .mani-num{background:#FEE2E2}
+.mani-2 .mani-num{background:#FEF3C7}
+.mani-3 .mani-num{background:#EDE9FE}
+.mani-t{font-size:20px;font-weight:800;letter-spacing:-.4px;margin-bottom:10px;color:var(--black)}
+.mani-d{font-size:14.5px;line-height:1.75;color:var(--muted)}
+.mani-d strong{color:var(--black)}
+.mission-line{background:var(--bg);border-radius:24px;padding:40px;text-align:center}
+.mission-label{font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:2px;color:var(--purple);margin-bottom:14px}
+.mission-text{font-size:clamp(22px,2.6vw,34px);font-weight:800;letter-spacing:-1.2px;line-height:1.25;color:var(--black);max-width:820px;margin:0 auto}
+.mission-text em{font-style:normal;color:var(--purple)}
+
+/* ── PARENTS FAQ ── */
+.faq{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:48px}
+.faq-card{background:#fff;border-radius:22px;padding:30px}
+.faq-q{font-size:16px;font-weight:800;letter-spacing:-.3px;color:var(--black);margin-bottom:10px}
+.faq-a{font-size:14.5px;line-height:1.75;color:var(--muted)}
+.faq-a strong{color:var(--black)}
+@media(max-width:960px){.mani{grid-template-columns:1fr}.faq{grid-template-columns:1fr}}
+
+/* ── REVIEWS ── жёлтый фон */
+.reviews-wrap{background:var(--yellow);padding:80px 40px}
+.reviews-inner{max-width:1200px;margin:0 auto}
+.reviews{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:48px}
+.rev{background:#fff;border-radius:24px;padding:32px;transition:transform .2s}
+.rev:hover{transform:translateY(-3px)}
+.rev-stars{font-size:16px;margin-bottom:14px}
+.rev-q{font-size:15px;line-height:1.8;color:var(--text);margin-bottom:22px;font-weight:500}
+.rev-who{display:flex;align-items:center;gap:12px}
+.rev-av{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:800;flex-shrink:0;color:#fff}
+.rev-name{font-size:14px;font-weight:800;color:var(--text);letter-spacing:-.2px}
+.rev-role{font-size:12px;color:var(--muted);margin-top:2px}
+
+/* ── PRICING ── */
+.pricing-sec{padding:80px 40px;max-width:1200px;margin:0 auto}
+.pricing-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:48px;max-width:780px;margin-left:auto;margin-right:auto}
+.price-box{border-radius:24px;padding:40px;position:relative;border:2px solid #E5E7EB}
+.price-box.free{background:#fff}
+.price-box.pro{background:var(--black);border-color:var(--black);color:#fff}
+.price-badge{position:absolute;top:22px;right:22px;background:var(--coral);color:#fff;font-size:10px;font-weight:800;padding:4px 12px;border-radius:40px;text-transform:uppercase;letter-spacing:.5px}
+.price-tier{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:var(--muted);margin-bottom:16px}
+.price-box.pro .price-tier{color:rgba(255,255,255,.5)}
+.price-amt{font-size:58px;font-weight:800;line-height:1;letter-spacing:-3px}
+.price-amt sup{font-size:24px;vertical-align:super;font-weight:700;letter-spacing:0}
+.price-mo{font-size:14px;color:var(--muted);margin-top:8px}
+.price-box.pro .price-mo{color:rgba(255,255,255,.45)}
+.price-sep{width:100%;height:1px;background:#E5E7EB;margin:28px 0}
+.price-box.pro .price-sep{background:rgba(255,255,255,.1)}
+.pf{display:flex;align-items:flex-start;gap:10px;font-size:14px;color:var(--muted);margin-bottom:12px;line-height:1.6;font-weight:500}
+.price-box.pro .pf{color:rgba(255,255,255,.65)}
+.pf .ok{color:var(--mint);font-weight:800;flex-shrink:0}
+.pf .no{color:#D1D5DB;flex-shrink:0}
+.price-box.pro .pf .ok{color:var(--yellow)}
+.p-cta{width:100%;padding:15px;border-radius:40px;font-family:'Space Grotesk',sans-serif;font-size:16px;font-weight:800;cursor:pointer;border:none;margin-top:24px;transition:all .2s;letter-spacing:-.2px}
+.p-cta.free{background:var(--bg);color:var(--black)}
+.p-cta.free:hover{background:#EDE9FE;color:var(--purple)}
+.p-cta.pro{background:var(--yellow);color:var(--black)}
+.p-cta.pro:hover{background:#FFD60A;transform:translateY(-1px)}
+
+/* ── FINAL CTA ── */
+.cta-wrap{padding:0 40px 80px;max-width:1200px;margin:0 auto}
+.cta-block{background:var(--black);border-radius:32px;text-align:center;padding:80px 40px;position:relative;overflow:hidden}
+.cta-block::before{content:'🚀';position:absolute;font-size:220px;opacity:.05;top:-30px;left:-20px;pointer-events:none;transform:rotate(-20deg)}
+.cta-block::after{content:'⭐';position:absolute;font-size:180px;opacity:.05;bottom:-40px;right:-10px;pointer-events:none}
+.cta-block h2{font-size:clamp(32px,5vw,64px);font-weight:800;letter-spacing:-2.5px;margin-bottom:16px;color:#fff;line-height:1;position:relative}
+.cta-block h2 span{color:var(--yellow)}
+.cta-block p{font-size:17px;color:rgba(255,255,255,.55);max-width:420px;margin:0 auto 40px;line-height:1.75;position:relative;font-weight:500}
+.cta-block .cta-main{background:var(--yellow);color:var(--black);position:relative;box-shadow:0 8px 32px rgba(255,225,65,.25)}
+.cta-block .cta-main:hover{background:#FFD60A;box-shadow:0 14px 40px rgba(255,225,65,.4)}
+
+/* ── FOOTER ── */
+footer{border-top:2px solid #F3F4F6;padding:32px 0;background:#fff}
+.ft{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;padding:0 40px;max-width:1200px;margin:0 auto}
+.ft-logo{font-size:16px;font-weight:800;color:var(--black)}
+.ft-logo em{color:var(--purple);font-style:normal}
+.ft-r{display:flex;gap:24px}
+.ft-r a{font-size:13px;color:var(--muted);text-decoration:none;font-weight:600;transition:color .18s}
+.ft-r a:hover{color:var(--purple)}
+
+/* ── MODAL ── */
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(17,17,24,.88);z-index:1000;align-items:center;justify-content:center;backdrop-filter:blur(16px)}
+.modal-bg.open{display:flex}
+.modal-box{background:#fff;border-radius:28px;width:min(960px,95vw);height:min(640px,92vh);overflow:hidden;position:relative;box-shadow:0 48px 120px rgba(0,0,0,.4)}
+.modal-close{position:absolute;top:14px;right:14px;z-index:10;background:#F3F4F6;border:none;color:var(--black);width:36px;height:36px;border-radius:10px;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .18s;font-weight:700}
+.modal-close:hover{background:#EDE9FE;color:var(--purple)}
+.modal-box iframe{width:100%;height:100%;border:none;display:block}
+
+/* ── TOAST ── */
+.toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(120px);background:var(--black);color:#fff;padding:14px 26px;border-radius:40px;font-size:14px;font-weight:700;z-index:2000;transition:transform .3s cubic-bezier(.34,1.56,.64,1);box-shadow:0 8px 32px rgba(0,0,0,.25);white-space:nowrap}
+.toast.show{transform:translateX(-50%) translateY(0)}
+
+/* ── RESPONSIVE ── */
+@media(max-width:960px){
+  .hdr{padding:12px 20px}
+  .hero{padding:48px 20px 40px}
+  .steps,.planets{grid-template-columns:1fr}
+  .p-img-wrap{height:220px}
+  .pricing-grid{grid-template-columns:1fr}
+  .sec,.pricing-sec,.cta-wrap{padding-left:20px;padding-right:20px}
+  .planets-bg{padding-left:20px;padding-right:20px}
+  .planets-inner{margin:0}
+  .ft{padding:0 20px}
+}
+@media(max-width:580px){
+  /* header */
+  .btn-ghost{display:none}
+  .btn-dark{padding:9px 16px;font-size:13px}
+  /* hero */
+  .hero{padding:24px 16px 28px;overflow:hidden}
+  .deco{display:none}
+  .hero-badge{font-size:11px;padding:6px 14px;white-space:nowrap}
+  h1{font-size:clamp(34px,9vw,52px);letter-spacing:-2px}
+  .hero-sub{font-size:15px}
+  /* subjects */
+  .subjects-row{gap:6px}
+  .subj-tag{font-size:12px;padding:7px 12px;gap:5px}
+  /* ctas */
+  .hero-ctas{flex-direction:column;align-items:stretch;gap:10px}
+  .cta-main,.cta-sec{width:100%;text-align:center;padding:16px 20px;font-size:16px}
+  /* cards */
+  .p-img-wrap{height:200px}
+  .p-img{width:92%}
+  /* stats */
+  .stats-bar{padding:20px 16px}
+  .stats-title{font-size:22px}
+  /* pricing */
+  .price-box{padding:28px 20px}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="hdr">
+    <a class="logo" href="#">
+      <div class="logo-mark"><img src="logo.svg" alt="Nooka"></div>
+      <div class="logo-name">Noo<em>ka</em></div>
+    </a>
+    <nav>
+      <a href="base/" style="text-decoration:none;font-weight:700;font-size:15px;color:var(--black,#111118);margin-right:14px">🚀 Моя база</a>
+      <button class="btn-dark" onclick="openModal()">Играть бесплатно</button>
+    </nav>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+  <!-- deco floating circles -->
+  <div class="deco d1">🧠</div>
+  <div class="deco d2">⚗️</div>
+  <div class="deco d3">🔬</div>
+  <div class="deco d4">📐</div>
+  <div class="deco d5">⚛️</div>
+  <div class="deco d6">🗺️</div>
+
+  <div class="hero-badge"><span class="dot"></span>Бета · 5 игр · 25 уровней</div>
+
+  <h1>
+    Настоящие игры,
+    <span class="line-purple">где ребёнок осваивает</span>
+    <span class="line-coral">ИИ и науки</span>
+  </h1>
+
+  <p class="hero-sub"><strong>Миссии и симуляции по 15 минут:</strong> ребёнок 6–12 лет строит нейросети, собирает молекулы и ставит опыты. С телефона, без установки и регистрации.</p>
+
+  <div class="subjects-row">
+    <span class="subj-tag st-ai">🧠 ИИ</span>
+    <span class="subj-tag st-chem">⚗️ Химия</span>
+    <span class="subj-tag st-bio">🔬 Биология</span>
+    <span class="subj-tag st-geo">🗺️ География</span>
+    <span class="subj-tag st-math">📐 Математика</span>
+    <span class="subj-tag st-phys">⚛️ Физика</span>
+  </div>
+
+  <div class="hero-ctas">
+    <button class="cta-main" onclick="openModal()">Запустить бесплатно</button>
+    <button class="cta-sec" onclick="document.getElementById('planets').scrollIntoView({behavior:'smooth'})">Все предметы</button>
+  </div>
+</section>
+
+<!-- STATS BAR — фиолетовый -->
+<div class="stats-bar">
+  <div class="stats-title">Ребёнок играет и разбирается,<br><em>как устроен мир</em></div>
+  <div class="stats-feats">
+    <div class="feat feat-1">
+      <svg class="feat-ic" viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M30 4L10 30h14l-6 18L44 22H30L36 4z" fill="#FFE141"/>
+      </svg>
+      <div>
+        <div class="feat-t">Учится руками</div>
+        <div class="feat-d">Ребёнок сортирует данные, пишет промпты, собирает молекулы и испытывает законы физики. В каждом уровне своя механика</div>
+      </div>
+    </div>
+    <div class="feat-sep"></div>
+    <div class="feat feat-2">
+      <svg class="feat-ic" viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- большая звезда по центру -->
+        <path d="M26 8l3.5 10.5H41l-9 6.5 3.5 10.5-9-6.5-9 6.5 3.5-10.5-9-6.5h11.5z" fill="#FF8A6A"/>
+        <!-- малые звёзды -->
+        <circle cx="10" cy="10" r="3.5" fill="rgba(255,255,255,.5)"/>
+        <circle cx="43" cy="8" r="2.5" fill="rgba(255,255,255,.4)"/>
+        <circle cx="44" cy="40" r="3" fill="rgba(255,255,255,.35)"/>
+        <circle cx="8" cy="38" r="2" fill="rgba(255,255,255,.3)"/>
+      </svg>
+      <div>
+        <div class="feat-t">То, чему не учат в школе</div>
+        <div class="feat-d">Единственная платформа в России, где ребёнок осваивает искусственный интеллект через игру. Химия и физика приходят раньше школьной программы</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PLANETS -->
+<div class="planets-bg" id="planets">
+  <div class="planets-inner">
+    <div class="sec-tag">Предметы</div>
+    <h2 class="sec-h">Каждый предмет —<br><span>своя вселенная</span></h2>
+    <p class="sec-sub">Открыты три предмета: ИИ, химия и физика. Биология, география и математика выходят в 2026.</p>
+    <div class="planets" id="planetsGrid"></div>
+  </div>
+</div>
+
+<!-- HOW IT WORKS -->
+<div class="sec">
+  <div class="sec-tag">Как это работает</div>
+  <h2 class="sec-h">Три шага —<br><span>и ты уже играешь</span></h2>
+  <p class="sec-sub">Выбирай миссию, проходи за 15 минут, открывай следующую.</p>
+  <div class="steps">
+    <div class="step step-1">
+      <div class="step-num">01</div>
+      <span class="step-ic">🪐</span>
+      <div class="step-t">Выбираешь планету</div>
+      <div class="step-d">ИИ, химия, физика — каждый предмет отдельный мир с уровнями и прогрессом.</div>
+    </div>
+    <div class="step step-2">
+      <div class="step-num">02</div>
+      <span class="step-ic">🎮</span>
+      <div class="step-t">Проходишь миссии</div>
+      <div class="step-d">Декодеры, роботы, нейросети, лабиринты: в каждом уровне новая механика.</div>
+    </div>
+    <div class="step step-3">
+      <div class="step-num">03</div>
+      <span class="step-ic">📈</span>
+      <div class="step-t">Видишь прогресс</div>
+      <div class="step-d">XP, открытые миры, статистика. Ребёнок видит свой рост и возвращается сам.</div>
+    </div>
+  </div>
+</div>
+
+<!-- MANIFESTO -->
+<div class="sec" id="why">
+  <div class="sec-tag">Почему это важно</div>
+  <h2 class="sec-h">Мир изменился.<br><span>Школа — нет.</span></h2>
+  <p class="sec-sub">Три вещи, которые происходят в большинстве семей. Ради них мы построили Nooka.</p>
+  <div class="mani">
+    <div class="mani-card mani-1">
+      <div class="mani-num">📱</div>
+      <div class="mani-t">Экран всё равно победит</div>
+      <div class="mani-d">Запреты рождают скандалы, а телефон остаётся в руках. <strong>Nooka меняет, что происходит на экране:</strong> 20 минут миссий, за которые вам спокойно.</div>
+    </div>
+    <div class="mani-card mani-2">
+      <div class="mani-num">🧯</div>
+      <div class="mani-t">Школа гасит интерес</div>
+      <div class="mani-d">К третьему классу «почему?» превращается в «а это будет на контрольной?». <strong>Ребёнок, который собирал молекулы в игре, приходит на урок химии как к старому другу.</strong></div>
+    </div>
+    <div class="mani-card mani-3">
+      <div class="mani-num">🤖</div>
+      <div class="mani-t">ИИ — новая грамотность</div>
+      <div class="mani-d">Когда наши дети вырастут, работать с ИИ будет так же базово, как читать. Школа этому не научит вовремя. <strong>В Nooka ребёнок строит нейросети руками: в игре, с шести лет.</strong></div>
+    </div>
+  </div>
+  <div class="mission-line">
+    <div class="mission-label">Наша миссия</div>
+    <div class="mission-text">Влюбить детей в то, <em>как устроен мир</em>, и подготовить к будущему, где повсюду ИИ.</div>
+  </div>
+</div>
+
+<!-- PARENTS -->
+<div class="reviews-wrap" id="parents">
+  <div class="reviews-inner">
+    <div class="sec-tag" style="background:#fff">Для родителей</div>
+    <h2 class="sec-h">Честные ответы<br>на честные вопросы</h2>
+    <div class="faq">
+      <div class="faq-card">
+        <div class="faq-q">«Это же опять игры в телефоне…»</div>
+        <div class="faq-a">Да, и в этом смысл: ребёнок всё равно возьмёт телефон. После миссий Nooka <strong>он объясняет вам за ужином, как работает нейросеть.</strong> Сравните с лентой рекомендаций.</div>
+      </div>
+      <div class="faq-card">
+        <div class="faq-q">«Чем вы лучше бесплатных приложений?»</div>
+        <div class="faq-a">Каждая миссия построена как эксперимент: <strong>собери, ошибись, попробуй снова.</strong> Так ребёнок понимает, а не запоминает. Новые миссии выходят каждый месяц.</div>
+      </div>
+      <div class="faq-card">
+        <div class="faq-q">«Ребёнку 7 лет — какой ему ИИ?»</div>
+        <div class="faq-a">Семилетка начинает с химии и физики руками, ИИ заходит через простые механики: рассортируй данные, покорми нейросеть. <strong>Понимание растёт вместе с ребёнком.</strong></div>
+      </div>
+      <div class="faq-card">
+        <div class="faq-q">«Сколько времени это займёт?»</div>
+        <div class="faq-a">Одна миссия занимает 10–20 минут, расписания нет. <strong>Ребёнок побеждает сегодня</strong>, без «результата через четверть». Работает с любого телефона, без установки.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PRICING -->
+<div class="pricing-sec" style="text-align:center">
+  <div class="sec-tag">Тарифы</div>
+  <h2 class="sec-h">Начни бесплатно,<br><span>расти безлимитно</span></h2>
+  <p class="sec-sub" style="margin:0 auto">ИИ, химия и физика — бесплатно навсегда. Nooka Pro открывает всё остальное.</p>
+  <div class="pricing-grid">
+    <div class="price-box free">
+      <div class="price-tier">Бесплатно</div>
+      <div class="price-amt">0 <span style="font-size:22px;font-weight:600;color:var(--muted)">₽</span></div>
+      <div class="price-mo">навсегда</div>
+      <div class="price-sep"></div>
+      <div class="pf"><span class="ok">✓</span> ИИ, химия, физика — 25 уровней</div>
+      <div class="pf"><span class="ok">✓</span> Сохранение прогресса</div>
+      <div class="pf"><span class="no">—</span> Биология, география и другие</div>
+      <div class="pf"><span class="no">—</span> Новые уровни при выходе</div>
+      <button class="p-cta free" onclick="openModal()">Начать →</button>
+    </div>
+    <div class="price-box pro">
+      <div class="price-badge">Скоро</div>
+      <div class="price-tier">Nooka Pro</div>
+      <div class="price-amt"><sup>₽</sup>490</div>
+      <div class="price-mo">в месяц — дешевле одного занятия с репетитором</div>
+      <div class="price-sep"></div>
+      <div class="pf"><span class="ok">✓</span> Все 6 предметов + будущие</div>
+      <div class="pf"><span class="ok">✓</span> Новая миссия каждый месяц</div>
+      <div class="pf"><span class="ok">✓</span> Ранний доступ к новым мирам</div>
+      <div class="pf"><span class="ok">✓</span> Статистика для родителей</div>
+      <div class="pf"><span class="ok">✓</span> Без рекламы и без автосписаний</div>
+      <button class="p-cta pro" onclick="openWaitlist()">Записаться в лист ожидания</button>
+    </div>
+  </div>
+</div>
+
+<!-- FINAL CTA -->
+<div class="cta-wrap">
+  <div class="cta-block">
+    <h2>Готов к первой<br><span>миссии?</span></h2>
+    <p>Три предмета бесплатно, навсегда. Без карты и регистрации: жми и играй.</p>
+    <button class="cta-main" onclick="openModal()">Запустить Nooka →</button>
+  </div>
+</div>
+
+<footer>
+  <div class="ft">
+    <div class="ft-logo">Noo<em>ka</em> · © 2026</div>
+    <div class="ft-r">
+      <a href="#">Для родителей</a>
+      <a href="#">О проекте</a>
+      <a href="https://t.me/NookaGame" target="_blank">Telegram-канал</a>
+    </div>
+  </div>
+</footer>
+
+<div class="modal-bg" id="modal" onclick="closeOut(event)">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal()">×</button>
+    <iframe id="gframe" src="" allow="autoplay"></iframe>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+// Лист ожидания: вставить ссылку на Telegram-бота/канал или Яндекс.Форму.
+// Пока пусто — кнопка показывает тост.
+const WAITLIST_URL = 'https://t.me/NookaGame';
+function openWaitlist(){
+  if(WAITLIST_URL){window.open(WAITLIST_URL,'_blank')}
+  else{showToast('Скоро — записываем в лист ожидания')}
+}
+const PLANET_COLORS = {
+  ai:   {bg:'pl-ai',   chip:'open',      chipClass:'open'},
+  chem: {bg:'pl-chem', chip:'open',      chipClass:'open'},
+  bio:  {bg:'pl-bio',  chip:'soon',      chipClass:'soon'},
+  geo:  {bg:'pl-geo',  chip:'soon-dark', chipClass:'soon-dark'},
+  math: {bg:'pl-math', chip:'soon',      chipClass:'soon'},
+  phys: {bg:'pl-phys', chip:'open',      chipClass:'open'},
+  code: {bg:'pl-code', chip:'open',      chipClass:'open'},
+  prompt:{bg:'pl-prompt',chip:'open',   chipClass:'open'},
+  space:{bg:'pl-space',chip:'soon',      chipClass:'soon'},
+  robo: {bg:'pl-robo', chip:'soon-dark', chipClass:'soon-dark'},
+  eco:  {bg:'pl-eco',  chip:'soon',      chipClass:'soon'},
+};
+const PL=[
+  {key:'ai',  img:'screenshots/ai.jpg',  name:'Нейро Академия',subject:'Искусственный интеллект',desc:'Построй нейросеть, напиши промпт, поймай ИИ на выдумке. 6 уровней.',active:true,levels:6,src:'games/ai.html?v=202607231131'},
+  {key:'prompt',img:'screenshots/prompt.jpg?i=202607131648',name:'ПромптЛаб',subject:'Искусственный интеллект',desc:'Научись говорить с ИИ: точный промпт, роли, итерации.',active:true,levels:4,src:'games/prompt.html?v=202607201835'},
+  {key:'chem',img:'screenshots/chem.jpg?i=202607131648',name:'Хемо Лаб',subject:'Химия',desc:'Реакции, молекулы и опыты, которые дома никто не разрешит.',active:true,levels:6,src:'games/chemistry.html?v=202607141232'},
+  {key:'phys',img:'screenshots/phys.jpg?i=202607131648',name:'КвантУм',subject:'Физика',desc:'Рычаги, траектории, равновесие: физика, которую можно потрогать.',active:true,levels:6,src:'games/physics.html?v=202607141232'},
+  {key:'code', img:'screenshots/code.jpg?i=202607131648', name:'КодБот',subject:'Программирование',desc:'Составь программу из блоков — и робот дойдёт до звезды.',active:true,levels:3,src:'games/code.html?v=202607141232'},
+  {key:'space',img:'screenshots/space.svg',name:'КосмоПорт',subject:'Астрономия',desc:'Собери ракету, рассчитай топливо и выйди на орбиту.',active:false,levels:6},
+  {key:'robo', img:'screenshots/robo.svg', name:'РобоЛаб',subject:'Инженерия',desc:'Шестерёнки, рычаги и моторы: собери машину, которая едет сама.',active:false,levels:6},
+  {key:'bio', img:'screenshots/bio.svg', name:'БиоМир',subject:'Биология',desc:'Клетки, ДНК, экосистемы: собери живой мир своими руками.',active:false,levels:8},
+  {key:'eco', img:'screenshots/eco.svg', name:'ЭкоСфера',subject:'Экология и энергия',desc:'Запитай целый город чистой энергией — и не устрой блэкаут.',active:false,levels:6},
+  {key:'math',img:'screenshots/math.svg',name:'Цифрариум',subject:'Математика',desc:'Числа, фигуры и шифры: головоломки, за которые берёшься сам.',active:false,levels:10},
+  {key:'geo', img:'screenshots/geo.svg', name:'ГеоАтлас',subject:'География',desc:'Материки, климаты, страны: квесты по всей планете.',active:false,levels:7}
+];
+const pg=document.getElementById('planetsGrid');
+PL.forEach(p=>{
+  const c=PLANET_COLORS[p.key];
+  const chipLabel=p.active?`● Открыто · ${p.levels} ур.`:`🔒 Скоро · ${p.levels} ур.`;
+  const d=document.createElement('div');
+  d.className=`planet ${c.bg}`;
+  d.innerHTML=`
+    <div class="p-img-wrap">
+      <img class="p-img" src="${p.img}" alt="${p.name}" loading="lazy">
+      ${!p.active?'<div class="p-img-dim"><span class="p-img-dim-label">В разработке</span></div>':''}
+      <span class="p-chip ${c.chipClass}">${chipLabel}</span>
+    </div>
+    <div class="p-body">
+      <div>
+        <div class="p-subject">${p.subject}</div>
+        <div class="p-name">${p.name}</div>
+      </div>
+      <div class="p-desc">${p.desc}</div>
+    </div>`;
+  d.onclick=p.active?()=>openModal(p.src):()=>showToast(`${p.name} — готовим. Следите за обновлениями.`);
+  pg.appendChild(d);
+});
+
+function openModal(src){src=src||'games/ai.html?v=202607231131';document.getElementById('gframe').src=src;document.getElementById('modal').classList.add('open');document.body.style.overflow='hidden'}
+function closeModal(){document.getElementById('modal').classList.remove('open');document.getElementById('gframe').src='';document.body.style.overflow=''}
+function closeOut(e){if(e.target===document.getElementById('modal'))closeModal()}
+let _t;
+function showToast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(_t);_t=setTimeout(()=>t.classList.remove('show'),3400)}
+</script>
+</body>
+</html>
