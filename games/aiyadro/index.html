@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no,viewport-fit=cover">
+<title>AI-ЯДРО — Nooka</title>
+<style>
+  html,body{margin:0;padding:0;height:100%;background:#05060d;overflow:hidden}
+  #c{width:100vw;height:100vh;display:block;touch-action:none}
+  #load{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;
+        color:#9fb2d8;font:600 15px/1.5 system-ui,sans-serif;letter-spacing:.04em}
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div id="load">Загружаем станцию…</div>
+<script src="Build/Web.loader.js"></script>
+<script>
+  var canvas = document.querySelector('#c');
+  function fit() {
+    var d = Math.min(window.devicePixelRatio || 1, 2);
+    canvas.width  = Math.floor(canvas.clientWidth  * d);
+    canvas.height = Math.floor(canvas.clientHeight * d);
+  }
+  fit();
+  window.addEventListener('resize', fit);
+  createUnityInstance(canvas, {
+    dataUrl: 'Build/Web.data.unityweb',
+    frameworkUrl: 'Build/Web.framework.js.unityweb',
+    codeUrl: 'Build/Web.wasm.unityweb',
+    streamingAssetsUrl: 'StreamingAssets',
+    companyName: 'Nooka',
+    productName: 'AI-ЯДРО',
+    productVersion: '0.1'
+  }).then(function () {
+    document.querySelector('#load').remove();
+  }).catch(function (e) {
+    document.querySelector('#load').textContent = 'Ошибка загрузки: ' + e;
+  });
+</script>
+</body>
+</html>
