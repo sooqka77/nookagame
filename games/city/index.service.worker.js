@@ -4,7 +4,7 @@
 // Incrementing CACHE_VERSION will kick off the install event and force
 // previously cached resources to be updated from the network.
 /** @type {string} */
-const CACHE_VERSION = '1784993353|2391670';
+const CACHE_VERSION = '1784993927|2184622';
 /** @type {string} */
 const CACHE_PREFIX = 'CityBuilder-sw-cache-';
 const CACHE_NAME = CACHE_PREFIX + CACHE_VERSION;
