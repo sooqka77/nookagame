@@ -5,7 +5,8 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no"/>
 <title>ПромптЛаб — Искусственный интеллект</title>
 <link rel="preconnect" href="https://fonts.bunny.net">
-<link href="https://fonts.bunny.net/css?family=unbounded:700,900|nunito:500,700,800,900" rel="stylesheet" media="print" onload="this.media='all'">
+<!-- display=swap: без него текст невидим, пока шрифт грузится (мигание на медленной сети) -->
+<link href="https://fonts.bunny.net/css?family=unbounded:700,900|nunito:500,700,800,900&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
 <style>
 
 :root{
@@ -153,6 +154,126 @@ body{background:#080C18;}
 html::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
  background-image:radial-gradient(1.5px 1.5px at 12% 20%,rgba(240,244,255,.5) 50%,transparent 51%),radial-gradient(1px 1px at 68% 12%,rgba(240,244,255,.4) 50%,transparent 51%),radial-gradient(1.5px 1.5px at 84% 40%,rgba(196,77,255,.4) 50%,transparent 51%),radial-gradient(1px 1px at 30% 68%,rgba(0,229,255,.35) 50%,transparent 51%),radial-gradient(1.5px 1.5px at 55% 86%,rgba(240,244,255,.35) 50%,transparent 51%),radial-gradient(1px 1px at 92% 74%,rgba(255,214,10,.3) 50%,transparent 51%);}
 
+
+/* ============ ЛАБОРАТОРИЯ НЕЙРО — хаб ПромптЛаба (тёмный космос) ============ */
+.plh{--h-bg:#140A24;--h-bg2:#1E0F35;--h-glow:#7B4FF2;--h-glow2:#B57BFF;
+  --h-ink:#F4EEFF;--h-ink2:#B9A8D6;--h-ink3:#7C6B99;
+  --h-sun:#FFD84D;--h-ok:#4ED99B;--h-card:rgba(255,255,255,.055);
+  position:relative;min-height:100vh;box-sizing:border-box;overflow-x:hidden;
+  background:
+    radial-gradient(90% 55% at 50% -8%,rgba(123,79,242,.42) 0%,transparent 62%),
+    radial-gradient(70% 40% at 85% 22%,rgba(255,111,196,.16) 0%,transparent 60%),
+    linear-gradient(180deg,#1E0F35 0%,#140A24 46%,#0E0719 100%);
+  color:var(--h-ink);font-family:var(--nk-body);
+  padding:18px 16px 30px;display:flex;flex-direction:column;align-items:center;gap:16px;}
+
+/* звёзды */
+.plh__sky{position:absolute;inset:0;pointer-events:none;overflow:hidden;}
+.plh__star{position:absolute;border-radius:50%;background:#fff;animation:plh-tw 3.4s ease-in-out infinite;}
+@keyframes plh-tw{0%,100%{opacity:.18;transform:scale(1);}50%{opacity:.85;transform:scale(1.35);}}
+
+/* верхняя строка: стрик / xp */
+.plh__top{position:relative;z-index:2;width:100%;max-width:420px;display:flex;align-items:center;gap:8px;}
+.plh__pill{display:inline-flex;align-items:center;gap:7px;font-weight:900;font-size:13.5px;
+  padding:8px 14px;border-radius:999px;background:var(--h-card);color:var(--h-ink);
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.10);backdrop-filter:blur(8px);}
+.plh__pill b{font-size:15px;}
+.plh__pill--sun{color:#2A1A08;background:linear-gradient(180deg,#FFE9A8,#FFD84D);
+  box-shadow:0 3px 0 #D9A81C,inset 0 1px 0 rgba(255,255,255,.7);}
+.plh__spacer{flex:1;}
+
+/* капсула-хабитат */
+.plh__hab{position:relative;z-index:2;width:100%;max-width:420px;border-radius:32px;padding:22px 18px 18px;
+  background:linear-gradient(180deg,rgba(123,79,242,.28),rgba(123,79,242,.06) 55%,transparent),var(--h-card);
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.11),0 26px 50px -26px rgba(0,0,0,.7);
+  display:flex;flex-direction:column;align-items:center;overflow:hidden;}
+.plh__habglow{position:absolute;top:-40%;left:50%;transform:translateX(-50%);
+  width:118%;aspect-ratio:1;border-radius:50%;pointer-events:none;
+  background:radial-gradient(circle,rgba(181,123,255,.34) 0%,rgba(123,79,242,.14) 42%,transparent 68%);
+  animation:plh-breathe 5s ease-in-out infinite;}
+@keyframes plh-breathe{0%,100%{opacity:.75;transform:translateX(-50%) scale(1);}50%{opacity:1;transform:translateX(-50%) scale(1.07);}}
+.plh__orbit{position:absolute;border-radius:50%;box-shadow:inset 0 0 0 1px rgba(255,255,255,.07);pointer-events:none;}
+.plh__mascot{position:relative;z-index:1;animation:plh-float 4.2s ease-in-out infinite;
+  filter:drop-shadow(0 16px 26px rgba(0,0,0,.55)) drop-shadow(0 0 26px rgba(181,123,255,.4));}
+@keyframes plh-float{0%,100%{transform:translateY(0) rotate(-1.2deg);}50%{transform:translateY(-9px) rotate(1.2deg);}}
+
+/* имя + звание */
+.plh__name{position:relative;z-index:1;margin-top:6px;font-family:var(--nk-brand);
+  font-weight:700;font-size:21px;letter-spacing:.01em;}
+.plh__rank{position:relative;z-index:1;margin-top:5px;display:inline-flex;align-items:center;gap:7px;
+  font-weight:900;font-size:12.5px;letter-spacing:.05em;text-transform:uppercase;
+  padding:6px 14px;border-radius:999px;color:#F0E6FF;
+  background:linear-gradient(180deg,rgba(181,123,255,.5),rgba(123,79,242,.35));
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.16);}
+
+/* мозг: полоса + навыки */
+.plh__brain{position:relative;z-index:2;width:100%;max-width:420px;border-radius:26px;padding:16px 16px 14px;
+  background:var(--h-card);box-shadow:inset 0 0 0 1px rgba(255,255,255,.09);backdrop-filter:blur(8px);}
+.plh__brow{display:flex;align-items:baseline;gap:8px;margin-bottom:11px;}
+.plh__blabel{font-weight:900;font-size:14.5px;}
+.plh__bval{margin-left:auto;font-family:var(--nk-brand);font-weight:700;font-size:19px;
+  color:var(--h-glow2);text-shadow:0 0 18px rgba(181,123,255,.6);}
+.plh__bar{height:11px;border-radius:999px;background:rgba(0,0,0,.34);overflow:hidden;
+  box-shadow:inset 0 1px 3px rgba(0,0,0,.5);}
+.plh__fill{height:100%;border-radius:999px;transition:width .7s cubic-bezier(.2,.8,.3,1);
+  background:linear-gradient(90deg,#7B4FF2,#B57BFF 55%,#FF8FD6);
+  box-shadow:0 0 16px rgba(181,123,255,.75);}
+.plh__skills{display:flex;gap:7px;margin-top:13px;}
+.plh__sk{flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;padding:9px 4px 8px;
+  border-radius:16px;background:rgba(0,0,0,.24);box-shadow:inset 0 0 0 1px rgba(255,255,255,.05);
+  transition:transform .15s,box-shadow .15s;}
+.plh__sk--on{background:linear-gradient(180deg,rgba(78,217,155,.26),rgba(78,217,155,.09));
+  box-shadow:inset 0 0 0 1px rgba(78,217,155,.4),0 0 20px -6px rgba(78,217,155,.5);}
+.plh__sk svg{width:22px;height:22px;}
+.plh__sk span{font-weight:900;font-size:10.5px;letter-spacing:.02em;text-align:center;line-height:1.15;}
+.plh__sk--off svg{opacity:.3;}
+.plh__sk--off span{color:var(--h-ink3);}
+
+/* реплика Нейро */
+.plh__say{position:relative;z-index:2;width:100%;max-width:420px;border-radius:22px;padding:14px 16px;
+  font-weight:800;font-size:14.5px;line-height:1.45;color:#FFF6DC;
+  background:linear-gradient(180deg,rgba(255,216,77,.16),rgba(255,216,77,.05));
+  box-shadow:inset 0 0 0 1px rgba(255,216,77,.3);}
+.plh__say b{color:var(--h-sun);}
+
+/* карта уровней */
+.plh__map{position:relative;z-index:2;width:100%;max-width:420px;display:flex;flex-direction:column;gap:10px;}
+.plh__lv{position:relative;display:flex;align-items:center;gap:13px;width:100%;text-align:left;
+  border:none;cursor:pointer;border-radius:22px;padding:13px 15px;color:var(--h-ink);
+  font-family:var(--nk-body);background:var(--h-card);
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.09),0 14px 26px -16px rgba(0,0,0,.75);
+  transition:transform .12s cubic-bezier(.2,.8,.3,1),box-shadow .12s;overflow:hidden;}
+.plh__lv:hover{transform:translateY(-2px);box-shadow:inset 0 0 0 1px rgba(255,255,255,.17),0 20px 32px -16px rgba(0,0,0,.8);}
+.plh__lv:active{transform:translateY(1px) scale(.995);}
+.plh__lv--next{background:linear-gradient(100deg,rgba(255,216,77,.2),rgba(255,143,214,.10) 60%,var(--h-card));
+  box-shadow:inset 0 0 0 1.5px rgba(255,216,77,.5),0 18px 34px -16px rgba(0,0,0,.8),0 0 40px -14px rgba(255,216,77,.4);}
+.plh__lv--done{background:linear-gradient(100deg,rgba(78,217,155,.16),var(--h-card));
+  box-shadow:inset 0 0 0 1px rgba(78,217,155,.32),0 14px 26px -16px rgba(0,0,0,.7);}
+.plh__orb{position:relative;flex:0 0 auto;width:52px;height:52px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  background:radial-gradient(circle at 34% 28%,#B57BFF,#5836BD 70%,#3A1F7A);
+  box-shadow:inset 0 -5px 12px rgba(0,0,0,.45),inset 0 3px 8px rgba(255,255,255,.28),0 0 22px -4px rgba(123,79,242,.65);}
+.plh__lv--done .plh__orb{background:radial-gradient(circle at 34% 28%,#7BF0BC,#1FA76E 70%,#12603F);
+  box-shadow:inset 0 -5px 12px rgba(0,0,0,.4),inset 0 3px 8px rgba(255,255,255,.3),0 0 22px -4px rgba(78,217,155,.6);}
+.plh__orb svg{width:26px;height:26px;}
+.plh__ring{position:absolute;inset:-5px;border-radius:50%;box-shadow:inset 0 0 0 2px rgba(255,216,77,.55);
+  animation:plh-pulse 1.9s ease-in-out infinite;}
+@keyframes plh-pulse{0%,100%{transform:scale(1);opacity:.85;}50%{transform:scale(1.09);opacity:.3;}}
+.plh__lvtxt{min-width:0;flex:1;display:block;}
+.plh__lvnum{display:block;font-weight:900;font-size:10.5px;letter-spacing:.11em;color:var(--h-ink3);text-transform:uppercase;}
+.plh__lvname{display:block;font-weight:900;font-size:16.5px;margin-top:3px;line-height:1.15;}
+.plh__lvskill{display:block;margin-top:4px;font-weight:800;font-size:12px;color:var(--h-ink2);}
+.plh__go{flex:0 0 auto;width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(180deg,#FFE9A8,#FFD84D);box-shadow:0 3px 0 #D9A81C;}
+.plh__go svg{width:15px;height:15px;}
+.plh__tick{flex:0 0 auto;width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(180deg,#7BF0BC,#4ED99B);box-shadow:0 3px 0 #1FA76E;}
+.plh__tick svg{width:15px;height:15px;}
+
+@media(max-width:400px){
+  .plh__lvname{font-size:15px;}
+  .plh__sk span{font-size:9.5px;}
+}
 
 </style>
 </head>
@@ -2980,111 +3101,304 @@ function Level3Numbers({
   }));
 }
 /* ---------- Home + App ---------- */
-const PL_LEVELS = [{
+/* ============ ЛАБОРАТОРИЯ НЕЙРО — хаб ПромптЛаба ============
+   Нейро копит навыки от пройденных уровней и честно говорит, чего ещё не умеет.
+   Ровно та механика, что держит игрока у конкурентов: питомец, который растёт. */
+
+const PLH_ICON = {
+  aim: /*#__PURE__*/React.createElement("svg", {
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: "2.1",
+    strokeLinecap: "round"
+  }, /*#__PURE__*/React.createElement("circle", {
+    cx: "12",
+    cy: "12",
+    r: "8.4"
+  }), /*#__PURE__*/React.createElement("circle", {
+    cx: "12",
+    cy: "12",
+    r: "3.6"
+  }), /*#__PURE__*/React.createElement("path", {
+    d: "M12 1.6v3.2M12 19.2v3.2M1.6 12h3.2M19.2 12h3.2"
+  })),
+  mask: /*#__PURE__*/React.createElement("svg", {
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: "2.1",
+    strokeLinecap: "round",
+    strokeLinejoin: "round"
+  }, /*#__PURE__*/React.createElement("path", {
+    d: "M8.4 3.4h11.2a1.6 1.6 0 0 1 1.6 1.7c-.35 5.4-1.5 8.6-3.5 10.4a3.6 3.6 0 0 1-4.6 0c-2-1.8-3.15-5-3.5-10.4a1.6 1.6 0 0 1 1.6-1.7z"
+  }), /*#__PURE__*/React.createElement("path", {
+    d: "M8.6 8.2H4.4a1.6 1.6 0 0 0-1.6 1.7c.35 5.4 1.5 8.6 3.5 10.4a3.6 3.6 0 0 0 4.3.3"
+  }), /*#__PURE__*/React.createElement("path", {
+    d: "M12.6 8.6h.01M17 8.6h.01"
+  })),
+  num: /*#__PURE__*/React.createElement("svg", {
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: "2.1",
+    strokeLinecap: "round",
+    strokeLinejoin: "round"
+  }, /*#__PURE__*/React.createElement("path", {
+    d: "M3.2 7.6h17.6M3.2 16.4h17.6"
+  }), /*#__PURE__*/React.createElement("circle", {
+    cx: "8.6",
+    cy: "7.6",
+    r: "2.6",
+    fill: "currentColor",
+    stroke: "none"
+  }), /*#__PURE__*/React.createElement("circle", {
+    cx: "15.4",
+    cy: "16.4",
+    r: "2.6",
+    fill: "currentColor",
+    stroke: "none"
+  })),
+  loop: /*#__PURE__*/React.createElement("svg", {
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: "2.1",
+    strokeLinecap: "round",
+    strokeLinejoin: "round"
+  }, /*#__PURE__*/React.createElement("path", {
+    d: "M20.2 11.4a8.2 8.2 0 1 1-2.6-5.8"
+  }), /*#__PURE__*/React.createElement("path", {
+    d: "M20.6 3.4v4.6h-4.6"
+  })),
+  play: /*#__PURE__*/React.createElement("svg", {
+    viewBox: "0 0 24 24",
+    fill: "#2A1A08",
+    stroke: "none"
+  }, /*#__PURE__*/React.createElement("path", {
+    d: "M8 4.8 19 12 8 19.2z"
+  })),
+  check: /*#__PURE__*/React.createElement("svg", {
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "#0C4A30",
+    strokeWidth: "3.4",
+    strokeLinecap: "round",
+    strokeLinejoin: "round"
+  }, /*#__PURE__*/React.createElement("path", {
+    d: "M4.6 12.6 9.6 17.6 19.4 7"
+  })),
+  fire: /*#__PURE__*/React.createElement("svg", {
+    viewBox: "0 0 24 24",
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: "2",
+    strokeLinecap: "round",
+    strokeLinejoin: "round"
+  }, /*#__PURE__*/React.createElement("path", {
+    d: "M12 2.6s4.6 4 4.6 8.2a4.6 4.6 0 0 1-9.2 0c0-1.5.6-2.7 1.3-3.6"
+  }), /*#__PURE__*/React.createElement("path", {
+    d: "M12 21.4a5.4 5.4 0 0 0 5.4-5.4c0-3-3-5.2-3-5.2"
+  })),
+  spark: /*#__PURE__*/React.createElement("svg", {
+    viewBox: "0 0 24 24",
+    fill: "currentColor",
+    stroke: "none"
+  }, /*#__PURE__*/React.createElement("path", {
+    d: "M12 2.4 13.9 9 20.6 11 13.9 13 12 19.6 10.1 13 3.4 11 10.1 9z"
+  }))
+};
+
+/* Навык за каждый уровень + что Нейро НЕ умеет, пока навыка нет.
+   Порядок = порядок уровней. */
+const PLH_SKILLS = [{
   n: 1,
-  emoji: '🧞',
-  title: 'Джинн-буквалист',
-  sub: 'Точный промпт = точный результат'
+  key: 'aim',
+  short: 'Точность',
+  name: 'Джинн-буквалист',
+  has: 'понимаю точные команды',
+  lack: 'скажешь «нарисуй что-нибудь» — я нарисую ерунду.'
 }, {
   n: 2,
-  emoji: '🎭',
-  title: 'Примерь роль',
-  sub: 'Один ИИ — тысяча голосов'
+  key: 'mask',
+  short: 'Роли',
+  name: 'Примерь роль',
+  has: 'умею менять голос',
+  lack: 'я отвечаю одинаково и малышу, и профессору.'
 }, {
   n: 3,
-  emoji: '🔢',
-  title: 'Скажи числом',
-  sub: 'Числа точнее слов'
+  key: 'num',
+  short: 'Числа',
+  name: 'Скажи числом',
+  has: 'считаю точно',
+  lack: 'скажешь «несколько звёзд» — нарисую то ли две, то ли сто.'
 }, {
   n: 4,
-  emoji: '🎨',
-  title: 'Докрути до идеала',
-  sub: 'Итерации: улучшай шагами'
+  key: 'loop',
+  short: 'Шаги',
+  name: 'Докрути до идеала',
+  has: 'докручиваю шагами',
+  lack: 'если с первого раза не вышло — я сдаюсь.'
 }];
+const PLH_RANKS = ['Новичок', 'Ученик', 'Помощник', 'Знаток', 'Мастер промптов'];
+function PLHStars() {
+  // детерминированные звёзды: не мигают заново при каждом рендере
+  const stars = [];
+  let seed = 7;
+  const rnd = () => (seed = (seed * 9301 + 49297) % 233280) / 233280;
+  for (let i = 0; i < 34; i++) {
+    const s = 1.2 + rnd() * 2.1;
+    stars.push(/*#__PURE__*/React.createElement("i", {
+      key: i,
+      className: "plh__star",
+      style: {
+        left: (rnd() * 100).toFixed(2) + '%',
+        top: (rnd() * 92).toFixed(2) + '%',
+        width: s,
+        height: s,
+        animationDelay: (rnd() * 3.4).toFixed(2) + 's',
+        opacity: 0.2 + rnd() * 0.5
+      }
+    }));
+  }
+  return /*#__PURE__*/React.createElement("div", {
+    className: "plh__sky"
+  }, stars);
+}
 function PLHome({
   onSelect
 }) {
-  const doneSet = new Set(window.nooka ? window.nooka.getCompleted('prompt') : []);
+  const doneArr = window.nooka ? window.nooka.getCompleted('prompt') : [];
+  const done = new Set(doneArr);
+  const got = PLH_SKILLS.filter(s => done.has(s.n));
+  const missing = PLH_SKILLS.filter(s => !done.has(s.n));
+  const smart = Math.round(got.length / PLH_SKILLS.length * 100);
+  const rank = PLH_RANKS[got.length];
+  const nextLv = missing.length ? missing[0].n : null;
+  const prof = window.nooka ? window.nooka.profile() : null;
+  const streak = window.nooka && window.nooka.streak ? window.nooka.streak() : 0;
+  const xp = prof ? prof.xp : 0;
+
+  // Маскот меняется по мере роста: здоровается → думает → победа
+  const face = got.length >= 4 ? 'win' : got.length >= 2 ? 'think' : 'hello';
+
+  // Реплика: сначала что умеет, потом честно — чего пока нет.
+  let say;
+  if (!got.length) {
+    say = /*#__PURE__*/React.createElement("span", null, "Меня только включили. Я пока путаюсь даже в простых просьбах — ", /*#__PURE__*/React.createElement("b", null, "научи меня!"));
+  } else if (missing.length) {
+    const m = missing[0];
+    // коротко: чипы навыков выше уже показывают, что Нейро умеет — не дублируем
+    say = /*#__PURE__*/React.createElement("span", null, "Но ", m.lack, " ", /*#__PURE__*/React.createElement("b", null, "Научи меня!"));
+  } else {
+    say = /*#__PURE__*/React.createElement("span", null, "Я умею всё, чему ты меня научил. ", /*#__PURE__*/React.createElement("b", null, "Теперь я понимаю людей!"));
+  }
   return /*#__PURE__*/React.createElement("div", {
-    className: "ak",
-    style: {
-      minHeight: '100vh',
-      height: '100vh',
-      background: 'radial-gradient(120% 60% at 50% -10%,rgba(123,79,242,.3) 0%,transparent 60%),linear-gradient(180deg,var(--ak-bg-2),var(--ak-bg))',
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      padding: '52px 20px 32px',
-      boxSizing: 'border-box',
-      overflowY: 'auto'
-    }
-  }, /*#__PURE__*/React.createElement("div", {
-    className: "nk-bob",
-    style: {
-      marginBottom: 10
-    }
-  }, NKM("hello", 108)), /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontFamily: 'var(--ak-display)',
-      fontSize: 30,
-      fontWeight: 700,
-      color: 'var(--ak-ink)',
-      marginBottom: 2
-    }
-  }, "ПромптЛаб"), /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontFamily: 'var(--ak-display)',
-      fontSize: 15,
-      color: 'var(--ak-ink-2)',
-      marginBottom: 32
-    }
-  }, "Искусственный интеллект · 4 урока"), /*#__PURE__*/React.createElement("div", {
-    style: {
-      display: 'flex',
-      flexDirection: 'column',
-      gap: 12,
-      width: '100%',
-      maxWidth: 340
-    }
-  }, PL_LEVELS.map(l => /*#__PURE__*/React.createElement("button", {
-    key: l.n,
-    className: doneSet.has(l.n) ? 'nk-level nk-level--done' : 'nk-level',
-    onClick: () => onSelect(l.n)
+    className: "plh ak"
+  }, /*#__PURE__*/React.createElement(PLHStars, null), /*#__PURE__*/React.createElement("div", {
+    className: "plh__top"
   }, /*#__PURE__*/React.createElement("span", {
-    className: "nk-coin",
+    className: "plh__pill"
+  }, /*#__PURE__*/React.createElement("span", {
     style: {
-      fontFamily: 'var(--nk-display)',
-      fontWeight: 900,
-      fontSize: 22,
-      color: '#7B4FF2',
-      textShadow: '0 0 14px rgba(123,79,242,.8)'
+      color: '#FF8F6A',
+      display: 'flex'
     }
-  }, l.n), /*#__PURE__*/React.createElement("span", null, /*#__PURE__*/React.createElement("span", {
-    className: "nk-level__title",
+  }, PLH_ICON.fire), /*#__PURE__*/React.createElement("b", null, streak), " дн."), /*#__PURE__*/React.createElement("span", {
+    className: "plh__spacer"
+  }), /*#__PURE__*/React.createElement("span", {
+    className: "plh__pill plh__pill--sun"
+  }, /*#__PURE__*/React.createElement("span", {
     style: {
-      display: 'block'
+      display: 'flex'
     }
-  }, l.title), /*#__PURE__*/React.createElement("span", {
-    className: "nk-level__sub",
+  }, PLH_ICON.spark), /*#__PURE__*/React.createElement("b", null, xp), " XP")), /*#__PURE__*/React.createElement("div", {
+    className: "plh__hab"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "plh__habglow"
+  }), /*#__PURE__*/React.createElement("div", {
+    className: "plh__orbit",
     style: {
-      display: 'block'
+      width: 210,
+      height: 210,
+      top: 12
     }
-  }, l.sub)), /*#__PURE__*/React.createElement("span", {
-    className: "nk-level__end"
-  }, doneSet.has(l.n) ? '⭐' : '→')))), /*#__PURE__*/React.createElement("div", {
+  }), /*#__PURE__*/React.createElement("div", {
+    className: "plh__orbit",
     style: {
-      marginTop: 24,
-      padding: '14px 18px',
-      background: 'rgba(16,28,50,.7)',
-      borderRadius: 18,
-      maxWidth: 340,
-      fontFamily: 'var(--ak-display)',
-      fontSize: 13.5,
-      color: 'var(--ak-ink-2)',
-      textAlign: 'center',
-      lineHeight: 1.5
+      width: 272,
+      height: 272,
+      top: -18
     }
-  }, "Ты — стажёр в бюро волшебных заказов. Художник — ИИ-джинн. Научись с ним говорить!"));
+  }), /*#__PURE__*/React.createElement("img", {
+    className: "plh__mascot",
+    src: '../mascot/' + face + '.webp',
+    alt: "Нейро",
+    width: "128",
+    height: "128"
+  }), /*#__PURE__*/React.createElement("div", {
+    className: "plh__name"
+  }, "Нейро"), /*#__PURE__*/React.createElement("div", {
+    className: "plh__rank"
+  }, rank)), /*#__PURE__*/React.createElement("div", {
+    className: "plh__brain"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "plh__brow"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "plh__blabel"
+  }, "Нейро понимает промпты"), /*#__PURE__*/React.createElement("span", {
+    className: "plh__bval"
+  }, smart, "%")), /*#__PURE__*/React.createElement("div", {
+    className: "plh__bar"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "plh__fill",
+    style: {
+      width: smart + '%'
+    }
+  })), /*#__PURE__*/React.createElement("div", {
+    className: "plh__skills"
+  }, PLH_SKILLS.map(s => /*#__PURE__*/React.createElement("div", {
+    key: s.n,
+    className: 'plh__sk ' + (done.has(s.n) ? 'plh__sk--on' : 'plh__sk--off')
+  }, /*#__PURE__*/React.createElement("span", {
+    style: {
+      display: 'flex',
+      color: done.has(s.n) ? '#7BF0BC' : '#B9A8D6'
+    }
+  }, PLH_ICON[s.key]), /*#__PURE__*/React.createElement("span", null, s.short))))), /*#__PURE__*/React.createElement("div", {
+    className: "plh__say"
+  }, say), /*#__PURE__*/React.createElement("div", {
+    className: "plh__map"
+  }, PLH_SKILLS.map(s => {
+    const isDone = done.has(s.n);
+    const isNext = s.n === nextLv;
+    return /*#__PURE__*/React.createElement("button", {
+      key: s.n,
+      className: 'plh__lv' + (isDone ? ' plh__lv--done' : isNext ? ' plh__lv--next' : ''),
+      onClick: () => onSelect(s.n)
+    }, /*#__PURE__*/React.createElement("span", {
+      className: "plh__orb"
+    }, isNext && /*#__PURE__*/React.createElement("span", {
+      className: "plh__ring"
+    }), /*#__PURE__*/React.createElement("span", {
+      style: {
+        display: 'flex',
+        color: '#fff'
+      }
+    }, PLH_ICON[s.key])), /*#__PURE__*/React.createElement("span", {
+      className: "plh__lvtxt"
+    }, /*#__PURE__*/React.createElement("span", {
+      className: "plh__lvnum"
+    }, "Урок ", s.n, isNext ? ' · дальше' : ''), /*#__PURE__*/React.createElement("span", {
+      className: "plh__lvname"
+    }, s.name), /*#__PURE__*/React.createElement("span", {
+      className: "plh__lvskill"
+    }, isDone ? 'Нейро научился: ' + s.has : 'Навык: ' + s.short)), isDone ? /*#__PURE__*/React.createElement("span", {
+      className: "plh__tick"
+    }, PLH_ICON.check) : /*#__PURE__*/React.createElement("span", {
+      className: "plh__go"
+    }, PLH_ICON.play));
+  })));
 }
 function App() {
   const [s, setS] = useState('home');
