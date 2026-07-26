@@ -968,16 +968,72 @@ function IntroModal({
    ПромптЛаб — учимся говорить с ИИ. Nooka.
    ============================================================ */
 
-const NKM = (n, sz) => /*#__PURE__*/React.createElement("img", {
-  src: '../mascot/' + n + '.webp',
-  alt: "Nooka",
-  style: {
-    width: sz,
-    height: sz,
-    borderRadius: sz * 0.28,
-    boxShadow: '0 0 24px rgba(196,77,255,.35)'
-  }
-});
+/* Маскот Нейро. Картинка всегда одна — чистый робот (hello).
+   Эмоция рисуется поверх: у think/win в исходных рендерах вокруг робота
+   налипло конфетти, которое нельзя отделить от корпуса — на тёмном фоне
+   оно читалось как мусорные пиксели, а из-за него же робот вставал не по центру.
+   Свои эффекты чище и вдобавок анимированы. */
+const NKM = (n, sz) => {
+  const conf = ['#FFD84D', '#FF6FC4', '#7BF0BC', '#B57BFF', '#FF9F3C', '#7FD4FF'];
+  return React.createElement('span', {
+    style: {
+      position: 'relative', display: 'inline-block',
+      width: sz, height: sz, lineHeight: 0,
+    }
+  },
+    React.createElement('img', {
+      src: '../mascot/hello.webp',
+      alt: 'Нейро',
+      width: sz, height: sz,
+      style: {
+        width: sz, height: sz, display: 'block',
+        filter: 'drop-shadow(0 8px 16px rgba(0,0,0,.35)) drop-shadow(0 0 20px rgba(196,77,255,.3))',
+      }
+    }),
+    n === 'think' && React.createElement('svg', {
+      viewBox: '0 0 100 100',
+      style: { position: 'absolute', inset: 0, width: '100%', height: '100%', pointerEvents: 'none', overflow: 'visible' }
+    },
+      React.createElement('style', null,
+        '@keyframes nkmQ{0%{opacity:0;transform:translateY(4px) scale(.7)}' +
+        '30%{opacity:1;transform:translateY(0) scale(1)}' +
+        '70%{opacity:1;transform:translateY(-4px) scale(1)}' +
+        '100%{opacity:0;transform:translateY(-9px) scale(.85)}}'),
+      [[20, 20, 15, 0], [37, 9, 20, .5], [55, 17, 12, 1]].map((q, i) =>
+        React.createElement('text', {
+          key: i, x: q[0], y: q[1], fontSize: q[2],
+          fontFamily: 'var(--nk-display),system-ui,sans-serif', fontWeight: 900,
+          fill: '#C48BFF', stroke: '#2A1150', strokeWidth: 1.6, paintOrder: 'stroke',
+          style: { animation: `nkmQ 2.4s ease-in-out ${q[3]}s infinite`, transformOrigin: `${q[0]}px ${q[1]}px` }
+        }, '?')
+      )
+    ),
+    n === 'win' && React.createElement('svg', {
+      viewBox: '0 0 100 100',
+      style: { position: 'absolute', inset: 0, width: '100%', height: '100%', pointerEvents: 'none', overflow: 'visible' }
+    },
+      React.createElement('style', null,
+        '@keyframes nkmC{0%{opacity:0;transform:translate(0,0) rotate(0)}' +
+        '12%{opacity:1}' +
+        '100%{opacity:0;transform:translate(var(--dx),var(--dy)) rotate(var(--rot))}}'),
+      [[50, 42, -38, -34, '220deg', 0], [50, 42, 36, -30, '-190deg', .18],
+       [50, 42, -30, 12, '150deg', .36], [50, 42, 30, 16, '-160deg', .54],
+       [50, 42, -12, -44, '200deg', .72], [50, 42, 14, -46, '-210deg', .9],
+       [50, 42, -44, -8, '170deg', 1.08], [50, 42, 44, -4, '-140deg', 1.26]].map((c, i) =>
+        React.createElement('rect', {
+          key: i, x: c[0] - 2.6, y: c[1] - 4.5, width: 5.6, height: 9, rx: 1.5,
+          fill: conf[i % conf.length],
+          style: {
+            '--dx': c[2] + 'px', '--dy': c[3] + 'px', '--rot': c[4],
+            animation: `nkmC 2.5s ease-out ${c[5]}s infinite`,
+            transformOrigin: '50px 42px',
+          }
+        })
+      )
+    )
+  );
+};
+
 /* ---------- Уровень 1: Джинн-буквалист (v2 — живая сцена) ---------- */
 const P1_SLOTS = [{
   id: 'adj',
@@ -3712,13 +3768,9 @@ function PLHome({
       height: 272,
       top: -18
     }
-  }), /*#__PURE__*/React.createElement("img", {
-    className: "plh__mascot",
-    src: '../mascot/' + face + '.webp',
-    alt: "Нейро",
-    width: "128",
-    height: "128"
   }), /*#__PURE__*/React.createElement("div", {
+    className: "plh__mascot"
+  }, NKM(face, 128)), /*#__PURE__*/React.createElement("div", {
     className: "plh__name"
   }, "Нейро"), /*#__PURE__*/React.createElement("div", {
     className: "plh__rank"
