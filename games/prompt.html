@@ -2652,7 +2652,6 @@ const P3N_ROUNDS = [{
   },
   lock: []
 }];
-const P3N_STARPOS = [[28, 26], [62, 16], [104, 30], [146, 18], [176, 34], [44, 52], [130, 52], [86, 44], [164, 60]];
 const P3N_CHECK = [{
   q: 'Джинн нарисовал РОВНО 7 звёзд. Что было в промпте?',
   a: ['«семь звёзд»', '«много звёзд»'],
@@ -2664,11 +2663,22 @@ const P3N_CHECK = [{
   right: 0,
   why: 'Нет размера в промпте — джинн выбирает сам. ИИ не вредничает — он угадывает!'
 }];
+/* ============ Уровень «Скажи числом» — сцена заказа ============
+   Всё, что видит ребёнок, реагирует на числа в промпте:
+   звёзды (количество + млечный путь), ракета (размер, высота, тяга),
+   луна (размер, кратеры, свечение). Рисуется одним SVG, без картинок. */
+
+const P3N_STARPOS = [[26, 30], [58, 18], [92, 36], [124, 22], [46, 54], [150, 48], [76, 62], [110, 12], [172, 20], [14, 44], [136, 66], [64, 40]];
 function P3NScene({
   v,
   dream
 }) {
-  const op = dream ? .55 : 1;
+  const rk = v.rocket,
+    mn = v.moon,
+    st = v.stars;
+  const thrust = 0.6 + rk * 0.22; // тяга растёт с размером ракеты
+  const uid = dream ? 'd' : 'r'; // отдельные id для двух копий сцены
+
   return /*#__PURE__*/React.createElement("svg", {
     viewBox: "0 0 200 150",
     style: {
@@ -2677,77 +2687,449 @@ function P3NScene({
       aspectRatio: '200/150',
       display: 'block',
       borderRadius: 18,
-      background: 'linear-gradient(180deg,#0D1427,#080C18)',
+      overflow: 'hidden',
       outline: dream ? '2px dashed #738AAA' : 'none',
-      opacity: op
+      opacity: dream ? .62 : 1,
+      boxShadow: dream ? 'none' : '0 18px 40px -18px rgba(0,0,0,.85), inset 0 0 0 1px rgba(255,255,255,.06)'
     }
-  }, /*#__PURE__*/React.createElement("style", null, `@keyframes p3Tw{0%,100%{opacity:.4}50%{opacity:1}}@keyframes p3Fl{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}`), /*#__PURE__*/React.createElement("circle", {
-    cx: "168",
-    cy: "28",
-    r: 16 + v.moon * 3,
-    fill: "#FFE066",
-    opacity: .06 * v.moon
-  }), /*#__PURE__*/React.createElement("circle", {
-    cx: "168",
-    cy: "28",
-    r: "13",
-    fill: "#FFE066",
-    opacity: .45 + v.moon * .18
-  }), /*#__PURE__*/React.createElement("circle", {
-    cx: "163",
-    cy: "24",
-    r: "2.6",
-    fill: "#D9B84A",
-    opacity: ".5"
-  }), /*#__PURE__*/React.createElement("circle", {
-    cx: "171",
-    cy: "32",
-    r: "1.8",
-    fill: "#D9B84A",
-    opacity: ".5"
-  }), P3N_STARPOS.slice(0, v.stars).map((p, i) => /*#__PURE__*/React.createElement("g", {
-    key: i,
-    transform: `translate(${p[0]} ${p[1]})`
-  }, /*#__PURE__*/React.createElement("path", {
-    d: "M0 -4 L1.2 -1.2 L4 0 L1.2 1.2 L0 4 L-1.2 1.2 L-4 0 L-1.2 -1.2 Z",
-    fill: "#F0F4FF",
+  }, /*#__PURE__*/React.createElement("defs", null, /*#__PURE__*/React.createElement("linearGradient", {
+    id: uid + 'sky',
+    x1: "0",
+    y1: "0",
+    x2: "0.25",
+    y2: "1"
+  }, /*#__PURE__*/React.createElement("stop", {
+    offset: "0%",
+    stopColor: "#160B2E"
+  }), /*#__PURE__*/React.createElement("stop", {
+    offset: "46%",
+    stopColor: "#0E1330"
+  }), /*#__PURE__*/React.createElement("stop", {
+    offset: "100%",
+    stopColor: "#071021"
+  })), /*#__PURE__*/React.createElement("radialGradient", {
+    id: uid + 'neb1',
+    cx: "50%",
+    cy: "50%"
+  }, /*#__PURE__*/React.createElement("stop", {
+    offset: "0%",
+    stopColor: "#7B4FF2",
+    stopOpacity: ".55"
+  }), /*#__PURE__*/React.createElement("stop", {
+    offset: "100%",
+    stopColor: "#7B4FF2",
+    stopOpacity: "0"
+  })), /*#__PURE__*/React.createElement("radialGradient", {
+    id: uid + 'neb2',
+    cx: "50%",
+    cy: "50%"
+  }, /*#__PURE__*/React.createElement("stop", {
+    offset: "0%",
+    stopColor: "#FF6FC4",
+    stopOpacity: ".34"
+  }), /*#__PURE__*/React.createElement("stop", {
+    offset: "100%",
+    stopColor: "#FF6FC4",
+    stopOpacity: "0"
+  })), /*#__PURE__*/React.createElement("radialGradient", {
+    id: uid + 'moon',
+    cx: "34%",
+    cy: "28%",
+    r: "82%"
+  }, /*#__PURE__*/React.createElement("stop", {
+    offset: "0%",
+    stopColor: "#FFF8D8"
+  }), /*#__PURE__*/React.createElement("stop", {
+    offset: "52%",
+    stopColor: "#F5DC8A"
+  }), /*#__PURE__*/React.createElement("stop", {
+    offset: "88%",
+    stopColor: "#C9A64E"
+  }), /*#__PURE__*/React.createElement("stop", {
+    offset: "100%",
+    stopColor: "#8F7233"
+  })), /*#__PURE__*/React.createElement("radialGradient", {
+    id: uid + 'halo',
+    cx: "50%",
+    cy: "50%"
+  }, /*#__PURE__*/React.createElement("stop", {
+    offset: "0%",
+    stopColor: "#FFE79A",
+    stopOpacity: ".5"
+  }), /*#__PURE__*/React.createElement("stop", {
+    offset: "60%",
+    stopColor: "#FFD84D",
+    stopOpacity: ".12"
+  }), /*#__PURE__*/React.createElement("stop", {
+    offset: "100%",
+    stopColor: "#FFD84D",
+    stopOpacity: "0"
+  })), /*#__PURE__*/React.createElement("linearGradient", {
+    id: uid + 'hull',
+    x1: "0",
+    y1: "0",
+    x2: "1",
+    y2: "0"
+  }, /*#__PURE__*/React.createElement("stop", {
+    offset: "0%",
+    stopColor: "#8E96AD"
+  }), /*#__PURE__*/React.createElement("stop", {
+    offset: "22%",
+    stopColor: "#EEF2FB"
+  }), /*#__PURE__*/React.createElement("stop", {
+    offset: "52%",
+    stopColor: "#FFFFFF"
+  }), /*#__PURE__*/React.createElement("stop", {
+    offset: "78%",
+    stopColor: "#C6CDDE"
+  }), /*#__PURE__*/React.createElement("stop", {
+    offset: "100%",
+    stopColor: "#7A8299"
+  })), /*#__PURE__*/React.createElement("linearGradient", {
+    id: uid + 'nose',
+    x1: "0",
+    y1: "0",
+    x2: "1",
+    y2: "0"
+  }, /*#__PURE__*/React.createElement("stop", {
+    offset: "0%",
+    stopColor: "#C0453F"
+  }), /*#__PURE__*/React.createElement("stop", {
+    offset: "40%",
+    stopColor: "#FF6B5E"
+  }), /*#__PURE__*/React.createElement("stop", {
+    offset: "100%",
+    stopColor: "#A5322E"
+  })), /*#__PURE__*/React.createElement("linearGradient", {
+    id: uid + 'fin',
+    x1: "0",
+    y1: "0",
+    x2: "1",
+    y2: "1"
+  }, /*#__PURE__*/React.createElement("stop", {
+    offset: "0%",
+    stopColor: "#B57BFF"
+  }), /*#__PURE__*/React.createElement("stop", {
+    offset: "100%",
+    stopColor: "#5836BD"
+  })), /*#__PURE__*/React.createElement("radialGradient", {
+    id: uid + 'glass',
+    cx: "34%",
+    cy: "26%",
+    r: "86%"
+  }, /*#__PURE__*/React.createElement("stop", {
+    offset: "0%",
+    stopColor: "#DFF9FF"
+  }), /*#__PURE__*/React.createElement("stop", {
+    offset: "42%",
+    stopColor: "#49D2F5"
+  }), /*#__PURE__*/React.createElement("stop", {
+    offset: "100%",
+    stopColor: "#0E6B93"
+  })), /*#__PURE__*/React.createElement("linearGradient", {
+    id: uid + 'fl1',
+    x1: "0",
+    y1: "0",
+    x2: "0",
+    y2: "1"
+  }, /*#__PURE__*/React.createElement("stop", {
+    offset: "0%",
+    stopColor: "#FFE9A8"
+  }), /*#__PURE__*/React.createElement("stop", {
+    offset: "45%",
+    stopColor: "#FF9F3C"
+  }), /*#__PURE__*/React.createElement("stop", {
+    offset: "100%",
+    stopColor: "#FF4D2E",
+    stopOpacity: "0"
+  })), /*#__PURE__*/React.createElement("linearGradient", {
+    id: uid + 'fl2',
+    x1: "0",
+    y1: "0",
+    x2: "0",
+    y2: "1"
+  }, /*#__PURE__*/React.createElement("stop", {
+    offset: "0%",
+    stopColor: "#FFFFFF"
+  }), /*#__PURE__*/React.createElement("stop", {
+    offset: "60%",
+    stopColor: "#FFE066"
+  }), /*#__PURE__*/React.createElement("stop", {
+    offset: "100%",
+    stopColor: "#FFB020",
+    stopOpacity: "0"
+  })), /*#__PURE__*/React.createElement("filter", {
+    id: uid + 'soft',
+    x: "-60%",
+    y: "-60%",
+    width: "220%",
+    height: "220%"
+  }, /*#__PURE__*/React.createElement("feGaussianBlur", {
+    stdDeviation: "3.4"
+  })), /*#__PURE__*/React.createElement("filter", {
+    id: uid + 'glow',
+    x: "-80%",
+    y: "-80%",
+    width: "260%",
+    height: "260%"
+  }, /*#__PURE__*/React.createElement("feGaussianBlur", {
+    stdDeviation: "1.9",
+    result: "b"
+  }), /*#__PURE__*/React.createElement("feMerge", null, /*#__PURE__*/React.createElement("feMergeNode", {
+    in: "b"
+  }), /*#__PURE__*/React.createElement("feMergeNode", {
+    in: "SourceGraphic"
+  })))), /*#__PURE__*/React.createElement("style", null, `
+        @keyframes p3tw{0%,100%{opacity:.25;}50%{opacity:1;}}
+        @keyframes p3fly{0%,100%{transform:translateY(0) rotate(-.6deg);}50%{transform:translateY(-3.2px) rotate(.6deg);}}
+        @keyframes p3flame{0%,100%{transform:scaleY(.86) scaleX(1.04);opacity:.92;}50%{transform:scaleY(1.14) scaleX(.94);opacity:1;}}
+        @keyframes p3core{0%,100%{transform:scaleY(.8);}50%{transform:scaleY(1.15);}}
+        @keyframes p3spark{0%{transform:translateY(0) scale(1);opacity:.9;}100%{transform:translateY(15px) scale(.2);opacity:0;}}
+        @keyframes p3neb{0%,100%{opacity:.55;transform:scale(1);}50%{opacity:.9;transform:scale(1.08);}}
+      `), /*#__PURE__*/React.createElement("rect", {
+    width: "200",
+    height: "150",
+    fill: `url(#${uid}sky)`
+  }), /*#__PURE__*/React.createElement("ellipse", {
+    cx: "44",
+    cy: "40",
+    rx: "52",
+    ry: "34",
+    fill: `url(#${uid}neb1)`,
     style: {
-      animation: `p3Tw ${1.2 + i % 3 * .5}s ease-in-out ${i * .2}s infinite`
+      animation: 'p3neb 9s ease-in-out infinite'
     }
-  }))), /*#__PURE__*/React.createElement("ellipse", {
+  }), /*#__PURE__*/React.createElement("ellipse", {
+    cx: "158",
+    cy: "86",
+    rx: "46",
+    ry: "30",
+    fill: `url(#${uid}neb2)`,
+    style: {
+      animation: 'p3neb 11s ease-in-out 1.4s infinite'
+    }
+  }), st >= 7 && /*#__PURE__*/React.createElement("g", {
+    opacity: (st - 6) * 0.13,
+    filter: `url(#${uid}soft)`
+  }, /*#__PURE__*/React.createElement("path", {
+    d: "M-10 74 Q60 52 118 62 T212 44",
+    stroke: "#CFE0FF",
+    strokeWidth: "13",
+    fill: "none",
+    opacity: ".5"
+  })), P3N_STARPOS.slice(0, st).map((p, i) => {
+    const s = 0.62 + i % 3 * 0.3;
+    return /*#__PURE__*/React.createElement("g", {
+      key: i,
+      transform: `translate(${p[0]} ${p[1]}) scale(${s})`,
+      style: {
+        animation: `p3tw ${1.6 + i % 4 * .55}s ease-in-out ${i * .21}s infinite`
+      }
+    }, /*#__PURE__*/React.createElement("circle", {
+      r: "3.4",
+      fill: "#BFD8FF",
+      opacity: ".22"
+    }), /*#__PURE__*/React.createElement("path", {
+      d: "M0 -4.6 L1.15 -1.15 L4.6 0 L1.15 1.15 L0 4.6 L-1.15 1.15 L-4.6 0 L-1.15 -1.15 Z",
+      fill: "#F6FAFF"
+    }));
+  }), [[36, 68], [82, 26], [116, 48], [160, 34], [22, 20], [142, 14], [98, 74], [178, 60]].slice(0, Math.min(8, st + 2)).map((p, i) => /*#__PURE__*/React.createElement("circle", {
+    key: 'd' + i,
+    cx: p[0],
+    cy: p[1],
+    r: ".8",
+    fill: "#9FB6E0",
+    style: {
+      animation: `p3tw ${2.4 + i * .3}s ease-in-out ${i * .4}s infinite`
+    }
+  })), /*#__PURE__*/React.createElement("g", {
+    transform: `translate(166 30)`
+  }, /*#__PURE__*/React.createElement("circle", {
+    r: 13 + mn * 4.6,
+    fill: `url(#${uid}halo)`,
+    opacity: .35 + mn * .16
+  }), /*#__PURE__*/React.createElement("circle", {
+    r: 7 + mn * 2.1,
+    fill: `url(#${uid}moon)`
+  }), [[-2.4, -2.2, 1.5], [2.2, 1.6, 1.1], [-1.2, 2.8, .8], [3.1, -2.4, .7], [.4, -.4, .55]].slice(0, 2 + mn).map((c, i) => {
+    const k = (7 + mn * 2.1) / 9;
+    return /*#__PURE__*/React.createElement("g", {
+      key: i
+    }, /*#__PURE__*/React.createElement("circle", {
+      cx: c[0] * k * 1.15,
+      cy: c[1] * k * 1.15,
+      r: c[2] * k,
+      fill: "#A8863C",
+      opacity: ".55"
+    }), /*#__PURE__*/React.createElement("circle", {
+      cx: c[0] * k * 1.15 - .18,
+      cy: c[1] * k * 1.15 - .2,
+      r: c[2] * k * .72,
+      fill: "#C6A455",
+      opacity: ".5"
+    }));
+  }), /*#__PURE__*/React.createElement("circle", {
+    r: 7 + mn * 2.1,
+    fill: "#0B1024",
+    opacity: ".2",
+    style: {
+      clipPath: 'inset(0 0 0 55%)'
+    }
+  })), /*#__PURE__*/React.createElement("g", null, /*#__PURE__*/React.createElement("ellipse", {
     cx: "100",
-    cy: "164",
-    rx: "120",
-    ry: "28",
-    fill: "#101C32"
-  }), /*#__PURE__*/React.createElement("g", {
-    transform: `translate(100 ${128 - v.rocket * 8}) scale(${.55 + v.rocket * .3})`
+    cy: "176",
+    rx: "150",
+    ry: "42",
+    fill: "#132347"
+  }), /*#__PURE__*/React.createElement("ellipse", {
+    cx: "100",
+    cy: "176",
+    rx: "150",
+    ry: "42",
+    fill: "none",
+    stroke: "#3E63A8",
+    strokeWidth: ".7",
+    opacity: ".55"
+  }), /*#__PURE__*/React.createElement("ellipse", {
+    cx: "100",
+    cy: "172",
+    rx: "150",
+    ry: "42",
+    fill: "none",
+    stroke: "#7FB4FF",
+    strokeWidth: "2.4",
+    opacity: ".16",
+    filter: `url(#${uid}soft)`
+  }), [[62, 141], [88, 138], [126, 140], [148, 143]].map((p, i) => /*#__PURE__*/React.createElement("circle", {
+    key: i,
+    cx: p[0],
+    cy: p[1],
+    r: ".9",
+    fill: "#FFD84D",
+    opacity: ".8",
+    style: {
+      animation: `p3tw ${2 + i * .5}s ease-in-out ${i * .3}s infinite`
+    }
+  }))), /*#__PURE__*/React.createElement("g", {
+    transform: `translate(100 ${124 - rk * 7.5}) scale(${.5 + rk * .3})`
   }, /*#__PURE__*/React.createElement("g", {
     style: {
-      animation: 'p3Fl 2.2s ease-in-out infinite'
+      animation: 'p3fly 3.1s ease-in-out infinite'
     }
-  }, /*#__PURE__*/React.createElement("path", {
-    d: "M0 -26 Q10 -12 10 4 L-10 4 Q-10 -12 0 -26",
-    fill: "#E6EAF5"
+  }, /*#__PURE__*/React.createElement("ellipse", {
+    cy: "20",
+    rx: 7 * thrust,
+    ry: 3 * thrust,
+    fill: "#FF8A3C",
+    opacity: ".28",
+    filter: `url(#${uid}soft)`
+  }), [0, 1, 2].map(i => /*#__PURE__*/React.createElement("circle", {
+    key: i,
+    cx: -2.6 + i * 2.6,
+    cy: "16",
+    r: ".85",
+    fill: "#FFC94D",
+    style: {
+      animation: `p3spark ${.9 + i * .25}s linear ${i * .3}s infinite`
+    }
+  })), /*#__PURE__*/React.createElement("path", {
+    d: "M-7.4 4 Q-15 9 -16.4 17 Q-11 15.6 -7.4 12.4 Z",
+    fill: `url(#${uid}fin)`
   }), /*#__PURE__*/React.createElement("path", {
-    d: "M-10 4 L-16 14 L-8 10 Z",
-    fill: "#C44DFF"
+    d: "M7.4 4 Q15 9 16.4 17 Q11 15.6 7.4 12.4 Z",
+    fill: `url(#${uid}fin)`
   }), /*#__PURE__*/React.createElement("path", {
-    d: "M10 4 L16 14 L8 10 Z",
-    fill: "#C44DFF"
-  }), /*#__PURE__*/React.createElement("circle", {
-    cx: "0",
-    cy: "-8",
-    r: "4.5",
-    fill: "#00E5FF"
+    d: "M0 6 L2.6 15 L-2.6 15 Z",
+    fill: "#4A2C9E",
+    opacity: ".85"
+  }), /*#__PURE__*/React.createElement("path", {
+    d: "M0 -27 Q7.6 -16 7.8 2 L7.4 13 L-7.4 13 L-7.8 2 Q-7.6 -16 0 -27",
+    fill: `url(#${uid}hull)`
+  }), /*#__PURE__*/React.createElement("path", {
+    d: "M0 -27 Q7.6 -16 7.8 -8 Q4 -11.4 0 -11.4 Q-4 -11.4 -7.8 -8 Q-7.6 -16 0 -27",
+    fill: `url(#${uid}nose)`
   }), /*#__PURE__*/React.createElement("rect", {
-    x: "-4",
-    y: "10",
-    width: "8",
-    height: "7",
-    rx: "3",
-    fill: "#FFD60A",
+    x: "-7.7",
+    y: "-6.4",
+    width: "15.4",
+    height: "1.5",
+    fill: "#8E96AD",
+    opacity: ".7"
+  }), /*#__PURE__*/React.createElement("rect", {
+    x: "-7.5",
+    y: "8.2",
+    width: "15",
+    height: "2.2",
+    fill: "#6E7793",
+    opacity: ".55"
+  }), /*#__PURE__*/React.createElement("path", {
+    d: "M-5.4 13 L-6.8 17 L6.8 17 L5.4 13 Z",
+    fill: "#5A6280"
+  }), /*#__PURE__*/React.createElement("ellipse", {
+    cy: "17",
+    rx: "6.8",
+    ry: "1.5",
+    fill: "#2E3550"
+  }), /*#__PURE__*/React.createElement("g", {
+    transform: "translate(0 17)",
+    style: {
+      transformOrigin: '50% 0%'
+    }
+  }, /*#__PURE__*/React.createElement("ellipse", {
+    cy: 7 * thrust,
+    rx: 5.4 * thrust,
+    ry: 9 * thrust,
+    fill: "#FF7A2E",
+    opacity: ".38",
+    filter: `url(#${uid}soft)`
+  }), /*#__PURE__*/React.createElement("path", {
+    d: `M-6 0 C-6.4 ${7 * thrust} -3 ${13 * thrust} 0 ${19 * thrust} C3 ${13 * thrust} 6.4 ${7 * thrust} 6 0 Z`,
+    fill: `url(#${uid}fl1)`,
+    style: {
+      animation: 'p3flame .34s ease-in-out infinite',
+      transformOrigin: '50% 0%'
+    }
+  }), /*#__PURE__*/React.createElement("path", {
+    d: `M-3.2 0 C-3.4 ${5 * thrust} -1.6 ${8.4 * thrust} 0 ${12.4 * thrust} C1.6 ${8.4 * thrust} 3.4 ${5 * thrust} 3.2 0 Z`,
+    fill: `url(#${uid}fl2)`,
+    style: {
+      animation: 'p3core .26s ease-in-out infinite',
+      transformOrigin: '50% 0%'
+    }
+  }), /*#__PURE__*/React.createElement("ellipse", {
+    cy: "1",
+    rx: "3.4",
+    ry: "1.6",
+    fill: "#FFF6D8",
     opacity: ".9"
+  })), /*#__PURE__*/React.createElement("circle", {
+    cy: "-3.4",
+    r: "4.6",
+    fill: "#39445F"
+  }), /*#__PURE__*/React.createElement("circle", {
+    cy: "-3.4",
+    r: "3.8",
+    fill: `url(#${uid}glass)`
+  }), /*#__PURE__*/React.createElement("ellipse", {
+    cx: "-1.2",
+    cy: "-4.8",
+    rx: "1.5",
+    ry: "1",
+    fill: "#FFFFFF",
+    opacity: ".78"
+  }), /*#__PURE__*/React.createElement("circle", {
+    cy: "-3.4",
+    r: "4.6",
+    fill: "none",
+    stroke: "#AEB8D0",
+    strokeWidth: ".8"
+  }), /*#__PURE__*/React.createElement("path", {
+    d: "M-3.4 -18 Q-5.6 -8 -5.4 8",
+    stroke: "#FFFFFF",
+    strokeWidth: "1.1",
+    opacity: ".38",
+    fill: "none",
+    strokeLinecap: "round"
   }))));
 }
 function P3NSlider({
