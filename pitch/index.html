@@ -66,6 +66,13 @@ footer-note{display:block;position:absolute;bottom:26px;left:72px;font-size:12px
 .ctab .rn td:first-child{border-radius:14px 0 0 14px;font-family:'Unbounded',sans-serif}
 .ctab .rn td:last-child{border-radius:0 14px 14px 0}
 .ctab .rn .yes{color:var(--yellow)}
+.nk-mascot{position:absolute;pointer-events:none;z-index:0;
+  filter:drop-shadow(0 22px 34px rgba(0,0,0,.55)) drop-shadow(0 0 42px rgba(168,120,255,.34))}
+.cover, .manifesto, .ask{position:relative;overflow:hidden}
+.cover h1, .cover .sub, .cover .cover-badge, .cover .logo-row,
+.manifesto h1, .manifesto .msub, .ask .ask-grid, .ask h2, .ask .logo-row{position:relative;z-index:1}
+.cover .sub{max-width:660px}
+.ctab-legend{margin-top:14px;font-size:12.5px;color:var(--muted);line-height:1.55;max-width:1050px}
 .ctab-note{margin-top:16px;font-size:14px;color:var(--muted);line-height:1.6;max-width:900px}
 
 /* manifesto */
@@ -77,7 +84,7 @@ footer-note{display:block;position:absolute;bottom:26px;left:72px;font-size:12px
 .flow{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:18px}
 .fstep{background:#fff;border-radius:22px;padding:16px;box-shadow:0 8px 28px rgba(17,17,24,.08);display:flex;flex-direction:column}
 .fstep .fn{width:28px;height:28px;border-radius:50%;background:var(--purple);color:#fff;font-family:'Unbounded',sans-serif;font-weight:900;font-size:13px;display:flex;align-items:center;justify-content:center;margin-bottom:10px}
-.fstep img{width:100%;height:158px;object-fit:cover;object-position:center top;border-radius:12px;margin-bottom:10px;background:#0D1427}
+.fstep img{width:100%;height:236px;object-fit:cover;object-position:center top;border-radius:12px;margin-bottom:10px;background:#0D1427}
 .fstep b{font-family:'Unbounded',sans-serif;font-size:14px;display:block;margin-bottom:4px;line-height:1.25}
 .fstep span{font-size:12.5px;color:var(--muted);line-height:1.5}
 .flow-note{margin-top:18px;background:var(--yellow);border-radius:18px;padding:16px 24px;font-family:'Unbounded',sans-serif;font-weight:700;font-size:clamp(15px,1.7vw,21px)}
@@ -99,7 +106,7 @@ footer-note{display:block;position:absolute;bottom:26px;left:72px;font-size:12px
 .stab th{padding:9px 6px;font-family:'Unbounded',sans-serif;font-size:11.5px;text-align:center;color:var(--muted);line-height:1.25}
 .stab th.us{background:var(--purple);color:#fff;border-radius:12px 12px 0 0}
 .stab td{padding:7px 6px;text-align:center;border-bottom:1px solid #EDEBF5}
-.stab td.crit{text-align:left;font-weight:700;font-size:13px}
+.stab td.crit{text-align:left;font-weight:700;font-size:13px;width:26%}
 .stab td.us{background:#F3EDFF}
 .stab tr.total td{border-bottom:none;font-family:'Unbounded',sans-serif;font-weight:900;font-size:15px;padding-top:11px}
 .stab tr.total td.us{background:var(--purple);color:#fff;border-radius:0 0 12px 12px}
@@ -181,7 +188,7 @@ footer-note{display:block;position:absolute;bottom:26px;left:72px;font-size:12px
   h2{font-size:44px!important}
   .pain-grid,.wn,.model-grid,.ask-grid,.aud,.trend{grid-template-columns:repeat(3,1fr)!important}
   .flow{grid-template-columns:repeat(4,1fr)!important}
-  .fstep img{height:130px!important}
+  .fstep img{height:236px!important}
   .stages,.team{grid-template-columns:1fr 1fr!important}
   .sol-shots{flex-direction:row!important}
   .sol-shots img{width:33%!important;max-height:300px}
@@ -197,6 +204,7 @@ footer-note{display:block;position:absolute;bottom:26px;left:72px;font-size:12px
 
 <!-- 1. COVER -->
 <section class="slide cover">
+  <img class="nk-mascot" src="nk-hello.webp" alt="" style="right:64px;bottom:56px;width:340px">
   <div class="logo-row">
     <img class="mark" src="logo.svg" alt="Nooka">
     <div style="font-family:'Unbounded';font-weight:900;font-size:34px">Nooka</div>
@@ -207,7 +215,7 @@ footer-note{display:block;position:absolute;bottom:26px;left:72px;font-size:12px
   <div class="cover-badge">
     <div class="cb">nookagame.ru — уже live</div>
     <div class="cb">5 игр · 25 уровней</div>
-    <div class="cb">Себестоимость разработки → 0</div>
+    <div class="cb">Себестоимость игры → почти 0</div>
   </div>
 </section>
 
@@ -239,9 +247,10 @@ footer-note{display:block;position:absolute;bottom:26px;left:72px;font-size:12px
 
 <!-- MANIFESTO -->
 <section class="slide manifesto">
+  <img class="nk-mascot" src="nk-hello.webp" alt="" style="right:80px;bottom:70px;width:285px;transform:scaleX(-1)">
   <div class="num" style="color:rgba(255,255,255,.35)">03 · Позиция</div>
-  <h1>Если нельзя остановить революцию —<br><em>её нужно возглавить</em></h1>
-  <p class="msub">ИИ у ребёнка уже в руках, и запретами это не отменить. Вопрос только один: он будет с ним <strong style="color:#fff">тупеть</strong> — или <strong style="color:var(--yellow)">расти</strong>.</p>
+  <h1>Запретить не получится.<br><em>Научить — можно</em></h1>
+  <p class="msub">ИИ у ребёнка уже в руках. Пока он умеет с ним одно: скинуть домашку и получить готовый ответ. Мы учим второму — <strong style="color:var(--yellow)">понимать, как эта штука работает, и управлять ей самому</strong>.</p>
 </section>
 
 <!-- 3. SOLUTION / HOW IT WORKS -->
@@ -270,9 +279,9 @@ footer-note{display:block;position:absolute;bottom:26px;left:72px;font-size:12px
     </div>
     <div class="fstep">
       <div class="fn">4</div>
-      <img src="chem.jpg" alt="Результат">
+      <img src="progress.jpg" alt="Прогресс и навыки">
       <b>Уносит понимание</b>
-      <span>В конце объясняет своими словами, что понял. Плюс опыт и звание — чтобы вернуться завтра.</span>
+      <span>Нейро умнеет вместе с ребёнком: каждый урок — новый навык. Видно, чему научился и зачем вернуться завтра.</span>
     </div>
   </div>
   <div class="flow-note">15 минут — и есть результат, который ребёнок может объяснить за ужином</div>
@@ -305,7 +314,7 @@ footer-note{display:block;position:absolute;bottom:26px;left:72px;font-size:12px
 <!-- GAMES GALLERY -->
 <section class="slide" style="background:var(--bg)">
   <div class="num">06 · Игры</div>
-  <div class="kicker">Не тесты — настоящие механики</div>
+  <div class="kicker">Механики, которые можно потрогать</div>
   <h2>Каждая игра — <em>рабочая модель</em><br>реального явления</h2>
   <div class="gal">
     <div class="gcard">
@@ -336,7 +345,7 @@ footer-note{display:block;position:absolute;bottom:26px;left:72px;font-size:12px
   <p class="sub">Себестоимость новой миссии стремится к нулю: сценарий, механика, графика и сборка идут через ИИ-конвейер. Это путь к платформе с сотнями игр, а не к студии, которая делает одну игру полгода.</p>
   <div class="stat-row">
     <div class="stat"><b>1</b><span>игра в неделю — текущий темп</span></div>
-    <div class="stat"><b>0 ₽</b><span>костов на разработку и хостинг</span></div>
+    <div class="stat"><b>~0 ₽</b><span>костов на разработку и хостинг</span></div>
     <div class="stat"><b>1000+</b><span>игр — потолок модели</span></div>
   </div>
   <div style="font-family:'Unbounded',sans-serif;font-weight:700;font-size:15px;margin-top:26px">Один конвейер — любые предметы:</div>
@@ -362,7 +371,7 @@ footer-note{display:block;position:absolute;bottom:26px;left:72px;font-size:12px
     <div class="acard">
       <div class="age">6–8 лет</div>
       <div class="cls">1–2 класс</div>
-      <p>Читает плохо — всё через действие и картинку. Узнаёт, что такое ИИ и где он вокруг: Face ID, рекомендации, голосовой помощник.</p>
+      <p>Ещё только учится читать — поэтому всё через действие и картинку. Узнаёт, что такое ИИ и где он вокруг: Face ID, рекомендации, голосовой помощник.</p>
     </div>
     <div class="acard" style="border:2px solid var(--purple)">
       <div class="age">8–10 лет<span class="core">ЯДРО</span></div>
@@ -465,34 +474,35 @@ footer-note{display:block;position:absolute;bottom:26px;left:72px;font-size:12px
 <!-- 8. COMPETITORS -->
 <section class="slide" style="background:var(--bg)">
   <div class="num">12 · Конкуренты</div>
-  <div class="kicker">Ранжирование ценности · оценка 1–5</div>
+  <div class="kicker">Кто рядом · оценка 1–5</div>
   <h2>Почему мы, <em>а не они</em></h2>
   <table class="stab">
     <thead>
       <tr>
         <th style="text-align:left">Критерий</th>
         <th class="us">🚀 Nooka</th>
-        <th>Учи.ру<br>ЯКласс</th>
-        <th>ЛогикЛайк<br>Умназия</th>
-        <th>Алгоритмика<br>Kodland</th>
+        <th>LittleAI<br>Master<br><span style="font-weight:400">(ОАЭ)</span></th>
+        <th>Imagi<br><span style="font-weight:400">(мир)</span></th>
         <th>Prodigy<br><span style="font-weight:400">(мир)</span></th>
+        <th>Учи.ру<br>ЯКласс<br><span style="font-weight:400">(РФ)</span></th>
+        <th>Алгоритмика<br>Kodland<br><span style="font-weight:400">(РФ)</span></th>
       </tr>
     </thead>
     <tbody>
-      <tr><td class="crit">ИИ как предмет обучения</td><td class="us"><span class="sc" style="background:#DCFCE7;color:#15803D">5</span></td><td><span class="sc" style="background:#F5F5F7;color:#C4C4CC">1</span></td><td><span class="sc" style="background:#F5F5F7;color:#C4C4CC">1</span></td><td><span class="sc" style="background:#F3F4F6;color:#9CA3AF">2</span></td><td><span class="sc" style="background:#F5F5F7;color:#C4C4CC">1</span></td></tr>
-      <tr><td class="crit">Возраст 6–12</td><td class="us"><span class="sc" style="background:#DCFCE7;color:#15803D">5</span></td><td><span class="sc" style="background:#E9F7EF;color:#2E7D5B">4</span></td><td><span class="sc" style="background:#DCFCE7;color:#15803D">5</span></td><td><span class="sc" style="background:#FFF4D6;color:#A97B00">3</span></td><td><span class="sc" style="background:#E9F7EF;color:#2E7D5B">4</span></td></tr>
-      <tr><td class="crit">Образовательная ценность</td><td class="us"><span class="sc" style="background:#E9F7EF;color:#2E7D5B">4</span></td><td><span class="sc" style="background:#E9F7EF;color:#2E7D5B">4</span></td><td><span class="sc" style="background:#FFF4D6;color:#A97B00">3</span></td><td><span class="sc" style="background:#DCFCE7;color:#15803D">5</span></td><td><span class="sc" style="background:#E9F7EF;color:#2E7D5B">4</span></td></tr>
-      <tr><td class="crit">Лёгкость старта</td><td class="us"><span class="sc" style="background:#DCFCE7;color:#15803D">5</span></td><td><span class="sc" style="background:#E9F7EF;color:#2E7D5B">4</span></td><td><span class="sc" style="background:#E9F7EF;color:#2E7D5B">4</span></td><td><span class="sc" style="background:#F3F4F6;color:#9CA3AF">2</span></td><td><span class="sc" style="background:#DCFCE7;color:#15803D">5</span></td></tr>
-      <tr><td class="crit">Цена</td><td class="us"><span class="sc" style="background:#DCFCE7;color:#15803D">5</span></td><td><span class="sc" style="background:#E9F7EF;color:#2E7D5B">4</span></td><td><span class="sc" style="background:#E9F7EF;color:#2E7D5B">4</span></td><td><span class="sc" style="background:#F5F5F7;color:#C4C4CC">1</span></td><td><span class="sc" style="background:#FFF4D6;color:#A97B00">3</span></td></tr>
-      <tr><td class="crit">Вовлечённость — ребёнок сам просит</td><td class="us"><span class="sc" style="background:#DCFCE7;color:#15803D">5</span></td><td><span class="sc" style="background:#F3F4F6;color:#9CA3AF">2</span></td><td><span class="sc" style="background:#FFF4D6;color:#A97B00">3</span></td><td><span class="sc" style="background:#FFF4D6;color:#A97B00">3</span></td><td><span class="sc" style="background:#DCFCE7;color:#15803D">5</span></td></tr>
-      <tr><td class="crit">Урок 15 минут</td><td class="us"><span class="sc" style="background:#DCFCE7;color:#15803D">5</span></td><td><span class="sc" style="background:#FFF4D6;color:#A97B00">3</span></td><td><span class="sc" style="background:#E9F7EF;color:#2E7D5B">4</span></td><td><span class="sc" style="background:#F5F5F7;color:#C4C4CC">1</span></td><td><span class="sc" style="background:#E9F7EF;color:#2E7D5B">4</span></td></tr>
-      <tr><td class="crit">Результат за один урок</td><td class="us"><span class="sc" style="background:#E9F7EF;color:#2E7D5B">4</span></td><td><span class="sc" style="background:#FFF4D6;color:#A97B00">3</span></td><td><span class="sc" style="background:#FFF4D6;color:#A97B00">3</span></td><td><span class="sc" style="background:#E9F7EF;color:#2E7D5B">4</span></td><td><span class="sc" style="background:#FFF4D6;color:#A97B00">3</span></td></tr>
-      <tr><td class="crit">Барьер входа</td><td class="us"><span class="sc" style="background:#DCFCE7;color:#15803D">5</span></td><td><span class="sc" style="background:#E9F7EF;color:#2E7D5B">4</span></td><td><span class="sc" style="background:#E9F7EF;color:#2E7D5B">4</span></td><td><span class="sc" style="background:#F5F5F7;color:#C4C4CC">1</span></td><td><span class="sc" style="background:#E9F7EF;color:#2E7D5B">4</span></td></tr>
-      <tr><td class="crit">Без расписания и преподавателя</td><td class="us"><span class="sc" style="background:#DCFCE7;color:#15803D">5</span></td><td><span class="sc" style="background:#DCFCE7;color:#15803D">5</span></td><td><span class="sc" style="background:#DCFCE7;color:#15803D">5</span></td><td><span class="sc" style="background:#F5F5F7;color:#C4C4CC">1</span></td><td><span class="sc" style="background:#DCFCE7;color:#15803D">5</span></td></tr>
-      <tr class="total"><td class="crit">ИТОГО</td><td class="us">48</td><td>34</td><td>36</td><td>23</td><td>38</td></tr>
+      <tr><td class="crit">ИИ как предмет обучения</td><td class="us"><span class="sc" style="background:#DCFCE7;color:#15803D">5</span></td><td><span class="sc" style="background:#DCFCE7;color:#15803D">5</span></td><td><span class="sc" style="background:#DCFCE7;color:#15803D">5</span></td><td><span class="sc" style="background:#F5F5F7;color:#C4C4CC">1</span></td><td><span class="sc" style="background:#F5F5F7;color:#C4C4CC">1</span></td><td><span class="sc" style="background:#F3F4F6;color:#9CA3AF">2</span></td></tr>
+      <tr><td class="crit">Возраст 6–12</td><td class="us"><span class="sc" style="background:#DCFCE7;color:#15803D">5</span></td><td><span class="sc" style="background:#F3F4F6;color:#9CA3AF">2</span></td><td><span class="sc" style="background:#FFF4D6;color:#A97B00">3</span></td><td><span class="sc" style="background:#E9F7EF;color:#2E7D5B">4</span></td><td><span class="sc" style="background:#E9F7EF;color:#2E7D5B">4</span></td><td><span class="sc" style="background:#FFF4D6;color:#A97B00">3</span></td></tr>
+      <tr><td class="crit">Ребёнок играет, а не читает</td><td class="us"><span class="sc" style="background:#DCFCE7;color:#15803D">5</span></td><td><span class="sc" style="background:#F3F4F6;color:#9CA3AF">2</span></td><td><span class="sc" style="background:#FFF4D6;color:#A97B00">3</span></td><td><span class="sc" style="background:#DCFCE7;color:#15803D">5</span></td><td><span class="sc" style="background:#F3F4F6;color:#9CA3AF">2</span></td><td><span class="sc" style="background:#FFF4D6;color:#A97B00">3</span></td></tr>
+      <tr><td class="crit">Старт без установки и регистрации</td><td class="us"><span class="sc" style="background:#DCFCE7;color:#15803D">5</span></td><td><span class="sc" style="background:#F3F4F6;color:#9CA3AF">2</span></td><td><span class="sc" style="background:#FFF4D6;color:#A97B00">3</span></td><td><span class="sc" style="background:#FFF4D6;color:#A97B00">3</span></td><td><span class="sc" style="background:#FFF4D6;color:#A97B00">3</span></td><td><span class="sc" style="background:#F5F5F7;color:#C4C4CC">1</span></td></tr>
+      <tr><td class="crit">Урок за 15 минут</td><td class="us"><span class="sc" style="background:#DCFCE7;color:#15803D">5</span></td><td><span class="sc" style="background:#E9F7EF;color:#2E7D5B">4</span></td><td><span class="sc" style="background:#FFF4D6;color:#A97B00">3</span></td><td><span class="sc" style="background:#E9F7EF;color:#2E7D5B">4</span></td><td><span class="sc" style="background:#FFF4D6;color:#A97B00">3</span></td><td><span class="sc" style="background:#F5F5F7;color:#C4C4CC">1</span></td></tr>
+      <tr><td class="crit">Результат, который ребёнок объяснит</td><td class="us"><span class="sc" style="background:#E9F7EF;color:#2E7D5B">4</span></td><td><span class="sc" style="background:#FFF4D6;color:#A97B00">3</span></td><td><span class="sc" style="background:#E9F7EF;color:#2E7D5B">4</span></td><td><span class="sc" style="background:#FFF4D6;color:#A97B00">3</span></td><td><span class="sc" style="background:#FFF4D6;color:#A97B00">3</span></td><td><span class="sc" style="background:#E9F7EF;color:#2E7D5B">4</span></td></tr>
+      <tr><td class="crit">Без расписания и преподавателя</td><td class="us"><span class="sc" style="background:#DCFCE7;color:#15803D">5</span></td><td><span class="sc" style="background:#DCFCE7;color:#15803D">5</span></td><td><span class="sc" style="background:#E9F7EF;color:#2E7D5B">4</span></td><td><span class="sc" style="background:#DCFCE7;color:#15803D">5</span></td><td><span class="sc" style="background:#DCFCE7;color:#15803D">5</span></td><td><span class="sc" style="background:#F5F5F7;color:#C4C4CC">1</span></td></tr>
+      <tr><td class="crit">Цена</td><td class="us"><span class="sc" style="background:#DCFCE7;color:#15803D">5</span></td><td><span class="sc" style="background:#FFF4D6;color:#A97B00">3</span></td><td><span class="sc" style="background:#E9F7EF;color:#2E7D5B">4</span></td><td><span class="sc" style="background:#FFF4D6;color:#A97B00">3</span></td><td><span class="sc" style="background:#E9F7EF;color:#2E7D5B">4</span></td><td><span class="sc" style="background:#F5F5F7;color:#C4C4CC">1</span></td></tr>
+      <tr><td class="crit">Объём контента сегодня</td><td class="us"><span class="sc" style="background:#F3F4F6;color:#9CA3AF">2</span></td><td><span class="sc" style="background:#DCFCE7;color:#15803D">5</span></td><td><span class="sc" style="background:#E9F7EF;color:#2E7D5B">4</span></td><td><span class="sc" style="background:#DCFCE7;color:#15803D">5</span></td><td><span class="sc" style="background:#DCFCE7;color:#15803D">5</span></td><td><span class="sc" style="background:#E9F7EF;color:#2E7D5B">4</span></td></tr>
+      <tr class="total"><td class="crit">ИТОГО</td><td class="us">41</td><td>31</td><td>33</td><td>33</td><td>30</td><td>20</td></tr>
     </tbody>
   </table>
-  <p class="ctab-note"><b style="color:var(--purple)">Читается за 5 секунд:</b> сильные игроки есть в каждой отдельной колонке — но никто не собирает вместе <b>ИИ как предмет, настоящую игру, цену подписки и результат за 15 минут</b>. Именно это пересечение мы и занимаем.</p>
+  <div class="ctab-legend">Кто это: <b>LittleAIMaster</b> — курс ИИ-грамотности, 540+ глав, $11.67/мес, ядро 11–18 лет. <b>Imagi</b> — ИИ-грамотность через школы, 700K учеников в 140 странах, $5.5M поднято. <b>Prodigy</b> — игровая математика, 100 млн аккаунтов: эталон модели, но не про ИИ.</div>
+  <p class="ctab-note"><b style="color:var(--purple)">Где мы отстаём — видно честно:</b> объём контента. У LittleAIMaster 540 глав, у нас 25 уровней. Именно этот разрыв закрывает конвейер из слайда 7, и именно на него идёт раунд. Остальное уже наше: <b>ИИ как предмет для возраста 6–12, игра вместо чтения, старт без установки и цена в 2 раза ниже</b>. Ни один игрок не собирает это вместе.</p>
 </section>
 
 <!-- 9. GTM -->
@@ -547,6 +557,7 @@ footer-note{display:block;position:absolute;bottom:26px;left:72px;font-size:12px
 
 <!-- 11. ASK -->
 <section class="slide ask">
+  <img class="nk-mascot" src="nk-hello.webp" alt="" style="right:76px;bottom:58px;width:300px">
   <div class="num">15 · Предложение</div>
   <div class="kicker" style="background:var(--yellow);color:var(--black)">Что дальше</div>
   <h2>Ищем партнёра<br>на <em>раунд роста</em></h2>
