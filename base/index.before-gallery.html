@@ -56,47 +56,6 @@ h2{font-size:22px;margin:34px 0 16px}
 .ranks .row .xp{margin-left:auto;color:var(--muted);font-size:13px}
 .ranks .row.got .name{color:var(--purple)}
 @media(max-width:600px){.profile{padding:24px;gap:18px}.rank-emo{font-size:48px}.rank-name{font-size:22px}}
-
-/* ── Моя коллекция: то, что ребёнок сделал сам ── */
-.gal-wrap{margin-bottom:26px;}
-.gal{display:grid;grid-template-columns:repeat(auto-fill,minmax(148px,1fr));gap:12px;}
-.gcard{background:#fff;border-radius:20px;padding:12px 12px 14px;text-align:center;
-  box-shadow:0 8px 22px -10px rgba(45,27,69,.18),inset 0 0 0 1px rgba(45,27,69,.05);
-  cursor:pointer;transition:transform .12s,box-shadow .12s;}
-.gcard:hover{transform:translateY(-3px);box-shadow:0 14px 30px -12px rgba(45,27,69,.28);}
-.gcard__pic{height:120px;display:flex;align-items:center;justify-content:center;
-  border-radius:14px;background:linear-gradient(180deg,#1B1030,#0E0719);margin-bottom:9px;}
-.gcard__pic svg{width:auto;height:104px;}
-.gcard__t{font-weight:900;font-size:13.5px;color:#2D1B45;line-height:1.2;}
-.gcard__n{margin-top:3px;font-weight:700;font-size:11px;color:#8B7BAE;line-height:1.25;}
-.gal-empty{background:#fff;border-radius:20px;padding:22px 20px;text-align:center;
-  box-shadow:inset 0 0 0 1px rgba(45,27,69,.06);}
-.gal-empty b{display:block;font-size:15px;color:#2D1B45;margin-bottom:5px;}
-.gal-empty span{font-size:13px;color:#6B5680;font-weight:600;}
-.gal-empty a{display:inline-block;margin-top:12px;padding:11px 22px;border-radius:999px;
-  background:linear-gradient(180deg,#9B78FF,#7B4FF2);color:#fff;font-weight:900;
-  font-size:14px;text-decoration:none;}
-/* просмотр во весь экран */
-.gview{position:fixed;inset:0;z-index:90;background:rgba(10,6,20,.9);backdrop-filter:blur(8px);
-  display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;}
-.gview svg{width:auto;height:min(46vh,340px);}
-.gview__t{margin-top:18px;font-family:'Unbounded',sans-serif;font-weight:700;
-  font-size:22px;color:#F4EEFF;text-align:center;}
-.gview__n{margin-top:6px;font-weight:700;font-size:13.5px;color:#A896C9;text-align:center;}
-.gview__b{margin-top:22px;display:flex;gap:10px;}
-.gview__b button{padding:13px 24px;border:none;border-radius:999px;cursor:pointer;
-  font-family:inherit;font-weight:900;font-size:14px;}
-.gview__b .x{background:rgba(255,255,255,.1);color:#E9DFFF;}
-.gview__b .d{background:rgba(255,107,107,.15);color:#FFB4A8;}
-/* анимации артефактов — те же, что в мастерской */
-@keyframes fgFloat{0%,100%{transform:translateY(0) rotate(-1deg);}50%{transform:translateY(-9px) rotate(1deg);}}
-@keyframes fgSad{0%,100%{transform:translateY(0) rotate(-7deg);}50%{transform:translateY(-3px) rotate(-5deg);}}
-@keyframes fgPulse{0%,100%{opacity:.55;}50%{opacity:1;}}
-@keyframes fgRune{0%,100%{opacity:.35;}50%{opacity:1;}}
-@keyframes fgFlame{0%,100%{transform:translateY(0) scaleY(1);}50%{transform:translateY(-4px) scaleY(1.18);}}
-@keyframes fgFlick{0%,100%{opacity:.85;}50%{opacity:1;}}
-@keyframes fgZap{0%{opacity:0;}12%{opacity:1;}30%{opacity:.2;}45%{opacity:1;}100%{opacity:0;}}
-@keyframes fgDrift{0%,100%{transform:translate(0,0);opacity:.5;}50%{transform:translate(6px,-8px);opacity:1;}}
 </style>
 </head>
 <body>
@@ -122,9 +81,6 @@ h2{font-size:22px;margin:34px 0 16px}
   <h2>Карта базы</h2>
   <div class="planets" id="planets"></div>
 
-  <h2 id="gallery">Моя коллекция</h2>
-  <div class="gal-wrap" id="galWrap"></div>
-
   <div class="ranks">
     <h2 style="margin:0 0 12px;font-size:18px">Путь до Капитана базы</h2>
     <div id="ranksList"></div>
@@ -132,15 +88,13 @@ h2{font-size:22px;margin:34px 0 16px}
 </div>
 
 <script src="../games/nooka-core.js"></script>
-<script src="../games/nooka-gallery.js"></script>
 <script>
 var GAMES=[
   {key:'ai',  name:'Нейро Академия', sub:'Искусственный интеллект', emoji:'🤖', bg:'#EDE9FE', total:6, src:'../games/ai.html?v=202607231131'},
   {key:'prompt',name:'ПромптЛаб', sub:'Искусственный интеллект', emoji:'🧞', bg:'#F3E8FF', total:5, src:'../games/prompt.html?v=202607231234'},
   {key:'chem',name:'Хемо Лаб',       sub:'Химия',                  emoji:'🧪', bg:'#DBFCE7', total:6, src:'../games/chemistry.html?v=202607141232'},
   {key:'phys',name:'КвантУм',        sub:'Физика',                 emoji:'⚡', bg:'#FEF3C7', total:6, src:'../games/physics.html?v=202607141232'},
-  {key:'code',name:'КодБот',         sub:'Программирование',       emoji:'🕹️', bg:'#EDE9FE', total:3, src:'../games/code.html?v=202607141232'},
-  {key:'forge',name:'Мастерская предметов', sub:'Искусственный интеллект', emoji:'⚒️', bg:'#F3E8FF', total:1, src:'../games/forge.html'}
+  {key:'code',name:'КодБот',         sub:'Программирование',       emoji:'🕹️', bg:'#EDE9FE', total:3, src:'../games/code.html?v=202607141232'}
 ];
 var RANKS=[[0,'Кадет','🎒'],[150,'Пилот','🚀'],[400,'Инженер','🔧'],[900,'Командир','🎖️'],[1800,'Капитан базы','👑']];
 
@@ -177,47 +131,6 @@ document.getElementById('planets').innerHTML=GAMES.map(function(g){
     '<div class="bar"><i style="width:'+pct+'%"></i></div>'+
     '<a class="play" href="'+g.src+'">'+(d>0&&!full?'Продолжить →':full?'Играть ещё →':'Начать →')+'</a></div>';
 }).join('');
-
-/* ── коллекция ── */
-function esc(t){return String(t).replace(/[&<>"]/g,function(c){
-  return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
-
-function drawGallery(){
-  var items=window.nookaGallery?window.nookaGallery.all():[];
-  var w=document.getElementById('galWrap');
-  if(!items.length){
-    w.innerHTML='<div class="gal-empty"><b>Здесь пусто</b>'+
-      '<span>Всё, что ты сделаешь сам, будет складываться сюда — и это можно показать</span>'+
-      '<a href="../games/forge.html">Выковать первый предмет →</a></div>';
-    return;
-  }
-  w.innerHTML='<div class="gal">'+items.map(function(a){
-    return '<div class="gcard" data-id="'+a.id+'">'+
-      '<div class="gcard__pic">'+a.svg+'</div>'+
-      '<div class="gcard__t">'+esc(a.title)+'</div>'+
-      '<div class="gcard__n">'+esc(a.note)+'</div></div>';
-  }).join('')+'</div>';
-
-  [].forEach.call(w.querySelectorAll('.gcard'),function(c){
-    c.onclick=function(){ openArtifact(c.getAttribute('data-id')); };
-  });
-}
-
-function openArtifact(id){
-  var a=window.nookaGallery.get(id); if(!a) return;
-  var v=document.createElement('div'); v.className='gview';
-  v.innerHTML=a.svg+
-    '<div class="gview__t">'+esc(a.title)+'</div>'+
-    '<div class="gview__n">'+esc(a.note)+(a.game?' · '+esc(a.game):'')+'</div>'+
-    '<div class="gview__b"><button class="x">Закрыть</button><button class="d">Удалить</button></div>';
-  document.body.appendChild(v);
-  v.querySelector('.x').onclick=function(){ v.remove(); };
-  v.querySelector('.d').onclick=function(){
-    window.nookaGallery.remove(id); v.remove(); drawGallery();
-  };
-  v.onclick=function(e){ if(e.target===v) v.remove(); };
-}
-drawGallery();
 
 document.getElementById('ranksList').innerHTML=RANKS.map(function(k){
   var got=xp>=k[0], cur=r.at===k[0];
