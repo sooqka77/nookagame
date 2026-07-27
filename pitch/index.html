@@ -44,9 +44,9 @@ footer-note{display:block;position:absolute;bottom:26px;left:72px;font-size:12px
 .chips{display:flex;gap:10px;flex-wrap:wrap;margin-top:26px}
 .chip{background:#EDE9FE;color:#5B21B6;border-radius:40px;padding:9px 20px;font-size:14.5px;font-weight:700}
 /* gallery */
-.gal{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-top:24px}
+.gal{display:grid;grid-template-columns:repeat(5,1fr);gap:18px;margin-top:24px}
 .gcard{background:#fff;border-radius:22px;overflow:hidden;box-shadow:0 10px 34px rgba(17,17,24,.10);display:flex;flex-direction:column}
-.gcard img{width:100%;height:230px;object-fit:cover;object-position:center top;background:#0D1427}
+.gcard img{width:100%;height:212px;object-fit:cover;object-position:center top;background:#0D1427}
 .gcap{padding:16px 18px 20px}
 .gcap b{font-family:'Unbounded',sans-serif;font-size:16px;display:block;margin-bottom:5px}
 .gcap b em{font-style:normal;color:var(--purple)}
@@ -166,11 +166,13 @@ footer-note{display:block;position:absolute;bottom:26px;left:72px;font-size:12px
 .stage li{font-size:15px;line-height:1.8;margin-left:18px;color:var(--muted)}
 .stage.glob li{color:rgba(255,255,255,.75)}
 /* team */
-.team{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:12px;max-width:900px}
+.team{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:8px;max-width:980px}
+.team .tm p{font-size:14px;line-height:1.55}
+.team .tm h3{margin-bottom:8px}
 .tm{background:var(--bg);border-radius:24px;padding:34px 30px}
 .tm h3{font-family:'Unbounded',sans-serif;font-size:20px;font-weight:900;margin-bottom:10px}
 .tm p{font-size:15px;color:var(--muted);line-height:1.7}
-.edge{margin-top:22px;background:var(--yellow);border-radius:22px;padding:26px 32px;font-size:clamp(16px,1.8vw,22px);font-weight:700;font-family:'Unbounded',sans-serif;line-height:1.4;max-width:900px}
+.edge{margin-top:16px;background:var(--yellow);border-radius:20px;padding:20px 28px;font-size:clamp(15px,1.55vw,19px);font-weight:700;font-family:'Unbounded',sans-serif;line-height:1.4;max-width:900px}
 /* ask */
 .ask{background:var(--black);color:#fff}
 .ask h2 em{color:var(--yellow)}
@@ -333,8 +335,12 @@ footer-note{display:block;position:absolute;bottom:26px;left:72px;font-size:12px
       <img src="code.jpg" alt="КодБот">
       <div class="gcap"><b>Код<em>Бот</em></b><span>Программирует робота блоками команд — первый шаг к алгоритмическому мышлению.</span></div>
     </div>
+    <div class="gcard">
+      <img src="prompt.jpg" alt="ПромптЛаб">
+      <div class="gcap"><b>Промпт<em>Лаб</em></b><span>Пишет ИИ план из шагов и смотрит, как тот исполняет буквально. Забыл шаг — робот додумает сам.</span></div>
+    </div>
   </div>
-  <p class="gal-note">Плюс <b>ПромптЛаб</b> — учит говорить с ИИ: точный промпт, роли, итерации. <b>Проверка «за ужином»:</b> после каждой миссии ребёнок объясняет родителю, что понял, своими словами — знание, а не «прошёл тест».</p>
+  <p class="gal-note"><b>Проверка «за ужином»:</b> после каждой миссии ребёнок объясняет родителю, что понял, своими словами — знание, а не «прошёл тест».</p>
 </section>
 
 <!-- 7. CONVEYOR -->
@@ -345,19 +351,19 @@ footer-note{display:block;position:absolute;bottom:26px;left:72px;font-size:12px
   <p class="sub">Себестоимость новой миссии стремится к нулю: сценарий, механика, графика и сборка идут через ИИ-конвейер. Это путь к платформе с сотнями игр, а не к студии, которая делает одну игру полгода.</p>
   <div class="stat-row">
     <div class="stat"><b>1</b><span>игра в неделю — текущий темп</span></div>
-    <div class="stat"><b>~0 ₽</b><span>костов на разработку и хостинг</span></div>
+    <div class="stat"><b>~0 ₽</b><span>затрат на разработку и хостинг</span></div>
     <div class="stat"><b>1000+</b><span>игр — потолок модели</span></div>
   </div>
   <div style="font-family:'Unbounded',sans-serif;font-weight:700;font-size:15px;margin-top:26px">Один конвейер — любые предметы:</div>
   <div class="dirs">
-    <div class="dir on">🧠 ИИ</div>
-    <div class="dir on">⚛️ Физика</div>
-    <div class="dir on">⚗️ Химия</div>
-    <div class="dir on">🕹️ Программирование</div>
-    <div class="dir">🧬 Биология</div>
-    <div class="dir">📐 Математика</div>
-    <div class="dir">🔭 Астрономия</div>
-    <div class="dir">⚙️ Инженерия</div>
+    <div class="dir on">ИИ</div>
+    <div class="dir on">Физика</div>
+    <div class="dir on">Химия</div>
+    <div class="dir on">Программирование</div>
+    <div class="dir">Биология</div>
+    <div class="dir">Математика</div>
+    <div class="dir">Астрономия</div>
+    <div class="dir">Инженерия</div>
   </div>
   <div style="font-size:13.5px;color:var(--muted);margin-top:12px">Закрашенные — уже в проде. Остальные открываются тем же конвейером, без новой команды.</div>
 </section>

@@ -5286,7 +5286,8 @@ function Level5Night({
   onWin,
   onHome
 }) {
-  const [phase, setPhase] = useState('intro'); // intro | play | check
+  /* «#l5!» открывает уровень сразу в игре — для показов и съёмки экранов */
+  const [phase, setPhase] = useState((window.location.hash || '').indexOf('!') > -1 ? 'play' : 'intro'); // intro | play | check
   const [rIdx, setRIdx] = useState(0);
   const [plan, setPlan] = useState([]);
   const [w, setW] = useState(() => Object.assign({}, P5_WORLD0, P5_ROUNDS[0].start));
@@ -5570,7 +5571,8 @@ function App() {
   /* прямая ссылка на уровень: prompt.html#l5 — удобно для показа */
   const [s, setS] = useState(() => {
     const h = (window.location.hash || '').replace('#', '');
-    return /^l[1-9]$/.test(h) ? h : 'home';
+    const k = h.replace('!', '');
+    return /^l[1-9]$/.test(k) ? k : 'home';
   });
   return /*#__PURE__*/React.createElement("div", {
     style: {
