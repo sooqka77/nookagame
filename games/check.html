@@ -78,7 +78,7 @@
   100%{transform:translateY(64px);}}
 
 /* ноги: подсвечиваются по очереди */
-.cknum{opacity:0;}
+.cknum{opacity:0;transform-box:fill-box;transform-origin:50% 50%;}
 .ckexp.ckgo .ckleg .cknum{animation:ckCount .4s ease-out var(--d) forwards;}
 @keyframes ckCount{from{opacity:0;transform:scale(.4);}to{opacity:1;transform:scale(1);}}
 
@@ -546,19 +546,20 @@ function CkExp({
       height: 13,
       fill: '#FF6B6B'
     }), React.createElement('rect', {
-      x: 174,
+      x: 154,
       y: 18,
       width: 20,
       height: 13,
       fill: '#5B8DEF'
     })), items.map((it, i) => React.createElement('g', {
       key: i,
+      transform: `translate(${it.x} 166)`
+    }, React.createElement('g', {
       className: it.pull ? 'ckpull' : 'ckstay',
       style: {
         '--tx': 150 - it.x + 'px',
         '--d': i * .12 + 's'
-      },
-      transform: `translate(${it.x} 166)`
+      }
     }, it.el(), React.createElement('text', {
       x: 0,
       y: 30,
@@ -567,7 +568,7 @@ function CkExp({
       fontWeight: 800,
       fontFamily: 'Nunito,sans-serif',
       fill: '#8B7BAE'
-    }, it.label))));
+    }, it.label)))));
   }
 
   /* ── ЛУНА ── */
