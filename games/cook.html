@@ -72,6 +72,33 @@
 @keyframes coHot{0%,100%{opacity:.6;}50%{opacity:1;}}
 @media (prefers-reduced-motion: reduce){.costage *,.cohot{animation:none !important;}}
 
+/* ── выспрашиваем гостя ── */
+.coask{margin:11px 14px 0;}
+.coask__h{display:flex;align-items:baseline;gap:8px;margin-bottom:9px;}
+.coask__h b{font-weight:900;font-size:14.5px;color:#F4EEFF;}
+.coask__h span{margin-left:auto;font-weight:800;font-size:12px;color:#E8C86B;}
+.coask__h span.out{color:#FF9A8A;}
+.coq{display:block;width:100%;text-align:left;margin-bottom:7px;padding:11px 14px;
+  border:none;border-radius:16px;cursor:pointer;font-family:var(--nk-body);
+  background:rgba(255,255,255,.055);box-shadow:inset 0 0 0 1px rgba(255,255,255,.09);
+  transition:box-shadow .15s,transform .1s;}
+.coq:hover:not(:disabled){box-shadow:inset 0 0 0 1.5px rgba(255,200,90,.5);}
+.coq:active:not(:disabled){transform:translateY(2px);}
+.coq:disabled{cursor:default;}
+.coq__q{display:block;font-weight:900;font-size:13.5px;color:#E4D8F5;}
+.coq--done .coq__q{color:#9B87BE;}
+.coq__a{display:block;margin-top:5px;font-weight:800;font-size:13px;color:#FFD98A;line-height:1.35;}
+
+/* блокнот */
+.conote{margin:11px 0 0;padding:11px 14px;border-radius:16px;
+  background:rgba(78,217,155,.08);box-shadow:inset 0 0 0 1px rgba(78,217,155,.26);}
+.conote__t{font-weight:900;font-size:11px;letter-spacing:.06em;text-transform:uppercase;
+  color:#7FD8A8;margin-bottom:6px;}
+.conote ul{margin:0;padding-left:18px;}
+.conote li{font-weight:800;font-size:13px;color:#D9F5E4;line-height:1.5;}
+.conote__e{font-weight:700;font-size:12.5px;color:#7C9B8A;}
+.cobtns{display:flex;gap:9px;}
+
 </style>
 </head>
 <body>
@@ -169,42 +196,6 @@ const CO_EXTRA = {
     label: 'Зелень',
     c: '#3FA85A'
   }
-};
-
-/* гости: часть требований скрыта до первой подачи */
-const CO_GUESTS = [{
-  who: 'Сестра, 6 лет',
-  ask: 'Хочу завтрак, только быстро',
-  open: {
-    base: 'bread'
-  },
-  // что сказала сразу
-  hidden: {
-    veg: 'mush'
-  },
-  // что забыла сказать
-  hiddenNo: true,
-  // это запрет, а не требование
-  hiddenSay: 'Фу, грибы! Я их не ем. Я же говорила… ну, наверное, не говорила.',
-  ok: 'Вот это завтрак. Спасибо!'
-}, {
-  who: 'Дедушка Пётр',
-  ask: 'После прогулки хочу что-то сытное',
-  open: {
-    prot: 'meat'
-  },
-  hidden: {
-    extra: 'spicy'
-  },
-  hiddenNo: true,
-  hiddenSay: 'Остро! Мне такое нельзя, врач запретил. Забыл предупредить.',
-  ok: 'Сытно и по-человечески. Молодец.'
-}];
-const CO_FIELD = {
-  base: 'основу',
-  prot: 'белок',
-  veg: 'овощи',
-  extra: 'добавку'
 };
 
 /* имя блюда собирается из того, что выбрал ребёнок */
@@ -446,7 +437,86 @@ function CoDish({
     strokeWidth: 2
   }), baseShape(), protShape(), vegShape(), extraShape());
 }
-/* ── ряд выбора ─────────────────────────────────────────── */
+/* ── гости: говорят расплывчато, детали надо выспросить ──
+   Бесполезные вопросы сделаны очевидно бесполезными, а не коварными:
+   ребёнок должен думать «надо было спросить про еду», а не чувствовать
+   себя обманутым.                                                      */
+const CO_GUESTS = [{
+  who: 'Сестра, 6 лет',
+  ask: 'Хочу что-нибудь на завтрак',
+  limit: 3,
+  // первый гость — щедро
+  qs: [{
+    q: 'Что ты не любишь?',
+    a: 'Грибы! Фу.',
+    key: true,
+    learn: 'не ест грибы'
+  }, {
+    q: 'Сколько у тебя времени?',
+    a: 'Мама дала пять минут.',
+    key: true,
+    learn: 'нужно быстро — тост'
+  }, {
+    q: 'Сильно голодная?',
+    a: 'Не очень.',
+    learn: 'ест немного'
+  }, {
+    q: 'Какой твой любимый цвет?',
+    a: 'Розовый! А при чём тут завтрак?'
+  }, {
+    q: 'Кто ещё будет есть?',
+    a: 'Только я.'
+  }],
+  need: {
+    base: 'bread'
+  },
+  // быстро = тост
+  ban: {
+    veg: 'mush'
+  },
+  // грибы нельзя
+  banSay: 'Тут грибы! Я же сказала, что не ем их.',
+  banSayBlind: 'Тут грибы, а я их не ем. Ты и не спросил…',
+  needSay: 'Я просила быстро. Это долго готовить.',
+  ok: 'Вот это завтрак! Спасибо.'
+}, {
+  who: 'Дедушка Пётр',
+  ask: 'Пришёл с прогулки, надо поесть',
+  limit: 2,
+  // дальше сложнее
+  qs: [{
+    q: 'Есть что-то нельзя?',
+    a: 'Острое нельзя, врач запретил.',
+    key: true,
+    learn: 'без острого'
+  }, {
+    q: 'Насколько проголодались?',
+    a: 'Как волк. Нужно сытно.',
+    key: true,
+    learn: 'нужен белок'
+  }, {
+    q: 'Что любите?',
+    a: 'Рыбу уважаю.',
+    learn: 'любит рыбу'
+  }, {
+    q: 'Торопитесь?',
+    a: 'Нет, я на пенсии.'
+  }, {
+    q: 'Как погода на улице?',
+    a: 'Ветрено. А обед-то будет?'
+  }],
+  need: {
+    prot: ['fish', 'meat', 'beans']
+  },
+  ban: {
+    extra: 'spicy'
+  },
+  banSay: 'Остро же! Мне такое нельзя.',
+  banSayBlind: 'Остро! Мне нельзя, врач запретил. Надо было спросить.',
+  needSay: 'Это не еда для голодного человека. Где основательность?',
+  ok: 'Вот это по-нашему. Спасибо, шеф.'
+}];
+/* ── ряд выбора состава ─────────────────────────────────── */
 function CoRow({
   title,
   opts,
@@ -474,6 +544,9 @@ function LevelCook({
     return ['play', 'free'].indexOf(p) > -1 ? p : 'intro';
   });
   const [gi, setGi] = useState(0);
+  const [stage, setStage] = useState('ask'); // ask — выспрашиваем, cook — готовим
+  const [asked, setAsked] = useState([]);
+  const [bonus, setBonus] = useState(0); // доп. вопросы после неудачной подачи
   const [v, setV] = useState({
     base: 'pasta',
     prot: 'none',
@@ -481,11 +554,11 @@ function LevelCook({
     extra: 'none'
   });
   const [cooking, setCooking] = useState(false);
-  const [res, setRes] = useState(null); // {ok, say, reveal}
-  const [known, setKnown] = useState([]); // что гость уже раскрыл
+  const [res, setRes] = useState(null);
   const [saved, setSaved] = useState(false);
   const tRef = useRef([]);
   const g = CO_GUESTS[gi];
+  const left = (g ? g.limit : 0) + bonus - asked.length;
   const clear = () => {
     tRef.current.forEach(clearTimeout);
     tRef.current = [];
@@ -497,39 +570,53 @@ function LevelCook({
     }));
     setRes(null);
   };
+  const askQ = i => {
+    if (left > 0 && asked.indexOf(i) < 0) setAsked(asked.concat(i));
+  };
+
+  /* что ребёнок успел выяснить */
+  const notes = () => asked.map(i => g.qs[i].learn).filter(Boolean);
+  const knows = key => asked.some(i => g.qs[i].key && g.qs[i].learn && g.qs[i][key] !== undefined);
   const serve = () => {
     clear();
     setCooking(true);
     setRes(null);
     tRef.current = [setTimeout(() => {
       setCooking(false);
-      const openMiss = Object.keys(g.open).filter(k => v[k] !== g.open[k]);
-      if (openMiss.length) {
+      const banKey = Object.keys(g.ban).find(k => v[k] === g.ban[k]);
+      if (banKey) {
+        /* знал ли ребёнок про запрет — от этого зависит тон */
+        const knew = asked.some(i => g.qs[i].key && g.qs[i].learn && (g.qs[i].learn.indexOf('не ест') > -1 || g.qs[i].learn.indexOf('без ') > -1));
         setRes({
           ok: false,
-          say: 'Я же просил ' + CO_FIELD[openMiss[0]] + ' другую. Посмотри ещё раз.'
+          say: knew ? g.banSay : g.banSayBlind,
+          blind: !knew
         });
         return;
       }
-      const brokenKey = Object.keys(g.hidden).find(k => v[k] === g.hidden[k]);
-      if (brokenKey) {
+      const needKey = Object.keys(g.need).find(k => {
+        const want = g.need[k];
+        return Array.isArray(want) ? want.indexOf(v[k]) < 0 : v[k] !== want;
+      });
+      if (needKey) {
         setRes({
           ok: false,
-          say: g.hiddenSay,
-          reveal: true
+          say: g.needSay
         });
-        setKnown(k => k.indexOf(gi) > -1 ? k : k.concat(gi));
         return;
       }
       setRes({
         ok: true,
         say: g.ok
       });
-    }, 1400)];
+    }, 1300)];
   };
   const nextGuest = () => {
     if (gi < CO_GUESTS.length - 1) {
       setGi(gi + 1);
+      setStage('ask');
+      setAsked([]);
+      setBonus(0);
       setRes(null);
       setV({
         base: 'pasta',
@@ -560,11 +647,96 @@ function LevelCook({
       setSaved(true);
       setRes({
         ok: true,
-        say: 'Рецепт записан. Он лежит в твоей коллекции.'
+        say: 'Рецепт записан — он в твоей коллекции.'
       });
-    }, 1400)];
+    }, 1300)];
   };
-  const panel = React.createElement('div', {
+
+  /* блокнот с тем, что выяснил */
+  const notepad = () => {
+    const n = notes();
+    return React.createElement('div', {
+      className: 'conote'
+    }, React.createElement('div', {
+      className: 'conote__t'
+    }, 'Что ты выяснил'), n.length ? React.createElement('ul', null, n.map((t, i) => React.createElement('li', {
+      key: i
+    }, t))) : React.createElement('div', {
+      className: 'conote__e'
+    }, 'Пока ничего. Спроси гостя.'));
+  };
+  const dish = React.createElement('div', {
+    className: 'costage' + (cooking ? ' cooking' : '')
+  }, React.createElement(CoDish, {
+    v,
+    u: 'd'
+  }), cooking && React.createElement('div', {
+    className: 'costeam'
+  }, [0, 1, 2].map(i => React.createElement('span', {
+    key: i,
+    style: {
+      '--d': i * .3 + 's'
+    }
+  }))));
+  return React.createElement('div', {
+    className: 'co'
+  }, React.createElement(TopBar, {
+    level: 17,
+    title: 'Шеф-повар',
+    onHome,
+    step: phase === 'free' ? 2 : gi,
+    total: 3
+  }), phase === 'intro' && React.createElement(IntroModal, {
+    emoji: NKM('hello', 88),
+    title: 'Шеф-повар',
+    law: 'Гость расскажет не всё — он и не подумает.\nСпроси сам, пока не начал готовить.',
+    tip: 'Вопросов немного. Выбирай те, что про еду.',
+    onStart: () => setPhase('play')
+  }), React.createElement('div', {
+    className: 'cobody'
+  }, phase === 'play' && React.createElement('div', {
+    className: 'coguest'
+  }, React.createElement('div', {
+    className: 'coguest__w'
+  }, g.who), React.createElement('div', {
+    className: 'coguest__a'
+  }, '«', g.ask, '»')), phase === 'free' && React.createElement(TaskBadge, null, 'Придумай своё блюдо'), /* ФАЗА 1: выспрашиваем */
+  phase === 'play' && stage === 'ask' && React.createElement('div', {
+    className: 'coask'
+  }, React.createElement('div', {
+    className: 'coask__h'
+  }, React.createElement('b', null, 'Спроси гостя'), React.createElement('span', {
+    className: left > 0 ? '' : 'out'
+  }, 'осталось вопросов: ', left)), g.qs.map((q, i) => {
+    const done = asked.indexOf(i) > -1;
+    return React.createElement('button', {
+      key: i,
+      className: 'coq' + (done ? ' coq--done' : ''),
+      onClick: () => askQ(i),
+      disabled: done || left <= 0
+    }, React.createElement('span', {
+      className: 'coq__q'
+    }, q.q), done && React.createElement('span', {
+      className: 'coq__a'
+    }, '— ', q.a));
+  }), notepad(), React.createElement('button', {
+    className: 'nk-btn nk-btn--pri',
+    style: {
+      width: '100%',
+      marginTop: 12
+    },
+    onClick: () => setStage('cook')
+  }, asked.length ? 'Иду готовить' : 'Готовить без вопросов')), /* ФАЗА 2: готовим */
+  phase !== 'intro' && (stage === 'cook' || phase === 'free') && React.createElement('div', null, dish, React.createElement('div', {
+    className: 'coname'
+  }, coName(v)), React.createElement('div', {
+    className: 'cosay-wrap'
+  }, res && React.createElement('div', {
+    className: 'cosay' + (res.ok ? '' : ' cosay--bad'),
+    key: res.say
+  }, React.createElement('span', {
+    className: 'cosay__a'
+  }, NKM(res.ok ? 'win' : 'think', 32)), React.createElement('span', null, res.say))), phase === 'play' && notepad(), React.createElement('div', {
     className: 'copanel'
   }, React.createElement(CoRow, {
     title: 'Основа',
@@ -586,62 +758,25 @@ function LevelCook({
     opts: CO_EXTRA,
     value: v.extra,
     onPick: k => set('extra', k)
-  }));
-  return React.createElement('div', {
-    className: 'co'
-  }, React.createElement(TopBar, {
-    level: 17,
-    title: 'Шеф-повар',
-    onHome,
-    step: phase === 'free' ? 2 : gi,
-    total: 3
-  }), phase === 'intro' && React.createElement(IntroModal, {
-    emoji: NKM('hello', 88),
-    title: 'Шеф-повар',
-    law: 'Гость говорит тебе. Ты говоришь Нейро.\nЧего не передал — Нейро не узнает.',
-    tip: 'Собери заказ и подай. Гости бывают с сюрпризом.',
-    onStart: () => setPhase('play')
-  }), React.createElement('div', {
-    className: 'cobody'
-  }, phase === 'play' ? React.createElement('div', {
-    className: 'coguest'
-  }, React.createElement('div', {
-    className: 'coguest__w'
-  }, g.who), React.createElement('div', {
-    className: 'coguest__a'
-  }, '«', g.ask, '»'), known.indexOf(gi) > -1 && React.createElement('div', {
-    className: 'coguest__n'
-  }, 'Теперь ты знаешь: ', CO_VEG[g.hidden.veg] ? 'не ест ' + CO_VEG[g.hidden.veg].label.toLowerCase() : 'без добавки «' + CO_EXTRA[g.hidden.extra].label.toLowerCase() + '»')) : React.createElement(TaskBadge, null, 'Придумай своё блюдо'), React.createElement('div', {
-    className: 'costage' + (cooking ? ' cooking' : '')
-  }, React.createElement(CoDish, {
-    v,
-    u: 'd'
-  }), cooking && React.createElement('div', {
-    className: 'costeam'
-  }, [0, 1, 2].map(i => React.createElement('span', {
-    key: i,
-    style: {
-      '--d': i * .3 + 's'
-    }
   })))), React.createElement('div', {
-    className: 'coname'
-  }, coName(v)), React.createElement('div', {
-    className: 'cosay-wrap'
-  }, res && React.createElement('div', {
-    className: 'cosay' + (res.ok ? '' : ' cosay--bad'),
-    key: res.say
-  }, React.createElement('span', {
-    className: 'cosay__a'
-  }, NKM(res.ok ? 'win' : 'think', 32)), React.createElement('span', null, res.say))), panel), React.createElement('div', {
     className: 'cofoot'
-  }, phase === 'play' && (!res || !res.ok) && React.createElement('button', {
+  }, phase === 'play' && stage === 'cook' && (!res || !res.ok) && React.createElement('div', {
+    className: 'cobtns'
+  }, res && React.createElement('button', {
+    className: 'nk-btn nk-btn--soft',
+    onClick: () => {
+      setBonus(bonus + 1);
+      setStage('ask');
+      setRes(null);
+    }
+  }, 'Спросить ещё'), React.createElement('button', {
     className: 'nk-btn nk-btn--pri',
     style: {
-      width: '100%'
+      flex: 1
     },
     onClick: serve,
     disabled: cooking
-  }, cooking ? 'Нейро готовит…' : 'Приготовить и подать'), phase === 'play' && res && res.ok && React.createElement('button', {
+  }, cooking ? 'Нейро готовит…' : 'Подать')), phase === 'play' && res && res.ok && React.createElement('button', {
     className: 'nk-btn nk-btn--ok',
     style: {
       width: '100%'
