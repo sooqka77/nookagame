@@ -1,0 +1,688 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1">
+<meta name="theme-color" content="#0E0719">
+<title>Шеф-повар — Nooka</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&family=Unbounded:wght@700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="nooka-ui.css">
+<style>
+
+/* ============ ШЕФ-ПОВАР ============ */
+.coroot{height:100vh;overflow:hidden;max-width:480px;margin:0 auto;position:relative;}
+.co{height:100%;display:flex;flex-direction:column;overflow:hidden;
+  background:linear-gradient(180deg,#1B1226 0%,#120C1B 62%,#0C0813 100%);}
+.cobody{flex:1;overflow-y:auto;padding:0 0 6px;-webkit-overflow-scrolling:touch;}
+
+/* гость */
+.coguest{margin:0 14px;padding:12px 15px;border-radius:20px;
+  background:linear-gradient(180deg,rgba(255,216,77,.13),rgba(255,216,77,.05));
+  box-shadow:inset 0 0 0 1px rgba(255,216,77,.28);}
+.coguest__w{font-weight:900;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:#E8C86B;}
+.coguest__a{margin-top:4px;font-weight:900;font-size:15px;line-height:1.3;color:#FFF6DC;}
+.coguest__n{margin-top:7px;padding-top:7px;font-weight:800;font-size:12px;color:#FFC98A;
+  border-top:1px dashed rgba(255,216,77,.3);}
+
+/* тарелка */
+.costage{position:relative;margin:10px auto 0;width:74%;max-width:280px;}
+.costage.cooking .codish{animation:coShake .5s ease-in-out infinite;}
+.costeam{position:absolute;left:50%;top:2%;transform:translateX(-50%);display:flex;gap:14px;}
+.costeam span{width:9px;height:9px;border-radius:50%;background:rgba(255,255,255,.5);
+  animation:coSteam 1.2s ease-out var(--d) infinite;}
+
+.coname{margin:2px 16px 0;text-align:center;font-family:var(--nk-brand),var(--nk-body);
+  font-weight:700;font-size:16.5px;line-height:1.25;color:#F4EEFF;}
+
+/* реплика */
+.cosay-wrap{min-height:32px;padding:10px 14px 0;}
+.cosay{display:flex;align-items:center;gap:10px;padding:9px 14px 9px 10px;border-radius:18px;
+  font-weight:800;font-size:13.5px;line-height:1.35;color:#D9F5E4;
+  background:rgba(78,217,155,.13);box-shadow:inset 0 0 0 1px rgba(78,217,155,.4);
+  animation:coIn .3s ease-out both;}
+.cosay--bad{color:#FFE0DA;background:rgba(255,138,90,.14);box-shadow:inset 0 0 0 1px rgba(255,138,90,.42);}
+.cosay__a{flex-shrink:0;line-height:0;}
+
+/* заказ */
+.copanel{margin:11px 14px 0;padding:11px 12px 12px;border-radius:20px;
+  background:rgba(255,255,255,.045);box-shadow:inset 0 0 0 1px rgba(255,255,255,.08);}
+.corow + .corow{margin-top:9px;}
+.corow__t{font-weight:900;font-size:11px;letter-spacing:.06em;text-transform:uppercase;
+  color:#9B87BE;margin-bottom:6px;}
+.corow__c{display:flex;flex-wrap:wrap;gap:6px;}
+.cochip{padding:8px 13px;border:none;border-radius:999px;cursor:pointer;
+  font-family:var(--nk-body);font-weight:800;font-size:12.5px;white-space:nowrap;
+  color:#E4D8F5;background:rgba(255,255,255,.06);
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.10);transition:box-shadow .15s,transform .1s;}
+.cochip:hover{box-shadow:inset 0 0 0 1.5px rgba(255,200,90,.5);}
+.cochip:active{transform:translateY(2px);}
+.cochip--on{color:#2A1A08;background:linear-gradient(180deg,#FFE9A8,#FFD84D);
+  box-shadow:0 3px 0 #D9A81C,inset 0 1px 0 rgba(255,255,255,.7);}
+
+.cofoot{flex-shrink:0;padding:10px 14px calc(14px + env(safe-area-inset-bottom));
+  background:linear-gradient(180deg,rgba(12,8,19,0),#0C0813 42%);}
+
+@keyframes coIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
+@keyframes coShake{0%,100%{transform:rotate(-1.2deg);}50%{transform:rotate(1.2deg);}}
+@keyframes coSteam{0%{opacity:0;transform:translateY(6px) scale(.6);}
+  30%{opacity:.8;}100%{opacity:0;transform:translateY(-26px) scale(1.5);}}
+.cohot{animation:coHot 1.4s ease-in-out infinite;}
+@keyframes coHot{0%,100%{opacity:.6;}50%{opacity:1;}}
+@media (prefers-reduced-motion: reduce){.costage *,.cohot{animation:none !important;}}
+
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="react-bundle.js"></script>
+<script src="nooka-core.js"></script>
+<script src="nooka-gallery.js"></script>
+<script src="nooka-ui.js"></script>
+<script>
+/* ============================================================
+   ШЕФ-ПОВАР — практика промптов в живой задаче.
+   Гость говорит не всё: часть требований всплывает только после
+   первой попытки. Ровно как с ИИ, когда забыл дать контекст.
+   Концепты И11–И14 из AI_CONCEPT_MAP.
+   ============================================================ */
+
+const CO_BASE = {
+  pasta: {
+    label: 'Паста',
+    c1: '#F5D98B',
+    c2: '#D9A94B'
+  },
+  rice: {
+    label: 'Рис',
+    c1: '#F6F1E4',
+    c2: '#D8CFB8'
+  },
+  bread: {
+    label: 'Тост',
+    c1: '#E8B872',
+    c2: '#B8823C'
+  }
+};
+const CO_PROT = {
+  none: {
+    label: 'Без белка',
+    hide: true
+  },
+  egg: {
+    label: 'Яйцо',
+    c1: '#FFF8E8',
+    c2: '#FFC93C'
+  },
+  fish: {
+    label: 'Рыба',
+    c1: '#F7B8A0',
+    c2: '#D97F62'
+  },
+  meat: {
+    label: 'Курица',
+    c1: '#E8C08E',
+    c2: '#B8834A'
+  },
+  beans: {
+    label: 'Фасоль',
+    c1: '#C08A5E',
+    c2: '#8A5C38'
+  }
+};
+const CO_VEG = {
+  none: {
+    label: 'Без овощей',
+    hide: true
+  },
+  tomato: {
+    label: 'Томаты',
+    c: '#E85C4A'
+  },
+  greens: {
+    label: 'Салат',
+    c: '#5FBF6A'
+  },
+  mush: {
+    label: 'Грибы',
+    c: '#B9A38A'
+  },
+  pepper: {
+    label: 'Перец',
+    c: '#E8903C'
+  }
+};
+const CO_EXTRA = {
+  none: {
+    label: 'Ничего'
+  },
+  spicy: {
+    label: 'Остро',
+    c: '#D93A2B'
+  },
+  cheese: {
+    label: 'Сыр',
+    c: '#F5D96B'
+  },
+  herbs: {
+    label: 'Зелень',
+    c: '#3FA85A'
+  }
+};
+
+/* гости: часть требований скрыта до первой подачи */
+const CO_GUESTS = [{
+  who: 'Сестра, 6 лет',
+  ask: 'Хочу завтрак, только быстро',
+  open: {
+    base: 'bread'
+  },
+  // что сказала сразу
+  hidden: {
+    veg: 'mush'
+  },
+  // что забыла сказать
+  hiddenNo: true,
+  // это запрет, а не требование
+  hiddenSay: 'Фу, грибы! Я их не ем. Я же говорила… ну, наверное, не говорила.',
+  ok: 'Вот это завтрак. Спасибо!'
+}, {
+  who: 'Дедушка Пётр',
+  ask: 'После прогулки хочу что-то сытное',
+  open: {
+    prot: 'meat'
+  },
+  hidden: {
+    extra: 'spicy'
+  },
+  hiddenNo: true,
+  hiddenSay: 'Остро! Мне такое нельзя, врач запретил. Забыл предупредить.',
+  ok: 'Сытно и по-человечески. Молодец.'
+}];
+const CO_FIELD = {
+  base: 'основу',
+  prot: 'белок',
+  veg: 'овощи',
+  extra: 'добавку'
+};
+
+/* имя блюда собирается из того, что выбрал ребёнок */
+function coName(v) {
+  const b = CO_BASE[v.base].label;
+  const p = v.prot !== 'none' ? CO_PROT[v.prot].label.toLowerCase() : null;
+  const g = v.veg !== 'none' ? CO_VEG[v.veg].label.toLowerCase() : null;
+  const e = v.extra === 'cheese' ? 'под сыром' : v.extra === 'herbs' ? 'с зеленью' : v.extra === 'spicy' ? 'по-острому' : null;
+  let n = b;
+  if (p && g) n += ' с ' + p + ' и ' + g;else if (p) n += ' с ' + p;else if (g) n += ' с ' + g;
+  if (e) n += ' ' + e;
+  return n;
+}
+
+/* ── тарелка сверху: еда рисуется по составу ── */
+function CoDish({
+  v,
+  u
+}) {
+  const id = s => s + (u || '');
+  const B = CO_BASE[v.base],
+    P = CO_PROT[v.prot],
+    G = CO_VEG[v.veg],
+    E = CO_EXTRA[v.extra];
+  const baseShape = () => {
+    if (v.base === 'pasta') {
+      return React.createElement('g', null, Array.from({
+        length: 11
+      }, (_, i) => React.createElement('path', {
+        key: i,
+        d: `M${58 + i * 8.4} ${96 + i % 3 * 6} q${i % 2 ? 16 : -16} 20 ${i % 2 ? 7 : -7} 38 q${i % 2 ? -13 : 13} 15 5 24`,
+        stroke: i % 3 === 0 ? B.c2 : B.c1,
+        strokeWidth: 8,
+        fill: 'none',
+        strokeLinecap: 'round',
+        opacity: .96
+      })));
+    }
+    if (v.base === 'rice') {
+      return React.createElement('g', null, Array.from({
+        length: 44
+      }, (_, i) => {
+        const a = i * 2.4,
+          r = 6 + i % 7 * 7.5;
+        return React.createElement('ellipse', {
+          key: i,
+          cx: 100 + Math.cos(a) * r,
+          cy: 132 + Math.sin(a) * r * .8,
+          rx: 5.6,
+          ry: 3.8,
+          fill: i % 3 ? B.c1 : B.c2,
+          transform: `rotate(${i * 24} ${100 + Math.cos(a) * r} ${132 + Math.sin(a) * r * .8})`
+        });
+      }));
+    }
+    return React.createElement('g', null, React.createElement('rect', {
+      x: 54,
+      y: 98,
+      width: 92,
+      height: 70,
+      rx: 10,
+      fill: B.c2
+    }), React.createElement('rect', {
+      x: 58,
+      y: 93,
+      width: 92,
+      height: 70,
+      rx: 10,
+      fill: B.c1
+    }));
+  };
+  const protShape = () => {
+    if (P.hide) return null;
+    if (v.prot === 'egg') return React.createElement('g', null, React.createElement('ellipse', {
+      cx: 104,
+      cy: 118,
+      rx: 30,
+      ry: 24,
+      fill: P.c1
+    }), React.createElement('circle', {
+      cx: 104,
+      cy: 116,
+      r: 12,
+      fill: P.c2
+    }));
+    if (v.prot === 'fish') return React.createElement('g', null, React.createElement('path', {
+      d: 'M74 128 q26 -20 54 0 q-26 20 -54 0 Z',
+      fill: P.c1
+    }), React.createElement('path', {
+      d: 'M128 128 l16 -10 v20 Z',
+      fill: P.c2
+    }), [88, 100, 112].map((x, i) => React.createElement('path', {
+      key: i,
+      d: `M${x} 120 q4 8 0 16`,
+      stroke: P.c2,
+      strokeWidth: 2,
+      fill: 'none'
+    })));
+    if (v.prot === 'meat') return React.createElement('g', null, React.createElement('path', {
+      d: 'M76 112 q28 -14 50 4 q10 20 -12 30 q-30 8 -42 -12 Z',
+      fill: P.c1
+    }), [[92, 120], [108, 128], [98, 136]].map((p, i) => React.createElement('path', {
+      key: i,
+      d: `M${p[0]} ${p[1]} l14 3`,
+      stroke: P.c2,
+      strokeWidth: 2.6,
+      strokeLinecap: 'round'
+    })));
+    return React.createElement('g', null, Array.from({
+      length: 9
+    }, (_, i) => React.createElement('ellipse', {
+      key: i,
+      cx: 80 + i % 3 * 20,
+      cy: 114 + Math.floor(i / 3) * 16,
+      rx: 7,
+      ry: 5,
+      fill: i % 2 ? P.c1 : P.c2,
+      transform: `rotate(${i * 20} ${80 + i % 3 * 20} ${114 + Math.floor(i / 3) * 16})`
+    })));
+  };
+  const vegShape = () => {
+    if (G.hide) return null;
+    if (v.veg === 'tomato') return React.createElement('g', null, [[74, 104], [128, 112], [92, 152]].map((p, i) => React.createElement('g', {
+      key: i
+    }, React.createElement('circle', {
+      cx: p[0],
+      cy: p[1],
+      r: 11,
+      fill: G.c
+    }), React.createElement('circle', {
+      cx: p[0] - 3,
+      cy: p[1] - 3,
+      r: 3.4,
+      fill: '#fff',
+      opacity: .35
+    }))));
+    if (v.veg === 'greens') return React.createElement('g', null, [[70, 118], [132, 104], [104, 158], [78, 148]].map((p, i) => React.createElement('path', {
+      key: i,
+      d: `M${p[0]} ${p[1]} q14 -12 26 2 q-14 12 -26 -2 Z`,
+      fill: G.c,
+      opacity: .92
+    })));
+    if (v.veg === 'mush') return React.createElement('g', null, [[76, 110], [126, 118], [98, 156]].map((p, i) => React.createElement('g', {
+      key: i
+    }, React.createElement('path', {
+      d: `M${p[0] - 12} ${p[1]} q12 -16 24 0 Z`,
+      fill: G.c
+    }), React.createElement('rect', {
+      x: p[0] - 4,
+      y: p[1],
+      width: 8,
+      height: 10,
+      rx: 3,
+      fill: '#D8CBB6'
+    }))));
+    return React.createElement('g', null, [[72, 112], [130, 108], [100, 156]].map((p, i) => React.createElement('path', {
+      key: i,
+      d: `M${p[0]} ${p[1]} q10 -6 16 4 q-8 10 -16 -4 Z`,
+      fill: G.c
+    })));
+  };
+  const extraShape = () => {
+    if (v.extra === 'cheese') return React.createElement('g', {
+      opacity: .9
+    }, Array.from({
+      length: 14
+    }, (_, i) => React.createElement('rect', {
+      key: i,
+      x: 68 + i % 7 * 11,
+      y: 106 + Math.floor(i / 7) * 40,
+      width: 9,
+      height: 4,
+      rx: 2,
+      fill: E.c,
+      transform: `rotate(${i * 26} ${68 + i % 7 * 11} ${106 + Math.floor(i / 7) * 40})`
+    })));
+    if (v.extra === 'herbs') return React.createElement('g', null, Array.from({
+      length: 12
+    }, (_, i) => React.createElement('circle', {
+      key: i,
+      cx: 70 + i * 37 % 66,
+      cy: 104 + i * 23 % 58,
+      r: 2.6,
+      fill: E.c
+    })));
+    if (v.extra === 'spicy') return React.createElement('g', null, [[80, 150], [126, 100]].map((p, i) => React.createElement('path', {
+      key: i,
+      d: `M${p[0]} ${p[1]} q10 6 6 18 q-10 -2 -6 -18 Z`,
+      fill: E.c
+    })), React.createElement('g', {
+      className: 'cohot'
+    }, [[96, 96], [112, 92]].map((p, i) => React.createElement('path', {
+      key: i,
+      d: `M${p[0]} ${p[1]} c-5 -8 2 -12 0 -18 c6 5 9 11 5 17 c-1 3 -4 3 -5 1 Z`,
+      fill: '#FF7A1F',
+      opacity: .8
+    }))));
+    return null;
+  };
+  return React.createElement('svg', {
+    viewBox: '0 0 200 200',
+    className: 'codish',
+    style: {
+      width: '100%',
+      display: 'block'
+    }
+  }, React.createElement('defs', null, React.createElement('radialGradient', {
+    id: id('plate'),
+    cx: '.4',
+    cy: '.35'
+  }, React.createElement('stop', {
+    offset: '0%',
+    stopColor: '#FFFDF8'
+  }), React.createElement('stop', {
+    offset: '78%',
+    stopColor: '#EFE7DA'
+  }), React.createElement('stop', {
+    offset: '100%',
+    stopColor: '#CFC3B2'
+  }))), React.createElement('ellipse', {
+    cx: 100,
+    cy: 136,
+    rx: 84,
+    ry: 76,
+    fill: 'rgba(0,0,0,.35)'
+  }), React.createElement('ellipse', {
+    cx: 100,
+    cy: 130,
+    rx: 84,
+    ry: 76,
+    fill: `url(#${id('plate')})`
+  }), React.createElement('ellipse', {
+    cx: 100,
+    cy: 130,
+    rx: 68,
+    ry: 61,
+    fill: 'none',
+    stroke: 'rgba(45,27,69,.10)',
+    strokeWidth: 2
+  }), baseShape(), protShape(), vegShape(), extraShape());
+}
+/* ── ряд выбора ─────────────────────────────────────────── */
+function CoRow({
+  title,
+  opts,
+  value,
+  onPick
+}) {
+  return React.createElement('div', {
+    className: 'corow'
+  }, React.createElement('div', {
+    className: 'corow__t'
+  }, title), React.createElement('div', {
+    className: 'corow__c'
+  }, Object.keys(opts).map(k => React.createElement('button', {
+    key: k,
+    className: 'cochip' + (value === k ? ' cochip--on' : ''),
+    onClick: () => onPick(k)
+  }, opts[k].label))));
+}
+function LevelCook({
+  onWin,
+  onHome
+}) {
+  const [phase, setPhase] = useState(() => {
+    const p = new URLSearchParams(window.location.search).get('p');
+    return ['play', 'free'].indexOf(p) > -1 ? p : 'intro';
+  });
+  const [gi, setGi] = useState(0);
+  const [v, setV] = useState({
+    base: 'pasta',
+    prot: 'none',
+    veg: 'none',
+    extra: 'none'
+  });
+  const [cooking, setCooking] = useState(false);
+  const [res, setRes] = useState(null); // {ok, say, reveal}
+  const [known, setKnown] = useState([]); // что гость уже раскрыл
+  const [saved, setSaved] = useState(false);
+  const tRef = useRef([]);
+  const g = CO_GUESTS[gi];
+  const clear = () => {
+    tRef.current.forEach(clearTimeout);
+    tRef.current = [];
+  };
+  useEffect(() => clear, []);
+  const set = (k, val) => {
+    setV(Object.assign({}, v, {
+      [k]: val
+    }));
+    setRes(null);
+  };
+  const serve = () => {
+    clear();
+    setCooking(true);
+    setRes(null);
+    tRef.current = [setTimeout(() => {
+      setCooking(false);
+      const openMiss = Object.keys(g.open).filter(k => v[k] !== g.open[k]);
+      if (openMiss.length) {
+        setRes({
+          ok: false,
+          say: 'Я же просил ' + CO_FIELD[openMiss[0]] + ' другую. Посмотри ещё раз.'
+        });
+        return;
+      }
+      const brokenKey = Object.keys(g.hidden).find(k => v[k] === g.hidden[k]);
+      if (brokenKey) {
+        setRes({
+          ok: false,
+          say: g.hiddenSay,
+          reveal: true
+        });
+        setKnown(k => k.indexOf(gi) > -1 ? k : k.concat(gi));
+        return;
+      }
+      setRes({
+        ok: true,
+        say: g.ok
+      });
+    }, 1400)];
+  };
+  const nextGuest = () => {
+    if (gi < CO_GUESTS.length - 1) {
+      setGi(gi + 1);
+      setRes(null);
+      setV({
+        base: 'pasta',
+        prot: 'none',
+        veg: 'none',
+        extra: 'none'
+      });
+    } else {
+      setPhase('free');
+      setRes(null);
+    }
+  };
+  const saveRecipe = () => {
+    clear();
+    setCooking(true);
+    tRef.current = [setTimeout(() => {
+      setCooking(false);
+      const svg = document.querySelector('.codish');
+      if (svg && window.nookaGallery) {
+        window.nookaGallery.add({
+          kind: 'recipe',
+          game: 'Шеф-повар',
+          title: coName(v),
+          note: 'Рецепт, который ты придумал сам',
+          svg: svg.outerHTML
+        });
+      }
+      setSaved(true);
+      setRes({
+        ok: true,
+        say: 'Рецепт записан. Он лежит в твоей коллекции.'
+      });
+    }, 1400)];
+  };
+  const panel = React.createElement('div', {
+    className: 'copanel'
+  }, React.createElement(CoRow, {
+    title: 'Основа',
+    opts: CO_BASE,
+    value: v.base,
+    onPick: k => set('base', k)
+  }), React.createElement(CoRow, {
+    title: 'Белок',
+    opts: CO_PROT,
+    value: v.prot,
+    onPick: k => set('prot', k)
+  }), React.createElement(CoRow, {
+    title: 'Овощи',
+    opts: CO_VEG,
+    value: v.veg,
+    onPick: k => set('veg', k)
+  }), React.createElement(CoRow, {
+    title: 'Добавка',
+    opts: CO_EXTRA,
+    value: v.extra,
+    onPick: k => set('extra', k)
+  }));
+  return React.createElement('div', {
+    className: 'co'
+  }, React.createElement(TopBar, {
+    level: 17,
+    title: 'Шеф-повар',
+    onHome,
+    step: phase === 'free' ? 2 : gi,
+    total: 3
+  }), phase === 'intro' && React.createElement(IntroModal, {
+    emoji: NKM('hello', 88),
+    title: 'Шеф-повар',
+    law: 'Гость говорит тебе. Ты говоришь Нейро.\nЧего не передал — Нейро не узнает.',
+    tip: 'Собери заказ и подай. Гости бывают с сюрпризом.',
+    onStart: () => setPhase('play')
+  }), React.createElement('div', {
+    className: 'cobody'
+  }, phase === 'play' ? React.createElement('div', {
+    className: 'coguest'
+  }, React.createElement('div', {
+    className: 'coguest__w'
+  }, g.who), React.createElement('div', {
+    className: 'coguest__a'
+  }, '«', g.ask, '»'), known.indexOf(gi) > -1 && React.createElement('div', {
+    className: 'coguest__n'
+  }, 'Теперь ты знаешь: ', CO_VEG[g.hidden.veg] ? 'не ест ' + CO_VEG[g.hidden.veg].label.toLowerCase() : 'без добавки «' + CO_EXTRA[g.hidden.extra].label.toLowerCase() + '»')) : React.createElement(TaskBadge, null, 'Придумай своё блюдо'), React.createElement('div', {
+    className: 'costage' + (cooking ? ' cooking' : '')
+  }, React.createElement(CoDish, {
+    v,
+    u: 'd'
+  }), cooking && React.createElement('div', {
+    className: 'costeam'
+  }, [0, 1, 2].map(i => React.createElement('span', {
+    key: i,
+    style: {
+      '--d': i * .3 + 's'
+    }
+  })))), React.createElement('div', {
+    className: 'coname'
+  }, coName(v)), React.createElement('div', {
+    className: 'cosay-wrap'
+  }, res && React.createElement('div', {
+    className: 'cosay' + (res.ok ? '' : ' cosay--bad'),
+    key: res.say
+  }, React.createElement('span', {
+    className: 'cosay__a'
+  }, NKM(res.ok ? 'win' : 'think', 32)), React.createElement('span', null, res.say))), panel), React.createElement('div', {
+    className: 'cofoot'
+  }, phase === 'play' && (!res || !res.ok) && React.createElement('button', {
+    className: 'nk-btn nk-btn--pri',
+    style: {
+      width: '100%'
+    },
+    onClick: serve,
+    disabled: cooking
+  }, cooking ? 'Нейро готовит…' : 'Приготовить и подать'), phase === 'play' && res && res.ok && React.createElement('button', {
+    className: 'nk-btn nk-btn--ok',
+    style: {
+      width: '100%'
+    },
+    onClick: nextGuest
+  }, gi < CO_GUESTS.length - 1 ? 'Следующий гость' : 'Теперь для себя'), phase === 'free' && !saved && React.createElement('button', {
+    className: 'nk-btn nk-btn--cta',
+    style: {
+      width: '100%'
+    },
+    onClick: saveRecipe,
+    disabled: cooking
+  }, cooking ? 'Нейро готовит…' : 'Записать рецепт'), phase === 'free' && saved && React.createElement('button', {
+    className: 'nk-btn nk-btn--ok',
+    style: {
+      width: '100%'
+    },
+    onClick: () => {
+      clear();
+      onWin();
+    }
+  }, 'Готово')));
+}
+function App() {
+  return React.createElement('div', {
+    className: 'coroot'
+  }, React.createElement(LevelCook, {
+    onWin: () => {
+      if (window.nooka) window.nooka.missionWin('cook1', 90, {
+        nextLabel: 'В коллекцию →'
+      });
+      setTimeout(() => {
+        window.location.href = '../base/index.html#gallery';
+      }, 400);
+    },
+    onHome: () => {
+      window.location.href = '../base/index.html';
+    }
+  }));
+}
+ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(App, null));
+</script>
+</body>
+</html>
