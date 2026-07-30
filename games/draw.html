@@ -115,6 +115,64 @@
 .dwacc__v span{font-weight:700;font-size:12px;color:#8B7BAE;}
 .dwacc__n{margin-top:9px;font-weight:700;font-size:12px;line-height:1.45;color:#A896C9;}
 
+/* лаборатория: сколько примеров дать */
+.dwlab{margin:11px 14px 0;padding:16px;border-radius:22px;
+  background:linear-gradient(180deg,#181227,#0D0A18);
+  box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.08);}
+.dwlab__h{display:flex;align-items:baseline;gap:8px;}
+.dwlab__h b{font-weight:900;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:#8B7BAE;}
+.dwlab__h em{margin-left:auto;font-style:normal;font-family:var(--nk-brand),var(--nk-body);
+  font-weight:700;font-size:26px;color:#7FE7FF;line-height:1;}
+.dwlab__h span{font-weight:800;font-size:12px;color:#8B7BAE;}
+.dwrange{-webkit-appearance:none;appearance:none;width:100%;height:34px;margin:10px 0 4px;
+  background:transparent;cursor:pointer;}
+.dwrange::-webkit-slider-runnable-track{height:10px;border-radius:999px;
+  background:linear-gradient(90deg,#7B4FF2,#7FE7FF);}
+.dwrange::-webkit-slider-thumb{-webkit-appearance:none;width:30px;height:30px;margin-top:-10px;
+  border-radius:50%;background:#fff;box-shadow:0 4px 14px -4px rgba(0,0,0,.9),inset 0 -3px 0 #C9BAE6;}
+.dwrange:disabled{opacity:.5;}
+.dwlab__lib{display:flex;flex-direction:column;gap:6px;margin-top:8px;}
+.dwlib{display:flex;gap:4px;flex-wrap:wrap;}
+.dwlib__i{width:30px;height:30px;border-radius:8px;overflow:hidden;opacity:.22;
+  background:#0C0918;box-shadow:inset 0 0 0 1px rgba(255,255,255,.1);transition:opacity .2s,transform .2s;}
+.dwlib__i.on{opacity:1;transform:scale(1.04);box-shadow:inset 0 0 0 1.5px rgba(127,231,255,.7);}
+.dwlib__i img{width:100%;height:100%;display:block;}
+.dwlab__best{margin-top:11px;padding:9px 12px;border-radius:14px;font-weight:800;font-size:12px;
+  color:#BFF5DF;background:rgba(78,217,155,.13);box-shadow:inset 0 0 0 1px rgba(78,217,155,.35);}
+
+/* экзамен */
+.dwexam{margin:12px 14px 0;padding:14px 16px;border-radius:20px;animation:dwIn .3s ease-out both;
+  background:rgba(255,255,255,.05);box-shadow:inset 0 0 0 1px rgba(255,255,255,.09);}
+.dwexam__t{font-family:var(--nk-brand),var(--nk-body);font-weight:700;font-size:16px;color:#F4EEFF;}
+.dwexam__r{margin-top:11px;display:flex;gap:7px;flex-wrap:wrap;}
+.dwec{position:relative;width:52px;height:60px;border-radius:12px;overflow:hidden;
+  background:#0C0918;box-shadow:inset 0 0 0 1px rgba(255,255,255,.1);
+  display:flex;flex-direction:column;align-items:center;}
+.dwec img{width:100%;height:44px;object-fit:cover;}
+.dwec span{font-weight:900;font-size:9px;line-height:16px;color:#C9BAE6;}
+.dwec--wait img{opacity:.3;}
+.dwec--ok{box-shadow:inset 0 0 0 1.5px #4ED99B;}
+.dwec--ok span{color:#8DEFC2;}
+.dwec--bad{box-shadow:inset 0 0 0 1.5px #FF6B6B;}
+.dwec--bad span{color:#FFB0A4;}
+.dwexam__n{margin-top:10px;font-weight:700;font-size:12px;line-height:1.45;color:#A896C9;}
+.dwlabbtns{display:flex;gap:9px;}
+
+/* круги дообучения */
+.dwrounds{margin:12px 14px 0;padding:14px 16px;border-radius:20px;
+  background:rgba(255,255,255,.045);box-shadow:inset 0 0 0 1px rgba(255,255,255,.08);}
+.dwrounds__t{font-weight:900;font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;
+  color:#8B7BAE;margin-bottom:12px;}
+.dwrounds__r{display:flex;gap:14px;align-items:flex-end;justify-content:center;}
+.dwrd{display:flex;flex-direction:column;align-items:center;gap:5px;width:64px;}
+.dwrd i{width:34px;height:78px;border-radius:9px;display:block;align-self:center;
+  background:linear-gradient(180deg,#A98BFF,#7FE7FF);
+  box-shadow:0 8px 20px -10px rgba(169,139,255,.9);transition:height .5s cubic-bezier(.2,.8,.3,1);}
+.dwrd b{font-family:var(--nk-brand),var(--nk-body);font-weight:700;font-size:14px;color:#F4EEFF;}
+.dwrd span{font-weight:800;font-size:10.5px;color:#8B7BAE;}
+.dwrd--empty i{background:rgba(255,255,255,.07);height:14px;box-shadow:none;}
+.dwrd--empty b{color:#5E4E80;}
+
 /* проверка связи */
 .dwq{margin:12px 14px 0;padding:14px 16px;border-radius:20px;
   background:rgba(255,255,255,.045);box-shadow:inset 0 0 0 1px rgba(255,255,255,.08);}
@@ -363,7 +421,7 @@ function DwBoard({ api, hint, locked }) {
 /* ── отладка: draw.html?n=2&demo=1 заполняет модель за ребёнка ──
    Нужно, чтобы проверять поздние фазы уровня без рисования пальцем
    и быстро показывать уровень целиком. В обычной игре не включается. */
-function dwSketch(kind, jit) {
+function dwSketch(kind, jit, variant) {
   const cv = document.createElement('canvas');
   cv.width = cv.height = DW_SIZE;
   const c = cv.getContext('2d');
@@ -376,30 +434,62 @@ function dwSketch(kind, jit) {
     });
     c.stroke();
   };
+  const ring = (cx, cy, rx, ry, step) => {
+    const o = [];
+    for (let a = 0; a <= 360; a += (step || 14)) {
+      const t = a * Math.PI / 180;
+      o.push([cx + rx * Math.cos(t), cy + ry * Math.sin(t)]);
+    }
+    line(o);
+  };
+  const v = variant || 0;
+
   if (kind === 'cat') {
-    const o = [];
-    for (let a = 0; a <= 360; a += 12) {
-      const t = a * Math.PI / 180;
-      o.push([150 + 62 * Math.cos(t), 165 + 52 * Math.sin(t)]);
+    if (v % 4 === 0) {                     // морда крупным планом
+      ring(150, 165, 62, 52);
+      line([[100, 125], [92, 72], [136, 110]]);
+      line([[200, 125], [210, 72], [166, 110]]);
+      line([[92, 168], [46, 158]]);
+      line([[208, 168], [254, 158]]);
+    } else if (v % 4 === 1) {              // кот целиком: сидит, с хвостом
+      ring(150, 96, 34, 30);
+      line([[124, 74], [118, 44], [144, 66]]);
+      line([[176, 74], [182, 44], [156, 66]]);
+      line([[122, 124], [116, 214], [186, 214], [180, 124]]);
+      line([[186, 206], [232, 190], [240, 140]]);
+    } else if (v % 4 === 2) {              // лежит: вытянутый силуэт
+      ring(96, 168, 30, 26);
+      line([[74, 148], [70, 122], [92, 142]]);
+      line([[118, 148], [124, 122], [102, 142]]);
+      ring(176, 176, 62, 32);
+      line([[236, 168], [268, 130]]);
+    } else {                               // худой, длинные уши
+      ring(150, 150, 40, 46);
+      line([[126, 112], [112, 52], [148, 100]]);
+      line([[174, 112], [190, 52], [152, 100]]);
+      line([[150, 196], [150, 246]]);
+      line([[118, 246], [182, 246]]);
     }
-    line(o);
-    line([[100, 125], [92, 72], [136, 110]]);
-    line([[200, 125], [210, 72], [166, 110]]);
-    line([[92, 168], [46, 158]]);
-    line([[208, 168], [254, 158]]);
-  } else if (kind === 'fish') {
-    const o = [];
-    for (let a = 0; a <= 360; a += 15) {
-      const t = a * Math.PI / 180;
-      o.push([144 + 66 * Math.cos(t), 158 + 34 * Math.sin(t)]);
+  } else {                                  // дома тоже разные
+    if (v % 4 === 0) {
+      line([[74, 270], [74, 150], [226, 150], [226, 270], [74, 270]]);
+      line([[60, 152], [150, 66], [240, 152]]);
+      line([[132, 270], [132, 208], [172, 208], [172, 270]]);
+    } else if (v % 4 === 1) {              // высокий, два окна
+      line([[104, 268], [104, 118], [196, 118], [196, 268], [104, 268]]);
+      line([[92, 120], [150, 62], [208, 120]]);
+      line([[124, 148], [124, 180], [156, 180], [156, 148], [124, 148]]);
+      line([[124, 200], [124, 232], [156, 232], [156, 200], [124, 200]]);
+    } else if (v % 4 === 2) {              // широкий, с трубой
+      line([[46, 262], [46, 176], [254, 176], [254, 262], [46, 262]]);
+      line([[36, 178], [150, 104], [264, 178]]);
+      line([[196, 132], [196, 92], [216, 92], [216, 146]]);
+      line([[130, 262], [130, 214], [170, 214], [170, 262]]);
+    } else {                               // домик с круглым окном
+      line([[86, 264], [86, 162], [214, 162], [214, 264], [86, 264]]);
+      line([[70, 164], [150, 88], [230, 164]]);
+      ring(150, 206, 22, 22, 24);
     }
-    line(o);
-    line([[210, 158], [258, 122], [258, 194], [210, 158]]);
-    line([[112, 146], [116, 150]]);
-  } else {
-    line([[74, 270], [74, 150], [226, 150], [226, 270], [74, 270]]);
-    line([[60, 152], [150, 66], [240, 152]]);
-    line([[132, 270], [132, 208], [172, 208], [172, 270]]);
   }
   return cv;
 }
@@ -411,6 +501,32 @@ function dwThumb(cv, size) {
   const c = t.getContext('2d');
   c.drawImage(cv, 0, 0, t.width, t.height);
   return t.toDataURL('image/png');
+}
+
+/* ── библиотека чужих рисунков и отложенный экзамен ──
+   Уровень «Сколько примеров хватит» ничего не рисует: ребёнок решает,
+   сколько примеров дать Нейро, и смотрит, как тот сдаёт экзамен на
+   рисунках, которых в обучении не было. Экзамен всегда один и тот же —
+   иначе попытки не сравнить. */
+function dwLibrary(n) {
+  const lib = { cat: [], house: [] };
+  for (let i = 0; i < n; i++) {
+    ['cat', 'house'].forEach(k => {
+      const cv = dwSketch(k, 8 + (i % 4) * 4, i);
+      lib[k].push({ label: k, f: dwFeatures(cv).f, thumb: dwThumb(cv, 64) });
+    });
+  }
+  return lib;
+}
+
+function dwExam(n) {
+  const out = [];
+  for (let i = 0; i < n; i++) {
+    const k = i % 2 ? 'house' : 'cat';
+    const cv = dwSketch(k, 11 + (i % 3) * 5, i + 1);   // варианты вразнобой с началом библиотеки
+    out.push({ label: k, f: dwFeatures(cv).f, thumb: dwThumb(cv, 64) });
+  }
+  return out;
 }
 
 /* ── сценарии уровней на этом движке ── */
@@ -502,6 +618,56 @@ const DW_LEVELS = {
     win: { show: 'acc', law: 'Мусор на входе — мусор на выходе',
       sub: 'Два неверных примера из восьми уронили точность. Поэтому данные для ИИ проверяют люди: иначе он старательно выучит чужую ошибку.' },
   },
+
+  6: {
+    title: 'Ещё разок',
+    mid: 'data6', xp: 90,
+    law: 'Нейро ошибся — покажи ему этот самый рисунок.\nВ следующий раз он его узнает.',
+    tip: 'Дай по одному примеру, а дальше учи Нейро на его же промахах.',
+    rounds: 3,
+    steps: [
+      { kind: 'draw', label: 'cat', word: 'кота', wordN: 'кот', many: 'коты', more: 'ещё одного кота', need: 1,
+        say: 'В этот раз начнём со <b>скупого набора</b>: всего один кот.' },
+      { kind: 'draw', label: 'house', word: 'дом', wordN: 'дом', many: 'дома', more: 'ещё один дом', need: 1,
+        say: 'И один дом. Двух примеров мало — я буду ошибаться. Это нормально: <b>так и учатся</b>.' },
+      { kind: 'test', word: 'кота', wordN: 'кот', many: 'коты', more: 'ещё одного кота', expect: 'cat', round: true,
+        say: 'Круг первый. Нарисуй кота — и посмотрим, насколько я уверен.' },
+    ],
+    quiz: {
+      q: 'Почему Нейро стал отвечать увереннее?',
+      opts: [
+        { t: 'Каждый раз я отдавал ему рисунок, на котором он спотыкался', ok: true },
+        { t: 'Он думал дольше и наконец понял', ok: false },
+        { t: 'Рисунки стали красивее', ok: false },
+      ],
+      okSay: 'Именно. Ты показывал ему то, чего ему не хватало, — и он подтягивался. Так дообучают настоящие модели.',
+      badSay: 'Думать дольше он не умеет — считает он мгновенно. Меняется только набор примеров: ты добавлял туда как раз те рисунки, на которых он спотыкался.',
+    },
+    win: { show: 'rounds', law: 'ИИ не рождается умным — его доучивают',
+      sub: 'Каждый круг ты давал Нейро ровно тот пример, которого ему не хватало. Настоящие модели растут так же: ошибка, разбор, новый пример.' },
+  },
+
+  7: {
+    labSay: 'Ребята прислали <b>кучу рисунков</b>. Мне не нужны все — выбери, сколько дать, и отправь меня на экзамен: там будут рисунки, которых я не видел.',
+    title: 'Сколько примеров хватит',
+    mid: 'data7', xp: 90,
+    law: 'Примеры не бесплатные.\nЗадача не «дать побольше», а понять, сколько хватит.',
+    tip: 'Выбери, сколько рисунков отдать Нейро, и отправь его на экзамен. Найди наименьшее число.',
+    lab: { max: 12, exam: 6 },
+    steps: [{ kind: 'lab' }],
+    quiz: {
+      q: 'Почему после шести примеров Нейро почти не становился лучше?',
+      opts: [
+        { t: 'Он уже понял, чем кот отличается от дома', ok: true },
+        { t: 'Он устал и перестал стараться', ok: false },
+        { t: 'Новые рисунки были хуже прежних', ok: false },
+      ],
+      okSay: 'Да. Первые примеры дают ему главное, дальше он лишь уточняет мелочи. Поэтому в работе считают не «сколько можно», а «сколько нужно».',
+      badSay: 'Дело не в усталости и не в качестве — рисунки были такие же. Просто главное он уже понял с первых примеров, а дальше добавлять почти нечего.',
+    },
+    win: { show: 'lab', law: 'Больше — не всегда лучше',
+      sub: 'Первые примеры решают почти всё, дальше кривая выполаживается. Собирать данные дорого, поэтому инженеры ищут, где остановиться.' },
+  },
 };
 
 /* ── артефакт: карточка питомца с рисунками ребёнка ── */
@@ -559,8 +725,16 @@ function LevelDraw({ n, onWin, onHome }) {
   const [tries, setTries] = useState(0);           // сколько раз Нейро промахнулся
   const [dirtyAcc, setDirtyAcc] = useState(null);  // точность до чистки набора
   const [flash, setFlash] = useState(false);       // «улетело в набор» — отклик на действие
+  const [rounds, setRounds] = useState([]);        // история кругов: с какой уверенностью отвечал
+  const [take, setTake] = useState(1);             // сколько рисунков каждого вида берём
+  const [exam, setExam] = useState(null);          // ход экзамена: {i, res:[]}
+  const [tryLog, setTryLog] = useState([]);        // попытки: {take, ok, total}
+  const lab = useRef(null);
+  if (!lab.current && L.lab) lab.current = { lib: dwLibrary(L.lab.max), exam: dwExam(L.lab.exam) };
   const [saved, setSaved] = useState(false);
   const api = useRef({});
+  const tRef = useRef([]);
+  useEffect(() => () => tRef.current.forEach(clearTimeout), []);
   api.current.onChange = setHas;
 
   /* отладка: собрать модель за ребёнка и встать на проверку */
@@ -594,6 +768,8 @@ function LevelDraw({ n, onWin, onHome }) {
 
   const step = L.steps[si];
   const mine = lbl => model.filter(m => m.label === lbl);
+  const best = tryLog.filter(t => t.ok === t.total)
+    .reduce((a, t) => a === null || t.take < a ? t.take : a, null);
 
   /* Копии рисунков ребёнка с частично слетевшими подписями — в этом и урок.
      Берём именно его рисунки, а не нарисованные за него: тогда чужая подпись —
@@ -648,6 +824,38 @@ function LevelDraw({ n, onWin, onHome }) {
   const WORD = { cat: 'кот', house: 'дом', fish: 'рыба' };
   const FLIP = { cat: 'house', house: 'cat' };
 
+  /* экзамен: Нейро отвечает на рисунки, которых в обучении не было */
+  const runExam = () => {
+    const M = lab.current.lib.cat.slice(0, take).concat(lab.current.lib.house.slice(0, take));
+    const res = lab.current.exam.map(e => {
+      const p = dwPredict(M, e.f);
+      return { thumb: e.thumb, truth: e.label, said: p.label, conf: p.conf, ok: p.label === e.label };
+    });
+    setExam({ i: 0, res: res });
+    const t = [];
+    res.forEach((_, k) => t.push(setTimeout(() => setExam({ i: k + 1, res: res }), 420 * (k + 1))));
+    t.push(setTimeout(() => {
+      const ok = res.filter(r => r.ok).length;
+      setTryLog(l => l.concat([{ take: take, ok: ok, total: res.length }]));
+    }, 420 * res.length + 200));
+    tRef.current = t;
+  };
+
+  /* дообучение на промахе: в набор идёт ровно тот рисунок, что сейчас на доске */
+  const teach = () => {
+    const cv = api.current.canvas;
+    const F = dwFeatures(cv);
+    if (!F || !guess) return;
+    const done = rounds.concat([{ conf: guess.conf, hit: guess.label === step.expect }]);
+    setModel(model.concat([{ label: step.expect, f: F.f, thumb: dwThumb(cv, 64) }]));
+    setRounds(done);
+    setGuess(null);
+    setFlash(true);
+    api.current.clear();
+    if (done.length >= (L.rounds || 3)) setPhase('quiz');
+    else setNote({ m: 'ok', t: 'Взял. Теперь у меня есть и этот пример — попробуй ещё раз.' });
+  };
+
   const relabel = i => {
     setModel(model.map((m, k) => k === i ? Object.assign({}, m, { label: FLIP[m.label] || m.label }) : m));
     setGuess(null);
@@ -685,6 +893,33 @@ function LevelDraw({ n, onWin, onHome }) {
       React.createElement('div', { className: 'dwbody dwdone' },
         hasArt
           ? React.createElement(DwPet, { shots: shots, conf: guess ? guess.conf : 70, u: 'p' })
+          : L.win.show === 'lab'
+          ? React.createElement('div', { className: 'dwwords' },
+              React.createElement('div', { className: 'dwwords__t' }, 'Твои попытки'),
+              React.createElement('div', { className: 'dwrounds__r', style: { marginTop: 14 } },
+                tryLog.slice(-5).map((t, i) => React.createElement('div', { key: i, className: 'dwrd' },
+                  React.createElement('i', { style: { height: Math.max(12, t.ok / t.total * 100) + '%' } }),
+                  React.createElement('b', null, t.ok + '/' + t.total),
+                  React.createElement('span', null, t.take * 2 + ' рис.')))),
+              React.createElement('div', { className: 'dwwords__n' },
+                best !== null
+                  ? 'Нейро сдал экзамен без ошибок с ' + best * 2 + ' ' +
+                    plural(best * 2, 'рисунка', 'рисунками', 'рисунками') +
+                    '. Всё, что сверх этого, — лишняя работа.'
+                  : 'Экзамен без ошибок так и не сдался. Значит примеров всё ещё мало — или они слишком похожи друг на друга.'))
+          : L.win.show === 'rounds'
+          ? React.createElement('div', { className: 'dwwords' },
+              React.createElement('div', { className: 'dwwords__t' }, 'Три круга дообучения'),
+              React.createElement('div', { className: 'dwrounds__r', style: { marginTop: 14 } },
+                rounds.map((r, i) => React.createElement('div', { key: i, className: 'dwrd' },
+                  React.createElement('i', { style: { height: Math.max(12, r.conf) + '%' } }),
+                  React.createElement('b', null, r.conf + '%'),
+                  React.createElement('span', null, 'круг ' + (i + 1))))),
+              React.createElement('div', { className: 'dwwords__n' },
+                rounds.length > 1
+                  ? 'Было ' + rounds[0].conf + '%, стало ' + rounds[rounds.length - 1].conf +
+                    '%. Между ними — только твои примеры.'
+                  : 'Каждый круг добавлял Нейро тот пример, которого не хватало.'))
           : L.win.show === 'acc'
           ? React.createElement('div', { className: 'dwwords' },
               React.createElement('div', { className: 'dwwords__t' }, 'Точность набора'),
@@ -739,7 +974,9 @@ function LevelDraw({ n, onWin, onHome }) {
   /* ── игра ── */
   const isTest = step.kind === 'test';
   const isClean = step.kind === 'clean';
-  const noBoard = isClean;
+  const isLab = step.kind === 'lab';
+  const noBoard = isClean || isLab;
+  const examDone = exam && exam.i >= exam.res.length;
   const doneCount = isTest || noBoard ? 0 : mine(step.label).length;
   /* точность пересчитывается на каждый рендер: правка подписи видна сразу */
   const audit = isClean ? dwSelfCheck(model) : null;
@@ -763,16 +1000,63 @@ function LevelDraw({ n, onWin, onHome }) {
             ? React.createElement('span', null,
                 'Ещё один пример — и я пересчитаю. Нарисуй ' + step.word +
                 ' немного иначе, чем раньше: так я пойму, что тут главное.')
-            : React.createElement('span', { dangerouslySetInnerHTML: { __html: step.say } })),
+            : React.createElement('span', { dangerouslySetInnerHTML: { __html: step.say || L.labSay || '' } })),
 
       React.createElement('div', { className: 'dwtask' },
         React.createElement('b', null,
-          isClean ? 'Найди, где подпись врёт'
+          isLab ? 'Сколько хватит?'
+            : isClean ? 'Найди, где подпись врёт'
             : fix ? 'Нарисуй ' + (step.more || step.word)
             : 'Нарисуй ' + step.word),
+        step.round && React.createElement('span', null,
+          'круг ' + Math.min(rounds.length + 1, L.rounds || 3) + ' из ' + (L.rounds || 3)),
         !isTest && !noBoard && React.createElement('span', null, doneCount + ' из ' + step.need),
         isTest && tries > 0 && React.createElement('span', null,
           'примеров: ' + mine(step.expect).length)),
+
+      isLab && React.createElement('div', { className: 'dwlab' },
+        React.createElement('div', { className: 'dwlab__h' },
+          React.createElement('b', null, 'Отдать Нейро'),
+          React.createElement('em', null, take * 2),
+          React.createElement('span', null, plural(take * 2, 'рисунок', 'рисунка', 'рисунков'))),
+        React.createElement('input', {
+          type: 'range', min: 1, max: L.lab.max, value: take, className: 'dwrange',
+          disabled: !!exam && !examDone,
+          onChange: e => { setTake(parseInt(e.target.value, 10)); setExam(null); },
+        }),
+        React.createElement('div', { className: 'dwlab__lib' },
+          ['cat', 'house'].map(k =>
+            React.createElement('div', { key: k, className: 'dwlib' },
+              lab.current.lib[k].map((m, i) => React.createElement('div', {
+                key: i, className: 'dwlib__i' + (i < take ? ' on' : ''),
+              }, React.createElement('img', { src: m.thumb, alt: '' })))))),
+        best !== null && React.createElement('div', { className: 'dwlab__best' },
+          'Лучший результат: экзамен сдан с ' + best * 2 + ' ' +
+          plural(best * 2, 'рисунка', 'рисунков', 'рисунков'))),
+
+      exam && React.createElement('div', { className: 'dwexam' },
+        React.createElement('div', { className: 'dwexam__t' },
+          examDone
+            ? 'Экзамен: ' + exam.res.filter(r => r.ok).length + ' из ' + exam.res.length
+            : 'Экзамен идёт…'),
+        React.createElement('div', { className: 'dwexam__r' },
+          exam.res.map((r, i) => React.createElement('div', {
+            key: i, className: 'dwec' + (i < exam.i ? (r.ok ? ' dwec--ok' : ' dwec--bad') : ' dwec--wait'),
+          },
+            React.createElement('img', { src: r.thumb, alt: '' }),
+            React.createElement('span', null, i < exam.i ? (WORD[r.said] || r.said) : '?')))),
+        examDone && React.createElement('div', { className: 'dwexam__n' },
+          exam.res.filter(r => r.ok).length === exam.res.length
+            ? 'Ни одной ошибки. Попробуй теперь с меньшим числом рисунков — где предел?'
+            : 'Эти рисунки Нейро раньше не видел. Ошибки — там, где ему не хватило примеров.')),
+
+      tryLog.length > 0 && React.createElement('div', { className: 'dwrounds' },
+        React.createElement('div', { className: 'dwrounds__t' }, 'Твои попытки'),
+        React.createElement('div', { className: 'dwrounds__r' },
+          tryLog.slice(-5).map((t, i) => React.createElement('div', { key: i, className: 'dwrd' },
+            React.createElement('i', { style: { height: Math.max(12, t.ok / t.total * 100) + '%' } }),
+            React.createElement('b', null, t.ok + '/' + t.total),
+            React.createElement('span', null, t.take * 2 + ' рис.'))))),
 
       !noBoard && React.createElement(DwBoard, { api: api.current, locked: !!guess,
         hint: has ? null : 'Рисуй пальцем прямо здесь' }),
@@ -818,6 +1102,19 @@ function LevelDraw({ n, onWin, onHome }) {
               : 'Уверен на ' + guess.conf + '%, и всё равно ошибся. Твои ' + (step.many || 'рисунки') +
                   ' слишком разные между собой — дай мне ещё один пример, и я стану точнее.')),
 
+      rounds.length > 0 && React.createElement('div', { className: 'dwrounds' },
+        React.createElement('div', { className: 'dwrounds__t' }, 'Насколько Нейро был уверен'),
+        React.createElement('div', { className: 'dwrounds__r' },
+          rounds.map((r, i) => React.createElement('div', { key: i, className: 'dwrd' },
+            React.createElement('i', { style: { height: Math.max(12, r.conf) + '%' } }),
+            React.createElement('b', null, r.conf + '%'),
+            React.createElement('span', null, 'круг ' + (i + 1)))),
+          Array.from({ length: Math.max(0, (L.rounds || 3) - rounds.length) }, (_, i) =>
+            React.createElement('div', { key: 'e' + i, className: 'dwrd dwrd--empty' },
+              React.createElement('i', null),
+              React.createElement('b', null, '—'),
+              React.createElement('span', null, 'круг ' + (rounds.length + i + 1)))))),
+
       model.length > 0 && React.createElement('div', {
         className: 'dwset' + (flash ? ' dwset--flash' : ''),
         onAnimationEnd: () => setFlash(false),
@@ -844,13 +1141,27 @@ function LevelDraw({ n, onWin, onHome }) {
             React.createElement('div', { className: 'dwslot', key: 's' + i }))))),
 
     React.createElement('div', { className: 'dwfoot' },
+      isLab && React.createElement('div', { className: 'dwlabbtns' },
+        tryLog.length > 0 && React.createElement('button', {
+          className: 'nk-btn nk-btn--soft', onClick: () => setPhase('quiz'),
+        }, 'Хватит'),
+        React.createElement('button', {
+          className: 'nk-btn nk-btn--pri', style: { flex: 1 },
+          disabled: !!exam && !examDone,
+          onClick: runExam,
+        }, exam && !examDone ? 'Нейро отвечает…' : tryLog.length ? 'Ещё попытка' : 'Обучить и на экзамен')),
+
       isClean && React.createElement('button', {
         className: 'nk-btn ' + (audit && !audit.wrong.length ? 'nk-btn--ok' : 'nk-btn--soft'),
         style: { width: '100%' },
         onClick: () => { setSi(si + 1); setGuess(null); api.current.clear(); },
       }, audit && !audit.wrong.length ? 'Готово, проверяем Нейро' : 'Всё равно дальше'),
 
-      guess && (hit
+      guess && step.round
+        ? React.createElement('button', {
+            className: 'nk-btn nk-btn--pri', style: { width: '100%' }, onClick: teach,
+          }, 'Отдать Нейро этот рисунок')
+        : guess && (hit
         ? React.createElement('button', {
             className: 'nk-btn nk-btn--ok', style: { width: '100%' },
             onClick: () => {
