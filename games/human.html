@@ -1,0 +1,511 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1">
+<meta name="theme-color" content="#0E0719">
+<title>Что решает человек — Nooka</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&family=Unbounded:wght@700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="nooka-ui.css">
+<style>
+/* ============ ЧТО РЕШАЕТ ЧЕЛОВЕК ============ */
+.huroot{height:100vh;overflow:hidden;max-width:480px;margin:0 auto;position:relative;}
+.hu{height:100%;display:flex;flex-direction:column;overflow:hidden;
+  background:linear-gradient(180deg,#131024 0%,#0D0A18 62%,#090711 100%);}
+.hubody{flex:1;overflow-y:auto;padding:0 0 6px;-webkit-overflow-scrolling:touch;
+  display:flex;flex-direction:column;}
+
+/* дело на сегодня */
+.hujob{margin:2px 14px 0;padding:14px 16px;border-radius:20px;
+  background:rgba(255,255,255,.055);box-shadow:inset 0 0 0 1px rgba(255,255,255,.09);
+  animation:huIn .32s ease-out both;}
+.hujob__k{font-weight:900;font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;color:#8B7BAE;}
+.hujob__t{margin-top:5px;font-weight:900;font-size:16px;line-height:1.3;color:#F2ECFF;}
+.hujob__ai{display:flex;gap:9px;align-items:flex-start;margin-top:11px;padding-top:11px;
+  border-top:1px solid rgba(255,255,255,.08);}
+.hujob__ai i{flex-shrink:0;line-height:0;}
+.hujob__ai span{font-weight:700;font-size:13px;line-height:1.4;color:#C6B7E4;}
+.hujob__ai b{color:#9C7BFF;font-weight:900;}
+
+/* пульт */
+.hudesk{margin:11px 14px 0;border-radius:22px;overflow:hidden;
+  background:linear-gradient(180deg,#181227,#0D0A18);
+  box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.08),0 16px 34px -20px rgba(0,0,0,.9);}
+.hudesk svg{width:100%;display:block;}
+
+/* лотки */
+.hutrays{margin:12px 14px 0;display:flex;flex-direction:column;gap:9px;}
+.hutray{display:flex;align-items:center;gap:12px;padding:13px 15px;border:none;cursor:pointer;
+  text-align:left;font-family:inherit;border-radius:19px;
+  background:rgba(255,255,255,.05);box-shadow:inset 0 0 0 1px rgba(255,255,255,.09);
+  transition:transform .12s,box-shadow .16s,background .16s;}
+.hutray:hover{transform:translateY(-2px);background:rgba(255,255,255,.085);}
+.hutray:disabled{cursor:default;opacity:.4;transform:none;}
+.hutray__l{flex-shrink:0;width:13px;height:13px;border-radius:50%;background:var(--c);
+  box-shadow:0 0 12px var(--c),inset 0 -2px 0 rgba(0,0,0,.25);}
+.hutray__t{flex:1;min-width:0;}
+.hutray__t b{display:block;font-weight:900;font-size:14.5px;color:#F2ECFF;}
+.hutray__t span{display:block;margin-top:2px;font-weight:700;font-size:11.5px;color:#8B7BAE;}
+.hutray--on{background:linear-gradient(180deg,rgba(255,255,255,.14),rgba(255,255,255,.05));
+  box-shadow:inset 0 0 0 1.5px var(--c),0 12px 26px -16px var(--c);}
+
+/* реплика результата */
+.husay-wrap{min-height:34px;padding:12px 14px 0;}
+.husay{display:flex;gap:10px;padding:13px 15px;border-radius:19px;animation:huIn .3s ease-out both;}
+.husay i{flex-shrink:0;line-height:0;}
+.husay span{font-weight:700;font-size:13px;line-height:1.45;}
+.husay--ok{background:rgba(78,217,155,.14);box-shadow:inset 0 0 0 1px rgba(78,217,155,.4);}
+.husay--ok span{color:#C4F4E0;}
+.husay--soft{background:rgba(255,200,60,.12);box-shadow:inset 0 0 0 1px rgba(255,200,60,.38);}
+.husay--soft span{color:#FFE9BE;}
+.husay--bad{background:rgba(255,107,107,.14);box-shadow:inset 0 0 0 1px rgba(255,107,107,.42);}
+.husay--bad span{color:#FFD6CF;}
+.huwhy{margin:9px 14px 0;padding:11px 15px;border-radius:17px;font-weight:700;font-size:12px;
+  line-height:1.45;color:#CFC0EC;background:rgba(255,255,255,.045);
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.07);animation:huIn .34s ease-out .1s both;}
+.huwhy b{color:#A98BFF;}
+
+.hufoot{flex-shrink:0;padding:10px 14px calc(14px + env(safe-area-inset-bottom));
+  background:linear-gradient(180deg,rgba(9,7,17,0),#090711 42%);}
+.hubtns{display:flex;gap:9px;}
+
+/* финал */
+.hudone{align-items:center;padding-top:4px;}
+.hupass{width:210px;animation:huPop .5s cubic-bezier(.2,.8,.3,1) both;}
+.hulaw{margin:8px 18px 0;text-align:center;}
+.hulaw b{display:block;font-family:var(--nk-brand),var(--nk-body);font-weight:700;
+  font-size:17px;line-height:1.3;color:#F4EEFF;}
+.hulaw span{display:block;margin-top:7px;font-weight:700;font-size:13.5px;color:#A896C9;line-height:1.45;}
+.huline{margin:15px 16px 0;padding:13px 16px;border-radius:18px;
+  background:linear-gradient(180deg,rgba(255,107,107,.13),rgba(255,107,107,.05));
+  box-shadow:inset 0 0 0 1px rgba(255,107,107,.3);}
+.huline__t{font-weight:900;font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;
+  color:#FF9E8E;margin-bottom:7px;}
+.huline ul{margin:0;padding-left:16px;}
+.huline li{font-weight:700;font-size:12.5px;line-height:1.5;color:#FFD6CF;}
+.huscore{margin:12px 16px 0;text-align:center;font-weight:800;font-size:12.5px;color:#8B7BAE;}
+
+@keyframes huIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
+@keyframes huPop{0%{opacity:0;transform:scale(.72);}68%{transform:scale(1.05);}100%{opacity:1;transform:scale(1);}}
+
+/* ── экран пульта: анимации результата ── */
+.huscan{transform-box:fill-box;transform-origin:50% 50%;}
+.hudesk.go--ok .huring{animation:huRing 1.1s ease-out forwards;}
+@keyframes huRing{0%{opacity:.9;transform:scale(.35);}100%{opacity:0;transform:scale(2.2);}}
+.huring{transform-box:fill-box;transform-origin:50% 50%;opacity:0;}
+.humark{opacity:0;transform-box:fill-box;transform-origin:50% 50%;}
+.hudesk.go--ok .humark--ok{animation:huMark .5s cubic-bezier(.2,.8,.3,1) .35s forwards;}
+.hudesk.go--soft .humark--soft{animation:huMark .5s cubic-bezier(.2,.8,.3,1) .3s forwards;}
+.hudesk.go--bad .humark--bad{animation:huMark .45s cubic-bezier(.2,.8,.3,1) .32s forwards;}
+@keyframes huMark{from{opacity:0;transform:scale(.4);}to{opacity:1;transform:scale(1);}}
+.hudesk.go--bad .hushake{animation:huShake .42s ease-in-out 2;}
+@keyframes huShake{0%,100%{transform:translateX(0);}25%{transform:translateX(-3px);}75%{transform:translateX(3px);}}
+.hudesk.go--bad .hualarm{animation:huAlarm .5s ease-in-out 3;}
+@keyframes huAlarm{0%,100%{opacity:0;}50%{opacity:.5;}}
+.hudesk.go--soft .huglyph,.hudesk.go--ok .huglyph{animation:huSink .7s ease-in forwards;}
+@keyframes huSink{to{opacity:.16;transform:translateY(4px);}}
+.huglyph{transform-box:fill-box;}
+.hulamp{transition:opacity .25s;}
+/* бегущая строка на пульте, пока ждём решения */
+.hudesk .hutick{animation:huTick 2.6s linear infinite;}
+@keyframes huTick{from{transform:translateX(0);}to{transform:translateX(-56px);}}
+@media (prefers-reduced-motion: reduce){.hudesk *{animation:none !important;}}
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script src="react-bundle.js"></script>
+<script src="nooka-core.js"></script>
+<script src="nooka-levels.js"></script>
+<script src="nooka-access.js"></script>
+<script src="nooka-gallery.js"></script>
+<script src="nooka-ui.js"></script>
+<script>
+/* ============================================================
+   ЧТО РЕШАЕТ ЧЕЛОВЕК — уровень 10 игры «Как управлять ИИ».
+   Концепт И18: границы доверия. У ИИ нет ответственности —
+   отвечает человек, поэтому часть решений нельзя отдавать.
+
+   Ребёнок — дежурный. Каждое дело он кладёт в один из трёх
+   лотков, а пульт показывает, что из этого вышло. Ошибка не
+   наказывается: она разыгрывается, и это и есть объяснение.
+   ============================================================ */
+
+const HU_TRAYS = [
+  { k: 'auto',   t: 'Робот делает сам',      s: 'Мелкое, быстро переделать',        c: '#4ED99B' },
+  { k: 'helper', t: 'Подскажет — решаю я',   s: 'Важное, но я разберусь',           c: '#FFC83C' },
+  { k: 'human',  t: 'Тут решает человек',    s: 'Робот не должен это трогать',      c: '#FF6B6B' },
+];
+
+const HU_JOBS = [
+  {
+    id: 'coat', when: 'Утро, 7:40', g: 'coat',
+    t: 'На улице +7 и дождь. Что надеть?',
+    ai: 'Гляну прогноз и достану куртку сам.',
+    right: 'auto',
+    out: {
+      auto:   { m: 'ok',   say: 'Куртка ждала у двери. Ты вышел и даже не задумался.' },
+      helper: { m: 'soft', say: 'Тоже вышло. Только ты потратил минуту на то, что ничего не решает.' },
+      human:  { m: 'soft', say: 'Ты сам стоял у окна и выбирал. Вышел, но опоздал на автобус.' },
+    },
+    why: 'Мелкие дела, которые легко переделать, спокойно отдавай роботу. На них не стоит тратить голову.',
+  },
+  {
+    id: 'music', when: 'В автобусе', g: 'music',
+    t: 'Нужна музыка на дорогу',
+    ai: 'Соберу плейлист под твоё настроение.',
+    right: 'auto',
+    out: {
+      auto:   { m: 'ok',   say: 'Нейро собрал двадцать песен. Половина — те, что ты любишь.' },
+      helper: { m: 'soft', say: 'Он предложил, ты выбрал. Тоже нормально, просто дольше.' },
+      human:  { m: 'soft', say: 'Ты выбирал каждую песню по одной и приехал, не доехав до второй.' },
+    },
+    why: 'Если ошибка ничего не стоит — пусть решает робот. Не понравилось, переключил.',
+  },
+  {
+    id: 'book', when: 'После школы', g: 'book',
+    t: 'Домашка по математике: пять задач',
+    ai: 'Могу решить все пять за секунду.',
+    right: 'helper',
+    out: {
+      auto:   { m: 'bad',  say: 'Задачи решены, тетрадь чистая. На уроке тебя вызвали к доске — и ты стоял молча.' },
+      helper: { m: 'ok',   say: 'Нейро разобрал первую, остальные ты решил сам. У доски всё вышло.' },
+      human:  { m: 'soft', say: 'Ты сидел четыре часа и две задачи так и не понял. Помощь была рядом.' },
+    },
+    why: 'Когда учишься — работа твоя, а робот только объясняет. Готовый ответ забирает у тебя урок.',
+  },
+  {
+    id: 'gift', when: 'Вечером', g: 'gift',
+    t: 'Подарок другу на день рождения',
+    ai: 'Найду, что покупают чаще всего.',
+    right: 'helper',
+    out: {
+      auto:   { m: 'bad',  say: 'Нейро взял самое популярное. Друг вежливо сказал спасибо и убрал в шкаф.' },
+      helper: { m: 'ok',   say: 'Он показал варианты, ты выбрал то, о чём друг говорил в марте. Попал.' },
+      human:  { m: 'soft', say: 'Ты справился сам, но полдня ходил по магазинам.' },
+    },
+    why: 'Робот знает, что покупают все. Что любит именно твой друг, знаешь только ты.',
+  },
+  {
+    id: 'chat', when: 'Поздно вечером', g: 'chat', hard: true,
+    t: 'Вы поссорились. Кто виноват?',
+    ai: 'Прочитаю вашу переписку и скажу, кто был неправ.',
+    right: 'human',
+    out: {
+      auto:   { m: 'bad',  say: 'Нейро посчитал резкие слова и назначил виноватым друга. Ты переслал вывод — друг перестал отвечать.' },
+      helper: { m: 'soft', say: 'Он пересказал переписку. Разбираться всё равно пришлось тебе — и это правильно.' },
+      human:  { m: 'ok',   say: 'Ты позвонил сам. Через час выяснилось, что вы поняли друг друга наоборот.' },
+    },
+    why: 'Робот видит слова, а не людей. И если он ошибётся — отвечать будешь ты, потерянным другом.',
+  },
+  {
+    id: 'pill', when: 'Ночью', g: 'pill', hard: true,
+    t: 'Болит живот. Что принять?',
+    ai: 'По описанию подберу таблетку из аптечки.',
+    right: 'human',
+    out: {
+      auto:   { m: 'bad',  say: 'Нейро выбрал таблетку по трём словам. Он тебя не видел, врачом не был и отвечать за это не станет.' },
+      helper: { m: 'soft', say: 'Он подсказал, к какому врачу идти. Решение принял врач — так и надо.' },
+      human:  { m: 'ok',   say: 'Ты разбудил маму. Поехали к врачу, и там разобрались за десять минут.' },
+    },
+    why: 'Здоровье — та самая красная линия. Тут решают люди, которые отвечают за тебя: ты, родители, врач.',
+  },
+];
+
+/* ── глифы дел ── */
+function HuGlyph({ g, c }) {
+  const S = { fill: 'none', stroke: c || '#D9CCFF', strokeWidth: 2, strokeLinecap: 'round', strokeLinejoin: 'round' };
+  const p = {
+    coat:  ['M9 4l3-1 3 1 4 3-2 3-2-1v11H7V10L5 11 3 8z', 'M12 3v6'],
+    music: ['M9 18a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z', 'M20 15a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z', 'M9 18V6l11-2v11'],
+    book:  ['M5 4h9l5 5v11H5z', 'M14 4v5h5', 'M8 13h8M8 16.5h5'],
+    gift:  ['M3 9h18v4H3z', 'M4.5 13h15v8h-15z', 'M12 9v12', 'M12 9c-3.5 0-5-1-5-3s3-2 5 3c2-4 5-4 5-3s-1.5 3-5 3z'],
+    chat:  ['M3 6h11v7H7l-4 3z', 'M10 10h11v7l-3 2v-2h-5'],
+    pill:  ['M8.5 3.5h7v4l-2 2v7.5a3 3 0 01-6 0V9.5l-1-2z', 'M8 12h8'],
+  }[g] || [];
+  return React.createElement('g', null,
+    p.map((d, i) => React.createElement('path', Object.assign({ key: i, d }, S))));
+}
+
+/* ── пульт дежурного ── */
+function HuDesk({ job, pick, res, run }) {
+  const cls = 'hudesk' + (run && res ? ' go--' + res.m : '');
+  const lamp = k => {
+    const T = HU_TRAYS.find(x => x.k === k);
+    const on = pick === k;
+    return React.createElement('g', { key: k, className: 'hulamp', opacity: on ? 1 : .22 },
+      React.createElement('circle', { cx: 0, cy: 0, r: 5.6, fill: T.c, opacity: on ? .28 : .12 }),
+      React.createElement('circle', { cx: 0, cy: 0, r: 3.1, fill: T.c }));
+  };
+
+  return React.createElement('div', { className: cls },
+    React.createElement('svg', { viewBox: '0 0 200 132' },
+      React.createElement('defs', null,
+        React.createElement('linearGradient', { id: 'hudeskg', x1: '0', y1: '0', x2: '0', y2: '1' },
+          React.createElement('stop', { offset: '0%', stopColor: '#2A2140' }),
+          React.createElement('stop', { offset: '100%', stopColor: '#171126' })),
+        React.createElement('linearGradient', { id: 'huscrg', x1: '0', y1: '0', x2: '0', y2: '1' },
+          React.createElement('stop', { offset: '0%', stopColor: '#0B1620' }),
+          React.createElement('stop', { offset: '100%', stopColor: '#080D16' })),
+        React.createElement('clipPath', { id: 'huscrclip' },
+          React.createElement('rect', { x: 22, y: 12, width: 156, height: 74, rx: 11 }))),
+
+      /* корпус */
+      React.createElement('rect', { x: 6, y: 4, width: 188, height: 122, rx: 18, fill: 'url(#hudeskg)' }),
+      React.createElement('rect', { x: 6, y: 4, width: 188, height: 122, rx: 18, fill: 'none',
+        stroke: 'rgba(255,255,255,.09)', strokeWidth: 1.4 }),
+
+      /* экран */
+      React.createElement('g', { className: 'hushake' },
+        React.createElement('rect', { x: 22, y: 12, width: 156, height: 74, rx: 11, fill: 'url(#huscrg)' }),
+        React.createElement('g', { clipPath: 'url(#huscrclip)' },
+          /* сетка */
+          Array.from({ length: 7 }, (_, i) => React.createElement('line', {
+            key: 'h' + i, x1: 22, x2: 178, y1: 22 + i * 10, y2: 22 + i * 10,
+            stroke: 'rgba(120,220,255,.06)', strokeWidth: 1 })),
+          /* глиф дела */
+          React.createElement('g', { transform: 'translate(77,26)' },
+            React.createElement('g', { className: 'huglyph' },
+              React.createElement('g', { transform: 'scale(1.9)' },
+                React.createElement(HuGlyph, { g: job.g, c: '#7FE7FF' })))),
+          /* ждём решения — бегущая строка */
+          !pick && React.createElement('g', { className: 'hutick' },
+            Array.from({ length: 12 }, (_, i) => React.createElement('rect', {
+              key: i, x: 26 + i * 14, y: 76, width: 8, height: 3, rx: 1.5,
+              fill: 'rgba(127,231,255,.35)' }))),
+          /* импульс «выполнено» */
+          React.createElement('circle', { className: 'huring', cx: 100, cy: 49, r: 20,
+            fill: 'none', stroke: '#4ED99B', strokeWidth: 2.4 }),
+          /* тревога */
+          React.createElement('rect', { className: 'hualarm', x: 22, y: 12, width: 156, height: 74,
+            fill: '#FF6B6B', opacity: 0 }),
+          /* отметки результата */
+          React.createElement('g', { transform: 'translate(100,49)' },
+            React.createElement('g', { className: 'humark humark--ok' },
+              React.createElement('circle', { r: 17, fill: 'rgba(78,217,155,.18)' }),
+              React.createElement('path', { d: 'M-8 1l6 6 11-13', fill: 'none', stroke: '#4ED99B',
+              strokeWidth: 3.4, strokeLinecap: 'round', strokeLinejoin: 'round' }))),
+          React.createElement('g', { transform: 'translate(100,49)' },
+            React.createElement('g', { className: 'humark humark--soft' },
+              React.createElement('circle', { r: 17, fill: 'rgba(255,200,60,.16)' }),
+              React.createElement('path', { d: 'M0 -9v10M0 6v.1', fill: 'none', stroke: '#FFC83C',
+              strokeWidth: 3.4, strokeLinecap: 'round' }))),
+          React.createElement('g', { transform: 'translate(100,49)' },
+            React.createElement('g', { className: 'humark humark--bad' },
+              React.createElement('circle', { r: 17, fill: 'rgba(255,107,107,.2)' }),
+              React.createElement('path', { d: 'M-7 -7l14 14M7 -7l-14 14', fill: 'none', stroke: '#FF6B6B',
+              strokeWidth: 3.4, strokeLinecap: 'round' })))),
+        React.createElement('rect', { x: 22, y: 12, width: 156, height: 74, rx: 11, fill: 'none',
+          stroke: 'rgba(127,231,255,.16)', strokeWidth: 1.4 })),
+
+      /* лампы решений */
+      React.createElement('g', { transform: 'translate(52,101)' }, lamp('auto')),
+      React.createElement('g', { transform: 'translate(100,101)' }, lamp('helper')),
+      React.createElement('g', { transform: 'translate(148,101)' }, lamp('human')),
+
+      /* прорези лотков */
+      [52, 100, 148].map((x, i) => React.createElement('rect', {
+        key: i, x: x - 22, y: 112, width: 44, height: 5, rx: 2.5,
+        fill: 'rgba(0,0,0,.45)', stroke: 'rgba(255,255,255,.06)', strokeWidth: 1 }))));
+}
+
+/* ── артефакт: пропуск дежурного ── */
+function HuPass({ hard, u }) {
+  const id = s => s + (u || '');
+  const rows = [
+    ['#4ED99B', 'Мелкое — роботу'],
+    ['#FFC83C', 'Важное — с подсказкой'],
+    ['#FF6B6B', 'Здоровье и люди — мне'],
+  ];
+  return React.createElement('svg', { viewBox: '0 0 200 250', className: 'hupass' },
+    React.createElement('defs', null,
+      React.createElement('linearGradient', { id: id('hupg'), x1: '0', y1: '0', x2: '0', y2: '1' },
+        React.createElement('stop', { offset: '0%', stopColor: '#241A3D' }),
+        React.createElement('stop', { offset: '100%', stopColor: '#120C1F' }))),
+    React.createElement('rect', { x: 10, y: 8, width: 180, height: 234, rx: 20, fill: `url(#${id('hupg')})`,
+      stroke: 'rgba(255,255,255,.14)', strokeWidth: 1.6 }),
+    React.createElement('rect', { x: 78, y: 2, width: 44, height: 12, rx: 6, fill: 'none',
+      stroke: 'rgba(255,255,255,.24)', strokeWidth: 2 }),
+    /* шапка */
+    React.createElement('text', { x: 100, y: 44, textAnchor: 'middle', fill: '#A98BFF',
+      style: { font: '900 11px Nunito, sans-serif', letterSpacing: '1.4px' } }, 'ПРОПУСК'),
+    React.createElement('text', { x: 100, y: 64, textAnchor: 'middle', fill: '#F4EEFF',
+      style: { font: "700 15px 'Unbounded', Nunito, sans-serif" } }, 'Дежурный'),
+    React.createElement('text', { x: 100, y: 82, textAnchor: 'middle', fill: '#F4EEFF',
+      style: { font: "700 15px 'Unbounded', Nunito, sans-serif" } }, 'по решениям'),
+    React.createElement('line', { x1: 30, y1: 96, x2: 170, y2: 96, stroke: 'rgba(255,255,255,.14)', strokeWidth: 1.4 }),
+    /* три правила */
+    rows.map((r, i) => React.createElement('g', { key: i, transform: `translate(30,${114 + i * 30})` },
+      React.createElement('circle', { cx: 6, cy: 6, r: 5.5, fill: r[0] }),
+      React.createElement('text', { x: 20, y: 10, fill: '#DDD2F2',
+        style: { font: '700 11px Nunito, sans-serif' } }, r[1]))),
+    /* печать */
+    React.createElement('g', { transform: 'translate(100,209)' },
+      React.createElement('circle', { r: 18, fill: 'none', stroke: 'rgba(255,216,77,.5)', strokeWidth: 1.8 }),
+      React.createElement('circle', { r: 14, fill: 'rgba(255,216,77,.1)' }),
+      React.createElement('path', { d: 'M0 -9l2.6 5.5 6 .8-4.3 4.2 1 6L0 5.4l-5.3 2.9 1-6-4.3-4.2 6-.8z',
+        fill: '#FFD84D' })),
+    React.createElement('text', { x: 100, y: 236, textAnchor: 'middle', fill: '#A08FC4',
+      style: { font: '700 9.5px Nunito, sans-serif' } },
+      'красных линий удержано: ' + hard + ' из 2'));
+}
+
+/* ── уровень ── */
+function LevelHuman({ onWin, onHome }) {
+  const [phase, setPhase] = useState(() => {
+    const p = new URLSearchParams(window.location.search).get('p');
+    return ['play', 'done'].indexOf(p) > -1 ? p : 'intro';
+  });
+  const [i, setI] = useState(() => {
+    const n = parseInt(new URLSearchParams(window.location.search).get('j'), 10);
+    return n > 0 && n <= HU_JOBS.length ? n - 1 : 0;
+  });
+  const [pick, setPick] = useState(null);
+  const [run, setRun] = useState(false);
+  const [log, setLog] = useState([]);          // {id, pick, m}
+  const [saved, setSaved] = useState(false);
+  const tRef = useRef([]);
+
+  const job = HU_JOBS[i];
+  const res = pick ? job.out[pick] : null;
+  const clear = () => { tRef.current.forEach(clearTimeout); tRef.current = []; };
+  useEffect(() => clear, []);
+
+  const choose = k => {
+    if (pick) return;
+    clear(); setPick(k); setRun(false);
+    tRef.current = [setTimeout(() => setRun(true), 60)];
+  };
+
+  const redo = () => { clear(); setPick(null); setRun(false); };
+
+  const next = () => {
+    clear();
+    setLog(log.concat([{ id: job.id, pick: pick, m: res.m }]));
+    setPick(null); setRun(false);
+    if (i + 1 < HU_JOBS.length) setI(i + 1);
+    else setPhase('done');
+  };
+
+  /* сколько красных линий удержано: дела с hard, где решение не отдано роботу */
+  const hardKept = () => {
+    const done = log.concat(pick ? [{ id: job.id, pick: pick, m: res.m }] : []);
+    return HU_JOBS.filter(j => j.hard).filter(j => {
+      const e = done.find(x => x.id === j.id);
+      return e && e.pick !== 'auto';
+    }).length;
+  };
+  const exact = () => log.filter(e => e.m === 'ok').length;
+
+  const savePass = () => {
+    const svg = document.querySelector('.hupass');
+    if (svg && window.nookaGallery) {
+      window.nookaGallery.add({
+        kind: 'pass', game: 'Что решает человек', title: 'Пропуск дежурного',
+        note: 'Три правила: что роботу, что с подсказкой, а что только себе',
+        svg: svg.outerHTML,
+      });
+    }
+    setSaved(true);
+  };
+
+  /* ── финал ── */
+  if (phase === 'done') {
+    const kept = hardKept();
+    return React.createElement('div', { className: 'hu' },
+      React.createElement(TopBar, { level: 10, title: 'Что решает человек', onHome, step: 6, total: 1 }),
+      React.createElement('div', { className: 'hubody hudone' },
+        React.createElement(HuPass, { hard: kept, u: 'p' }),
+        React.createElement('div', { className: 'hulaw' },
+          React.createElement('b', null, 'У робота нет ответственности'),
+          React.createElement('span', null,
+            'Он может ошибиться и не заметить. Отвечать всё равно будет человек — поэтому часть решений остаётся за тобой.')),
+        React.createElement('div', { className: 'huline' },
+          React.createElement('div', { className: 'huline__t' }, 'Твоя красная линия'),
+          React.createElement('ul', null,
+            React.createElement('li', null, 'Здоровье — решают ты, родители и врач'),
+            React.createElement('li', null, 'Ссоры и дружба — разбираются люди, а не подсчёт слов'))),
+        React.createElement('div', { className: 'huscore' },
+          'Точно в лоток: ' + exact() + ' из ' + HU_JOBS.length +
+          ' · красных линий удержано: ' + kept + ' из 2')),
+      React.createElement('div', { className: 'hufoot' },
+        !saved
+          ? React.createElement('button', {
+              className: 'nk-btn nk-btn--cta', style: { width: '100%' }, onClick: savePass,
+            }, 'Забрать пропуск')
+          : React.createElement('button', {
+              className: 'nk-btn nk-btn--ok', style: { width: '100%' },
+              onClick: () => { clear(); onWin(); },
+            }, 'Готово')));
+  }
+
+  /* ── игра ── */
+  const mustRedo = res && job.hard && pick === 'auto';
+
+  return React.createElement('div', { className: 'hu' },
+    React.createElement(TopBar, { level: 10, title: 'Что решает человек', onHome, step: i, total: 1 }),
+
+    phase === 'intro' && React.createElement(IntroModal, {
+      emoji: NKM('hello', 88),
+      title: 'Что решает человек',
+      law: 'Робот может ошибиться и не заметить.\nОтвечать за ошибку всё равно будет человек.',
+      tip: 'Ты дежурный. Разложи дела: что роботу, что с подсказкой, а что только себе.',
+      onStart: () => setPhase('play'),
+    }),
+
+    React.createElement('div', { className: 'hubody' },
+      React.createElement('div', { className: 'hujob', key: job.id },
+        React.createElement('div', { className: 'hujob__k' }, job.when + ' · дело ' + (i + 1) + ' из ' + HU_JOBS.length),
+        React.createElement('div', { className: 'hujob__t' }, job.t),
+        React.createElement('div', { className: 'hujob__ai' },
+          React.createElement('i', null, NKM('hello', 30)),
+          React.createElement('span', null, React.createElement('b', null, 'Нейро: '), '«', job.ai, '»'))),
+
+      React.createElement(HuDesk, { job, pick, res, run }),
+
+      React.createElement('div', { className: 'hutrays' },
+        HU_TRAYS.map(T => React.createElement('button', {
+          key: T.k, className: 'hutray' + (pick === T.k ? ' hutray--on' : ''),
+          style: { '--c': T.c }, disabled: !!pick && pick !== T.k,
+          onClick: () => choose(T.k),
+        },
+          React.createElement('span', { className: 'hutray__l' }),
+          React.createElement('span', { className: 'hutray__t' },
+            React.createElement('b', null, T.t),
+            React.createElement('span', null, T.s))))),
+
+      React.createElement('div', { className: 'husay-wrap' },
+        run && res && React.createElement('div', { className: 'husay husay--' + res.m, key: pick },
+          React.createElement('i', null, NKM(res.m === 'ok' ? 'win' : 'think', 30)),
+          React.createElement('span', null, res.say))),
+
+      run && res && res.m !== 'ok' && React.createElement('div', { className: 'huwhy' },
+        React.createElement('b', null, 'Как правильно: '), job.why)),
+
+    React.createElement('div', { className: 'hufoot' },
+      run && res && React.createElement('div', { className: 'hubtns' },
+        (res.m !== 'ok') && React.createElement('button', {
+          className: 'nk-btn nk-btn--soft', style: { flex: mustRedo ? 1 : 'none' }, onClick: redo,
+        }, 'Переложить'),
+        !mustRedo && React.createElement('button', {
+          className: 'nk-btn nk-btn--pri', style: { flex: 1 }, onClick: next,
+        }, i + 1 < HU_JOBS.length ? 'Следующее дело' : 'Сдать дежурство'))));
+}
+
+function App() {
+  return React.createElement('div', { className: 'huroot' },
+    React.createElement(LevelHuman, {
+      onWin: () => {
+        if (window.nooka) window.nooka.missionWin('ctrl10', 110, { nextLabel: 'В коллекцию →' });
+        setTimeout(() => { window.location.href = '../base/index.html#gallery'; }, 400);
+      },
+      onHome: () => { window.location.href = 'game.html?g=control'; },
+    }));
+}
+ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(App, null));
+</script>
+</body>
+</html>
