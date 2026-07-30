@@ -105,6 +105,8 @@
 <div id="root"></div>
 <script src="react-bundle.js"></script>
 <script src="nooka-core.js"></script>
+<script src="nooka-levels.js"></script>
+<script src="nooka-access.js"></script>
 <script src="nooka-gallery.js"></script>
 <script src="nooka-ui.js"></script>
 <script>
@@ -681,7 +683,7 @@ function LevelCook({
   return React.createElement('div', {
     className: 'co'
   }, React.createElement(TopBar, {
-    level: 17,
+    level: 5,
     title: 'Шеф-повар',
     onHome,
     step: phase === 'free' ? 2 : gi,
@@ -813,7 +815,7 @@ function App() {
       }, 400);
     },
     onHome: () => {
-      window.location.href = '../base/index.html';
+      window.location.href = 'game.html?g=control';
     }
   }));
 }

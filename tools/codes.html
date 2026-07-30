@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Коды доступа — Nooka</title>
+<style>
+:root{--ink:#2D1B45;--ink2:#6B5680;--pri:#7B4FF2;--sun:#FFD84D;--ok:#1FA76E}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Nunito',system-ui,sans-serif;background:#F4F1FA;color:var(--ink);padding:28px 20px 60px}
+.wrap{max-width:640px;margin:0 auto}
+h1{font-size:24px;font-weight:900;margin-bottom:6px}
+.sub{font-size:14px;color:var(--ink2);line-height:1.5;margin-bottom:22px}
+.card{background:#fff;border-radius:22px;padding:22px;box-shadow:0 10px 24px -14px rgba(45,27,69,.25);margin-bottom:16px}
+label{display:block;font-weight:800;font-size:12.5px;color:var(--ink2);margin-bottom:8px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end}
+select,input{padding:12px 14px;border:1.5px solid #E4DCF5;border-radius:12px;font-family:inherit;
+  font-size:15px;font-weight:700;color:var(--ink);background:#FBF9FF;outline:none}
+select:focus,input:focus{border-color:var(--pri)}
+button{padding:13px 22px;border:none;border-radius:12px;cursor:pointer;font-family:inherit;
+  font-weight:900;font-size:15px;color:#fff;background:var(--pri)}
+button.alt{background:#EFE9FF;color:var(--pri)}
+.out{margin-top:16px;font-family:ui-monospace,Menlo,monospace;font-size:15px;font-weight:700;
+  line-height:2;white-space:pre-wrap;word-break:break-all}
+.out b{background:#FFF6D6;padding:2px 6px;border-radius:6px}
+.hint{margin-top:14px;font-size:12.5px;color:var(--ink2);line-height:1.5}
+.chk{display:flex;gap:10px;align-items:center;margin-top:10px}
+.res{margin-top:12px;font-weight:800;font-size:14px}
+.res.ok{color:var(--ok)}
+.res.bad{color:#D94A34}
+.warn{background:#FFF6D6;border-radius:16px;padding:15px 18px;font-size:13px;line-height:1.55;
+  font-weight:600;box-shadow:inset 0 0 0 1px rgba(232,174,31,.35)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Коды доступа</h1>
+  <p class="sub">Печатает коды для родителей, которые оплатили. Работает офлайн, на этой же странице —
+  никакого сервера. Внутри кода зашиты тариф и дата окончания.</p>
+
+  <div class="card">
+    <label>Сколько кодов и на какой тариф</label>
+    <div class="row">
+      <select id="plan">
+        <option value="month">Месяц — 490 ₽ (31 день)</option>
+        <option value="year">Год — 1450 ₽ (366 дней)</option>
+      </select>
+      <input id="n" type="number" value="5" min="1" max="60" style="width:92px">
+      <button id="go">Напечатать</button>
+      <button class="alt" id="copy">Скопировать</button>
+    </div>
+    <div class="out" id="out"></div>
+    <div class="hint" id="hint"></div>
+  </div>
+
+  <div class="card">
+    <label>Проверить код (что внутри)</label>
+    <div class="row">
+      <input id="chk" placeholder="NOOKA-••••-••••" style="flex:1;min-width:200px">
+      <button class="alt" id="chkGo">Проверить</button>
+    </div>
+    <div class="res" id="chkRes"></div>
+  </div>
+
+  <div class="warn">
+    <b>Как это работает.</b> Родитель платит → вы даёте код из этого списка → он вводит его в игре
+    и играет до даты окончания. Код можно передать другому человеку — сервера, который бы это
+    отследил, пока нет. Для первой тысячи продаж это дешевле, чем строить регистрацию.
+    Выдавайте по одному коду на оплату и записывайте, кому какой ушёл.
+  </div>
+</div>
+
+<script src="../games/nooka-levels.js"></script>
+<script src="../games/nooka-access.js"></script>
+<script>
+var out = document.getElementById('out'), hint = document.getElementById('hint');
+function dstr(ms){ var d = new Date(ms);
+  return String(d.getDate()).padStart(2,'0')+'.'+String(d.getMonth()+1).padStart(2,'0')+'.'+d.getFullYear(); }
+
+document.getElementById('go').onclick = function(){
+  var plan = document.getElementById('plan').value;
+  var n = Math.max(1, Math.min(60, parseInt(document.getElementById('n').value, 10) || 1));
+  var seen = {}, list = [];
+  var guard = 0;
+  while (list.length < n && guard++ < 2000) {
+    var c = nookaAccess.make(plan, Math.floor(Math.random() * 16));
+    if (!seen[c]) { seen[c] = 1; list.push(c); }
+  }
+  out.innerHTML = list.map(function(c){ return '<b>' + c + '</b>'; }).join('\n');
+  var p = nookaAccess.parse(list[0]);
+  hint.textContent = 'Тариф: ' + nookaAccess.plans[plan].title.toLowerCase() +
+    ' · доступ до ' + dstr(p.until) + ' · выдано ' + list.length + ' шт. ' +
+    'Дата считается от момента печати, так что печатайте под конкретную оплату.';
+};
+
+document.getElementById('copy').onclick = function(){
+  var t = out.innerText.trim();
+  if (!t) return;
+  navigator.clipboard.writeText(t);
+  this.textContent = 'Скопировано';
+  var b = this; setTimeout(function(){ b.textContent = 'Скопировать'; }, 1400);
+};
+
+document.getElementById('chkGo').onclick = function(){
+  var r = nookaAccess.parse(document.getElementById('chk').value);
+  var el = document.getElementById('chkRes');
+  if (!r) { el.className = 'res bad'; el.textContent = 'Код не настоящий — контрольная сумма не сходится.'; return; }
+  var left = Math.ceil((r.until - Date.now()) / 86400000);
+  el.className = 'res ' + (left > 0 ? 'ok' : 'bad');
+  el.textContent = (left > 0 ? 'Рабочий код. ' : 'Код просрочен. ') +
+    'Тариф: ' + nookaAccess.plans[r.plan].title.toLowerCase() + ' · до ' + dstr(r.until) +
+    (left > 0 ? ' · осталось дней: ' + left : '');
+};
+
+document.getElementById('go').click();
+</script>
+</body>
+</html>

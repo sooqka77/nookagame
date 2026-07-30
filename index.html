@@ -235,6 +235,38 @@ footer{border-top:2px solid rgba(123,79,242,.12);background:#FFF6E9}
   .hero-safe{gap:10px}
 }
 @media(prefers-reduced-motion:reduce){.nk-bob,.hero-deco .nk-coin,.hero-badge .dot{animation:none}}
+
+/* ── первый ряд: курс ИИ-грамотности ── */
+.course-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(276px,1fr));gap:18px;margin-top:8px}
+.cc{position:relative;display:flex;flex-direction:column;gap:11px;padding:26px 24px 22px;
+  border-radius:30px;color:#fff;overflow:hidden;cursor:pointer;border:none;text-align:left;
+  font-family:inherit;background:linear-gradient(165deg,#241844,#150E2A 62%,#100A1F);
+  box-shadow:0 22px 44px -20px rgba(45,27,69,.55),inset 0 0 0 1px rgba(255,255,255,.08);
+  transition:transform .16s cubic-bezier(.2,.8,.3,1),box-shadow .16s}
+.cc:hover{transform:translateY(-5px);box-shadow:0 30px 56px -22px rgba(45,27,69,.62),inset 0 0 0 1px rgba(255,255,255,.16)}
+.cc::after{content:'';position:absolute;right:-46px;top:-46px;width:176px;height:176px;border-radius:50%;
+  background:radial-gradient(circle,var(--t) 0%,transparent 68%);opacity:.38;pointer-events:none}
+.cc-top{display:flex;align-items:center;justify-content:space-between;font-size:12px;font-weight:800}
+.cc-no{color:var(--t)}
+.cc-age{color:#9C8CBE}
+.cc-name{font-family:var(--nk-brand);font-weight:900;font-size:21px;line-height:1.15;letter-spacing:-.01em}
+.cc-sub{font-size:13px;font-weight:800;color:var(--t);margin-top:-4px}
+.cc-about{font-size:13px;font-weight:500;line-height:1.5;color:#B4A5D0}
+.cc-list{list-style:none;padding:0;margin:4px 0 0;display:flex;flex-direction:column;gap:7px}
+.cc-list li{position:relative;padding-left:20px;font-size:12.5px;font-weight:700;color:#DCD2EE;line-height:1.35}
+.cc-list li::before{content:'';position:absolute;left:4px;top:6px;width:7px;height:7px;border-radius:50%;
+  background:var(--t);box-shadow:0 0 9px var(--t)}
+.cc-foot{margin-top:auto;padding-top:14px;display:flex;align-items:center;justify-content:space-between;
+  border-top:1px solid rgba(255,255,255,.1)}
+.cc-foot b{font-family:var(--nk-brand);font-weight:700;font-size:14px}
+.cc-foot span{font-size:13.5px;font-weight:800;color:var(--t)}
+.cc-soon{font-size:11.5px;font-weight:700;color:#8878A8;margin-top:2px}
+.course-note{margin-top:20px;padding:15px 20px;border-radius:20px;text-align:center;
+  font-weight:700;font-size:13.5px;color:var(--nk-ink);
+  background:linear-gradient(180deg,var(--nk-sun-1),#FFE9A8);
+  box-shadow:0 10px 22px -12px rgba(232,174,31,.5)}
+.price-grid{grid-template-columns:repeat(auto-fit,minmax(238px,1fr))!important}
+.price-hint{margin-top:18px;text-align:center;font-size:13px;font-weight:600;color:var(--nk-ink-2);line-height:1.5}
 </style>
 </head>
 <body>
@@ -255,7 +287,7 @@ footer{border-top:2px solid rgba(123,79,242,.12);background:#FFF6E9}
 
   <section class="wrap hero">
     <div class="hero-copy">
-      <div class="nk-chip hero-badge"><span class="dot"></span>Бета · 5 игр · 26 уровней</div>
+      <div class="nk-chip hero-badge"><span class="dot"></span>Курс ИИ-грамотности · 3 игры · 30 уровней</div>
       <h1 class="nk-t-brand">Экранное время,<br><span class="p">за которое</span><br><span class="s">не стыдно</span></h1>
       <p class="nk-t-body hero-sub"><strong>Игровая образовательная платформа</strong> для детей 6–12 лет: ребёнок строит нейросеть, ставит опыты и программирует робота. <strong>15 минут — и он объяснит это сам.</strong></p>
       <div class="hero-ctas">
@@ -289,10 +321,18 @@ footer{border-top:2px solid rgba(123,79,242,.12);background:#FFF6E9}
     </div>
   </section>
 
+  <section class="wrap section" id="course">
+    <div class="nk-chip sec-head-chip">Главное на платформе</div>
+    <h2 class="nk-t-h1 sec-h">ИИ-грамотность <span>для детей 8–12</span></h2>
+    <p class="nk-t-body sec-sub">Три игры, тридцать уровней. Программа собрана по рамке AI4K12 — «Пять больших идей об ИИ» от AAAI и CSTA, по ней учат в американских школах. Ребёнок не слушает про ИИ, а обучает его, ломает и проверяет на вранье.</p>
+    <div class="course-grid" id="courseGrid"></div>
+    <div class="course-note">Первая игра — пять уровней бесплатно. Без регистрации и без карты.</div>
+  </section>
+
   <section class="wrap section" id="subjects">
-    <div class="nk-chip sec-head-chip">Игры</div>
-    <h2 class="nk-t-h1 sec-h">Каждая игра — <span>своя вселенная</span></h2>
-    <p class="nk-t-body sec-sub">Пять игр уже открыты: два мира про искусственный интеллект, физика, химия и программирование. Остальные — в работе.</p>
+    <div class="nk-chip sec-head-chip">Ещё игры</div>
+    <h2 class="nk-t-h1 sec-h">Науки, которые <span>можно потрогать</span></h2>
+    <p class="nk-t-body sec-sub">Физика, химия и программирование уже открыты. Остальные миры — в работе: они войдут в годовой доступ по мере выхода.</p>
     <div class="grid-cards" id="planets"></div>
   </section>
 
@@ -318,36 +358,49 @@ footer{border-top:2px solid rgba(123,79,242,.12);background:#FFF6E9}
   </section>
 
   <section class="wrap section pricing" id="plans">
-    <div class="nk-chip sec-head-chip">Тарифы</div>
-    <h2 class="nk-t-h1 sec-h">Начните бесплатно, <span>растите без лимитов</span></h2>
-    <p class="nk-t-body sec-sub" style="margin-left:auto;margin-right:auto">Все пять игр — бесплатно навсегда. Nooka Pro откроет новые миры и отчёт для родителей.</p>
+    <div class="nk-chip sec-head-chip">Доступ</div>
+    <h2 class="nk-t-h1 sec-h">Пять уровней бесплатно, <span>дальше — по доступу</span></h2>
+    <p class="nk-t-body sec-sub" style="margin-left:auto;margin-right:auto">Никакой подписки с автосписанием. Доступ заканчивается сам, продлевать или нет — решаете вы.</p>
     <div class="price-grid">
       <div class="nk-clay price-box">
         <div class="nk-t-caption price-tier">Бесплатно</div>
         <div class="price-amt">0 ₽</div>
-        <div class="nk-t-caption" style="margin-bottom:24px">навсегда</div>
+        <div class="nk-t-caption" style="margin-bottom:24px">без регистрации</div>
         <div class="pf">
-          <div><span class="ok">✓</span> 5 игр — 26 уровней</div>
+          <div><span class="ok">✓</span> Первая игра: уровни 1–5</div>
           <div><span class="ok">✓</span> Прогресс, опыт и звания</div>
-          <div class="no"><span>—</span> Новые предметы при выходе</div>
-          <div class="no"><span>—</span> Отчёт для родителей</div>
+          <div><span class="ok">✓</span> Коллекция работ ребёнка</div>
+          <div class="no"><span>—</span> Остальные 25 уровней</div>
         </div>
         <button class="nk-btn nk-btn--soft" style="width:100%" data-play>Начать →</button>
       </div>
-      <div class="price-box pro">
-        <span class="price-badge">СКОРО</span>
-        <div class="nk-t-caption price-tier">Nooka Pro</div>
+      <div class="nk-clay price-box">
+        <div class="nk-t-caption price-tier">Месяц</div>
         <div class="price-amt">490 ₽</div>
-        <div class="nk-t-caption price-amt-sub" style="margin-bottom:24px">в месяц</div>
+        <div class="nk-t-caption" style="margin-bottom:24px">31 день, без автопродления</div>
         <div class="pf">
-          <div><span class="ok">✓</span> Все игры + новые каждый месяц</div>
-          <div><span class="ok">✓</span> Ранний доступ к новым мирам</div>
-          <div><span class="ok">✓</span> Отчёт о прогрессе для родителей</div>
-          <div><span class="ok">✓</span> Поддержка проекта</div>
+          <div><span class="ok">✓</span> Три игры, 30 уровней</div>
+          <div><span class="ok">✓</span> Все механики и артефакты</div>
+          <div><span class="ok">✓</span> Один код — одна семья</div>
+          <div><span class="ok">✓</span> Ничего не спишется потом</div>
         </div>
-        <button class="nk-btn nk-btn--cta" style="width:100%" data-wait>Записаться в лист ожидания</button>
+        <button class="nk-btn nk-btn--soft" style="width:100%" data-buy>Оформить доступ</button>
+      </div>
+      <div class="price-box pro">
+        <span class="price-badge">ВЫГОДНЕЕ</span>
+        <div class="nk-t-caption price-tier">Год вперёд</div>
+        <div class="price-amt">1450 ₽</div>
+        <div class="nk-t-caption price-amt-sub" style="margin-bottom:24px">12 месяцев — как 3 по месяцу</div>
+        <div class="pf">
+          <div><span class="ok">✓</span> Те же три игры на год</div>
+          <div><span class="ok">✓</span> Плюс новые игры платформы, которые выйдут за этот год</div>
+          <div><span class="ok">✓</span> В планах — науки и технологии</div>
+          <div><span class="ok">✓</span> Возврат в течение 14 дней</div>
+        </div>
+        <button class="nk-btn nk-btn--cta" style="width:100%" data-buy>Взять год</button>
       </div>
     </div>
+    <div class="price-hint">Оплата и код доступа — через наш Telegram. Код вводится прямо в игре: аккаунт создавать не нужно.</div>
   </section>
 
   <section class="wrap final">
@@ -384,13 +437,12 @@ footer{border-top:2px solid rgba(123,79,242,.12);background:#FFF6E9}
 </div>
 <div class="nk-chip toast" id="toast"></div>
 
+<script src="games/nooka-levels.js"></script>
 <script>
 var WAITLIST_URL = 'https://t.me/NookaGame';
 var V = '?v=202607211900';
 
 var PLANETS = [
-  {key:'ai',    icon:'ai', coin:'',              subject:'Искусственный интеллект', name:'Нейро Академия', desc:'Собери нейросеть, обучи её на данных и поймай ИИ на выдумке.', active:true,  levels:6,  img:'screenshots/ai.jpg',     src:'games/ai.html'},
-  {key:'prompt',icon:'prompt', coin:'nk-coin--sun',  subject:'Искусственный интеллект', name:'ПромптЛаб',      desc:'Научись говорить с ИИ: точный промпт, роли, числа и итерации.', active:true,  levels:4,  img:'screenshots/prompt.jpg', src:'games/prompt.html'},
   {key:'phys',  icon:'phys', coin:'nk-coin--sun',  subject:'Физика',                  name:'КвантУм',        desc:'Рычаги, траектории, равновесие: физика, которую можно потрогать.', active:true,  levels:6,  img:'screenshots/phys.jpg',   src:'games/physics.html'},
   {key:'chem',  icon:'chem', coin:'nk-coin--ok',   subject:'Химия',                   name:'Хемо Лаб',       desc:'Реакции, плотность и опыты, которые дома никто не разрешит.', active:true,  levels:6,  img:'screenshots/chem.jpg',   src:'games/chemistry.html'},
   {key:'code',  icon:'code', coin:'',              subject:'Программирование',        name:'КодБот',         desc:'Составь программу из блоков — и робот дойдёт до звезды.', active:true,  levels:3,  img:'screenshots/code.jpg',   src:'games/code.html'},
@@ -427,7 +479,8 @@ PLANETS.forEach(function(p){
 var modal = document.getElementById('modal'), gframe = document.getElementById('gframe');
 function isNarrow(){ return window.matchMedia('(max-width:900px)').matches; }
 function openGame(src){
-  var url = (src || 'games/ai.html') + V;
+  var u = src || 'games/game.html?g=control';
+  var url = u + (u.indexOf('?') > -1 ? V.replace('?', '&') : V);
   if (isNarrow()) { window.location.href = url; return; }   // на телефоне игра открывается на весь экран
   gframe.src = url; modal.classList.add('open'); document.body.style.overflow='hidden';
 }
@@ -439,7 +492,33 @@ document.addEventListener('keydown', function(e){ if(e.key==='Escape' && modal.c
 var toastEl = document.getElementById('toast'), _t;
 function toast(msg){ toastEl.textContent=msg; toastEl.classList.add('show'); clearTimeout(_t); _t=setTimeout(function(){ toastEl.classList.remove('show'); }, 3400); }
 
-document.querySelectorAll('[data-play]').forEach(function(b){ b.addEventListener('click', function(){ openGame('games/ai.html'); }); });
+document.querySelectorAll('[data-play]').forEach(function(b){ b.addEventListener('click', function(){ openGame('games/game.html?g=data'); }); });
+document.querySelectorAll('[data-buy]').forEach(function(b){ b.addEventListener('click', function(){ window.open(WAITLIST_URL,'_blank','noopener'); }); });
+
+/* витрина курса — из единого реестра games/nooka-levels.js */
+(function(){
+  var box = document.getElementById('courseGrid');
+  if (!box || !window.nookaLevels) return;
+  var NO = ['','Игра 1','Игра 2','Игра 3'];
+  nookaLevels.games.forEach(function(g, i){
+    var st = nookaLevels.stats(g.key);
+    var pick = g.levels.filter(function(l){ return l.href; }).slice(0, 3);
+    if (pick.length < 3) pick = g.levels.slice(0, 3);
+    var card = document.createElement('button');
+    card.className = 'cc';
+    card.style.setProperty('--t', g.tint);
+    card.innerHTML =
+      '<div class="cc-top"><span class="cc-no">'+NO[i+1]+'</span><span class="cc-age">'+g.age+'</span></div>' +
+      '<div class="cc-name">'+g.name+'</div>' +
+      '<div class="cc-sub">'+g.sub+'</div>' +
+      '<div class="cc-about">'+g.about+'</div>' +
+      '<ul class="cc-list">' + pick.map(function(l){ return '<li>'+l.t+'</li>'; }).join('') + '</ul>' +
+      '<div class="cc-foot"><b>'+st.total+' уровней</b><span>Открыть →</span></div>' +
+      (st.ready < st.total ? '<div class="cc-soon">Готово '+st.ready+', остальные в работе</div>' : '');
+    card.addEventListener('click', function(){ openGame('games/game.html?g='+g.key); });
+    box.appendChild(card);
+  });
+})();
 document.querySelectorAll('[data-wait]').forEach(function(b){ b.addEventListener('click', function(){ window.open(WAITLIST_URL,'_blank','noopener'); }); });
 </script>
 </body>

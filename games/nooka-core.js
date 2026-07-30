@@ -75,7 +75,9 @@
     // Миссия пройдена + красочный экран победы (конфетти, XP, звание)
     missionWin: function (id, xp, opts) {
       var isNew = this.completeMission(id, xp);
-      this.celebrate(isNew ? (xp || 60) : 0, opts || {});
+      opts = opts || {};
+      opts.mid = id;                       // чтобы celebrate нашёл игру в реестре
+      this.celebrate(isNew ? (xp || 60) : 0, opts);
       return isNew;
     },
 
@@ -106,6 +108,21 @@
         '#nooka-win .nk-base{display:block;color:#7B2FFF;font-weight:700;font-size:14px;text-decoration:none;padding:8px}' +
         '#nooka-win canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}';
 
+      /* куда вести после победы: хаб той игры курса, где живёт этот уровень */
+      var hub = { href: '../base/', label: '\u041c\u043e\u044f \u0431\u0430\u0437\u0430' };
+      try {
+        if (window.nookaLevels && opts.mid) {
+          window.nookaLevels.games.forEach(function (g) {
+            g.levels.forEach(function (lv) {
+              if (lv.mid === opts.mid) {
+                hub.href = 'game.html?g=' + g.key;
+                hub.label = '\u041a \u0443\u0440\u043e\u0432\u043d\u044f\u043c: ' + g.name;
+              }
+            });
+          });
+        }
+      } catch (e) {}
+
       var wrap = document.createElement('div');
       wrap.id = 'nooka-win';
       wrap.innerHTML = '<style>' + css + '</style><canvas></canvas><div class="nk-card">' +
@@ -117,7 +134,7 @@
         '<div class="nk-bar"><i></i></div>' +
         '<div class="nk-show">Покажи родителям, что у тебя получилось! 👀</div>' +
         '<button class="nk-next">' + (opts.nextLabel || 'Дальше →') + '</button>' +
-        '<a class="nk-base" href="../base/">🚀 Моя база</a></div>';
+        '<a class="nk-base" href="' + hub.href + '">' + hub.label + '</a></div>';
       document.body.appendChild(wrap);
 
       var pct = rank.next ? Math.min(100, Math.round((total - rank.at) / (rank.next.at - rank.at) * 100)) : 100;

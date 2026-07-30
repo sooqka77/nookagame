@@ -660,6 +660,8 @@ function(a,b,c){if(!Vd(b))throw Error(m(200));return Wd(null,a,b,!1,c)};Q.unmoun
 
 </script>
 <script src="nooka-core.js"></script>
+<script src="nooka-levels.js"></script>
+<script src="nooka-access.js"></script>
 <script>
 
 const {
@@ -2671,7 +2673,7 @@ function Level3Iterate({
       overflow: 'hidden'
     }
   }, /*#__PURE__*/React.createElement(TopBar, {
-    level: 4,
+    level: 6,
     title: "Докрути до идеала",
     onHome: onHome,
     step: Math.min(applied.filter(id => P3_FIXES.find(f => f.id === id).good).length + 1, 4),
@@ -5427,7 +5429,7 @@ function Level5Night({
       overflow: 'hidden'
     }
   }, React.createElement(TopBar, {
-    level: 5,
+    level: 8,
     title: 'Ночная смена',
     onHome,
     step: phase === 'check' ? 3 : rIdx,
@@ -5592,7 +5594,7 @@ function App() {
         nextLabel: 'Дальше →'
       });
     },
-    onHome: () => setS('home')
+    onHome: () => { window.location.href = 'game.html?g=control'; }
   }), s === 'l2' && /*#__PURE__*/React.createElement(Level2Roles, {
     onWin: () => {
       setS('l3');
@@ -5600,7 +5602,7 @@ function App() {
         nextLabel: 'Дальше →'
       });
     },
-    onHome: () => setS('home')
+    onHome: () => { window.location.href = 'game.html?g=control'; }
   }), s === 'l3' && /*#__PURE__*/React.createElement(Level3Numbers, {
     onWin: () => {
       setS('l4');
@@ -5608,7 +5610,7 @@ function App() {
         nextLabel: 'Дальше →'
       });
     },
-    onHome: () => setS('home')
+    onHome: () => { window.location.href = 'game.html?g=control'; }
   }), s === 'l4' && /*#__PURE__*/React.createElement(Level3Iterate, {
     onWin: () => {
       setS('l5');
@@ -5616,7 +5618,7 @@ function App() {
         nextLabel: 'Дальше →'
       });
     },
-    onHome: () => setS('home')
+    onHome: () => { window.location.href = 'game.html?g=control'; }
   }), s === 'l5' && /*#__PURE__*/React.createElement(Level5Night, {
     onWin: () => {
       setS('home');
@@ -5624,7 +5626,7 @@ function App() {
         nextLabel: 'На главную →'
       });
     },
-    onHome: () => setS('home')
+    onHome: () => { window.location.href = 'game.html?g=control'; }
   }));
 }
 ReactDOM.createRoot(document.getElementById('root')).render(/*#__PURE__*/React.createElement(App, null));

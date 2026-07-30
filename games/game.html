@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Игра — Nooka</title>
+<link rel="icon" href="../logo.svg">
+<link rel="preconnect" href="https://fonts.bunny.net">
+<link href="https://fonts.bunny.net/css?family=unbounded:700,900|nunito:400,700,800,900" rel="stylesheet">
+<style>
+:root{
+  --ink:#F3EEFF;--ink-2:#A896C9;--ink-3:#6E5C90;
+  --pri:#A98BFF;--pri-d:#7B4FF2;--ok:#4ED99B;--sun:#FFD84D;
+  --brand:'Unbounded','Nunito',system-ui,sans-serif;
+  --body:'Nunito',system-ui,sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{background:#0A0714}
+body{font-family:var(--body);color:var(--ink);min-height:100vh;
+  background:
+    radial-gradient(1200px 600px at 50% -10%,rgba(123,79,242,.28),transparent 62%),
+    radial-gradient(700px 420px at 88% 18%,rgba(78,217,155,.10),transparent 60%),
+    linear-gradient(180deg,#141026 0%,#0D0A1A 46%,#08060F 100%);
+  background-attachment:fixed;-webkit-font-smoothing:antialiased}
+/* звёздная пыль */
+body::before{content:'';position:fixed;inset:0;pointer-events:none;opacity:.5;
+  background-image:radial-gradient(1.4px 1.4px at 12% 14%,#fff,transparent),
+    radial-gradient(1.2px 1.2px at 74% 8%,#fff,transparent),
+    radial-gradient(1.6px 1.6px at 33% 42%,#E9DFFF,transparent),
+    radial-gradient(1.1px 1.1px at 88% 55%,#fff,transparent),
+    radial-gradient(1.3px 1.3px at 58% 76%,#FFE9B8,transparent),
+    radial-gradient(1px 1px at 22% 88%,#fff,transparent),
+    radial-gradient(1.5px 1.5px at 95% 88%,#D9CCFF,transparent);}
+
+.wrap{position:relative;max-width:560px;margin:0 auto;
+  padding:16px 18px calc(34px + env(safe-area-inset-bottom))}
+
+/* ── шапка ── */
+.top{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.top a{display:inline-flex;align-items:center;gap:7px;text-decoration:none;
+  font-weight:800;font-size:13.5px;color:var(--ink-2)}
+.top a:hover{color:var(--ink)}
+.top .brand{font-family:var(--brand);font-weight:900;font-size:16px;color:var(--ink)}
+.top .brand em{font-style:normal;color:var(--pri)}
+
+.head{margin-bottom:22px}
+.kick{display:inline-flex;align-items:center;gap:8px;padding:6px 13px;border-radius:999px;
+  font-weight:800;font-size:11.5px;letter-spacing:.04em;text-transform:uppercase;
+  color:#E9DFFF;background:rgba(255,255,255,.07);
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.1)}
+.kick i{width:6px;height:6px;border-radius:50%;background:var(--gtint,var(--pri));
+  box-shadow:0 0 10px var(--gtint,var(--pri))}
+h1{font-family:var(--brand);font-weight:900;font-size:30px;line-height:1.1;
+  margin:13px 0 0;letter-spacing:-.01em}
+.h-sub{margin-top:7px;font-weight:800;font-size:14px;color:var(--gtint,var(--pri))}
+.about{margin-top:11px;font-weight:600;font-size:13.5px;line-height:1.5;color:var(--ink-2)}
+
+.prog{margin-top:17px;padding:15px 17px;border-radius:20px;
+  background:rgba(255,255,255,.05);box-shadow:inset 0 0 0 1px rgba(255,255,255,.08)}
+.prog__t{display:flex;align-items:baseline;justify-content:space-between;
+  font-weight:800;font-size:12.5px;color:var(--ink-2)}
+.prog__t b{font-family:var(--brand);font-weight:700;font-size:17px;color:var(--ink)}
+.prog__b{margin-top:10px;height:9px;border-radius:999px;background:rgba(255,255,255,.09);overflow:hidden}
+.prog__b i{display:block;height:100%;border-radius:999px;
+  background:linear-gradient(90deg,var(--gtint,var(--pri)),#fff6);
+  box-shadow:0 0 14px var(--gtint,var(--pri));transition:width .6s cubic-bezier(.2,.8,.3,1)}
+.prog__n{margin-top:9px;font-weight:700;font-size:12px;color:var(--ink-3)}
+
+/* ── маршрут ── */
+.route{margin-top:26px;position:relative}
+.st{position:relative;margin-bottom:12px}
+.st:nth-child(even){margin-left:20px}
+.st:nth-child(odd){margin-right:12px}
+/* соединение между станциями */
+.st::before{content:'';position:absolute;left:32px;top:-13px;width:2px;height:14px;
+  background:repeating-linear-gradient(180deg,rgba(255,255,255,.22) 0 3px,transparent 3px 6px)}
+.st:first-child::before{display:none}
+
+.st__hd{width:100%;display:flex;align-items:center;gap:13px;padding:13px 14px;
+  border:none;cursor:pointer;text-align:left;font-family:inherit;
+  border-radius:22px;background:rgba(255,255,255,.055);
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.08);
+  transition:transform .12s,box-shadow .18s,background .18s}
+.st__hd:hover{transform:translateY(-2px);background:rgba(255,255,255,.08)}
+.st__no{position:relative;flex-shrink:0;width:50px;height:50px;border-radius:16px;
+  display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(180deg,rgba(255,255,255,.12),rgba(255,255,255,.04));
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.12)}
+.st__no svg{width:26px;height:26px;color:#D9CCFF}
+.st__no i{position:absolute;right:-5px;bottom:-5px;min-width:20px;height:20px;padding:0 5px;
+  border-radius:999px;display:flex;align-items:center;justify-content:center;
+  font-family:var(--brand);font-weight:700;font-size:11px;font-style:normal;
+  color:#1B0F30;background:#CBB8FF;box-shadow:0 3px 8px -2px rgba(0,0,0,.6)}
+.st__tx{flex:1;min-width:0}
+.st__tx b{display:block;font-weight:900;font-size:15.5px;line-height:1.25;color:var(--ink)}
+.st__tx span{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
+  margin-top:3px;font-weight:600;font-size:12.5px;line-height:1.35;color:var(--ink-2)}
+.st__mk{flex-shrink:0;display:flex;align-items:center;justify-content:center;
+  width:30px;height:30px;border-radius:50%;font-weight:900;font-size:15px;
+  color:var(--ink-2);background:rgba(255,255,255,.07)}
+.st__mk svg{width:16px;height:16px}
+
+/* состояния */
+.st--done .st__no{background:linear-gradient(180deg,rgba(78,217,155,.3),rgba(78,217,155,.1));
+  box-shadow:inset 0 0 0 1px rgba(78,217,155,.5)}
+.st--done .st__no svg{color:#BFF5DF}
+.st--done .st__mk{color:#0C2A1E;background:var(--ok)}
+.st--done .st__tx b{color:#DFF7EC}
+
+.st--now .st__hd{background:linear-gradient(180deg,rgba(169,139,255,.2),rgba(169,139,255,.07));
+  box-shadow:inset 0 0 0 1.5px rgba(169,139,255,.55),0 16px 34px -18px rgba(123,79,242,.8)}
+.st--now .st__no{background:linear-gradient(180deg,#B79BFF,#8A5CF0);
+  box-shadow:0 0 0 1px rgba(255,255,255,.2),0 0 22px rgba(138,92,240,.7)}
+.st--now .st__no svg{color:#fff}
+.st--now .st__mk{color:#fff;background:rgba(255,255,255,.18)}
+
+.st--soon{opacity:.62}
+.st--soon .st__hd{cursor:default;box-shadow:inset 0 0 0 1px rgba(255,255,255,.06);
+  background:rgba(255,255,255,.03)}
+.st--soon .st__hd:hover{transform:none;background:rgba(255,255,255,.03)}
+.st--soon .st__no svg{color:#8877AA}
+.st--soon .st__mk{width:auto;padding:0 11px;border-radius:999px;font-size:11px;
+  font-weight:800;letter-spacing:.03em;color:#B4A2D6}
+
+.st--lock .st__no svg{color:#9A88BE}
+.st--lock .st__mk{color:var(--sun);background:rgba(255,216,77,.14)}
+
+/* раскрытая часть */
+.st__body{overflow:hidden;max-height:0;transition:max-height .32s cubic-bezier(.3,.8,.3,1)}
+.st--open .st__body{max-height:340px}
+.st__in{margin:9px 4px 4px;padding:15px 17px;border-radius:20px;
+  background:rgba(255,255,255,.045);box-shadow:inset 0 0 0 1px rgba(255,255,255,.07)}
+.why b{display:block;font-weight:900;font-size:11.5px;letter-spacing:.05em;
+  text-transform:uppercase;color:var(--gtint,var(--pri));margin-bottom:5px}
+.why span{font-weight:700;font-size:13.5px;line-height:1.45;color:#E4DAF5}
+.st__full{margin-top:11px;font-weight:600;font-size:12.5px;line-height:1.45;color:var(--ink-2)}
+.st__art{display:inline-flex;align-items:center;gap:7px;margin-top:12px;
+  padding:6px 12px;border-radius:999px;font-weight:800;font-size:11.5px;
+  color:#FFE9AE;background:rgba(255,216,77,.12);
+  box-shadow:inset 0 0 0 1px rgba(255,216,77,.28)}
+.st__art svg{width:13px;height:13px}
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;
+  margin-top:14px;padding:15px;border:none;border-radius:999px;cursor:pointer;
+  font-family:var(--brand);font-weight:700;font-size:15px;text-decoration:none}
+.btn--pri{color:#fff;background:linear-gradient(180deg,#9B78FF,#7B4FF2 60%,#6E41E4);
+  box-shadow:0 5px 0 #5836BD,0 14px 26px -10px rgba(123,79,242,.7)}
+.btn--pri:active{transform:translateY(3px);box-shadow:0 2px 0 #5836BD}
+.btn--ok{color:#08281B;background:linear-gradient(180deg,#77E9B3,#4ED99B 60%,#38C687);
+  box-shadow:0 5px 0 #1FA76E}
+.btn--sun{color:#33240A;background:linear-gradient(180deg,#FFF1B4,#FFD84D 60%,#FFC53A);
+  box-shadow:0 5px 0 #E8AE1F}
+.btn--off{color:#9A8BBE;background:rgba(255,255,255,.06);
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.08);cursor:default}
+
+/* ── подвал ── */
+.foot{margin-top:28px}
+.card{padding:17px 19px;border-radius:22px;background:rgba(255,255,255,.045);
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.08)}
+.card h3{font-family:var(--brand);font-weight:700;font-size:15px;margin-bottom:9px}
+.card p{font-weight:600;font-size:12.5px;line-height:1.5;color:var(--ink-2)}
+.card a{color:var(--pri);font-weight:800;text-decoration:none}
+.ideas{margin-top:13px;display:flex;flex-direction:column;gap:7px}
+.idea{display:flex;align-items:center;gap:10px;font-weight:700;font-size:12.5px;color:#DCD2EE}
+.idea u{flex:1;height:1px;background:rgba(255,255,255,.1);text-decoration:none}
+.idea b{font-family:var(--brand);font-weight:700;font-size:12px;color:var(--ink-2)}
+.gal{margin-top:12px;display:flex;align-items:center;justify-content:space-between;gap:12px;
+  padding:14px 17px;border-radius:20px;text-decoration:none;
+  background:linear-gradient(180deg,rgba(255,216,77,.12),rgba(255,216,77,.04));
+  box-shadow:inset 0 0 0 1px rgba(255,216,77,.24)}
+.gal b{display:block;font-family:var(--brand);font-weight:700;font-size:14px;color:#FFE9AE}
+.gal span{display:block;margin-top:3px;font-weight:700;font-size:12px;color:#C9B27E}
+.gal i{font-style:normal;font-size:20px;color:#FFD84D}
+.nav{margin-top:12px;display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.nav a{padding:13px;border-radius:18px;text-align:center;text-decoration:none;
+  font-weight:800;font-size:13px;color:#D6CBEC;background:rgba(255,255,255,.05);
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.08)}
+.nav a:hover{background:rgba(255,255,255,.09);color:#fff}
+
+@media(max-width:400px){h1{font-size:26px}.st:nth-child(even){margin-left:12px}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+
+<!-- глифы уровней -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<g id="gl" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"></g>
+</defs>
+<symbol id="g-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.6-6 10-6 10 6 10 6-3.6 6-10 6-10-6-10-6z"/><circle cx="12" cy="12" r="2.6"/></symbol>
+<symbol id="g-brush" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M15.5 3.5l5 5-8 8-5-5z"/><path d="M7.5 11.5l-3 6.5 6.5-3"/><path d="M4.5 18l-1.5 3 3-1.5"/></symbol>
+<symbol id="g-ghost" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M5 20V10a7 7 0 0114 0v10l-2.3-2-2.4 2-2.3-2-2.4 2z"/><circle cx="9.6" cy="10.5" r="1"/><circle cx="14.4" cy="10.5" r="1"/></symbol>
+<symbol id="g-broom" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3l7 7"/><path d="M12.5 6.5l5 5-8 8H4v-5z"/><path d="M8 11l5 5"/></symbol>
+<symbol id="g-cat" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9L5.5 3.5 10 7h4l4.5-3.5L20 9v5a8 8 0 01-16 0z"/><circle cx="9.5" cy="12" r=".9"/><circle cx="14.5" cy="12" r=".9"/><path d="M12 15v1.5M9.5 17h5"/></symbol>
+<symbol id="g-loop" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12a8 8 0 11-2.6-5.9"/><path d="M20 3.5V7h-3.5"/></symbol>
+<symbol id="g-stack" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="15.5" width="18" height="4.5" rx="1.6"/><rect x="5.5" y="10.5" width="13" height="4.5" rx="1.6"/><rect x="8" y="5.5" width="8" height="4.5" rx="1.6"/></symbol>
+<symbol id="g-tags" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12.5 3H20a1 1 0 011 1v7.5L11 21.5 2.5 13z"/><circle cx="16.8" cy="7.2" r="1.5"/></symbol>
+<symbol id="g-gauge" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 17a9 9 0 1117 0"/><path d="M12 17l4.5-5"/><circle cx="12" cy="17" r="1.6"/></symbol>
+<symbol id="g-cap" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 9L12 4.5 21.5 9 12 13.5z"/><path d="M6 11v5c0 1.7 2.7 3 6 3s6-1.3 6-3v-5"/></symbol>
+<symbol id="g-genie" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19h13a3.5 3.5 0 000-7H8"/><path d="M17 15.5l4-2"/><path d="M11 9c0-2.2 1.8-4 4-4-1.2 1.2-1.2 2.8 0 4 1.2 1.2 1.2 2.8 0 4"/></symbol>
+<symbol id="g-mask" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6.5h18v5c0 4.4-4 8-9 8s-9-3.6-9-8z"/><circle cx="8.5" cy="11" r="1.6"/><circle cx="15.5" cy="11" r="1.6"/></symbol>
+<symbol id="g-slider" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7.5h18M3 16.5h18"/><circle cx="9" cy="7.5" r="2.6"/><circle cx="16" cy="16.5" r="2.6"/></symbol>
+<symbol id="g-sword" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M19.5 3.5L11 12l-1.5 4 4-1.5L22 6z"/><path d="M8 15l-4.5 4.5"/><path d="M5.5 16.5L7.5 18.5"/></symbol>
+<symbol id="g-plate" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4.5"/></symbol>
+<symbol id="g-poster" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="3.5" width="17" height="17" rx="2.5"/><path d="M3.5 15l4-4 4 3.5 3-3 5 4.5"/><circle cx="15.5" cy="8" r="1.4"/></symbol>
+<symbol id="g-magnify" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L21 21"/></symbol>
+<symbol id="g-night" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8.5 8.5 0 019.5 4a8.5 8.5 0 1010.5 10.5z"/><path d="M17 3.5l.8 1.7 1.7.8-1.7.8-.8 1.7-.8-1.7-1.7-.8 1.7-.8z"/></symbol>
+<symbol id="g-joy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="10.5" rx="5"/><path d="M7 10.5v3.5M5.2 12.2h3.6"/><circle cx="16" cy="11.3" r="1"/><circle cx="18.3" cy="13.6" r="1"/></symbol>
+<symbol id="g-scale" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3.5v17M6 20.5h12"/><path d="M4 8h16"/><path d="M4 8l-2.5 5h5z"/><path d="M20 8l-2.5 5h5z"/></symbol>
+<symbol id="g-lamp" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M9 17a6 6 0 116 0v1.5H9z"/><path d="M9.5 21h5"/></symbol>
+<symbol id="g-chain" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="8.5" width="9" height="7" rx="3.5"/><rect x="12.5" y="8.5" width="9" height="7" rx="3.5"/></symbol>
+<symbol id="g-map" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="5.5" cy="6" r="2.2"/><circle cx="18" cy="9" r="2.2"/><circle cx="8.5" cy="18" r="2.2"/><path d="M7.4 7.4l8.9 1M7 16l9.4-5.2"/></symbol>
+<symbol id="g-words" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h11M4 11h7"/><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="2"/><path d="M4 16h5.5"/></symbol>
+<symbol id="g-xray" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="3.5" width="17" height="17" rx="2.5"/><path d="M9 7v4.5a3 3 0 006 0V7"/><path d="M9 17h6"/></symbol>
+<symbol id="g-wave" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h2M7 8v8M11 5v14M15 9v6M19 11.5v1M21 12h.01"/></symbol>
+<symbol id="g-cloud" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M7 15.5a4 4 0 01.4-8A5.5 5.5 0 0118 8.8a3.4 3.4 0 01-.4 6.7z"/><path d="M8.5 19l-1 2M12 19l-1 2M15.5 19l-1 2"/></symbol>
+<symbol id="g-shield" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 3v6c0 4.6-3.4 8-8 9.5C8 20 4.5 16.6 4.5 12V6z"/><path d="M8.8 12l2.4 2.4 4-4.4"/></symbol>
+<symbol id="g-lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><rect x="4.5" y="10.5" width="15" height="10" rx="2.5"/><path d="M8 10.5V7a4 4 0 018 0v3.5"/></symbol>
+<symbol id="g-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 12.5l5 5 10-11"/></symbol>
+<symbol id="g-star" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 2.5l2.9 6.1 6.6.9-4.8 4.7 1.2 6.6L12 17.6l-5.9 3.2 1.2-6.6L2.5 9.5l6.6-.9z"/></symbol>
+</svg>
+
+<div class="wrap">
+  <div class="top">
+    <a href="../base/index.html">← Моя база</a>
+    <span class="brand">Noo<em>ka</em></span>
+  </div>
+
+  <div class="head" id="head"></div>
+  <div class="route" id="route"></div>
+  <div class="foot" id="foot"></div>
+</div>
+
+<script src="nooka-core.js"></script>
+<script src="nooka-levels.js"></script>
+<script src="nooka-gallery.js"></script>
+<script src="nooka-access.js"></script>
+<script>
+var IDEAS = {
+  1:'Восприятие — как ИИ видит и слышит',
+  2:'Представление — как хранит знание и рассуждает',
+  3:'Обучение — как учится на данных',
+  4:'Взаимодействие — как понимает человека',
+  5:'Влияние — что меняет в жизни людей'
+};
+var NUM = ['','первая','вторая','третья'];
+
+var q = new URLSearchParams(location.search);
+var key = q.get('g') || 'control';
+var G = nookaLevels.game(key);
+if (!G) { location.replace('../base/index.html'); }
+
+var gi = nookaLevels.games.indexOf(G) + 1;
+var st = nookaLevels.stats(key);
+var next = nookaLevels.nextLevel(key);
+document.title = G.name + ' — Nooka';
+document.documentElement.style.setProperty('--gtint', G.tint);
+
+function esc(t){ return String(t).replace(/[&<>"]/g,function(c){
+  return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
+function ico(id,cls){ return '<svg'+(cls?' class="'+cls+'"':'')+'><use href="#'+id+'"></use></svg>'; }
+function plural(n,a,b,c){ var m=n%100; if(m>10&&m<20)return c; m=n%10;
+  return m===1?a:(m>=2&&m<=4?b:c); }
+
+/* ── шапка ── */
+document.getElementById('head').innerHTML =
+  '<span class="kick"><i></i>' + NUM[gi] + ' игра курса · ' + G.age + '</span>' +
+  '<h1>' + esc(G.name) + '</h1>' +
+  '<div class="h-sub">' + esc(G.sub) + '</div>' +
+  '<p class="about">' + esc(G.about) + '</p>' +
+  '<div class="prog">' +
+    '<div class="prog__t"><span>Пройдено</span><b>' + st.done + ' из ' + st.total + '</b></div>' +
+    '<div class="prog__b"><i style="width:' + Math.round(st.done / st.total * 100) + '%"></i></div>' +
+    (st.ready < st.total
+      ? '<div class="prog__n">Открыто ' + st.ready + ' ' + plural(st.ready,'уровень','уровня','уровней') +
+        ', ещё ' + (st.total - st.ready) + ' в работе</div>'
+      : '<div class="prog__n">Все ' + st.total + ' уровней готовы</div>') +
+  '</div>';
+
+/* ── маршрут ── */
+document.getElementById('route').innerHTML = G.levels.map(function (lv) {
+  var done = nookaLevels.isDone(lv);
+  var soon = !lv.href;
+  var lock = !soon && !nookaAccess.canPlay(key, lv.n);
+  var now  = !done && !soon && !lock && next && next.n === lv.n;
+  var cls = 'st' + (done ? ' st--done' : soon ? ' st--soon' : lock ? ' st--lock' : now ? ' st--now' : '');
+
+  var mark = done ? ico('g-check')
+    : soon ? 'скоро'
+    : lock ? ico('g-lock')
+    : '→';
+
+  var btn = soon
+    ? '<div class="btn btn--off">Ещё делаем</div>'
+    : lock
+      ? '<button class="btn btn--sun" data-pay="1">Открыть доступ</button>'
+      : '<a class="btn ' + (done ? 'btn--ok' : 'btn--pri') + '" href="' + lv.href + '">' +
+        (done ? 'Пройти снова' : 'Играть') + '</a>';
+
+  return '<div class="' + cls + (now ? ' st--open' : '') + '" data-n="' + lv.n + '">' +
+    '<button class="st__hd">' +
+      '<span class="st__no">' + ico('g-' + lv.g) + '<i>' + lv.n + '</i></span>' +
+      '<span class="st__tx"><b>' + esc(lv.t) + '</b><span>' + esc(lv.s) + '</span></span>' +
+      '<span class="st__mk">' + mark + '</span>' +
+    '</button>' +
+    '<div class="st__body"><div class="st__in">' +
+      '<div class="why"><b>Зачем это</b><span>' + esc(lv.learn) + '</span></div>' +
+      (lv.art ? '<div class="st__art">' + ico('g-star') + 'В коллекцию: ' + esc(lv.art) + '</div>' : '') +
+      btn +
+    '</div></div>' +
+  '</div>';
+}).join('');
+
+/* аккордеон: открыт один уровень */
+[].forEach.call(document.querySelectorAll('.st'), function (s) {
+  if (s.classList.contains('st--soon')) return;
+  s.querySelector('.st__hd').onclick = function () {
+    var was = s.classList.contains('st--open');
+    [].forEach.call(document.querySelectorAll('.st--open'), function (o) { o.classList.remove('st--open'); });
+    if (!was) s.classList.add('st--open');
+  };
+});
+[].forEach.call(document.querySelectorAll('[data-pay]'), function (b) {
+  b.onclick = function () { nookaAccess.paywall({}); };
+});
+
+/* ── подвал: методика, коллекция, соседние игры ── */
+var used = {}, arts = 0, artsDone = 0;
+G.levels.forEach(function (lv) {
+  used[lv.idea] = (used[lv.idea] || 0) + 1;
+  if (lv.art) { arts++; if (nookaLevels.isDone(lv)) artsDone++; }
+});
+var ideaRows = Object.keys(used).sort().map(function (k) {
+  return '<div class="idea"><span>' + IDEAS[k] + '</span><u></u><b>' + used[k] + '</b></div>';
+}).join('');
+
+var others = nookaLevels.games.filter(function (g) { return g.key !== key; })
+  .map(function (g) {
+    var s = nookaLevels.stats(g.key);
+    return '<a href="game.html?g=' + g.key + '">' + esc(g.name) + '<br><span style="font-weight:700;font-size:11.5px;color:#8877AA">' +
+      s.done + ' из ' + s.total + '</span></a>';
+  }).join('');
+
+document.getElementById('foot').innerHTML =
+  (arts ? '<a class="gal" href="../base/index.html#gallery"><span><b>Коллекция ребёнка</b>' +
+    '<span>' + artsDone + ' из ' + arts + ' ' + plural(arts,'вещи','вещей','вещей') +
+    ' этой игры уже сделано</span></span><i>' + (artsDone ? '★' : '☆') + '</i></a>' : '') +
+  '<div class="card" style="margin-top:12px">' +
+    '<h3>Что осваивает ребёнок</h3>' +
+    '<p>Программа опирается на AI4K12 — рамку «Пять больших идей об ИИ» от AAAI и CSTA. ' +
+    'В этой игре разобраны:</p>' +
+    '<div class="ideas">' + ideaRows + '</div>' +
+  '</div>' +
+  '<div class="nav">' + others + '</div>';
+
+if (q.get('paywall')) nookaAccess.paywall({});
+</script>
+</body>
+</html>
