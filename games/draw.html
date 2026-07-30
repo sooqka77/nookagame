@@ -68,6 +68,10 @@
 .dwex--other{box-shadow:inset 0 0 0 1.5px rgba(255,200,60,.55);}
 .dwex--fish{box-shadow:inset 0 0 0 1.5px rgba(127,231,255,.6);}
 .dwex--near{box-shadow:inset 0 0 0 2px #A98BFF,0 0 18px -4px #A98BFF;}
+.dwex--ext{outline:2px dashed rgba(255,200,60,.55);outline-offset:-2px;}
+.dwex--miss{box-shadow:inset 0 0 0 2px #FF6B6B,0 0 16px -4px #FF6B6B;}
+.dwex--edit{cursor:pointer;transition:transform .12s;}
+.dwex--edit:hover{transform:translateY(-3px) scale(1.04);}
 .dwex__x{position:absolute;right:2px;top:2px;width:17px;height:17px;border:none;cursor:pointer;
   border-radius:50%;background:rgba(10,6,20,.8);color:#FFB4A8;font-size:10px;line-height:17px;padding:0;}
 .dwex__b{position:absolute;left:0;right:0;bottom:0;padding:1px 0;text-align:center;
@@ -87,6 +91,15 @@
 .dwbar i{display:block;height:100%;border-radius:999px;transition:width .8s cubic-bezier(.2,.8,.3,1);
   background:linear-gradient(90deg,#A98BFF,#7FE7FF);}
 .dwguess__n{margin-top:9px;font-weight:700;font-size:12px;color:#A896C9;line-height:1.45;}
+
+/* табло точности */
+.dwacc{margin:12px 14px 0;padding:15px 16px;border-radius:20px;animation:dwIn .32s ease-out both;
+  background:rgba(255,255,255,.05);box-shadow:inset 0 0 0 1px rgba(255,255,255,.09);}
+.dwacc__t{font-weight:900;font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:#8B7BAE;}
+.dwacc__v{margin-top:7px;display:flex;align-items:baseline;gap:10px;}
+.dwacc__v b{font-family:var(--nk-brand),var(--nk-body);font-weight:700;font-size:26px;color:#F4EEFF;}
+.dwacc__v span{font-weight:700;font-size:12.5px;color:#A896C9;}
+.dwacc__n{margin-top:9px;font-weight:700;font-size:12px;line-height:1.45;color:#A896C9;}
 
 /* проверка связи */
 .dwq{margin:12px 14px 0;padding:14px 16px;border-radius:20px;
@@ -121,6 +134,11 @@
 .dwword{padding:8px 16px;border-radius:999px;font-family:var(--nk-brand),var(--nk-body);
   font-weight:700;font-size:15px;color:#0B1620;background:#7FE7FF;}
 .dwwords__n{margin-top:13px;font-weight:700;font-size:12.5px;line-height:1.45;color:#A896C9;}
+.dwaccbig{margin-top:12px;display:flex;align-items:baseline;justify-content:center;gap:12px;}
+.dwaccbig s{font-family:var(--nk-brand),var(--nk-body);font-weight:700;font-size:24px;
+  color:#FF9E8E;text-decoration:line-through;opacity:.75;}
+.dwaccbig em{font-style:normal;font-size:18px;color:#8B7BAE;}
+.dwaccbig b{font-family:var(--nk-brand),var(--nk-body);font-weight:700;font-size:34px;color:#7FE7FF;}
 
 @keyframes dwIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
 @keyframes dwPop{0%{opacity:0;transform:scale(.72);}68%{transform:scale(1.05);}100%{opacity:1;transform:scale(1);}}
@@ -235,6 +253,21 @@ function dwPredict(model, f) {
     unsure: own > 0.30,                 // ничего похожего в примерах нет (порог из замеров)
     dist: own,
   };
+}
+
+/* ── самопроверка: каждый пример предсказываем по всем остальным ──
+   Это настоящая проверка на отложенном примере (leave-one-out), а не
+   выдуманное число: пример с чужой подписью почти всегда не угадывается,
+   поэтому грязь в наборе видно сразу и она чинится на глазах. */
+function dwSelfCheck(model) {
+  if (model.length < 3) return { ok: 0, total: model.length, acc: 0, wrong: [] };
+  var ok = 0; var wrong = [];
+  model.forEach(function (m, i) {
+    var rest = model.filter(function (_, k) { return k !== i; });
+    var p = dwPredict(rest, m.f);
+    if (p && p.label === m.label) ok++; else wrong.push(i);
+  });
+  return { ok: ok, total: model.length, acc: Math.round(ok / model.length * 100), wrong: wrong };
 }
 
 /* ── доска ── */
@@ -418,6 +451,43 @@ const DW_LEVELS = {
     win: { law: 'ИИ не знает, чего он не знает',
       sub: 'Пока ты не показал рыбу, для Нейро её не существовало — а ответ он всё равно давал. Так же ошибаются и большие модели.' },
   },
+
+  4: {
+    title: 'Мусор на входе',
+    mid: 'data4', xp: 80,
+    law: 'ИИ верит подписи, а не своим глазам.\nПример с чужой подписью учит его неправильному.',
+    tip: 'Соберём набор, посмотрим на точность Нейро — и почистим подписи.',
+    steps: [
+      { kind: 'draw', label: 'cat', word: 'кота', wordN: 'кот', many: 'коты', more: 'ещё одного кота', need: 2,
+        say: 'Нарисуй мне <b>двух котов</b> — с них начнём набор.' },
+      { kind: 'draw', label: 'house', word: 'дом', wordN: 'дом', many: 'дома', more: 'ещё один дом', need: 2,
+        say: 'И <b>два дома</b>. Пока в наборе только твои рисунки, все подписаны верно.' },
+      { kind: 'audit',
+        inject: [
+          { kind: 'cat', label: 'cat' },
+          { kind: 'house', label: 'house' },
+          { kind: 'cat', label: 'house' },     // подпись врёт
+          { kind: 'house', label: 'cat' },     // подпись врёт
+        ],
+        say: 'Со станции прислали <b>четыре примера</b> — я добавил их к твоим. Сейчас проверю себя: закрою один пример и попробую угадать его по остальным. И так по кругу.' },
+      { kind: 'clean',
+        say: 'Красным я отметил, где спотыкаюсь. Посмотри на рисунок и подпись: <b>нажми на карточку</b>, чтобы поменять подпись, или выброси крестиком. Точность считается сразу.' },
+      { kind: 'test', word: 'кота', wordN: 'кот', many: 'коты', more: 'ещё одного кота', expect: 'cat',
+        say: 'Набор почищен. Теперь по-настоящему: нарисуй кота.' },
+    ],
+    quiz: {
+      q: 'Почему точность упала?',
+      opts: [
+        { t: 'Два примера были подписаны чужим словом', ok: true },
+        { t: 'Примеров стало слишком много', ok: false },
+        { t: 'Нейро устал считать', ok: false },
+      ],
+      okSay: 'Да. Он не смотрит на картинку — он верит подписи. Чужая подпись учит его неправильному.',
+      badSay: 'Дело не в количестве: восемь примеров — это нормально. Беда была в двух подписях, и Нейро им поверил.',
+    },
+    win: { show: 'acc', law: 'Мусор на входе — мусор на выходе',
+      sub: 'Два неверных примера из восьми уронили точность. Поэтому данные для ИИ проверяют люди: иначе он старательно выучит чужую ошибку.' },
+  },
 };
 
 /* ── артефакт: карточка питомца с рисунками ребёнка ── */
@@ -473,6 +543,7 @@ function LevelDraw({ n, onWin, onHome }) {
   const [note, setNote] = useState(null);          // короткая реплика поверх шага
   const [fix, setFix] = useState(false);           // «дай мне ещё один пример»
   const [tries, setTries] = useState(0);           // сколько раз Нейро промахнулся
+  const [dirtyAcc, setDirtyAcc] = useState(null);  // точность до чистки набора
   const [saved, setSaved] = useState(false);
   const api = useRef({});
   api.current.onChange = setHas;
@@ -495,7 +566,7 @@ function LevelDraw({ n, onWin, onHome }) {
     if (!isNaN(forced) && forced >= 0 && forced < L.steps.length) ti = forced;
     if (ti < 0) ti = L.steps.length - 1;
     setSi(ti);
-    setPhase('play');
+    if (!q.get('p')) setPhase('play');     // отладка: ?p=done оставляет финал
     const want = L.steps[ti].expect || 'cat';
     const t = setTimeout(() => {          // тестовый рисунок на доске
       const cv = api.current.canvas;
@@ -508,6 +579,22 @@ function LevelDraw({ n, onWin, onHome }) {
 
   const step = L.steps[si];
   const mine = lbl => model.filter(m => m.label === lbl);
+
+  /* примеры «с другой станции»: часть подписана неверно — в этом и урок */
+  useEffect(() => {
+    if (!step || !step.inject || model.some(m => m.ext)) return;
+    const add = step.inject.map((x, i) => {
+      const cv = dwSketch(x.kind, 10 + i * 2);
+      return { label: x.label, f: dwFeatures(cv).f, thumb: dwThumb(cv, 64), ext: true };
+    });
+    setModel(m => m.concat(add));
+  }, [si]);
+
+  useEffect(() => {
+    if (step && step.kind === 'audit' && dirtyAcc === null && model.length > 4) {
+      setDirtyAcc(dwSelfCheck(model).acc);
+    }
+  }, [model, si]);
 
   /* принять рисунок как пример */
   const accept = () => {
@@ -536,6 +623,13 @@ function LevelDraw({ n, onWin, onHome }) {
   };
 
   const WORD = { cat: 'кот', house: 'дом', fish: 'рыба' };
+  const FLIP = { cat: 'house', house: 'cat' };
+
+  const relabel = i => {
+    setModel(model.map((m, k) => k === i ? Object.assign({}, m, { label: FLIP[m.label] || m.label }) : m));
+    setGuess(null);
+  };
+  const drop = i => { setModel(model.filter((_, k) => k !== i)); setGuess(null); };
 
   const guessText = g => {
     if (!g) return '';
@@ -568,6 +662,15 @@ function LevelDraw({ n, onWin, onHome }) {
       React.createElement('div', { className: 'dwbody dwdone' },
         hasArt
           ? React.createElement(DwPet, { shots: shots, conf: guess ? guess.conf : 70, u: 'p' })
+          : L.win.show === 'acc'
+          ? React.createElement('div', { className: 'dwwords' },
+              React.createElement('div', { className: 'dwwords__t' }, 'Точность набора'),
+              React.createElement('div', { className: 'dwaccbig' },
+                React.createElement('s', null, (dirtyAcc === null ? 80 : dirtyAcc) + '%'),
+                React.createElement('em', null, '→'),
+                React.createElement('b', null, dwSelfCheck(model).acc + '%')),
+              React.createElement('div', { className: 'dwwords__n' },
+                'Столько Нейро угадывал до чистки — и столько после. Рисунки те же, изменились только подписи.'))
           : React.createElement('div', { className: 'dwwords' },
               React.createElement('div', { className: 'dwwords__t' }, 'Теперь Нейро знает столько слов'),
               React.createElement('div', { className: 'dwwords__r' },
@@ -612,7 +715,12 @@ function LevelDraw({ n, onWin, onHome }) {
 
   /* ── игра ── */
   const isTest = step.kind === 'test';
-  const doneCount = isTest ? 0 : mine(step.label).length;
+  const isClean = step.kind === 'clean';
+  const isAudit = step.kind === 'audit';
+  const noBoard = isClean || isAudit;
+  const doneCount = isTest || noBoard ? 0 : mine(step.label).length;
+  /* точность пересчитывается на каждый рендер: правка подписи видна сразу */
+  const audit = (isAudit || isClean) ? dwSelfCheck(model) : null;
   const hit = guess && (step.unknown || (!guess.unsure && guess.label === step.expect));
 
   return React.createElement('div', { className: 'dw' },
@@ -636,20 +744,39 @@ function LevelDraw({ n, onWin, onHome }) {
             : React.createElement('span', { dangerouslySetInnerHTML: { __html: step.say } })),
 
       React.createElement('div', { className: 'dwtask' },
-        React.createElement('b', null, fix ? 'Нарисуй ' + (step.more || step.word) : 'Нарисуй ' + step.word),
-        !isTest && React.createElement('span', null, doneCount + ' из ' + step.need),
+        React.createElement('b', null,
+          isAudit ? 'Нейро проверяет себя'
+            : isClean ? 'Почини подписи'
+            : fix ? 'Нарисуй ' + (step.more || step.word)
+            : 'Нарисуй ' + step.word),
+        !isTest && !noBoard && React.createElement('span', null, doneCount + ' из ' + step.need),
         isTest && tries > 0 && React.createElement('span', null,
           'примеров: ' + mine(step.expect).length)),
 
-      React.createElement(DwBoard, { api: api.current, locked: !!guess,
+      !noBoard && React.createElement(DwBoard, { api: api.current, locked: !!guess,
         hint: has ? null : 'Веди пальцем по доске' }),
 
-      React.createElement('div', { className: 'dwtools' },
+      !noBoard && React.createElement('div', { className: 'dwtools' },
         React.createElement('button', { onClick: () => { api.current.clear(); setGuess(null); }, disabled: !has },
           'Стереть'),
         (!isTest || fix)
           ? React.createElement('button', { onClick: accept, disabled: !has }, 'Это готово')
           : React.createElement('button', { onClick: check, disabled: !has || !!guess }, 'Пусть узнает')),
+
+      audit && React.createElement('div', { className: 'dwacc' },
+        React.createElement('div', { className: 'dwacc__t' }, 'Точность на своих же примерах'),
+        React.createElement('div', { className: 'dwacc__v' },
+          React.createElement('b', null, audit.acc + '%'),
+          React.createElement('span', null, 'угадал ' + audit.ok + ' из ' + audit.total)),
+        React.createElement('div', { className: 'dwbar' },
+          React.createElement('i', {
+            style: { width: audit.acc + '%', background: audit.acc > 90
+              ? 'linear-gradient(90deg,#4ED99B,#7FE7FF)' : 'linear-gradient(90deg,#FF7A64,#FFC83C)' },
+          })),
+        React.createElement('div', { className: 'dwacc__n' },
+          audit.acc > 90
+            ? 'Набор чистый: каждый пример узнаётся по остальным.'
+            : 'Я закрываю один пример и угадываю его по остальным. Там, где не сошлось, — красная рамка.')),
 
       guess && React.createElement('div', { className: 'dwguess' },
         React.createElement('div', { className: 'dwguess__t' }, 'Нейро говорит'),
@@ -666,22 +793,42 @@ function LevelDraw({ n, onWin, onHome }) {
             : hit
               ? 'Уверен на ' + guess.conf + '%. Больше всего похоже на твой рисунок в рамке — по нему и узнал.'
               : 'Уверен на ' + guess.conf + '%, и всё равно ошибся. Твои ' + (step.many || 'рисунки') +
-                ' слишком разные между собой — дай мне ещё один пример, и я стану точнее.')),
+                  ' слишком разные между собой — дай мне ещё один пример, и я стану точнее.')),
 
       model.length > 0 && React.createElement('div', { className: 'dwset' },
-        React.createElement('div', { className: 'dwset__t' }, 'Чему ты его научил'),
+        React.createElement('div', { className: 'dwset__t' },
+          isClean ? 'Набор Нейро · пунктиром — присланные со станции' : 'Чему ты его научил'),
         React.createElement('div', { className: 'dwrow' },
           model.map((m, i) => React.createElement('div', {
             key: i,
             className: 'dwex dwex--' + (m.label === 'cat' ? 'cat' : m.label === 'fish' ? 'fish' : 'other') +
+              (m.ext ? ' dwex--ext' : '') + (isClean ? ' dwex--edit' : '') +
+              (audit && audit.wrong.indexOf(i) > -1 ? ' dwex--miss' : '') +
               (guess && guess.near && guess.near.i === i ? ' dwex--near' : ''),
+            onClick: isClean ? () => relabel(i) : null,
+            title: isClean ? 'Нажми, чтобы поменять подпись' : null,
           },
             React.createElement('img', { src: m.thumb, alt: '' }),
-            React.createElement('span', { className: 'dwex__b' }, WORD[m.label] || m.label))),
+            React.createElement('span', { className: 'dwex__b' }, WORD[m.label] || m.label),
+            isClean && React.createElement('button', {
+              className: 'dwex__x',
+              onClick: e => { e.stopPropagation(); drop(i); },
+            }, '✕'))),
           !isTest && Array.from({ length: Math.max(0, step.need - doneCount) }, (_, i) =>
             React.createElement('div', { className: 'dwslot', key: 's' + i }))))),
 
     React.createElement('div', { className: 'dwfoot' },
+      isAudit && React.createElement('button', {
+        className: 'nk-btn nk-btn--pri', style: { width: '100%' },
+        onClick: () => { setSi(si + 1); setGuess(null); },
+      }, audit && audit.acc > 90 ? 'Дальше' : 'Почистить набор'),
+
+      isClean && React.createElement('button', {
+        className: 'nk-btn ' + (audit && audit.acc > 90 ? 'nk-btn--ok' : 'nk-btn--soft'),
+        style: { width: '100%' },
+        onClick: () => { setSi(si + 1); setGuess(null); api.current.clear(); },
+      }, audit && audit.acc > 90 ? 'Чисто, проверяем' : 'Всё равно проверить'),
+
       guess && (hit
         ? React.createElement('button', {
             className: 'nk-btn nk-btn--ok', style: { width: '100%' },
