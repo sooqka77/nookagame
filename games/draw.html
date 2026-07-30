@@ -148,7 +148,7 @@
    ============================================================ */
 
 const DW_SIZE = 300;        // внутренний размер холста: признаки считаем в нём
-const DW_PEN = 13;
+const DW_PEN = 9;      // тоньше: жирная линия сливалась в кляксу
 const DW_GRID = 5;          // сетка признаков 5×5
 
 /* ── признаки рисунка: плотность чернил по клеткам bbox + пропорция ──
@@ -367,11 +367,11 @@ const DW_LEVELS = {
     law: 'ИИ не читает учебник.\nОн учится на примерах, которые дал ему человек.',
     tip: 'Рисуй пальцем. Три кота, потом три дома — и Нейро начнёт различать.',
     steps: [
-      { kind: 'draw', label: 'cat', word: 'кота', need: 3,
+      { kind: 'draw', label: 'cat', word: 'кота', wordN: 'кот', many: 'коты', more: 'ещё одного кота', need: 3,
         say: 'Я <b>никогда не видел кота</b>. Нарисуй мне трёх — я запомню, как они выглядят.' },
-      { kind: 'draw', label: 'house', word: 'дом', need: 3,
+      { kind: 'draw', label: 'house', word: 'дом', wordN: 'дом', many: 'дома', more: 'ещё один дом', need: 3,
         say: 'Теперь трижды нарисуй <b>дом</b>. Чтобы узнавать кота, мне надо знать и то, что котом <b>не</b> является.' },
-      { kind: 'test', word: 'кота', expect: 'cat',
+      { kind: 'test', word: 'кота', wordN: 'кот', many: 'коты', more: 'ещё одного кота', expect: 'cat',
         say: 'Проверим. Нарисуй кота ещё раз — я попробую узнать его сам.' },
     ],
     quiz: {
@@ -394,15 +394,15 @@ const DW_LEVELS = {
     law: 'ИИ выбирает только из того, что видел.\nЧего он не знает — он всё равно назовёт.',
     tip: 'Научи Нейро двум вещам. Потом нарисуй третью — ту, которой не учил.',
     steps: [
-      { kind: 'draw', label: 'cat', word: 'кота', need: 2,
+      { kind: 'draw', label: 'cat', word: 'кота', wordN: 'кот', many: 'коты', more: 'ещё одного кота', need: 2,
         say: 'Начнём быстро: нарисуй мне <b>двух котов</b>.' },
-      { kind: 'draw', label: 'house', word: 'дом', need: 2,
+      { kind: 'draw', label: 'house', word: 'дом', wordN: 'дом', many: 'дома', more: 'ещё один дом', need: 2,
         say: 'И <b>два дома</b>. Теперь я знаю два слова: кот и дом.' },
-      { kind: 'test', word: 'рыбу', expect: 'fish', unknown: true,
+      { kind: 'test', word: 'рыбу', wordN: 'рыба', many: 'рыбы', more: 'ещё одну рыбу', expect: 'fish', unknown: true,
         say: 'А теперь нарисуй <b>рыбу</b>. Я никогда её не видел — посмотрим, что я скажу.' },
-      { kind: 'draw', label: 'fish', word: 'рыбу', need: 3,
+      { kind: 'draw', label: 'fish', word: 'рыбу', wordN: 'рыба', many: 'рыбы', more: 'ещё одну рыбу', need: 3,
         say: 'Теперь научи меня: нарисуй <b>трёх рыб</b>. Тогда у меня появится третье слово.' },
-      { kind: 'test', word: 'рыбу', expect: 'fish',
+      { kind: 'test', word: 'рыбу', wordN: 'рыба', many: 'рыбы', more: 'ещё одну рыбу', expect: 'fish',
         say: 'Проверим ещё раз. Нарисуй рыбу — я попробую снова.' },
     ],
     quiz: {
@@ -491,6 +491,8 @@ function LevelDraw({ n, onWin, onHome }) {
     });
     setModel(m);
     let ti = L.steps.findIndex(x => x.kind === 'test');
+    const forced = parseInt(q.get('step'), 10);      // отладка: встать на нужный шаг
+    if (!isNaN(forced) && forced >= 0 && forced < L.steps.length) ti = forced;
     if (ti < 0) ti = L.steps.length - 1;
     setSi(ti);
     setPhase('play');
@@ -526,7 +528,7 @@ function LevelDraw({ n, onWin, onHome }) {
   const check = () => {
     const cv = api.current.canvas;
     const F = dwFeatures(cv);
-    if (!F) { setNote({ m: 'bad', t: 'Пусто. Нарисуй кота — иначе мне нечего узнавать.' }); return; }
+    if (!F) { setNote({ m: 'bad', t: 'Пусто. Нарисуй ' + step.word + ' — иначе мне нечего узнавать.' }); return; }
     const p = dwPredict(model, F.f);
     setGuess(p);
     setNote(null);
@@ -629,11 +631,12 @@ function LevelDraw({ n, onWin, onHome }) {
           ? React.createElement('span', null, note.t)
           : fix
             ? React.createElement('span', null,
-                'Ещё один пример — и я пересчитаю. Нарисуй кота немного иначе, чем раньше: так я пойму, что в нём главное.')
+                'Ещё один пример — и я пересчитаю. Нарисуй ' + step.word +
+                ' немного иначе, чем раньше: так я пойму, что тут главное.')
             : React.createElement('span', { dangerouslySetInnerHTML: { __html: step.say } })),
 
       React.createElement('div', { className: 'dwtask' },
-        React.createElement('b', null, fix ? 'Нарисуй ещё одного ' + step.word : 'Нарисуй ' + step.word),
+        React.createElement('b', null, fix ? 'Нарисуй ' + (step.more || step.word) : 'Нарисуй ' + step.word),
         !isTest && React.createElement('span', null, doneCount + ' из ' + step.need),
         isTest && tries > 0 && React.createElement('span', null,
           'примеров: ' + mine(step.expect).length)),
@@ -656,13 +659,14 @@ function LevelDraw({ n, onWin, onHome }) {
         React.createElement('div', { className: 'dwguess__n' },
           step.unknown
             ? 'Я сказал «' + (WORD[guess.label] || guess.label) + '» и был уверен на ' + guess.conf +
-              '%. Но слова «' + step.word.replace('у', 'а') + '» у меня нет — я выбрал самое похожее из того, что знаю. ' +
+              '%. Но слова «' + (step.wordN || step.word) + '» у меня нет — я выбрал самое похожее из того, что знаю. ' +
               'Сказать «такого не видел» я не умею.'
             : guess.unsure
             ? 'Ни один твой пример на это не похож. Я узнаю только то, что видел.'
             : hit
               ? 'Уверен на ' + guess.conf + '%. Больше всего похоже на твой рисунок в рамке — по нему и узнал.'
-              : 'Уверен на ' + guess.conf + '%, и всё равно ошибся. Твои коты слишком разные между собой — дай мне ещё один пример, и я стану точнее.')),
+              : 'Уверен на ' + guess.conf + '%, и всё равно ошибся. Твои ' + (step.many || 'рисунки') +
+                ' слишком разные между собой — дай мне ещё один пример, и я стану точнее.')),
 
       model.length > 0 && React.createElement('div', { className: 'dwset' },
         React.createElement('div', { className: 'dwset__t' }, 'Чему ты его научил'),
