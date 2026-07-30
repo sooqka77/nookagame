@@ -30,10 +30,10 @@
 
 /* задача */
 .dwtask{margin:11px 14px 0;display:flex;align-items:center;gap:10px;}
-.dwtask b{font-family:var(--nk-brand),var(--nk-body);font-weight:700;font-size:16px;color:#F4EEFF;}
-.dwtask span{margin-left:auto;flex-shrink:0;padding:5px 11px;border-radius:999px;
-  font-weight:900;font-size:11.5px;color:#CBB8FF;background:rgba(169,139,255,.16);
-  box-shadow:inset 0 0 0 1px rgba(169,139,255,.32);}
+.dwtask b{font-family:var(--nk-brand),var(--nk-body);font-weight:700;font-size:18px;color:#F4EEFF;}
+.dwtask span{margin-left:auto;flex-shrink:0;padding:6px 13px;border-radius:999px;
+  font-family:var(--nk-brand),var(--nk-body);font-weight:700;font-size:13px;color:#1B0F30;
+  background:#CBB8FF;}
 
 /* доска */
 .dwpad{position:relative;margin:9px 14px 0;border-radius:22px;overflow:hidden;
@@ -45,19 +45,29 @@
   background-image:radial-gradient(1px 1px at 12px 12px,rgba(255,255,255,.16),transparent);
   background-size:24px 24px;}
 .dwpad__hint{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
-  pointer-events:none;font-weight:800;font-size:13.5px;color:#5E4E80;text-align:center;padding:0 30px;}
+  pointer-events:none;font-weight:800;font-size:14px;color:#6B5A90;text-align:center;padding:0 30px;
+  line-height:1.5;white-space:pre-line;}
 
 /* инструменты */
 .dwtools{margin:10px 14px 0;display:flex;gap:9px;}
-.dwtools button{flex:1;padding:12px;border:none;border-radius:16px;cursor:pointer;
-  font-family:inherit;font-weight:900;font-size:13.5px;color:#D6CBEC;
-  background:rgba(255,255,255,.055);box-shadow:inset 0 0 0 1px rgba(255,255,255,.09);}
-.dwtools button:hover{background:rgba(255,255,255,.09);color:#fff;}
-.dwtools button:disabled{opacity:.4;cursor:default;}
+.dwtools button{padding:14px;border:none;border-radius:16px;cursor:pointer;
+  font-family:inherit;font-weight:900;font-size:14px;transition:transform .1s,filter .15s;}
+.dwtool--side{flex:0 0 34%;color:#B4A2D6;background:rgba(255,255,255,.055);
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.09);}
+.dwtool--side:hover{background:rgba(255,255,255,.09);color:#fff;}
+.dwtool--main{flex:1;color:#fff;font-size:15.5px;
+  background:linear-gradient(180deg,#9B78FF,#7B4FF2 60%,#6E41E4);
+  box-shadow:0 5px 0 #5836BD,0 14px 26px -12px rgba(123,79,242,.75);}
+.dwtool--main:active{transform:translateY(3px);box-shadow:0 2px 0 #5836BD;}
+.dwtools button:disabled{opacity:.35;cursor:default;box-shadow:inset 0 0 0 1px rgba(255,255,255,.09);
+  background:rgba(255,255,255,.05);color:#8877AA;}
 
 /* примеры, которые ребёнок уже дал */
 .dwset{margin:12px 14px 0;padding:12px 14px;border-radius:19px;
   background:rgba(255,255,255,.04);box-shadow:inset 0 0 0 1px rgba(255,255,255,.07);}
+.dwset--flash{animation:dwFlash .7s ease-out;}
+@keyframes dwFlash{0%{box-shadow:inset 0 0 0 2px #7FE7FF,0 0 30px -6px #7FE7FF;}
+  100%{box-shadow:inset 0 0 0 1px rgba(255,255,255,.07);}}
 .dwset__t{font-weight:900;font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;
   color:#8B7BAE;margin-bottom:9px;}
 .dwrow{display:flex;gap:8px;flex-wrap:wrap;}
@@ -397,8 +407,8 @@ const DW_LEVELS = {
   2: {
     title: 'Нарисуй — и научи',
     mid: 'data2', xp: 80,
-    law: 'ИИ не читает учебник.\nОн учится на примерах, которые дал ему человек.',
-    tip: 'Рисуй пальцем. Три кота, потом три дома — и Нейро начнёт различать.',
+    law: 'Нейро не знает, как выглядит кот.\nОн выучит только то, что ты нарисуешь.',
+    tip: 'Рисуй пальцем прямо на доске. Сначала три кота, потом три дома.',
     steps: [
       { kind: 'draw', label: 'cat', word: 'кота', wordN: 'кот', many: 'коты', more: 'ещё одного кота', need: 3,
         say: 'Я <b>никогда не видел кота</b>. Нарисуй мне трёх — я запомню, как они выглядят.' },
@@ -424,8 +434,8 @@ const DW_LEVELS = {
   3: {
     title: 'Чего я не видел',
     mid: 'data3', xp: 80,
-    law: 'ИИ выбирает только из того, что видел.\nЧего он не знает — он всё равно назовёт.',
-    tip: 'Научи Нейро двум вещам. Потом нарисуй третью — ту, которой не учил.',
+    law: 'Нейро знает только те слова, которым ты его научил.\nВсё остальное он назовёт знакомым словом.',
+    tip: 'Сначала научи двум словам. Потом нарисуй третье — то, которому не учил.',
     steps: [
       { kind: 'draw', label: 'cat', word: 'кота', wordN: 'кот', many: 'коты', more: 'ещё одного кота', need: 2,
         say: 'Начнём быстро: нарисуй мне <b>двух котов</b>.' },
@@ -455,8 +465,8 @@ const DW_LEVELS = {
   4: {
     title: 'Мусор на входе',
     mid: 'data4', xp: 80,
-    law: 'ИИ верит подписи, а не своим глазам.\nПример с чужой подписью учит его неправильному.',
-    tip: 'Соберём набор, посмотрим на точность Нейро — и почистим подписи.',
+    law: 'Нейро верит подписи под рисунком.\nЕсли подпись врёт — он выучит неправду.',
+    tip: 'Соберём примеры, посмотрим, где Нейро путается, и починим подписи.',
     steps: [
       { kind: 'draw', label: 'cat', word: 'кота', wordN: 'кот', many: 'коты', more: 'ещё одного кота', need: 2,
         say: 'Нарисуй мне <b>двух котов</b> — с них начнём набор.' },
@@ -544,6 +554,7 @@ function LevelDraw({ n, onWin, onHome }) {
   const [fix, setFix] = useState(false);           // «дай мне ещё один пример»
   const [tries, setTries] = useState(0);           // сколько раз Нейро промахнулся
   const [dirtyAcc, setDirtyAcc] = useState(null);  // точность до чистки набора
+  const [flash, setFlash] = useState(false);       // «улетело в набор» — отклик на действие
   const [saved, setSaved] = useState(false);
   const api = useRef({});
   api.current.onChange = setHas;
@@ -607,8 +618,13 @@ function LevelDraw({ n, onWin, onHome }) {
     setModel(next);
     setNote(null);
     api.current.clear();
-    if (fix) { setFix(false); setGuess(null); return; }
-    if (next.filter(m => m.label === label).length >= step.need) setSi(si + 1);
+    var got = next.filter(m => m.label === label).length;
+    setFlash(true);
+    if (fix) { setFix(false); setGuess(null); setNote({ m: 'ok', t: 'Запомнил! Теперь пересчитаю.' }); return; }
+    if (got >= step.need) setSi(si + 1);
+    else setNote({ m: 'ok', t: got === 1
+      ? 'Запомнил! Нарисуй ещё — по одному примеру я почти ничего не пойму.'
+      : 'Запомнил. Осталось ' + (step.need - got) + '.' });
   };
 
   /* проверить: что скажет Нейро */
@@ -754,14 +770,16 @@ function LevelDraw({ n, onWin, onHome }) {
           'примеров: ' + mine(step.expect).length)),
 
       !noBoard && React.createElement(DwBoard, { api: api.current, locked: !!guess,
-        hint: has ? null : 'Веди пальцем по доске' }),
+        hint: has ? null : 'Рисуй пальцем прямо здесь' }),
 
       !noBoard && React.createElement('div', { className: 'dwtools' },
-        React.createElement('button', { onClick: () => { api.current.clear(); setGuess(null); }, disabled: !has },
-          'Стереть'),
+        React.createElement('button', { className: 'dwtool--side',
+          onClick: () => { api.current.clear(); setGuess(null); }, disabled: !has }, 'Заново'),
         (!isTest || fix)
-          ? React.createElement('button', { onClick: accept, disabled: !has }, 'Это готово')
-          : React.createElement('button', { onClick: check, disabled: !has || !!guess }, 'Пусть узнает')),
+          ? React.createElement('button', { className: 'dwtool--main', onClick: accept, disabled: !has },
+              'Отдать Нейро')
+          : React.createElement('button', { className: 'dwtool--main', onClick: check, disabled: !has || !!guess },
+              'Пусть угадает')),
 
       audit && React.createElement('div', { className: 'dwacc' },
         React.createElement('div', { className: 'dwacc__t' }, 'Точность на своих же примерах'),
@@ -795,7 +813,10 @@ function LevelDraw({ n, onWin, onHome }) {
               : 'Уверен на ' + guess.conf + '%, и всё равно ошибся. Твои ' + (step.many || 'рисунки') +
                   ' слишком разные между собой — дай мне ещё один пример, и я стану точнее.')),
 
-      model.length > 0 && React.createElement('div', { className: 'dwset' },
+      model.length > 0 && React.createElement('div', {
+        className: 'dwset' + (flash ? ' dwset--flash' : ''),
+        onAnimationEnd: () => setFlash(false),
+      },
         React.createElement('div', { className: 'dwset__t' },
           isClean ? 'Набор Нейро · пунктиром — присланные со станции' : 'Чему ты его научил'),
         React.createElement('div', { className: 'dwrow' },
