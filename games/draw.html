@@ -80,8 +80,11 @@
 .dwex--near{box-shadow:inset 0 0 0 2px #A98BFF,0 0 18px -4px #A98BFF;}
 .dwex--ext{outline:2px dashed rgba(255,200,60,.55);outline-offset:-2px;}
 .dwex--miss{box-shadow:inset 0 0 0 2px #FF6B6B,0 0 16px -4px #FF6B6B;}
-.dwex--edit{cursor:pointer;transition:transform .12s;}
+.dwex--edit{cursor:pointer;transition:transform .12s;width:70px;height:70px;}
 .dwex--edit:hover{transform:translateY(-3px) scale(1.04);}
+.dwex--edit .dwex__b{font-size:10px;padding:2px 0;}
+/* присланные карточки в режиме правки чуть заметнее: с ними и работаем */
+.dwex--edit.dwex--ext{outline-color:rgba(255,200,60,.9);}
 .dwex__x{position:absolute;right:2px;top:2px;width:17px;height:17px;border:none;cursor:pointer;
   border-radius:50%;background:rgba(10,6,20,.8);color:#FFB4A8;font-size:10px;line-height:17px;padding:0;}
 .dwex__b{position:absolute;left:0;right:0;bottom:0;padding:1px 0;text-align:center;
@@ -106,9 +109,10 @@
 .dwacc{margin:12px 14px 0;padding:15px 16px;border-radius:20px;animation:dwIn .32s ease-out both;
   background:rgba(255,255,255,.05);box-shadow:inset 0 0 0 1px rgba(255,255,255,.09);}
 .dwacc__t{font-weight:900;font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:#8B7BAE;}
-.dwacc__v{margin-top:7px;display:flex;align-items:baseline;gap:10px;}
-.dwacc__v b{font-family:var(--nk-brand),var(--nk-body);font-weight:700;font-size:26px;color:#F4EEFF;}
-.dwacc__v span{font-weight:700;font-size:12.5px;color:#A896C9;}
+.dwacc__v{display:flex;flex-direction:column;gap:3px;}
+.dwacc__v b{font-family:var(--nk-brand),var(--nk-body);font-weight:700;font-size:19px;color:#FF9E8E;}
+.dwacc--ok .dwacc__v b{color:#7CE9B7;}
+.dwacc__v span{font-weight:700;font-size:12px;color:#8B7BAE;}
 .dwacc__n{margin-top:9px;font-weight:700;font-size:12px;line-height:1.45;color:#A896C9;}
 
 /* проверка связи */
@@ -174,6 +178,13 @@
 
    Уровни на этом движке: draw.html?n=2 (научи), 3, 4, 6, 7.
    ============================================================ */
+
+function plural(n, a, b, c) {
+  var m = n % 100;
+  if (m > 10 && m < 20) return c;
+  m = n % 10;
+  return m === 1 ? a : (m >= 2 && m <= 4 ? b : c);
+}
 
 const DW_SIZE = 300;        // внутренний размер холста: признаки считаем в нём
 const DW_PEN = 9;      // тоньше: жирная линия сливалась в кляксу
@@ -472,16 +483,9 @@ const DW_LEVELS = {
         say: 'Нарисуй мне <b>двух котов</b> — с них начнём набор.' },
       { kind: 'draw', label: 'house', word: 'дом', wordN: 'дом', many: 'дома', more: 'ещё один дом', need: 2,
         say: 'И <b>два дома</b>. Пока в наборе только твои рисунки, все подписаны верно.' },
-      { kind: 'audit',
-        inject: [
-          { kind: 'cat', label: 'cat' },
-          { kind: 'house', label: 'house' },
-          { kind: 'cat', label: 'house' },     // подпись врёт
-          { kind: 'house', label: 'cat' },     // подпись врёт
-        ],
-        say: 'Со станции прислали <b>четыре примера</b> — я добавил их к твоим. Сейчас проверю себя: закрою один пример и попробую угадать его по остальным. И так по кругу.' },
       { kind: 'clean',
-        say: 'Красным я отметил, где спотыкаюсь. Посмотри на рисунок и подпись: <b>нажми на карточку</b>, чтобы поменять подпись, или выброси крестиком. Точность считается сразу.' },
+        copy: ['cat', 'house', 'house', 'cat'],   // копии его же рисунков, две подписи врут
+        say: 'Я скопировал твои рисунки себе в набор — вот они, с пунктиром. Только <b>две подписи при переносе слетели</b>. Найди их: я уже путаюсь.' },
       { kind: 'test', word: 'кота', wordN: 'кот', many: 'коты', more: 'ещё одного кота', expect: 'cat',
         say: 'Набор почищен. Теперь по-настоящему: нарисуй кота.' },
     ],
@@ -591,18 +595,21 @@ function LevelDraw({ n, onWin, onHome }) {
   const step = L.steps[si];
   const mine = lbl => model.filter(m => m.label === lbl);
 
-  /* примеры «с другой станции»: часть подписана неверно — в этом и урок */
+  /* Копии рисунков ребёнка с частично слетевшими подписями — в этом и урок.
+     Берём именно его рисунки, а не нарисованные за него: тогда чужая подпись —
+     единственная причина путаницы, и после починки Нейро перестаёт ошибаться. */
   useEffect(() => {
-    if (!step || !step.inject || model.some(m => m.ext)) return;
-    const add = step.inject.map((x, i) => {
-      const cv = dwSketch(x.kind, 10 + i * 2);
-      return { label: x.label, f: dwFeatures(cv).f, thumb: dwThumb(cv, 64), ext: true };
-    });
+    if (!step || !step.copy || model.some(m => m.ext)) return;
+    const cats = model.filter(m => m.label === 'cat').slice(0, 2);
+    const houses = model.filter(m => m.label === 'house').slice(0, 2);
+    const src = cats.concat(houses);
+    if (src.length < step.copy.length) return;
+    const add = src.map((m, i) => ({ label: step.copy[i], f: m.f, thumb: m.thumb, ext: true }));
     setModel(m => m.concat(add));
-  }, [si]);
+  }, [si, model.length]);
 
   useEffect(() => {
-    if (step && step.kind === 'audit' && dirtyAcc === null && model.length > 4) {
+    if (step && step.kind === 'clean' && dirtyAcc === null && model.length > 4) {
       setDirtyAcc(dwSelfCheck(model).acc);
     }
   }, [model, si]);
@@ -732,11 +739,10 @@ function LevelDraw({ n, onWin, onHome }) {
   /* ── игра ── */
   const isTest = step.kind === 'test';
   const isClean = step.kind === 'clean';
-  const isAudit = step.kind === 'audit';
-  const noBoard = isClean || isAudit;
+  const noBoard = isClean;
   const doneCount = isTest || noBoard ? 0 : mine(step.label).length;
   /* точность пересчитывается на каждый рендер: правка подписи видна сразу */
-  const audit = (isAudit || isClean) ? dwSelfCheck(model) : null;
+  const audit = isClean ? dwSelfCheck(model) : null;
   const hit = guess && (step.unknown || (!guess.unsure && guess.label === step.expect));
 
   return React.createElement('div', { className: 'dw' },
@@ -761,8 +767,7 @@ function LevelDraw({ n, onWin, onHome }) {
 
       React.createElement('div', { className: 'dwtask' },
         React.createElement('b', null,
-          isAudit ? 'Нейро проверяет себя'
-            : isClean ? 'Почини подписи'
+          isClean ? 'Найди, где подпись врёт'
             : fix ? 'Нарисуй ' + (step.more || step.word)
             : 'Нарисуй ' + step.word),
         !isTest && !noBoard && React.createElement('span', null, doneCount + ' из ' + step.need),
@@ -781,20 +786,20 @@ function LevelDraw({ n, onWin, onHome }) {
           : React.createElement('button', { className: 'dwtool--main', onClick: check, disabled: !has || !!guess },
               'Пусть угадает')),
 
-      audit && React.createElement('div', { className: 'dwacc' },
-        React.createElement('div', { className: 'dwacc__t' }, 'Точность на своих же примерах'),
+      audit && React.createElement('div', { className: 'dwacc' + (audit.wrong.length ? '' : ' dwacc--ok') },
         React.createElement('div', { className: 'dwacc__v' },
-          React.createElement('b', null, audit.acc + '%'),
-          React.createElement('span', null, 'угадал ' + audit.ok + ' из ' + audit.total)),
+          React.createElement('b', null, audit.wrong.length ? 'Нейро путается' : 'Нейро не путается'),
+          React.createElement('span', null,
+            'узнаёт ' + audit.ok + ' из ' + audit.total + ' своих примеров')),
         React.createElement('div', { className: 'dwbar' },
           React.createElement('i', {
             style: { width: audit.acc + '%', background: audit.acc > 90
               ? 'linear-gradient(90deg,#4ED99B,#7FE7FF)' : 'linear-gradient(90deg,#FF7A64,#FFC83C)' },
           })),
         React.createElement('div', { className: 'dwacc__n' },
-          audit.acc > 90
-            ? 'Набор чистый: каждый пример узнаётся по остальным.'
-            : 'Я закрываю один пример и угадываю его по остальным. Там, где не сошлось, — красная рамка.')),
+          audit.wrong.length
+            ? 'Смотри на карточки с пунктиром: рисунок и подпись должны сходиться. Нажми на карточку — подпись поменяется.'
+            : 'Каждый рисунок подписан верно — и Нейро перестал путаться.')),
 
       guess && React.createElement('div', { className: 'dwguess' },
         React.createElement('div', { className: 'dwguess__t' }, 'Нейро говорит'),
@@ -818,13 +823,13 @@ function LevelDraw({ n, onWin, onHome }) {
         onAnimationEnd: () => setFlash(false),
       },
         React.createElement('div', { className: 'dwset__t' },
-          isClean ? 'Набор Нейро · пунктиром — присланные со станции' : 'Чему ты его научил'),
+          isClean ? 'Набор Нейро · пунктиром — копии твоих рисунков' : 'Чему ты его научил'),
         React.createElement('div', { className: 'dwrow' },
           model.map((m, i) => React.createElement('div', {
             key: i,
             className: 'dwex dwex--' + (m.label === 'cat' ? 'cat' : m.label === 'fish' ? 'fish' : 'other') +
               (m.ext ? ' dwex--ext' : '') + (isClean ? ' dwex--edit' : '') +
-              (audit && audit.wrong.indexOf(i) > -1 ? ' dwex--miss' : '') +
+
               (guess && guess.near && guess.near.i === i ? ' dwex--near' : ''),
             onClick: isClean ? () => relabel(i) : null,
             title: isClean ? 'Нажми, чтобы поменять подпись' : null,
@@ -839,16 +844,11 @@ function LevelDraw({ n, onWin, onHome }) {
             React.createElement('div', { className: 'dwslot', key: 's' + i }))))),
 
     React.createElement('div', { className: 'dwfoot' },
-      isAudit && React.createElement('button', {
-        className: 'nk-btn nk-btn--pri', style: { width: '100%' },
-        onClick: () => { setSi(si + 1); setGuess(null); },
-      }, audit && audit.acc > 90 ? 'Дальше' : 'Почистить набор'),
-
       isClean && React.createElement('button', {
-        className: 'nk-btn ' + (audit && audit.acc > 90 ? 'nk-btn--ok' : 'nk-btn--soft'),
+        className: 'nk-btn ' + (audit && !audit.wrong.length ? 'nk-btn--ok' : 'nk-btn--soft'),
         style: { width: '100%' },
         onClick: () => { setSi(si + 1); setGuess(null); api.current.clear(); },
-      }, audit && audit.acc > 90 ? 'Чисто, проверяем' : 'Всё равно проверить'),
+      }, audit && !audit.wrong.length ? 'Готово, проверяем Нейро' : 'Всё равно дальше'),
 
       guess && (hit
         ? React.createElement('button', {
