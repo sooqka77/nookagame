@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <!-- base href removed -->
+  
+  
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Чип собирает знания</title>
+<link href="https://fonts.bunny.net/css?family=space-grotesk:400,500,700" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #050510;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    overflow: hidden;
+    font-family: 'Space Grotesk', Arial, sans-serif;
+    touch-action: none;
+  }
+  #game-root {
+    position: relative;
+    width: 400px;
+    height: 640px;
+    overflow: hidden;
+  }
+  canvas { display: block; border-radius: 16px; box-shadow: 0 0 40px rgba(100,150,255,0.4); }
+
+  .overlay {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    background: rgba(10,10,46,0.93);
+    border-radius: 16px;
+    pointer-events: all;
+    padding: 20px;
+  }
+  .overlay.active { display: flex; }
+
+  .chip-preview {
+    width: 90px; height: 90px;
+    margin-bottom: 12px;
+    animation: float 2s ease-in-out infinite;
+    image-rendering: pixelated;
+  }
+  @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
+
+  h1 { font-size: 26px; color: #7af; text-shadow: 0 0 20px #4af; margin-bottom: 6px; line-height: 1.3; }
+  h2 { font-size: 30px; color: #fd0; text-shadow: 0 0 20px #fa0; margin-bottom: 10px; }
+  .sub { font-size: 14px; color: #adf; margin-bottom: 18px; }
+
+  .infobox {
+    background: rgba(100,150,255,0.15);
+    border: 2px solid rgba(100,180,255,0.35);
+    border-radius: 12px;
+    padding: 12px 18px;
+    margin-bottom: 18px;
+    max-width: 310px;
+  }
+  .infobox p { color: #cef; font-size: 14px; line-height: 1.9; }
+  .dot { display: inline-block; width: 16px; height: 16px; border-radius: 50%; vertical-align: middle; margin: 0 3px; }
+  .blue-dot  { background:#4af; box-shadow:0 0 6px #4af; }
+  .red-dot   { background:#f55; box-shadow:0 0 6px #f55; }
+  .yel-dot   { background:#fd4; box-shadow:0 0 6px #fd4; }
+  .grn-dot   { background:#4f8; box-shadow:0 0 6px #4f8; }
+
+  .btn {
+    background: linear-gradient(135deg, #4af, #26f);
+    border: none; border-radius: 30px;
+    padding: 14px 38px; font-size: 20px;
+    color: white; font-weight: bold; cursor: pointer;
+    box-shadow: 0 4px 20px rgba(80,160,255,0.5);
+    transition: transform 0.1s; pointer-events: all; font-family: inherit;
+    margin-top: 4px;
+  }
+  .btn:active { transform: scale(0.95); }
+  .btn-green { background: linear-gradient(135deg, #4f8, #0a6); box-shadow: 0 4px 20px rgba(80,255,160,0.5); }
+
+  .score-big { font-size: 52px; color: #fd0; text-shadow: 0 0 20px #fa0; margin: 8px 0; }
+  .result-msg { font-size: 15px; color: #adf; margin-bottom: 18px; line-height: 1.6; }
+  .win-title { color: #af8 !important; text-shadow: 0 0 20px #4f8 !important; }
+  .lose-title { color: #f88 !important; text-shadow: 0 0 20px #f44 !important; }
+
+  .lesson-stats { background: rgba(0,245,255,.06); border: 1px solid rgba(0,245,255,.2); border-radius: 14px; padding: 14px 16px; margin-bottom: 14px; }
+  .stat-row { display: flex; align-items: center; gap: 8px; margin: 6px 0; font-size: 14px; }
+  .stat-icon { font-size: 18px; width: 24px; }
+  .stat-label { flex: 1; color: #aac; }
+  .stat-val { font-weight: 700; font-size: 16px; color: #00f5ff; }
+  .stat-val.red { color: #f55; }
+  .stat-val.green { color: #4f8; }
+  .stat-grade { text-align: center; margin-top: 10px; font-size: 15px; font-weight: 700; color: #ffd700; }
+
+  .lesson-box { background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.1); border-radius: 14px; padding: 16px; text-align: left; }
+  .lesson-title { font-size: 16px; font-weight: 700; color: #00f5ff; margin-bottom: 10px; text-align: center; }
+  .lesson-p { font-size: 13px; color: #ccd; line-height: 1.6; margin-bottom: 10px; }
+  .lesson-p.gold { color: #ffd700; margin-bottom: 0; }
+  .lesson-row { display: flex; align-items: flex-start; gap: 8px; font-size: 13px; color: #ccd; line-height: 1.5; margin-bottom: 8px; }
+  .lesson-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; margin-top: 3px; }
+  .lesson-dot.blue { background: #4af; box-shadow: 0 0 6px #4af; }
+  .lesson-dot.red { background: #f55; box-shadow: 0 0 6px #f55; }
+  .lesson-sep { border-top: 1px solid rgba(255,255,255,.1); margin: 12px 0; }
+
+  @media (max-width: 420px) {
+    #game-root { width: 100vw; height: 100vh; }
+    canvas, .overlay { border-radius: 0; }
+  }
+</style>
+</head>
+<body>
+<div id="game-root">
+  <canvas id="gameCanvas" width="400" height="640"></canvas>
+
+  <!-- Start -->
+  <div class="overlay active" id="startScreen">
+    <img class="chip-preview" src="https://vtelpopqybfytrgzkomj.supabase.co/storage/v1/object/public/game-assets/public/0219f826-7370-466a-9186-812b3978f163/2a31ef8c-5f1f-4d01-90eb-c54c3fd1f1c6/8afdc701-66f3-4880-8b1d-53fa904a38da.png" alt="Chip">
+    <h1>Чип собирает<br>знания! 🤖</h1>
+    <p class="sub">Помоги роботу стать умнее</p>
+    <div class="infobox">
+      <p>← → или мышь/тап — двигай Чипа</p>
+      <p>Лови <span class="dot blue-dot"></span><b style="color:#7af"> синие</b> — это знания!</p>
+      <p>Избегай <span class="dot red-dot"></span><b style="color:#f88"> красных</b> — вирусы!</p>
+    </div>
+    <button class="btn" id="startBtn">▶ ИГРАТЬ</button>
+  </div>
+
+  <!-- Level announce -->
+  <div class="overlay" id="levelScreen">
+    <h2 id="lvlTitle">Уровень 1</h2>
+    <div class="infobox">
+      <p id="lvlDesc"></p>
+    </div>
+    <button class="btn" id="lvlBtn">ПОЕХАЛИ! 🚀</button>
+  </div>
+
+  <!-- Game Over -->
+  <div class="overlay" id="goScreen" style="overflow-y:auto;padding:20px 16px;justify-content:flex-start;padding-top:24px">
+    <h2 id="goTitle">Игра окончена</h2>
+    <div class="score-big" id="goScore">0</div>
+    <p class="result-msg" id="goMsg"></p>
+
+    <!-- Урок (только при победе) -->
+    <div id="win-lesson" style="display:none;width:100%;max-width:360px;margin:14px auto 0">
+      <div class="lesson-stats">
+        <div class="stat-row"><span class="stat-icon">💡</span><span class="stat-label">Знаний поймано</span><span class="stat-val" id="stat-caught">0</span></div>
+        <div class="stat-row"><span class="stat-icon">💀</span><span class="stat-label">Вирусов поймано</span><span class="stat-val red" id="stat-virus">0</span></div>
+        <div class="stat-row"><span class="stat-icon">😢</span><span class="stat-label">Упущено знаний</span><span class="stat-val red" id="stat-missed">0</span></div>
+        <div class="stat-row"><span class="stat-icon">🎯</span><span class="stat-label">Чистота датасета</span><span class="stat-val green" id="stat-accuracy">0%</span></div>
+        <div class="stat-grade" id="stat-grade"></div>
+      </div>
+
+      <div class="lesson-box">
+        <div class="lesson-title">🧠 Что это было?</div>
+        <p class="lesson-p">Ты только что симулировал <b>обучение нейросети</b>.</p>
+        <div class="lesson-row"><span class="lesson-dot blue"></span><b>Синие, жёлтые, зелёные</b> шары — это <b>хорошие данные</b>: правильные примеры, верные ответы, качественная информация</div>
+        <div class="lesson-row"><span class="lesson-dot red"></span><b>Красные</b> шары — это <b>вирусы в датасете</b>: мусор, ошибки, ложные данные</div>
+        <div class="lesson-sep"></div>
+        <p class="lesson-p">ИИ учится только на том, что попадает внутрь.<br><b>Больше хороших данных → умнее ИИ.<br>Вирусы в датасете → глупые ошибки.</b></p>
+        <p class="lesson-p gold">Именно так обучают ChatGPT, Midjourney и всех других — миллиарды примеров, тщательно отфильтрованных людьми. 🌍</p>
+      </div>
+    </div>
+
+    <button class="btn btn-green" id="restartBtn" style="margin-top:16px">🔄 ЕЩЁ РАЗ</button>
+    <button class="btn btn-green" style="background:linear-gradient(135deg,#6366f1,#8b5cf6);margin-top:8px" onclick="notifyDone()">К КОРАБЛЮ →</button>
+  </div>
+</div>
+
+<script>
+const canvas = document.getElementById('gameCanvas');
+const ctx = canvas.getContext('2d');
+const W = 400, H = 640;
+
+// Audio
+function makeAudio(url) {
+  const a = new Audio(url);
+  return () => { try { a.currentTime=0; a.play().catch(()=>{}); } catch(e){} };
+}
+const playSuccess = makeAudio('https://vtelpopqybfytrgzkomj.supabase.co/storage/v1/object/public/game-assets/public/0219f826-7370-466a-9186-812b3978f163/2a31ef8c-5f1f-4d01-90eb-c54c3fd1f1c6/be74cfba-fccf-4e59-8e1c-eee8a8446165.mp3');
+const playClick  = makeAudio('https://vtelpopqybfytrgzkomj.supabase.co/storage/v1/object/public/game-assets/public/0219f826-7370-466a-9186-812b3978f163/2a31ef8c-5f1f-4d01-90eb-c54c3fd1f1c6/e3cb1166-e411-4aa4-9f54-5f1e791c608a.mp3');
+
+const CHIP_IMG = new Image();
+CHIP_IMG.src = 'https://vtelpopqybfytrgzkomj.supabase.co/storage/v1/object/public/game-assets/public/0219f826-7370-466a-9186-812b3978f163/2a31ef8c-5f1f-4d01-90eb-c54c3fd1f1c6/8afdc701-66f3-4880-8b1d-53fa904a38da.png';
+
+// ── Level configs ──────────────────────────────────────────────
+const LEVELS = [
+  null, // placeholder for index 0
+  {
+    spawnInterval: 1.7, speed: 95, goodChance: 0.55,
+    goodTypes: ['blue'],
+    goal: 12,
+    desc: '🔵 Лови только <b style="color:#4af">синие</b> знания!<br>Избегай <b style="color:#f55">красных</b> вирусов!<br>Собери 12 знаний ❤️❤️❤️'
+  },
+  {
+    spawnInterval: 1.2, speed: 130, goodChance: 0.55,
+    goodTypes: ['blue','yellow'],
+    goal: 20,
+    desc: '🔵🟡 Теперь и <b style="color:#fd4">жёлтые</b> — тоже знания!<br>Шарики быстрее — будь внимательнее!<br>Собери 20 знаний ❤️❤️❤️'
+  },
+  {
+    spawnInterval: 0.85, speed: 165, goodChance: 0.55,
+    goodTypes: ['blue','yellow','green'],
+    goal: 30,
+    desc: '🔵🟡🟢 <b style="color:#4f8">Зелёные</b> тоже знания!<br>Шарики летят очень быстро!<br>Собери 30 знаний и победи! ❤️❤️❤️'
+  }
+];
+
+const BALL_DEF = {
+  blue:   { color:'#4af', glow:'#08f', emoji:'💡' },
+  yellow: { color:'#fd4', glow:'#fa0', emoji:'⭐' },
+  green:  { color:'#4f8', glow:'#0c5', emoji:'📗' },
+  red:    { color:'#f55', glow:'#f00', emoji:'💀' }
+};
+
+// ── State ──────────────────────────────────────────────────────
+let gameState = 'idle'; // idle | levelAnnounce | playing | transition
+let score=0, lives=3, level=1, combo=0, levelProgress=0;
+let caught=0, virusHits=0, missed=0;
+let balls=[], particles=[], floats=[];
+let shakeAmt=0, shakeTime=0;
+let spawnTimer=0, lastTS=0;
+
+const chip = { x:W/2, y:H-80, w:64, h:64 };
+const input = { left:false, right:false, mouseX:-1 };
+
+// ── Input ──────────────────────────────────────────────────────
+document.addEventListener('keydown', e => {
+  if(e.key==='ArrowLeft'||e.key==='a'||e.key==='A') input.left=true;
+  if(e.key==='ArrowRight'||e.key==='d'||e.key==='D') input.right=true;
+});
+document.addEventListener('keyup', e => {
+  if(e.key==='ArrowLeft'||e.key==='a'||e.key==='A') input.left=false;
+  if(e.key==='ArrowRight'||e.key==='d'||e.key==='D') input.right=false;
+});
+canvas.addEventListener('mousemove', e => {
+  const r = canvas.getBoundingClientRect();
+  input.mouseX = (e.clientX - r.left) * (W / r.width);
+});
+canvas.addEventListener('touchmove', e => {
+  e.preventDefault();
+  const r = canvas.getBoundingClientRect();
+  input.mouseX = (e.touches[0].clientX - r.left) * (W / r.width);
+}, {passive:false});
+canvas.addEventListener('touchstart', e => {
+  e.preventDefault();
+  const r = canvas.getBoundingClientRect();
+  input.mouseX = (e.touches[0].clientX - r.left) * (W / r.width);
+}, {passive:false});
+
+// ── Helpers ────────────────────────────────────────────────────
+function burst(x, y, color, n=10) {
+  for(let i=0;i<n;i++){
+    const a = Math.random()*Math.PI*2, s = 60+Math.random()*130;
+    particles.push({ x, y, vx:Math.cos(a)*s, vy:Math.sin(a)*s-70,
+      r:3+Math.random()*5, color, life:0.7+Math.random()*0.3, maxLife:1 });
+  }
+}
+function floatText(x, y, text, color) {
+  floats.push({ x, y, text, color, life:1.1, vy:-55 });
+}
+function shake(amt, dur) { shakeAmt=amt; shakeTime=dur; }
+
+// ── Game control ───────────────────────────────────────────────
+function initLevel(lvl) {
+  level=lvl; lives=3; balls=[]; particles=[]; floats=[];
+  combo=0; levelProgress=0; spawnTimer=0;
+  if(lvl===1){ score=0; caught=0; virusHits=0; missed=0; }
+  chip.x=W/2; input.mouseX=-1;
+
+  const cfg = LEVELS[lvl];
+  document.getElementById('lvlTitle').textContent = `Уровень ${lvl}`;
+  document.getElementById('lvlDesc').innerHTML = cfg.desc;
+  show('levelScreen');
+  gameState='levelAnnounce';
+}
+
+function startPlaying() { hide('levelScreen'); gameState='playing'; }
+
+function endGame(win) {
+  gameState='transition';
+  const title = document.getElementById('goTitle');
+  const msg   = document.getElementById('goMsg');
+  document.getElementById('goScore').textContent = score;
+  const total = caught + virusHits + missed;
+  const accuracy = total>0 ? Math.round(caught/total*100) : 0;
+
+  if(win){
+    setTimeout(notifyDone, 12000);
+    title.textContent='🏆 Чип стал умным!';
+    title.className='win-title';
+    msg.innerHTML='Чип прошёл все 3 уровня обучения!';
+    document.getElementById('win-lesson').style.display='block';
+    document.getElementById('stat-caught').textContent = caught;
+    document.getElementById('stat-virus').textContent = virusHits;
+    document.getElementById('stat-missed').textContent = missed;
+    document.getElementById('stat-accuracy').textContent = accuracy + '%';
+    const grade = accuracy>=85?'🧠 Чип — гений!':accuracy>=65?'✅ Хорошая нейросеть':accuracy>=45?'⚠️ Средний результат':'🤕 Много шума в данных';
+    document.getElementById('stat-grade').textContent = grade;
+  } else {
+    document.getElementById('win-lesson').style.display='none';
+    title.textContent='💔 Вирусы победили!';
+    title.className='lose-title';
+    msg.innerHTML='Слишком много вирусов попало в датасет…<br>Попробуй ещё раз — у тебя получится!';
+  }
+  setTimeout(()=>show('goScreen'), 600);
+}
+
+function show(id){ document.getElementById(id).classList.add('active'); }
+function hide(id){ document.getElementById(id).classList.remove('active'); }
+
+// ── Main loop ──────────────────────────────────────────────────
+function tick(ts) {
+  const dt = Math.min((ts - lastTS)/1000, 0.05);
+  lastTS = ts;
+
+  if(gameState==='playing') {
+    // Shake
+    if(shakeTime>0) shakeTime-=dt; else shakeAmt=0;
+
+    // Move chip
+    const spd = 270 + level*30;
+    if(input.left)  chip.x -= spd*dt;
+    if(input.right) chip.x += spd*dt;
+    if(!input.left && !input.right && input.mouseX>=0) {
+      chip.x += (input.mouseX - chip.x) * Math.min(1, 14*dt);
+    }
+    chip.x = Math.max(chip.w/2+4, Math.min(W-chip.w/2-4, chip.x));
+
+    // Spawn
+    spawnTimer -= dt;
+    if(spawnTimer<=0) {
+      spawnBall();
+      const cfg=LEVELS[level];
+      spawnTimer = cfg.spawnInterval * (0.75 + Math.random()*0.5);
+    }
+
+    // Update balls
+    const cfg=LEVELS[level];
+    for(let i=balls.length-1;i>=0;i--){
+      const b=balls[i];
+      b.wobble += b.wobbleSpd * dt;
+      b.y += b.vy*dt;
+      b.x += b.vx*dt;
+      if(b.x-b.r<0){b.x=b.r;b.vx*=-0.6;}
+      if(b.x+b.r>W){b.x=W-b.r;b.vx*=-0.6;}
+
+      // Catch check
+      const dx=b.x-chip.x, dy=b.y-(chip.y+chip.h*0.05);
+      const catchR = chip.w*0.52;
+      if(Math.sqrt(dx*dx+dy*dy) < catchR+b.r-10 && b.y > chip.y-chip.h/2) {
+        balls.splice(i,1);
+        if(b.isGood) {
+          combo++; caught++;
+          const pts = combo>=6?3:combo>=3?2:1;
+          score+=pts; levelProgress++;
+          playSuccess();
+          burst(b.x, b.y, b.color, 12);
+          floatText(b.x, b.y-30, combo>=6?`🔥КОМБО×${pts}!`:combo>=3?`✨×${pts}!`:`+${pts}`, b.color);
+          if(levelProgress >= cfg.goal) {
+            gameState='transition';
+            if(level<3) setTimeout(()=>initLevel(level+1), 700);
+            else        setTimeout(()=>endGame(true), 700);
+          }
+        } else {
+          combo=0; lives--; virusHits++;
+          playClick();
+          shake(9,0.35);
+          burst(b.x,b.y,'#f55',10);
+          floatText(b.x,b.y-20,'💀 ВИРУС!','#f55');
+          if(lives<=0){ gameState='transition'; setTimeout(()=>endGame(false),600); }
+        }
+        continue;
+      }
+
+      // Off screen
+      if(b.y-b.r>H){
+        balls.splice(i,1);
+        if(b.isGood){
+          combo=0; lives--; missed++;
+          shake(5,0.2);
+          floatText(b.x, H-60,'😢 Упустил!','#f88');
+          if(lives<=0){ gameState='transition'; setTimeout(()=>endGame(false),400); }
+        }
+      }
+    }
+
+    // Particles
+    for(let i=particles.length-1;i>=0;i--){
+      const p=particles[i];
+      p.x+=p.vx*dt; p.y+=p.vy*dt; p.vy+=220*dt;
+      p.life-=dt;
+      if(p.life<=0) particles.splice(i,1);
+    }
+    // Floats
+    for(let i=floats.length-1;i>=0;i--){
+      const f=floats[i];
+      f.y+=f.vy*dt; f.life-=dt;
+      if(f.life<=0) floats.splice(i,1);
+    }
+  }
+
+  render();
+  requestAnimationFrame(tick);
+}
+
+function spawnBall(){
+  const cfg=LEVELS[level];
+  const isGood = Math.random()<cfg.goodChance;
+  const type = isGood ? cfg.goodTypes[Math.floor(Math.random()*cfg.goodTypes.length)] : 'red';
+  const def = BALL_DEF[type];
+  balls.push({
+    x:28+Math.random()*(W-56), y:-22, r:18,
+    vy: cfg.speed*(0.85+Math.random()*0.3),
+    vx: (Math.random()-0.5)*50,
+    type, isGood,
+    color:def.color, glow:def.glow, emoji:def.emoji,
+    wobble:Math.random()*Math.PI*2, wobbleSpd:1.2+Math.random()
+  });
+}
+
+// ── Render ─────────────────────────────────────────────────────
+const STARS = Array.from({length:45},(_,i)=>({
+  x:(i*137+50)%W, y:(i*97+20)%(H*0.75),
+  r:i%4===0?1.8:i%3===0?1.2:0.8
+}));
+
+function render(){
+  // BG
+  const bg=ctx.createLinearGradient(0,0,0,H);
+  bg.addColorStop(0,'#060618');
+  bg.addColorStop(1,'#0c1540');
+  ctx.fillStyle=bg; ctx.fillRect(0,0,W,H);
+
+  // Stars
+  ctx.fillStyle='rgba(255,255,255,0.45)';
+  for(const s of STARS){
+    ctx.beginPath(); ctx.arc(s.x,s.y,s.r,0,Math.PI*2); ctx.fill();
+  }
+
+  if(gameState==='idle') return;
+
+  let sx=0,sy=0;
+  if(shakeTime>0){ sx=(Math.random()-0.5)*shakeAmt; sy=(Math.random()-0.5)*shakeAmt; }
+  ctx.save();
+  ctx.translate(sx,sy);
+
+  drawProgressBar();
+  drawHUD();
+  balls.forEach(drawBall);
+  drawParticles();
+  drawChip();
+  drawFloats();
+
+  ctx.restore();
+}
+
+function drawHUD(){
+  // Score
+  ctx.font='bold 22px Arial'; ctx.textAlign='left';
+  ctx.fillStyle='#fd0'; ctx.shadowColor='#fa0'; ctx.shadowBlur=10;
+  ctx.fillText(`⭐ ${score}`,14,40); ctx.shadowBlur=0;
+  // Level
+  ctx.font='bold 16px Arial'; ctx.textAlign='center';
+  ctx.fillStyle='#adf';
+  ctx.fillText(`Уровень ${level}`,W/2,40);
+  // Lives
+  ctx.font='20px Arial'; ctx.textAlign='right';
+  let h='';
+  for(let i=0;i<3;i++) h+=i<lives?'❤️':'🖤';
+  ctx.fillText(h,W-10,40);
+  // Combo
+  if(combo>=3){
+    ctx.font='bold 15px Arial'; ctx.textAlign='center';
+    ctx.fillStyle='#fd0'; ctx.shadowColor='#fa0'; ctx.shadowBlur=8;
+    ctx.fillText(`🔥 КОМБО ×${combo}`,W/2,80); ctx.shadowBlur=0;
+  }
+}
+
+function drawProgressBar(){
+  const cfg=LEVELS[level];
+  if(!cfg) return;
+  const prog=Math.min(levelProgress/cfg.goal,1);
+  const bx=18,by=56,bw=W-36,bh=7;
+  ctx.fillStyle='rgba(255,255,255,0.08)';
+  ctx.beginPath(); ctx.roundRect(bx,by,bw,bh,3); ctx.fill();
+  if(prog>0){
+    const g=ctx.createLinearGradient(bx,0,bx+bw,0);
+    g.addColorStop(0,'#4af'); g.addColorStop(1,'#d4f');
+    ctx.fillStyle=g; ctx.shadowColor='#4af'; ctx.shadowBlur=6;
+    ctx.beginPath(); ctx.roundRect(bx,by,bw*prog,bh,3); ctx.fill();
+    ctx.shadowBlur=0;
+  }
+}
+
+function drawBall(b){
+  ctx.save();
+  const wx=Math.sin(b.wobble)*2.5;
+  ctx.shadowColor=b.glow; ctx.shadowBlur=20;
+  const gr=ctx.createRadialGradient(b.x+wx-b.r*.3,b.y-b.r*.3,b.r*.05, b.x+wx,b.y,b.r);
+  gr.addColorStop(0,'rgba(255,255,255,0.95)');
+  gr.addColorStop(0.3,b.color);
+  gr.addColorStop(1,b.glow);
+  ctx.beginPath(); ctx.arc(b.x+wx,b.y,b.r,0,Math.PI*2);
+  ctx.fillStyle=gr; ctx.fill();
+  ctx.shadowBlur=0;
+  ctx.font=`${b.r*1.1}px Arial`;
+  ctx.textAlign='center'; ctx.textBaseline='middle';
+  ctx.fillText(b.emoji, b.x+wx, b.y+1);
+  ctx.textBaseline='alphabetic';
+  ctx.restore();
+}
+
+function drawChip(){
+  ctx.save();
+  // Glow platform under chip
+  ctx.shadowColor='#4af'; ctx.shadowBlur=22;
+  ctx.fillStyle='rgba(80,160,255,0.18)';
+  ctx.beginPath();
+  ctx.ellipse(chip.x, chip.y+chip.h/2-6, chip.w*0.58, 11, 0, 0, Math.PI*2);
+  ctx.fill();
+  ctx.shadowBlur=0;
+  // Catch arc hint
+  ctx.strokeStyle='rgba(100,200,255,0.25)';
+  ctx.lineWidth=2; ctx.setLineDash([5,5]);
+  ctx.beginPath();
+  ctx.arc(chip.x,chip.y+chip.h*.08,chip.w*.52+15,Math.PI*.1,Math.PI*.9);
+  ctx.stroke(); ctx.setLineDash([]);
+  // Image
+  if(CHIP_IMG.complete && CHIP_IMG.naturalWidth>0){
+    ctx.imageSmoothingEnabled=false;
+    ctx.drawImage(CHIP_IMG, chip.x-chip.w/2, chip.y-chip.h/2, chip.w, chip.h);
+  } else {
+    ctx.fillStyle='#4af';
+    ctx.fillRect(chip.x-24,chip.y-24,48,48);
+  }
+  ctx.restore();
+}
+
+function drawParticles(){
+  for(const p of particles){
+    ctx.save();
+    ctx.globalAlpha=Math.max(0,p.life/0.7);
+    ctx.fillStyle=p.color; ctx.shadowColor=p.color; ctx.shadowBlur=8;
+    ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2); ctx.fill();
+    ctx.restore();
+  }
+}
+
+function drawFloats(){
+  for(const f of floats){
+    ctx.save();
+    ctx.globalAlpha=Math.max(0,Math.min(1,f.life));
+    ctx.font='bold 19px Arial'; ctx.textAlign='center';
+    ctx.fillStyle=f.color; ctx.shadowColor=f.color; ctx.shadowBlur=14;
+    ctx.fillText(f.text,f.x,f.y);
+    ctx.restore();
+  }
+}
+
+// ── Button wiring ──────────────────────────────────────────────
+document.getElementById('startBtn').addEventListener('click',()=>{
+  hide('startScreen'); initLevel(1);
+});
+document.getElementById('lvlBtn').addEventListener('click',()=>startPlaying());
+document.getElementById('restartBtn').addEventListener('click',()=>{
+  hide('goScreen'); initLevel(1);
+});
+
+// ── Boot ───────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  requestAnimationFrame(ts=>{ lastTS=ts; requestAnimationFrame(tick); });
+});
+
+function notifyDone() {
+  window.parent.postMessage({type:'level_done', earned:9, total:10}, '*');
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,1851 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <!-- base href removed -->
+  
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Декодер сигналов</title>
+<link href="https://fonts.bunny.net/css?family=space-grotesk:400,500,700" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; touch-action: manipulation; }
+html, body { width: 100%; height: 100%; overflow: hidden; background: #050510; font-family: 'Space Grotesk', 'Courier New', sans-serif; }
+
+#game-root {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+/* ===== NEBULA BACKGROUND ===== */
+#nebula-canvas {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ===== SCREEN LAYER ===== */
+.screen {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.5s ease;
+}
+.screen.active {
+  opacity: 1;
+  pointer-events: all;
+}
+
+/* ===== WIPE TRANSITION ===== */
+#wipe-overlay {
+  position: fixed;
+  top: 0; left: -100%;
+  width: 100%; height: 100%;
+  background: linear-gradient(135deg, #050510, #0a0020);
+  z-index: 1000;
+  pointer-events: none;
+  transition: none;
+}
+#wipe-overlay.wiping {
+  animation: wipeAnim 1s ease-in-out forwards;
+}
+@keyframes wipeAnim {
+  0% { left: -100%; }
+  45% { left: 0%; }
+  55% { left: 0%; }
+  100% { left: 100%; }
+}
+
+/* ===== INTRO SCREEN ===== */
+#intro-screen {
+  background: transparent;
+  text-align: center;
+  padding: 20px;
+}
+.radar-anim-container {
+  width: min(200px, 40vw);
+  height: min(200px, 40vw);
+  position: relative;
+  margin: 0 auto 20px;
+}
+#intro-radar {
+  width: 100%;
+  height: 100%;
+}
+.intro-text {
+  color: #00f5ff;
+  font-size: clamp(13px, 3.5vw, 18px);
+  line-height: 1.8;
+  text-shadow: 0 0 10px #00f5ff;
+  white-space: pre-line;
+  min-height: 120px;
+}
+.intro-title {
+  color: #ff00aa;
+  font-size: clamp(18px, 5vw, 28px);
+  font-weight: bold;
+  margin-bottom: 16px;
+  text-shadow: 0 0 20px #ff00aa;
+  letter-spacing: 2px;
+}
+.btn-start {
+  margin-top: 24px;
+  padding: 14px 36px;
+  background: transparent;
+  border: 2px solid #00f5ff;
+  color: #00f5ff;
+  font-size: clamp(15px, 4vw, 20px);
+  font-family: 'Courier New', monospace;
+  cursor: pointer;
+  letter-spacing: 2px;
+  text-shadow: 0 0 10px #00f5ff;
+  box-shadow: 0 0 20px rgba(0,245,255,0.3);
+  transition: all 0.2s;
+  border-radius: 4px;
+}
+.btn-start:hover, .btn-start:active {
+  background: rgba(0,245,255,0.15);
+  box-shadow: 0 0 30px rgba(0,245,255,0.6);
+}
+
+/* ===== PHASE 1: RADAR ===== */
+#radar-screen {
+  background: #020a08;
+  justify-content: stretch;
+  align-items: stretch;
+}
+#radar-hud {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  padding: 10px 16px;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.hud-label {
+  color: #00ff88;
+  font-size: clamp(12px, 3vw, 15px);
+  text-shadow: 0 0 8px #00ff88;
+}
+.hud-bar-outer {
+  width: 100%;
+  height: 8px;
+  background: rgba(0,255,136,0.15);
+  border: 1px solid rgba(0,255,136,0.4);
+  border-radius: 4px;
+  overflow: hidden;
+}
+.hud-bar-inner {
+  height: 100%;
+  background: #00ff88;
+  box-shadow: 0 0 8px #00ff88;
+  transition: width 0.3s;
+  width: 0%;
+}
+#radar-canvas-wrap {
+  position: absolute;
+  top: 70px;
+  bottom: 60px;
+  left: 0; right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+#radar-canvas {
+  display: block;
+  border-radius: 50%;
+}
+#radar-footer {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  padding: 8px 16px;
+  z-index: 20;
+}
+#timer-bar-outer {
+  width: 100%;
+  height: 10px;
+  background: rgba(0,255,136,0.15);
+  border: 1px solid rgba(0,255,136,0.4);
+  border-radius: 5px;
+  overflow: hidden;
+}
+#timer-bar-inner {
+  height: 100%;
+  background: #00ff88;
+  box-shadow: 0 0 8px #00ff88;
+  width: 100%;
+  transition: background 0.5s, box-shadow 0.5s;
+}
+#timer-label {
+  color: #00ff88;
+  font-size: clamp(11px, 2.5vw, 13px);
+  text-align: center;
+  margin-top: 4px;
+  text-shadow: 0 0 6px #00ff88;
+}
+#radar-flash {
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 100%;
+  pointer-events: none;
+  z-index: 30;
+  opacity: 0;
+}
+#phase1-result {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(2,10,8,0.95);
+  border: 2px solid #00ff88;
+  color: #00ff88;
+  padding: 20px 32px;
+  text-align: center;
+  font-size: clamp(14px, 3.5vw, 20px);
+  z-index: 50;
+  display: none;
+  border-radius: 8px;
+  box-shadow: 0 0 30px rgba(0,255,136,0.4);
+  white-space: pre-line;
+  line-height: 1.6;
+}
+
+/* ===== PHASE 2: TERMINAL ===== */
+#terminal-screen {
+  background: #010a01;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: stretch;
+  align-items: stretch;
+}
+#crt-overlay {
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 100%;
+  pointer-events: none;
+  z-index: 5;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0,0,0,0.08) 2px,
+      rgba(0,0,0,0.08) 4px
+    );
+  animation: scanlines 8s linear infinite;
+}
+@keyframes scanlines {
+  0% { background-position: 0 0; }
+  100% { background-position: 0 200px; }
+}
+#crt-edge {
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 100%;
+  pointer-events: none;
+  z-index: 6;
+  box-shadow: inset 0 0 60px rgba(0,0,0,0.7);
+  border-radius: 4px;
+}
+#terminal-inner {
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 10px 14px;
+  gap: 8px;
+  overflow: hidden;
+}
+#terminal-header {
+  color: #00ff44;
+  font-size: clamp(10px, 2.5vw, 13px);
+  text-shadow: 0 0 6px #00ff44;
+  border-bottom: 1px solid rgba(0,255,68,0.3);
+  padding-bottom: 6px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-shrink: 0;
+}
+.cursor-blink {
+  animation: blink 1s step-end infinite;
+}
+@keyframes blink { 50% { opacity: 0; } }
+#terminal-message {
+  flex: 1;
+  overflow-y: auto;
+  font-size: clamp(13px, 3.5vw, 17px);
+  line-height: 1.9;
+  color: #aaffaa;
+  text-shadow: 0 0 4px #00ff44;
+  min-height: 0;
+}
+.blank-block {
+  display: inline-block;
+  background: rgba(0,255,68,0.15);
+  border: 1px solid rgba(0,255,68,0.5);
+  color: #00ff44;
+  padding: 1px 6px;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: inherit;
+  font-family: inherit;
+  letter-spacing: 1px;
+  user-select: none;
+  transition: all 0.2s;
+  vertical-align: middle;
+}
+.blank-block:hover, .blank-block.active-blank {
+  background: rgba(0,255,68,0.3);
+  box-shadow: 0 0 8px #00ff44;
+}
+.filled-word {
+  display: inline-block;
+  color: #FFD700;
+  font-weight: bold;
+  text-shadow: 0 0 10px #FFD700;
+  vertical-align: middle;
+  animation: wordAppear 0.4s ease;
+}
+@keyframes wordAppear {
+  0% { opacity: 0; transform: scale(1.4); }
+  100% { opacity: 1; transform: scale(1); }
+}
+#word-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 8px;
+  background: rgba(0,255,68,0.05);
+  border: 1px solid rgba(0,255,68,0.2);
+  border-radius: 6px;
+  min-height: 44px;
+  flex-shrink: 0;
+}
+.word-chip {
+  padding: 4px 10px;
+  background: rgba(0,255,68,0.1);
+  border: 1px solid rgba(0,255,68,0.4);
+  border-radius: 20px;
+  color: #00ff88;
+  font-size: clamp(11px, 2.8vw, 14px);
+  cursor: default;
+  text-shadow: 0 0 4px #00ff44;
+  transition: opacity 0.3s;
+}
+.word-chip.used {
+  opacity: 0.3;
+  text-decoration: line-through;
+}
+#word-selector {
+  background: rgba(0,10,0,0.95);
+  border: 1px solid rgba(0,255,68,0.5);
+  border-radius: 8px;
+  padding: 10px;
+  flex-shrink: 0;
+  display: none;
+}
+#word-selector-title {
+  color: #00ff44;
+  font-size: clamp(11px, 2.5vw, 13px);
+  margin-bottom: 8px;
+  text-shadow: 0 0 6px #00ff44;
+}
+.word-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+  cursor: pointer;
+  padding: 6px 8px;
+  border-radius: 4px;
+  transition: background 0.2s;
+}
+.word-option:hover, .word-option:active {
+  background: rgba(0,255,68,0.1);
+}
+.conf-bar-outer {
+  flex: 1;
+  height: 8px;
+  background: rgba(0,255,68,0.1);
+  border: 1px solid rgba(0,255,68,0.3);
+  border-radius: 4px;
+  overflow: hidden;
+}
+.conf-bar-inner {
+  height: 100%;
+  background: #00ff44;
+  box-shadow: 0 0 4px #00ff44;
+  transition: width 0.5s;
+}
+.word-option-label {
+  color: #00ff88;
+  font-size: clamp(12px, 3vw, 15px);
+  min-width: 70px;
+  text-shadow: 0 0 4px #00ff44;
+}
+.word-option-pct {
+  color: #aaffaa;
+  font-size: clamp(10px, 2.5vw, 12px);
+  min-width: 36px;
+  text-align: right;
+}
+#terminal-status {
+  font-size: clamp(11px, 2.5vw, 13px);
+  color: #00ff44;
+  text-shadow: 0 0 6px #00ff44;
+  text-align: center;
+  min-height: 18px;
+  flex-shrink: 0;
+}
+#terminal-progress-bar {
+  height: 6px;
+  background: rgba(0,255,68,0.15);
+  border-radius: 3px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+#terminal-progress-fill {
+  height: 100%;
+  background: #FFD700;
+  box-shadow: 0 0 6px #FFD700;
+  width: 0%;
+  transition: width 0.5s;
+}
+#terminal-complete {
+  display: none;
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(1,10,1,0.97);
+  border: 2px solid #FFD700;
+  color: #FFD700;
+  padding: 20px 28px;
+  text-align: center;
+  font-size: clamp(16px, 4vw, 22px);
+  z-index: 50;
+  border-radius: 8px;
+  box-shadow: 0 0 40px rgba(255,215,0,0.5);
+  text-shadow: 0 0 10px #FFD700;
+}
+
+/* ===== PHASE 3: CHAT ===== */
+#chat-screen {
+  background: #0d1117;
+  display: flex;
+  flex-direction: column;
+  justify-content: stretch;
+  align-items: stretch;
+}
+#chat-header {
+  background: #161b22;
+  border-bottom: 1px solid #30363d;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+  z-index: 10;
+}
+.chat-avatar {
+  font-size: 26px;
+}
+.chat-info { flex: 1; }
+.chat-name {
+  color: #e6edf3;
+  font-size: clamp(14px, 3.5vw, 18px);
+  font-weight: bold;
+  font-family: -apple-system, sans-serif;
+}
+.chat-status {
+  color: #3fb950;
+  font-size: clamp(10px, 2.5vw, 12px);
+  font-family: -apple-system, sans-serif;
+}
+.chat-status::before {
+  content: '●';
+  margin-right: 4px;
+  font-size: 8px;
+}
+#chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 0;
+}
+.chat-bubble {
+  max-width: 75%;
+  padding: 10px 14px;
+  border-radius: 18px;
+  font-size: clamp(13px, 3.5vw, 16px);
+  line-height: 1.5;
+  font-family: -apple-system, sans-serif;
+  animation: bubbleIn 0.3s ease;
+}
+@keyframes bubbleIn {
+  0% { opacity: 0; transform: translateY(10px) scale(0.95); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+.chat-bubble.received {
+  background: #21262d;
+  color: #e6edf3;
+  border-bottom-left-radius: 4px;
+  align-self: flex-start;
+}
+.chat-bubble.sent {
+  background: #1f6feb;
+  color: #ffffff;
+  border-bottom-right-radius: 4px;
+  align-self: flex-end;
+}
+.chat-bubble.sent-error {
+  background: #da3633;
+  color: #ffffff;
+  border-bottom-right-radius: 4px;
+  align-self: flex-end;
+  animation: bubbleShake 0.3s ease;
+}
+@keyframes bubbleShake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-8px); }
+  75% { transform: translateX(8px); }
+}
+.typing-indicator {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 10px 14px;
+  background: #21262d;
+  border-radius: 18px;
+  border-bottom-left-radius: 4px;
+  align-self: flex-start;
+  max-width: 70px;
+}
+.typing-dot {
+  width: 7px; height: 7px;
+  background: #8b949e;
+  border-radius: 50%;
+  animation: typingBounce 1.2s ease infinite;
+}
+.typing-dot:nth-child(2) { animation-delay: 0.15s; }
+.typing-dot:nth-child(3) { animation-delay: 0.3s; }
+@keyframes typingBounce {
+  0%, 60%, 100% { transform: translateY(0); }
+  30% { transform: translateY(-6px); }
+}
+#chat-input-area {
+  flex-shrink: 0;
+  padding: 10px 12px;
+  background: #161b22;
+  border-top: 1px solid #30363d;
+  display: none;
+}
+#chat-question {
+  color: #8b949e;
+  font-size: clamp(11px, 2.8vw, 14px);
+  font-family: -apple-system, sans-serif;
+  margin-bottom: 8px;
+  text-align: center;
+}
+#chat-options {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.chat-option {
+  padding: 10px 16px;
+  border-radius: 20px;
+  font-size: clamp(13px, 3.5vw, 16px);
+  font-family: -apple-system, sans-serif;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.2s;
+  user-select: none;
+}
+.chat-option.correct-opt {
+  background: rgba(31,111,235,0.15);
+  border: 1.5px solid #1f6feb;
+  color: #58a6ff;
+}
+.chat-option.correct-opt:hover, .chat-option.correct-opt:active {
+  background: rgba(31,111,235,0.3);
+}
+.chat-option.funny-opt {
+  background: rgba(139,148,158,0.1);
+  border: 1.5px solid #30363d;
+  color: #8b949e;
+}
+.chat-option.funny-opt:hover, .chat-option.funny-opt:active {
+  background: rgba(139,148,158,0.2);
+}
+
+/* ===== FINALE SCREEN ===== */
+#finale-screen {
+  background: #050510;
+  padding: 16px;
+  overflow-y: auto;
+}
+#finale-inner {
+  max-width: 480px;
+  width: 100%;
+  margin: 0 auto;
+}
+.finale-title {
+  color: #00f5ff;
+  font-size: clamp(20px, 5vw, 28px);
+  font-weight: bold;
+  text-align: center;
+  text-shadow: 0 0 20px #00f5ff;
+  margin-bottom: 16px;
+  letter-spacing: 2px;
+}
+.finale-stats {
+  background: rgba(0,245,255,0.05);
+  border: 1px solid rgba(0,245,255,0.2);
+  border-radius: 8px;
+  padding: 14px 18px;
+  margin-bottom: 14px;
+  color: #aaffee;
+  font-size: clamp(12px, 3vw, 15px);
+  line-height: 1.8;
+}
+.finale-score {
+  color: #FFD700;
+  font-size: clamp(20px, 5vw, 26px);
+  font-weight: bold;
+  text-shadow: 0 0 15px #FFD700;
+  text-align: center;
+  margin: 8px 0;
+}
+.finale-secret {
+  background: rgba(255,0,170,0.07);
+  border: 1px solid rgba(255,0,170,0.3);
+  border-radius: 8px;
+  padding: 14px 18px;
+  color: #ffaadd;
+  font-size: clamp(12px, 3vw, 14px);
+  line-height: 1.7;
+  margin-bottom: 16px;
+}
+.finale-secret h3 {
+  color: #ff00aa;
+  text-shadow: 0 0 10px #ff00aa;
+  margin-bottom: 10px;
+  font-size: clamp(13px, 3.2vw, 16px);
+}
+.finale-btns {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.finale-btn {
+  padding: 12px 24px;
+  font-size: clamp(13px, 3.5vw, 16px);
+  font-family: 'Courier New', monospace;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+  letter-spacing: 1px;
+}
+.finale-btn.primary {
+  background: transparent;
+  border: 2px solid #00f5ff;
+  color: #00f5ff;
+  text-shadow: 0 0 8px #00f5ff;
+  box-shadow: 0 0 16px rgba(0,245,255,0.3);
+}
+.finale-btn.primary:hover, .finale-btn.primary:active {
+  background: rgba(0,245,255,0.15);
+}
+.finale-btn.secondary {
+  background: rgba(255,215,0,0.1);
+  border: 2px solid #FFD700;
+  color: #FFD700;
+  text-shadow: 0 0 8px #FFD700;
+}
+
+/* ===== CONFETTI ===== */
+#confetti-canvas {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  z-index: 999;
+}
+
+/* ===== PARTICLES ===== */
+.particle-burst {
+  position: absolute;
+  width: 4px; height: 4px;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 100;
+  animation: particleFly 0.6s ease-out forwards;
+}
+@keyframes particleFly {
+  0% { opacity: 1; transform: translate(0,0) scale(1); }
+  100% { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(0); }
+}
+
+/* scrollbar */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(0,245,255,0.3); border-radius: 2px; }
+</style>
+</head>
+<body>
+<div id="game-root">
+  <canvas id="nebula-canvas"></canvas>
+  <canvas id="confetti-canvas"></canvas>
+  <div id="wipe-overlay"></div>
+
+  <!-- INTRO -->
+  <div id="intro-screen" class="screen">
+    <div class="intro-title">⚡ ДЕКОДЕР СИГНАЛОВ</div>
+    <div class="radar-anim-container">
+      <canvas id="intro-radar"></canvas>
+    </div>
+    <div class="intro-text" id="intro-text"></div>
+    <button class="btn-start" id="intro-btn" style="display:none" onclick="startPhase1()">НАЧАТЬ →</button>
+  </div>
+
+  <!-- PHASE 1: RADAR -->
+  <div id="radar-screen" class="screen">
+    <div id="radar-hud">
+      <div class="hud-label" id="word-count-label">📡 Слова: 0/12</div>
+      <div class="hud-bar-outer"><div class="hud-bar-inner" id="word-bar"></div></div>
+    </div>
+    <div id="radar-canvas-wrap">
+      <canvas id="radar-canvas"></canvas>
+      <div id="radar-flash" style="background:rgba(255,0,0,0.4)"></div>
+    </div>
+    <div id="radar-footer">
+      <div id="timer-bar-outer"><div id="timer-bar-inner"></div></div>
+      <div id="timer-label">⏱ 40 сек</div>
+    </div>
+    <div id="phase1-result"></div>
+  </div>
+
+  <!-- PHASE 2: TERMINAL -->
+  <div id="terminal-screen" class="screen">
+    <div id="crt-overlay"></div>
+    <div id="crt-edge"></div>
+    <div id="terminal-inner">
+      <div id="terminal-header">
+        <span>ДЕШИФРАТОР v2.4 | СТАТУС: <span id="term-status-txt">АКТИВЕН</span></span>
+        <span class="cursor-blink">█</span>
+      </div>
+      <div id="terminal-progress-bar"><div id="terminal-progress-fill"></div></div>
+      <div id="terminal-message"></div>
+      <div id="terminal-status"></div>
+      <div id="word-chips"></div>
+      <div id="word-selector">
+        <div id="word-selector-title">▶ Выбери слово:</div>
+        <div id="word-options"></div>
+      </div>
+    </div>
+    <div id="terminal-complete">СООБЩЕНИЕ ДЕКОДИРОВАНО! 🎉</div>
+  </div>
+
+  <!-- PHASE 3: CHAT -->
+  <div id="chat-screen" class="screen">
+    <div id="chat-header">
+      <div class="chat-avatar">🛸</div>
+      <div class="chat-info">
+        <div class="chat-name">Станция 7-G</div>
+        <div class="chat-status">в сети</div>
+      </div>
+    </div>
+    <div id="chat-messages"></div>
+    <div id="chat-input-area">
+      <div id="chat-question"></div>
+      <div id="chat-options"></div>
+    </div>
+  </div>
+
+  <!-- FINALE -->
+  <div id="finale-screen" class="screen">
+    <div id="finale-inner">
+      <div class="finale-title">📡 МИССИЯ ВЫПОЛНЕНА!</div>
+      <div class="finale-stats" id="finale-stats"></div>
+      <div class="finale-score" id="finale-score"></div>
+      <div class="finale-secret">
+        <h3>🧠 СЕКРЕТ ИИ: Ты работал как настоящий ChatGPT!</h3>
+        <p>Вот что делают языковые модели:</p>
+        <br>
+        <p><b style="color:#00f5ff">1.</b> Разбивают текст на <b>СЛОВА</b> (как ты собирал на радаре)</p>
+        <p><b style="color:#00f5ff">2.</b> Предсказывают слово по <b>КОНТЕКСТУ</b><br>
+        (как ты выбирал «СТАНЦИЯ» а не «КНОПКА» — потому что по смыслу подходит!)</p>
+        <p><b style="color:#00f5ff">3.</b> Чем больше контекста — тем <b>точнее</b> предсказание</p>
+        <br>
+        <p>Когда ты пишешь ChatGPT — он делает ровно это: угадывает следующее слово, одно за другим.</p>
+        <br>
+        <p style="color:#FFD700">Теперь ты знаешь его секрет! 🤫</p>
+      </div>
+      <div class="finale-btns">
+        <button class="finale-btn primary" onclick="restartGame()">ЕЩЁ РАЗ 🔄</button>
+        <button class="finale-btn secondary" onclick="notifyDone()">К КОРАБЛЮ →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// =========================================================
+//  GLOBAL STATE
+// =========================================================
+const state = {
+  phase: 'intro',
+  wordsFound: [],
+  score: 0,
+  startTime: 0,
+  phase1Words: 0,
+  phase2Done: false,
+  phase3Sentence: 0,
+  correctAnswers: 0,
+  totalAnswers: 0
+};
+
+// =========================================================
+//  NEBULA BACKGROUND
+// =========================================================
+(function initNebula() {
+  const canvas = document.getElementById('nebula-canvas');
+  const ctx = canvas.getContext('2d');
+  const clouds = [];
+  function resize() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+  for (let i = 0; i < 6; i++) {
+    clouds.push({
+      x: Math.random() * window.innerWidth,
+      y: Math.random() * window.innerHeight,
+      r: 80 + Math.random() * 120,
+      hue: Math.random() > 0.5 ? 280 : 200,
+      vx: (Math.random() - 0.5) * 0.15,
+      vy: (Math.random() - 0.5) * 0.1
+    });
+  }
+  // Stars
+  const stars = [];
+  for (let i = 0; i < 120; i++) {
+    stars.push({ x: Math.random(), y: Math.random(), r: Math.random() * 1.5 + 0.3, a: Math.random() });
+  }
+  function drawNebula() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = '#050510';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    // stars
+    stars.forEach(s => {
+      ctx.beginPath();
+      ctx.arc(s.x * canvas.width, s.y * canvas.height, s.r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(200,220,255,${s.a * 0.7})`;
+      ctx.fill();
+    });
+    // nebula clouds
+    clouds.forEach(c => {
+      c.x += c.vx;
+      c.y += c.vy;
+      if (c.x < -c.r) c.x = canvas.width + c.r;
+      if (c.x > canvas.width + c.r) c.x = -c.r;
+      if (c.y < -c.r) c.y = canvas.height + c.r;
+      if (c.y > canvas.height + c.r) c.y = -c.r;
+      const g = ctx.createRadialGradient(c.x, c.y, 0, c.x, c.y, c.r);
+      g.addColorStop(0, `hsla(${c.hue},80%,50%,0.08)`);
+      g.addColorStop(1, `hsla(${c.hue},80%,30%,0)`);
+      ctx.beginPath();
+      ctx.arc(c.x, c.y, c.r, 0, Math.PI * 2);
+      ctx.fillStyle = g;
+      ctx.fill();
+    });
+    requestAnimationFrame(drawNebula);
+  }
+  drawNebula();
+})();
+
+// =========================================================
+//  WIPE TRANSITION
+// =========================================================
+function wipeTransition(cb) {
+  const wipe = document.getElementById('wipe-overlay');
+  wipe.classList.remove('wiping');
+  void wipe.offsetWidth;
+  wipe.classList.add('wiping');
+  setTimeout(cb, 450);
+  setTimeout(() => wipe.classList.remove('wiping'), 1050);
+}
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => {
+    s.classList.remove('active');
+  });
+  const target = document.getElementById(id);
+  if (target) {
+    target.classList.add('active');
+  }
+}
+
+// =========================================================
+//  INTRO
+// =========================================================
+(function initIntro() {
+  const canvas = document.getElementById('intro-radar');
+  const size = Math.max(40, Math.min(180, window.innerWidth * 0.38));
+  canvas.width = size; canvas.height = size;
+  const ctx = canvas.getContext('2d');
+  let angle = 0;
+  let blipTimer = 0;
+  let blips = [];
+  for (let i = 0; i < 3; i++) {
+    const a = Math.random() * Math.PI * 2;
+    const r = (0.3 + Math.random() * 0.5) * Math.max(1, size / 2 - 10);
+    blips.push({ a, r, alpha: 0 });
+  }
+
+  function drawIntroRadar() {
+    const cx = size / 2, cy = size / 2, R = Math.max(1, size / 2 - 4);
+    ctx.clearRect(0, 0, size, size);
+    // bg
+    ctx.beginPath(); ctx.arc(cx, cy, R, 0, Math.PI * 2);
+    ctx.fillStyle = '#020e06'; ctx.fill();
+    ctx.strokeStyle = 'rgba(0,255,136,0.3)'; ctx.lineWidth = 1; ctx.stroke();
+    // grid circles
+    [0.33, 0.66, 1].forEach(f => {
+      ctx.beginPath(); ctx.arc(cx, cy, R * f, 0, Math.PI * 2);
+      ctx.strokeStyle = 'rgba(0,255,136,0.15)'; ctx.lineWidth = 0.8; ctx.stroke();
+    });
+    // crosshairs
+    ctx.strokeStyle = 'rgba(0,255,136,0.15)';
+    ctx.lineWidth = 0.8;
+    [0, Math.PI/2, Math.PI, Math.PI*1.5].forEach(a => {
+      ctx.beginPath();
+      ctx.moveTo(cx, cy);
+      ctx.lineTo(cx + Math.cos(a)*R, cy + Math.sin(a)*R);
+      ctx.stroke();
+    });
+    // sweep trail
+    for (let i = 0; i < 30; i++) {
+      const a2 = angle - (i * 0.06);
+      const alpha = (1 - i/30) * 0.35;
+      ctx.beginPath();
+      ctx.moveTo(cx, cy);
+      ctx.arc(cx, cy, R, a2 - 0.07, a2);
+      ctx.closePath();
+      ctx.fillStyle = `rgba(0,255,136,${alpha})`;
+      ctx.fill();
+    }
+    // beam
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.lineTo(cx + Math.cos(angle)*R, cy + Math.sin(angle)*R);
+    ctx.strokeStyle = 'rgba(0,255,136,0.9)'; ctx.lineWidth = 1.5; ctx.stroke();
+    // blips
+    blipTimer++;
+    blips.forEach(b => {
+      const diff = ((b.a - angle) % (Math.PI*2) + Math.PI*2) % (Math.PI*2);
+      if (diff < 0.3) b.alpha = 1;
+      else b.alpha = Math.max(0, b.alpha - 0.01);
+      if (b.alpha > 0.05) {
+        const bx = cx + Math.cos(b.a)*b.r;
+        const by = cy + Math.sin(b.a)*b.r;
+        ctx.beginPath(); ctx.arc(bx, by, 4, 0, Math.PI*2);
+        ctx.fillStyle = `rgba(0,255,136,${b.alpha * 0.9})`; ctx.fill();
+      }
+    });
+    // center dot
+    ctx.beginPath(); ctx.arc(cx, cy, 3, 0, Math.PI*2);
+    ctx.fillStyle = '#00ff88'; ctx.fill();
+    angle += 0.04;
+    requestAnimationFrame(drawIntroRadar);
+  }
+  drawIntroRadar();
+})();
+
+function initIntroText() {
+  const text = `⚡ ПЕРЕХВАЧЕН СИГНАЛ!\nИсточник: неизвестная станция, сектор 7-G\nИИ-переводчик повреждён.\nДекодируй сигнал вручную, капитан!`;
+  const el = document.getElementById('intro-text');
+  const btn = document.getElementById('intro-btn');
+  let i = 0;
+  el.textContent = '';
+  const interval = setInterval(() => {
+    if (i < text.length) {
+      el.textContent += text[i];
+      i++;
+    } else {
+      clearInterval(interval);
+      btn.style.display = 'block';
+    }
+  }, 28);
+  setTimeout(() => {
+    clearInterval(interval);
+    el.textContent = text;
+    btn.style.display = 'block';
+  }, 4800);
+}
+
+// =========================================================
+//  PHASE 1: RADAR
+// =========================================================
+const REAL_WORDS = ['СТАНЦИЯ','ДВИГАТЕЛЬ','ПОМОЩЬ','ДАННЫЕ','РЕМОНТ','ОРБИТА','СЕКТОР','СИГНАЛ','ЖДЁМ','СЕРЬЁЗНО','ОТПРАВЬТЕ','ПОВРЕЖДЁН'];
+let radarCtx, radarSize, radarCX, radarCY, radarR;
+let radarAngle = 0;
+let radarDots = [];
+let radarFoundCount = 0;
+let radarTimer = 40;
+let radarTimerInterval = null;
+let radarAnimFrame = null;
+let radarRunning = false;
+let radarPhase1Active = false;
+
+function startPhase1() {
+  state.phase = 'phase1';
+  state.startTime = Date.now();
+  wipeTransition(() => {
+    showScreen('radar-screen');
+    initRadar();
+  });
+}
+
+function initRadar() {
+  const wrap = document.getElementById('radar-canvas-wrap');
+  const canvas = document.getElementById('radar-canvas');
+  const W = wrap.clientWidth;
+  const H = wrap.clientHeight;
+  radarSize = Math.min(W, H) * 0.88;
+  canvas.width = radarSize; canvas.height = radarSize;
+  radarCX = radarSize / 2; radarCY = radarSize / 2; radarR = radarSize / 2 - 8;
+  radarCtx = canvas.getContext('2d');
+  radarAngle = 0; radarFoundCount = 0; radarDots = []; radarTimer = 40;
+  state.wordsFound = [];
+
+  // Generate dots
+  for (let i = 0; i < 12; i++) {
+    let x, y, dist;
+    do {
+      x = (Math.random() - 0.5) * 2;
+      y = (Math.random() - 0.5) * 2;
+      dist = Math.sqrt(x*x + y*y);
+    } while (dist > 0.85 || dist < 0.18);
+    radarDots.push({ type: 'real', word: REAL_WORDS[i], x: radarCX + x*radarR, y: radarCY + y*radarR, found: false, alpha: 0, lastBeam: 0, phase: Math.random()*Math.PI*2 });
+  }
+  for (let i = 0; i < 8; i++) {
+    let x, y, dist;
+    do {
+      x = (Math.random() - 0.5) * 2;
+      y = (Math.random() - 0.5) * 2;
+      dist = Math.sqrt(x*x + y*y);
+    } while (dist > 0.85 || dist < 0.18);
+    radarDots.push({ type: 'noise', x: radarCX + x*radarR, y: radarCY + y*radarR, found: false, alpha: 0 });
+  }
+
+  updateWordBar();
+  radarPhase1Active = true;
+  radarRunning = true;
+  radarAnimFrame = requestAnimationFrame(radarLoop);
+
+  radarTimerInterval = setInterval(() => {
+    radarTimer--;
+    if (radarTimer <= 0) { radarTimer = 0; endPhase1(); }
+    updateTimerBar();
+  }, 1000);
+
+  document.getElementById('radar-canvas').addEventListener('click', handleRadarClick);
+  document.getElementById('radar-canvas').addEventListener('touchstart', handleRadarTouch, { passive: true });
+}
+
+let radarFrame = 0;
+function radarLoop() {
+  if (!radarRunning) return;
+  radarFrame++;
+  const ctx = radarCtx;
+  ctx.clearRect(0, 0, radarSize, radarSize);
+
+  // clip to circle
+  ctx.save();
+  ctx.beginPath();
+  ctx.arc(radarCX, radarCY, radarR, 0, Math.PI*2);
+  ctx.clip();
+
+  // bg
+  ctx.fillStyle = '#010e06';
+  ctx.fillRect(0, 0, radarSize, radarSize);
+
+  // Grid
+  ctx.strokeStyle = 'rgba(0,255,136,0.12)';
+  ctx.lineWidth = 0.8;
+  [0.33, 0.66, 1].forEach(f => {
+    ctx.beginPath(); ctx.arc(radarCX, radarCY, radarR*f, 0, Math.PI*2); ctx.stroke();
+  });
+  for (let a = 0; a < Math.PI*2; a += Math.PI/6) {
+    ctx.beginPath(); ctx.moveTo(radarCX, radarCY);
+    ctx.lineTo(radarCX + Math.cos(a)*radarR, radarCY + Math.sin(a)*radarR); ctx.stroke();
+  }
+
+  // Sweep trail
+  const trailLen = 50;
+  for (let i = trailLen; i >= 0; i--) {
+    const a = radarAngle - i * 0.04;
+    const alpha = (1 - i/trailLen) * 0.5;
+    ctx.beginPath(); ctx.moveTo(radarCX, radarCY);
+    ctx.arc(radarCX, radarCY, radarR, a - 0.04, a); ctx.closePath();
+    ctx.fillStyle = `rgba(0,255,136,${alpha})`; ctx.fill();
+  }
+  // Beam line
+  ctx.beginPath(); ctx.moveTo(radarCX, radarCY);
+  ctx.lineTo(radarCX + Math.cos(radarAngle)*radarR, radarCY + Math.sin(radarAngle)*radarR);
+  ctx.strokeStyle = 'rgba(0,255,136,0.95)'; ctx.lineWidth = 2; ctx.stroke();
+
+  // Dots
+  radarDots.forEach(dot => {
+    if (dot.found) return;
+    // calc visibility from beam angle
+    const dx = dot.x - radarCX, dy = dot.y - radarCY;
+    const dotAngle = Math.atan2(dy, dx);
+    let diff = ((radarAngle - dotAngle) % (Math.PI*2) + Math.PI*2) % (Math.PI*2);
+    // decay: fade over one full sweep
+    const fullSweep = Math.PI * 2;
+    if (diff < 0.25) {
+      dot.alpha = 1.0;
+      dot.lastBeam = radarFrame;
+    } else {
+      const framesSince = radarFrame - dot.lastBeam;
+      const sweepFrames = fullSweep / 0.04;
+      dot.alpha = Math.max(dot.type === 'real' ? 0.12 : 0, 1 - framesSince / (sweepFrames * 0.9));
+    }
+
+    if (dot.type === 'noise') {
+      // Chaotic flicker
+      const flicker = Math.random() > 0.5 ? Math.random() : 0;
+      const a = dot.alpha * flicker;
+      if (a < 0.02) { radarAngle += 0.02; return; }
+      ctx.beginPath(); ctx.arc(dot.x, dot.y, 4, 0, Math.PI*2);
+      ctx.fillStyle = `rgba(255,100,50,${a})`; ctx.fill();
+      ctx.beginPath(); ctx.arc(dot.x, dot.y, 7, 0, Math.PI*2);
+      ctx.strokeStyle = `rgba(255,80,20,${a*0.5})`; ctx.lineWidth = 1; ctx.stroke();
+    } else {
+      // Real: rhythmic pulse
+      const pulse = (Math.sin(radarFrame * 0.08 + dot.phase) + 1) / 2;
+      const urgency = radarTimer <= 10 ? 1 + Math.sin(radarFrame * 0.2) * 0.5 : 1;
+      const a = dot.alpha * (0.7 + 0.3 * pulse) * urgency;
+      const r = 4 + pulse * 2;
+      ctx.beginPath(); ctx.arc(dot.x, dot.y, r, 0, Math.PI*2);
+      ctx.fillStyle = `rgba(0,245,255,${a})`; ctx.fill();
+      // glow ring
+      ctx.beginPath(); ctx.arc(dot.x, dot.y, r + 4, 0, Math.PI*2);
+      ctx.strokeStyle = `rgba(0,245,255,${a*0.3})`; ctx.lineWidth = 1; ctx.stroke();
+    }
+  });
+
+  ctx.restore();
+
+  // Center dot
+  ctx.beginPath(); ctx.arc(radarCX, radarCY, 4, 0, Math.PI*2);
+  ctx.fillStyle = '#00ff88'; ctx.fill();
+
+  // Border
+  ctx.beginPath(); ctx.arc(radarCX, radarCY, radarR, 0, Math.PI*2);
+  ctx.strokeStyle = 'rgba(0,255,136,0.5)'; ctx.lineWidth = 2; ctx.stroke();
+
+  radarAngle += 0.035;
+  if (radarAngle >= Math.PI*2) radarAngle -= Math.PI*2;
+  radarAnimFrame = requestAnimationFrame(radarLoop);
+}
+
+function handleRadarTouch(e) {
+  const touch = e.touches[0];
+  const rect = document.getElementById('radar-canvas').getBoundingClientRect();
+  handleRadarTap(touch.clientX - rect.left, touch.clientY - rect.top);
+}
+function handleRadarClick(e) {
+  const rect = e.target.getBoundingClientRect();
+  handleRadarTap(e.clientX - rect.left, e.clientY - rect.top);
+}
+
+function handleRadarTap(tx, ty) {
+  if (!radarPhase1Active) return;
+  // Scale from display to canvas coords
+  const canvas = document.getElementById('radar-canvas');
+  const scaleX = radarSize / canvas.clientWidth;
+  const scaleY = radarSize / canvas.clientHeight;
+  const cx = tx * scaleX, cy = ty * scaleY;
+
+  let hit = null;
+  let hitDist = 999;
+  radarDots.forEach(dot => {
+    if (dot.found) return;
+    const d = Math.sqrt((dot.x - cx)**2 + (dot.y - cy)**2);
+    if (d < 22 && d < hitDist) { hit = dot; hitDist = d; }
+  });
+  if (!hit) return;
+
+  if (hit.type === 'real') {
+    hit.found = true;
+    radarFoundCount++;
+    state.wordsFound.push(hit.word);
+    state.score += 10;
+    showWordFloat(hit.word);
+    updateWordBar();
+    spawnRadarRipple(hit.x, hit.y);
+    if (radarFoundCount >= 12) endPhase1();
+  } else {
+    hit.found = true;
+    screenShake();
+    showNoiseFlash();
+  }
+}
+
+function spawnRadarRipple(x, y) {
+  // Visual ripple on canvas — handled in draw loop via special list
+}
+
+function showWordFloat(word) {
+  const canvas = document.getElementById('radar-canvas');
+  const rect = canvas.getBoundingClientRect();
+  const el = document.createElement('div');
+  el.textContent = word;
+  el.style.cssText = `position:fixed;left:${rect.left + rect.width/2}px;top:${rect.top + 40}px;transform:translate(-50%,-50%);color:#00f5ff;font-size:clamp(14px,3.5vw,18px);font-family:'Courier New',monospace;text-shadow:0 0 10px #00f5ff;pointer-events:none;z-index:200;animation:wordFloat 1.2s ease forwards;`;
+  document.head.insertAdjacentHTML('beforeend', `<style>@keyframes wordFloat{0%{opacity:1;transform:translate(-50%,-50%) scale(1.2)}100%{opacity:0;transform:translate(-50%,-200%) scale(0.8)}}</style>`);
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 1200);
+}
+
+function showNoiseFlash() {
+  const el = document.getElementById('radar-flash');
+  el.style.background = 'rgba(255,0,0,0.35)';
+  el.style.opacity = '1';
+  // show ПОМЕХА text
+  const label = document.createElement('div');
+  label.textContent = 'ПОМЕХА!';
+  label.style.cssText = `position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:#ff4444;font-size:clamp(20px,5vw,28px);font-weight:bold;font-family:'Courier New',monospace;text-shadow:0 0 20px #ff0000;pointer-events:none;z-index:201;animation:noiseFlash 0.6s ease forwards;`;
+  document.head.insertAdjacentHTML('beforeend', `<style>@keyframes noiseFlash{0%{opacity:1;transform:translate(-50%,-50%) scale(1.3)}100%{opacity:0;transform:translate(-50%,-50%) scale(0.8)}}</style>`);
+  document.getElementById('radar-canvas-wrap').appendChild(label);
+  setTimeout(() => { el.style.opacity = '0'; label.remove(); }, 500);
+}
+
+function screenShake() {
+  const wrap = document.getElementById('radar-canvas-wrap');
+  wrap.style.transform = 'translateX(6px)';
+  setTimeout(() => wrap.style.transform = 'translateX(-6px)', 60);
+  setTimeout(() => wrap.style.transform = 'translateX(4px)', 120);
+  setTimeout(() => wrap.style.transform = 'translateX(0)', 200);
+}
+
+function updateWordBar() {
+  const pct = (radarFoundCount / 12) * 100;
+  document.getElementById('word-bar').style.width = pct + '%';
+  document.getElementById('word-count-label').textContent = `📡 Слова: ${radarFoundCount}/12`;
+}
+
+function updateTimerBar() {
+  const pct = (radarTimer / 40) * 100;
+  document.getElementById('timer-bar-inner').style.width = pct + '%';
+  document.getElementById('timer-label').textContent = `⏱ ${radarTimer} сек`;
+  if (radarTimer <= 10) {
+    document.getElementById('timer-bar-inner').style.background = '#ff4444';
+    document.getElementById('timer-bar-inner').style.boxShadow = '0 0 8px #ff0000';
+    document.getElementById('timer-label').style.color = '#ff4444';
+  }
+}
+
+function endPhase1() {
+  if (!radarPhase1Active) return;
+  radarPhase1Active = false;
+  radarRunning = false;
+  clearInterval(radarTimerInterval);
+  cancelAnimationFrame(radarAnimFrame);
+  state.phase1Words = radarFoundCount;
+
+  const result = document.getElementById('phase1-result');
+  const missing = REAL_WORDS.filter(w => !state.wordsFound.includes(w));
+  // fill in missing words to always have enough
+  while (state.wordsFound.length < 12) {
+    const w = REAL_WORDS.find(r => !state.wordsFound.includes(r));
+    if (w) state.wordsFound.push(w);
+    else break;
+  }
+  result.textContent = `Сканирование завершено!\nНайдено ${radarFoundCount}/12 слов.\n\nЗАГРУЗКА ДЕШИФРАТОРА...`;
+  result.style.display = 'block';
+  setTimeout(() => {
+    result.style.display = 'none';
+    startPhase2();
+  }, 2200);
+}
+
+// =========================================================
+//  PHASE 2: TERMINAL
+// =========================================================
+const BLANKS_DATA = [
+  { sentence: 0, pos: 0, word: 'СТАНЦИЯ', wrong: ['РАКЕТА', 'КНОПКА'], correctConf: 87, wrongConfs: [42, 8] },
+  { sentence: 0, pos: 1, word: 'СЕКТОРЕ', wrong: ['ТУАЛЕТЕ', 'КАРМАНЕ'], correctConf: 91, wrongConfs: [22, 5] },
+  { sentence: 1, pos: 0, word: 'ДВИГАТЕЛЬ', wrong: ['КНОПКА', 'ПОДУШКА'], correctConf: 89, wrongConfs: [31, 6] },
+  { sentence: 1, pos: 1, word: 'СЕРЬЁЗНО', wrong: ['ВЕСЕЛО', 'ВКУСНО'], correctConf: 82, wrongConfs: [28, 10] },
+  { sentence: 2, pos: 0, word: 'ПОМОЩЬ', wrong: ['ПИЦЦА', 'МУЗЫКА'], correctConf: 94, wrongConfs: [18, 4] },
+  { sentence: 3, pos: 0, word: 'ОТПРАВЬТЕ', wrong: ['СЪЕШЬТЕ', 'УБЕРИТЕ'], correctConf: 88, wrongConfs: [25, 7] },
+  { sentence: 3, pos: 1, word: 'ДАННЫЕ', wrong: ['КОТЛЕТЫ', 'НОСКИ'], correctConf: 90, wrongConfs: [20, 5] },
+  { sentence: 3, pos: 2, word: 'РЕМОНТУ', wrong: ['КУЛИНАРИИ', 'ТАНЦАМ'], correctConf: 85, wrongConfs: [33, 9] },
+  { sentence: 4, pos: 0, word: 'ЖДЁМ', wrong: ['СПИМ', 'ПРЫГАЕМ'], correctConf: 88, wrongConfs: [38, 12] },
+  { sentence: 4, pos: 1, word: 'ОРБИТЕ', wrong: ['ДИВАНЕ', 'КУХНЕ'], correctConf: 93, wrongConfs: [24, 6] },
+];
+
+const MESSAGE_TEMPLATE = [
+  ['██████', ' в ', '██████', ' 7-G.'],
+  [' Наш ', '█████████', ' ', '████████', ' повреждён.'],
+  [' ', '██████', ' нужна помощь.'],
+  [' ', '█████████', ' ', '██████', ' по ', '███████', '.'],
+  [' Мы ', '████', ' на ', '██████', '.'],
+];
+
+let termBlanks = [];
+let currentBlankIdx = null;
+let termSolved = 0;
+let termWordsUsed = [];
+
+function startPhase2() {
+  wipeTransition(() => {
+    showScreen('terminal-screen');
+    initTerminal();
+  });
+}
+
+function initTerminal() {
+  termBlanks = [];
+  termWordsUsed = [];
+  termSolved = 0;
+  currentBlankIdx = null;
+
+  // Build message HTML
+  const msgEl = document.getElementById('terminal-message');
+  msgEl.innerHTML = '';
+  document.getElementById('word-selector').style.display = 'none';
+  document.getElementById('terminal-status').textContent = '';
+  document.getElementById('terminal-progress-fill').style.width = '0%';
+  document.getElementById('terminal-complete').style.display = 'none';
+
+  let blankCount = 0;
+  const lines = [];
+  BLANKS_DATA.forEach((b, i) => { b.idx = i; b.filled = false; b.currentConf = b.correctConf; b.wrongConfsCurrent = [...b.wrongConfs]; });
+
+  // Build typed message line by line
+  const fullLines = [
+    `████████ в ████████ 7-G.`,
+    `Наш █████████ ████████ повреждён.`,
+    `Нам нужна ██████.`,
+    `█████████ ██████ по ███████.`,
+    `Мы ████ на ██████.`
+  ];
+
+  // Map each blank to its position
+  const blankMap = [
+    [0, 1], // line 0: blank 0, blank 1
+    [2, 3], // line 1
+    [4],    // line 2
+    [5, 6, 7], // line 3
+    [8, 9], // line 4
+  ];
+
+  let html = '';
+  fullLines.forEach((line, li) => {
+    const blanks = blankMap[li];
+    let lineHtml = '';
+    // Replace █ blocks
+    let remaining = line;
+    let bi = 0;
+    const parts = remaining.split(/(█+)/);
+    parts.forEach(part => {
+      if (/█+/.test(part)) {
+        const bIdx = blanks[bi++];
+        if (bIdx !== undefined) {
+          lineHtml += `<span class="blank-block" data-bidx="${bIdx}" onclick="selectBlank(${bIdx})">████</span>`;
+          termBlanks.push(bIdx);
+        }
+      } else {
+        lineHtml += part;
+      }
+    });
+    html += `<div style="margin-bottom:4px">${lineHtml}</div>`;
+  });
+
+  // Type it out
+  let step = 0;
+  const lines2 = html;
+  msgEl.innerHTML = '';
+  // Just set it directly since it's HTML
+  msgEl.style.opacity = '0';
+  setTimeout(() => {
+    msgEl.innerHTML = lines2;
+    msgEl.style.opacity = '1';
+    msgEl.style.transition = 'opacity 0.5s';
+    buildWordChips();
+  }, 500);
+
+  // Terminal boot text
+  const headerEl = document.getElementById('term-status-txt');
+  let dots = 0;
+  const bootInterval = setInterval(() => {
+    headerEl.textContent = 'АКТИВЕН' + '.'.repeat(dots % 4);
+    dots++;
+  }, 400);
+  setTimeout(() => { clearInterval(bootInterval); headerEl.textContent = 'АКТИВЕН'; }, 3000);
+}
+
+function buildWordChips() {
+  const container = document.getElementById('word-chips');
+  container.innerHTML = '';
+  BLANKS_DATA.forEach(b => {
+    const chip = document.createElement('div');
+    chip.className = 'word-chip';
+    chip.id = `chip-${b.idx}`;
+    chip.textContent = b.word;
+    container.appendChild(chip);
+  });
+}
+
+function selectBlank(bIdx) {
+  const blank = BLANKS_DATA[bIdx];
+  if (blank.filled) return;
+  currentBlankIdx = bIdx;
+  // Highlight selected blank
+  document.querySelectorAll('.blank-block').forEach(el => el.classList.remove('active-blank'));
+  const blankEl = document.querySelector(`[data-bidx="${bIdx}"]`);
+  if (blankEl) blankEl.classList.add('active-blank');
+
+  // Show word selector
+  const selector = document.getElementById('word-selector');
+  selector.style.display = 'block';
+
+  const opts = document.getElementById('word-options');
+  opts.innerHTML = '';
+
+  // Build options: correct + 2 wrong, shuffled
+  const options = [
+    { word: blank.word, conf: blank.currentConf, correct: true },
+    { word: blank.wrong[0], conf: blank.wrongConfsCurrent[0], correct: false },
+    { word: blank.wrong[1], conf: blank.wrongConfsCurrent[1], correct: false },
+  ];
+  // shuffle
+  options.sort(() => Math.random() - 0.5);
+
+  options.forEach(opt => {
+    const div = document.createElement('div');
+    div.className = 'word-option';
+    div.innerHTML = `
+      <span class="word-option-label">${opt.word}</span>
+      <div class="conf-bar-outer"><div class="conf-bar-inner" style="width:${opt.conf}%"></div></div>
+      <span class="word-option-pct">${opt.conf}%</span>
+    `;
+    div.onclick = () => chooseWord(bIdx, opt.word, opt.correct, opts, options);
+    opts.appendChild(div);
+  });
+}
+
+function chooseWord(bIdx, word, correct, optsEl, allOptions) {
+  const blank = BLANKS_DATA[bIdx];
+  const status = document.getElementById('terminal-status');
+
+  if (correct) {
+    blank.filled = true;
+    state.score += 20;
+    state.correctAnswers++;
+    state.totalAnswers++;
+    // Replace blank with gold word
+    const blankEl = document.querySelector(`[data-bidx="${bIdx}"]`);
+    if (blankEl) {
+      const span = document.createElement('span');
+      span.className = 'filled-word';
+      span.textContent = word;
+      blankEl.replaceWith(span);
+      // Gold particle burst
+      const rect = span.getBoundingClientRect();
+      spawnParticles(rect.left + rect.width/2, rect.top + rect.height/2, '#FFD700');
+    }
+    // Mark chip as used
+    const chip = document.getElementById(`chip-${bIdx}`);
+    if (chip) chip.classList.add('used');
+
+    status.style.color = '#FFD700';
+    status.textContent = '✅ СОВПАДЕНИЕ! ИИ тоже выбрал бы это слово.';
+
+    termSolved++;
+    document.getElementById('terminal-progress-fill').style.width = (termSolved / BLANKS_DATA.length * 100) + '%';
+
+    document.getElementById('word-selector').style.display = 'none';
+    currentBlankIdx = null;
+
+    // Update other blank confidences slightly (context shift)
+    BLANKS_DATA.forEach(b => {
+      if (!b.filled) {
+        b.currentConf = Math.min(99, b.currentConf + Math.round(Math.random() * 4));
+      }
+    });
+
+    if (termSolved >= BLANKS_DATA.length) {
+      setTimeout(finishPhase2, 800);
+    }
+  } else {
+    state.totalAnswers++;
+    // Wrong: flash red, bounce back
+    status.style.color = '#ff4444';
+    status.textContent = '❌ ОШИБКА КОНТЕКСТА. Попробуй другое.';
+    // Increase correct bar in options
+    allOptions.forEach(o => {
+      if (o.correct) o.conf = Math.min(99, o.conf + 8);
+      else o.conf = Math.max(1, o.conf - 4);
+    });
+    // Re-render options
+    selectBlank(bIdx);
+    // Shake the blank
+    const blankEl = document.querySelector(`[data-bidx="${bIdx}"]`);
+    if (blankEl) {
+      blankEl.style.animation = 'none';
+      blankEl.style.transform = 'translateX(-6px)';
+      setTimeout(() => blankEl.style.transform = 'translateX(6px)', 60);
+      setTimeout(() => blankEl.style.transform = 'translateX(0)', 130);
+    }
+  }
+}
+
+function spawnParticles(x, y, color) {
+  for (let i = 0; i < 8; i++) {
+    const p = document.createElement('div');
+    p.className = 'particle-burst';
+    const angle = (i / 8) * Math.PI * 2;
+    const dist = 30 + Math.random() * 30;
+    p.style.cssText = `left:${x}px;top:${y}px;background:${color};position:fixed;--dx:${Math.cos(angle)*dist}px;--dy:${Math.sin(angle)*dist}px;`;
+    document.body.appendChild(p);
+    setTimeout(() => p.remove(), 700);
+  }
+}
+
+function finishPhase2() {
+  // Flash all filled words
+  document.querySelectorAll('.filled-word').forEach(el => {
+    el.style.animation = 'wordFlash 0.5s ease 3';
+  });
+  document.head.insertAdjacentHTML('beforeend', '<style>@keyframes wordFlash{0%,100%{color:#FFD700;text-shadow:0 0 10px #FFD700}50%{color:#ffffff;text-shadow:0 0 20px #ffffff}}</style>');
+
+  const comp = document.getElementById('terminal-complete');
+  comp.style.display = 'block';
+  state.phase2Done = true;
+  setTimeout(() => {
+    comp.style.display = 'none';
+    startPhase3();
+  }, 2000);
+}
+
+// =========================================================
+//  PHASE 3: CHAT
+// =========================================================
+const DECODED_MESSAGE = [
+  'СТАНЦИЯ в СЕКТОРЕ 7-G.',
+  'Наш ДВИГАТЕЛЬ СЕРЬЁЗНО повреждён.',
+  'Нам нужна ПОМОЩЬ.',
+  'ОТПРАВЬТЕ ДАННЫЕ по РЕМОНТУ.',
+  'Мы ЖДЁМ на ОРБИТЕ.'
+];
+
+const CHAT_SENTENCES = [
+  {
+    template: 'Мы получили ваш ___',
+    options: [
+      { text: 'СИГНАЛ', correct: true },
+      { text: 'БУТЕРБРОД', correct: false, reply: '??? Какой бутерброд? 🤔 Мы в открытом космосе!' },
+      { text: 'ХОЛОДИЛЬНИК', correct: false, reply: 'У нас нет холодильника... мы станция! 🤷' }
+    ],
+    correctReply: 'Отлично! 😊 Рады слышать!'
+  },
+  {
+    template: 'Высылаем данные по ___',
+    options: [
+      { text: 'КУЛИНАРИИ', correct: false, reply: 'Мы не голодны! 😅 Нам нужны данные по ремонту!' },
+      { text: 'РЕМОНТУ', correct: true },
+      { text: 'ТАНЦАМ', correct: false, reply: 'Сейчас не время для танцев! 💃❌ Двигатель сломан!' }
+    ],
+    correctReply: 'Принято! Загружаем... ⚡'
+  },
+  {
+    template: 'Держитесь, помощь ___!',
+    options: [
+      { text: 'ВКУСНАЯ', correct: false, reply: 'Помощь не едят! 🍽️❌ Что значит «вкусная»?!' },
+      { text: 'УБЕЖАЛА', correct: false, reply: 'Не пугайте нас! 😱 Помощь не должна убегать!' },
+      { text: 'БЛИЗКО', correct: true }
+    ],
+    correctReply: 'СПАСИБО! Ждём вас! 🎉🛸'
+  }
+];
+
+let chatSentenceIdx = 0;
+let chatBusy = false;
+
+function startPhase3() {
+  wipeTransition(() => {
+    showScreen('chat-screen');
+    initChat();
+  });
+}
+
+function initChat() {
+  chatSentenceIdx = 0;
+  chatBusy = false;
+  state.phase3Sentence = 0;
+  const messages = document.getElementById('chat-messages');
+  messages.innerHTML = '';
+  document.getElementById('chat-input-area').style.display = 'none';
+
+  // Show decoded message bubbles one by one
+  let delay = 500;
+  DECODED_MESSAGE.forEach((msg, i) => {
+    setTimeout(() => showTypingThenBubble(msg, 'received', 700), delay);
+    delay += 1200;
+  });
+
+  // Then alien asks
+  setTimeout(() => {
+    showTypingThenBubble('Вы получили наше сообщение? Пожалуйста, ответьте!', 'received', 900, () => {
+      showChatInput(0);
+    });
+  }, delay + 400);
+}
+
+function showTypingThenBubble(text, side, typingDur, cb) {
+  const messages = document.getElementById('chat-messages');
+  const typing = document.createElement('div');
+  typing.className = 'typing-indicator';
+  typing.innerHTML = '<div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>';
+  if (side === 'received') messages.appendChild(typing);
+  messages.scrollTop = messages.scrollHeight;
+
+  setTimeout(() => {
+    typing.remove();
+    const bubble = document.createElement('div');
+    bubble.className = `chat-bubble ${side}`;
+    bubble.textContent = text;
+    messages.appendChild(bubble);
+    messages.scrollTop = messages.scrollHeight;
+    if (cb) cb();
+  }, typingDur);
+}
+
+function showChatInput(idx) {
+  if (idx >= CHAT_SENTENCES.length) return;
+  const s = CHAT_SENTENCES[idx];
+  const area = document.getElementById('chat-input-area');
+  const qEl = document.getElementById('chat-question');
+  const optsEl = document.getElementById('chat-options');
+
+  qEl.textContent = s.template.replace('___', '___');
+  optsEl.innerHTML = '';
+  area.style.display = 'block';
+
+  // Shuffle options
+  const shuffled = [...s.options].sort(() => Math.random() - 0.5);
+  shuffled.forEach(opt => {
+    const btn = document.createElement('div');
+    btn.className = `chat-option ${opt.correct ? 'correct-opt' : 'funny-opt'}`;
+    btn.textContent = opt.text;
+    btn.onclick = () => handleChatOption(idx, opt, btn);
+    optsEl.appendChild(btn);
+  });
+
+  document.getElementById('chat-messages').scrollTop = document.getElementById('chat-messages').scrollHeight;
+}
+
+function handleChatOption(idx, opt, btn) {
+  if (chatBusy) return;
+  chatBusy = true;
+
+  const area = document.getElementById('chat-input-area');
+  const s = CHAT_SENTENCES[idx];
+  const messages = document.getElementById('chat-messages');
+  const sentText = s.template.replace('___', opt.text);
+
+  if (opt.correct) {
+    area.style.display = 'none';
+    // Send correct bubble
+    const bubble = document.createElement('div');
+    bubble.className = 'chat-bubble sent';
+    bubble.textContent = sentText;
+    messages.appendChild(bubble);
+    messages.scrollTop = messages.scrollHeight;
+    state.correctAnswers++;
+    state.totalAnswers++;
+    state.score += 30;
+
+    const isLast = idx === CHAT_SENTENCES.length - 1;
+    const reply = isLast
+      ? 'Данные получены! Двигатель починен! Ваш ИИ-переводчик восстановлен на 100%! Спасибо, капитан! 🚀✨'
+      : s.correctReply;
+
+    setTimeout(() => {
+      showTypingThenBubble(reply, 'received', 900, () => {
+        chatBusy = false;
+        if (isLast) {
+          launchConfetti();
+          setTimeout(() => showFinale(), 2500);
+        } else {
+          chatSentenceIdx = idx + 1;
+          showChatInput(chatSentenceIdx);
+        }
+      });
+    }, 500);
+  } else {
+    state.totalAnswers++;
+    // Send wrong bubble
+    const bubble = document.createElement('div');
+    bubble.className = 'chat-bubble sent-error';
+    bubble.textContent = sentText;
+    messages.appendChild(bubble);
+    messages.scrollTop = messages.scrollHeight;
+
+    setTimeout(() => {
+      showTypingThenBubble(opt.reply, 'received', 700, () => {
+        // Remove wrong bubble and try again
+        bubble.remove();
+        chatBusy = false;
+        // Re-render options
+        showChatInput(idx);
+      });
+    }, 600);
+  }
+}
+
+// =========================================================
+//  CONFETTI
+// =========================================================
+function launchConfetti() {
+  const canvas = document.getElementById('confetti-canvas');
+  const ctx = canvas.getContext('2d');
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  const particles = [];
+  const colors = ['#00f5ff', '#ff00aa', '#FFD700', '#00ff88', '#ffffff'];
+  for (let i = 0; i < 150; i++) {
+    particles.push({
+      x: Math.random() * canvas.width,
+      y: -20,
+      vx: (Math.random() - 0.5) * 4,
+      vy: 2 + Math.random() * 4,
+      color: colors[Math.floor(Math.random() * colors.length)],
+      r: 4 + Math.random() * 6,
+      rot: Math.random() * Math.PI * 2,
+      vrot: (Math.random() - 0.5) * 0.2
+    });
+  }
+  let frame = 0;
+  function animate() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    particles.forEach(p => {
+      p.x += p.vx; p.y += p.vy; p.vy += 0.05;
+      p.rot += p.vrot;
+      ctx.save();
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.rot);
+      ctx.fillStyle = p.color;
+      ctx.fillRect(-p.r/2, -p.r/2, p.r, p.r * 0.5);
+      ctx.restore();
+    });
+    frame++;
+    if (frame < 180) requestAnimationFrame(animate);
+    else ctx.clearRect(0, 0, canvas.width, canvas.height);
+  }
+  animate();
+}
+
+// =========================================================
+//  FINALE
+// =========================================================
+function showFinale() {
+  wipeTransition(() => {
+    showScreen('finale-screen');
+    buildFinale();
+  });
+}
+
+function buildFinale() {
+  const elapsed = Math.floor((Date.now() - state.startTime) / 1000);
+  const mins = Math.floor(elapsed / 60);
+  const secs = elapsed % 60;
+  const accuracy = state.totalAnswers > 0 ? Math.round((state.correctAnswers / state.totalAnswers) * 100) : 100;
+
+  state.score += accuracy; // bonus
+  // Save high score
+  const prev = parseInt(localStorage.getItem('signalDecoderHighScore') || '0');
+  if (state.score > prev) localStorage.setItem('signalDecoderHighScore', state.score);
+  const best = localStorage.getItem('signalDecoderHighScore');
+
+  document.getElementById('finale-stats').innerHTML = `
+📡 Сканирование: ${state.phase1Words}/12 слов найдено<br>
+🖥️ Дешифровка: завершена ✅<br>
+💬 Ответ: доставлен ✅<br>
+🎯 Точность: ${accuracy}%<br>
+⏱️ Время: ${mins}:${secs.toString().padStart(2,'0')}<br>
+🏆 Рекорд: ${best} очков
+  `;
+  document.getElementById('finale-score').textContent = `💫 Очки: ${state.score.toLocaleString()}`;
+  launchConfetti();
+  setTimeout(notifyDone, 8000);
+}
+
+// =========================================================
+//  RESTART
+// =========================================================
+function restartGame() {
+  state.phase = 'intro';
+  state.wordsFound = [];
+  state.score = 0;
+  state.startTime = 0;
+  state.phase1Words = 0;
+  state.phase2Done = false;
+  state.phase3Sentence = 0;
+  state.correctAnswers = 0;
+  state.totalAnswers = 0;
+  radarRunning = false;
+  clearInterval(radarTimerInterval);
+  cancelAnimationFrame(radarAnimFrame);
+
+  document.getElementById('word-selector').style.display = 'none';
+  document.getElementById('chat-messages').innerHTML = '';
+  document.getElementById('chat-input-area').style.display = 'none';
+
+  wipeTransition(() => {
+    showScreen('intro-screen');
+    document.getElementById('intro-text').textContent = '';
+    document.getElementById('intro-btn').style.display = 'none';
+    setTimeout(initIntroText, 300);
+  });
+}
+
+// =========================================================
+//  BOOT
+// =========================================================
+document.addEventListener('DOMContentLoaded', () => {
+  showScreen('intro-screen');
+  initIntroText();
+});
+
+function notifyDone() {
+  window.parent.postMessage({type:'level_done', earned:8, total:10}, '*');
+}
+</script>
+</body>
+</html>

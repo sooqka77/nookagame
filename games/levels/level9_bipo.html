@@ -1,0 +1,1137 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <!-- base href removed -->
+  
+  
+  
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>БИПО — Робот-помощник</title>
+<link href="https://fonts.bunny.net/css?family=space-grotesk:400,500,700" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none}
+html,body{width:100%;height:100%;overflow:hidden;background:#050510;font-family:'Space Grotesk',Arial,sans-serif;touch-action:manipulation}
+#root{width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;overflow:hidden}
+
+/* STARFIELD */
+.starbg{position:absolute;inset:0;pointer-events:none;z-index:0}
+.star{position:absolute;background:#fff;border-radius:50%;animation:twinkle var(--d) infinite alternate}
+@keyframes twinkle{from{opacity:var(--o)}to{opacity:0.05;transform:scale(0.4)}}
+
+/* SCREENS */
+.scr{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;z-index:10}
+.scr.on{display:flex}
+
+/* ===== INTRO ===== */
+#s-intro{background:#0B1026;justify-content:center;padding:20px;gap:10px}
+.alarm{position:absolute;top:0;left:0;right:0;height:5px;background:linear-gradient(90deg,#ff0000,#ff6600,#ff0000);animation:alm 0.9s ease-in-out infinite}
+@keyframes alm{0%,100%{opacity:0.2}50%{opacity:1}}
+.intro-card{background:rgba(0,245,255,0.05);border:1px solid #00f5ff33;border-radius:20px;padding:20px 24px;max-width:460px;width:100%;text-align:center}
+.intro-logo{font-size:clamp(20px,5vw,28px);font-weight:900;color:#00f5ff;text-shadow:0 0 20px #00f5ff;margin-bottom:12px;letter-spacing:2px}
+#intro-typed{color:#cde;font-size:clamp(13px,3.2vw,16px);line-height:1.9;min-height:160px}
+.cursor{display:inline-block;width:2px;height:1.1em;background:#00f5ff;animation:blink .6s infinite;vertical-align:middle;margin-left:1px}
+@keyframes blink{50%{opacity:0}}
+#intro-bipo-wrap{font-size:clamp(60px,18vw,100px);animation:wave .8s ease-in-out infinite alternate;cursor:pointer;display:none}
+@keyframes wave{from{transform:rotate(-8deg) scale(1)}to{transform:rotate(8deg) scale(1.08)}}
+.big-btn{background:linear-gradient(135deg,#00d4ff,#0066ff);color:#fff;border:none;border-radius:50px;padding:13px 32px;font-size:clamp(15px,4vw,19px);font-weight:900;cursor:pointer;box-shadow:0 0 22px #00f5ff66;letter-spacing:1px;transition:transform .1s,box-shadow .1s}
+.big-btn:active{transform:scale(0.92);box-shadow:0 0 8px #00f5ff33}
+
+/* ===== GAME SCREEN ===== */
+#s-game{justify-content:flex-start;overflow:hidden}
+.g-header{width:100%;display:flex;align-items:center;justify-content:space-between;padding:5px 12px;background:rgba(0,0,0,0.5);z-index:20;flex-shrink:0;border-bottom:1px solid #00f5ff22}
+.phase-lbl{color:#00f5ff;font-weight:900;font-size:clamp(10px,3vw,14px);text-shadow:0 0 8px #00f5ff}
+.hearts-disp{font-size:clamp(13px,3.5vw,18px)}
+.score-lbl{color:#ffd700;font-weight:700;font-size:clamp(10px,2.8vw,13px)}
+
+/* GRID */
+.grid-wrap{flex:1;display:flex;align-items:center;justify-content:center;position:relative;min-height:0;width:100%;overflow:hidden}
+.maze-box{position:relative;flex-shrink:0}
+.maze-grid{display:grid;gap:3px;background:#050d1a;border:2px solid #00f5ff55;border-radius:10px;padding:5px;box-shadow:0 0 40px #00f5ff1a,0 0 80px #00f5ff0a;position:relative}
+.cell{position:relative;border-radius:5px;background:#0d1b3e;border:1px solid #162040;display:flex;align-items:center;justify-content:center;overflow:hidden;transition:background .2s}
+/* grid pattern on floor */
+.cell::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent,transparent 9px,rgba(0,245,255,0.03) 9px,rgba(0,245,255,0.03) 10px),repeating-linear-gradient(0deg,transparent,transparent 9px,rgba(0,245,255,0.03) 9px,rgba(0,245,255,0.03) 10px)}
+.cell.wall{background:#021018;border-color:#00f5ff88;box-shadow:inset 0 0 10px #00f5ff33,0 0 8px #00f5ff22}
+.cell.wall::before{display:none}
+.cell.wall::after{content:'';position:absolute;inset:0;background:repeating-linear-gradient(45deg,transparent,transparent 5px,rgba(0,245,255,0.08) 5px,rgba(0,245,255,0.08) 10px)}
+.cell.wall-hit{animation:wallhit .5s ease-out;background:#3a0000!important;border-color:#ff4400!important;box-shadow:inset 0 0 15px #ff2200!important}
+@keyframes wallhit{0%{background:#ff3300}100%{background:#021018}}
+.cell.wall-cracked{background:#1a0a00!important;border-color:#ff8c00!important;box-shadow:inset 0 0 12px #ff6a0055!important;position:relative}
+.cell.wall-cracked::after{content:'';position:absolute;inset:0;background:repeating-linear-gradient(45deg,transparent,transparent 5px,rgba(255,140,0,0.12) 5px,rgba(255,140,0,0.12) 10px)}
+.cell.wall-cracked .crack-lines{position:absolute;inset:0;pointer-events:none}
+.cell.wall-broken{animation:wallbreak .55s ease-out forwards}
+@keyframes wallbreak{0%{transform:scale(1);opacity:1;filter:brightness(2)}50%{transform:scale(1.18);opacity:.7;filter:brightness(3) saturate(2)}100%{transform:scale(0.2);opacity:0;filter:brightness(1)}}
+.cb.smash{background:linear-gradient(135deg,#92400e,#f59e0b);width:clamp(44px,10.5vw,56px);height:clamp(44px,10.5vw,56px);font-size:clamp(17px,4.5vw,22px);box-shadow:0 4px 12px #f59e0b66;animation:smashpulse .7s ease-in-out infinite}
+@keyframes smashpulse{0%,100%{box-shadow:0 4px 12px #f59e0b66;transform:scale(1)}50%{box-shadow:0 4px 22px #f59e0bcc;transform:scale(1.07)}}
+.smash-counter{position:absolute;top:-6px;right:-6px;background:#ef4444;color:#fff;border-radius:50%;width:18px;height:18px;font-size:10px;font-weight:900;display:flex;align-items:center;justify-content:center;border:1.5px solid #fff}
+.smash-wall-hi{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:1.4em;pointer-events:none;animation:wallglow .6s ease-in-out infinite alternate}
+@keyframes wallglow{from{opacity:.5;transform:scale(.9)}to{opacity:1;transform:scale(1.1)}}
+.cell.danger{background:#180404;border-color:#ff330099;animation:dngr 1.4s ease-in-out infinite}
+@keyframes dngr{0%,100%{box-shadow:inset 0 0 10px #ff220033}50%{box-shadow:inset 0 0 22px #ff220077}}
+.cell.danger::before{display:none}
+.cell.danger-stripe::after{content:'';position:absolute;inset:0;background:repeating-linear-gradient(45deg,transparent,transparent 5px,rgba(255,60,0,0.1) 5px,rgba(255,60,0,0.1) 10px)}
+.cell.trail::before{background:radial-gradient(circle,rgba(0,245,255,0.12) 0%,transparent 70%)}
+.cell.module{animation:modpulse 1s ease-in-out infinite}
+@keyframes modpulse{0%,100%{box-shadow:inset 0 0 15px #ffd70055}50%{box-shadow:inset 0 0 28px #ffd700aa}}
+
+/* BIPO */
+#bipo-el{position:absolute;z-index:30;pointer-events:none;transition:left .3s cubic-bezier(.4,0,.2,1),top .3s cubic-bezier(.4,0,.2,1)}
+#bipo-svg{width:100%;height:100%;overflow:visible;filter:drop-shadow(0 4px 8px rgba(59,130,246,0.5))}
+#bipo-el.idle #bipo-svg{animation:bidle 2s ease-in-out infinite}
+@keyframes bidle{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+#bipo-el.bonk #bipo-svg{animation:bbonk .65s ease-in-out}
+@keyframes bbonk{0%{transform:scale(1) rotate(0deg)}15%{transform:scale(1.25) rotate(8deg)}35%{transform:scale(0.8) rotate(-10deg) translateY(6px)}55%{transform:scale(1.1) rotate(5deg)}75%{transform:scale(0.95) rotate(-3deg)}100%{transform:scale(1) rotate(0deg)}}
+#bipo-el.walk-r #bipo-svg{animation:bwalkr .32s ease-in-out}
+@keyframes bwalkr{0%,100%{transform:rotate(0)}25%{transform:rotate(6deg) translateX(3px)}75%{transform:rotate(-4deg)}}
+#bipo-el.walk-l #bipo-svg{animation:bwalkl .32s ease-in-out}
+@keyframes bwalkl{0%,100%{transform:rotate(0)}25%{transform:rotate(-6deg) translateX(-3px)}75%{transform:rotate(4deg)}}
+#bipo-el.walk-u #bipo-svg{animation:bwalku .32s ease-in-out}
+@keyframes bwalku{0%,100%{transform:rotate(0)}25%{transform:rotate(-4deg) translateY(-3px)}75%{transform:rotate(4deg)}}
+#bipo-el.walk-d #bipo-svg{animation:bwalkd .32s ease-in-out}
+@keyframes bwalkd{0%,100%{transform:rotate(0)}25%{transform:rotate(4deg) translateY(3px)}75%{transform:rotate(-4deg)}}
+#bipo-el.zap #bipo-svg{animation:bzap .7s ease-in-out}
+@keyframes bzap{0%{transform:scale(1)}15%{transform:scale(1.3) rotate(-6deg)}35%{transform:scale(0.85) rotate(10deg)}55%{transform:scale(1.15) rotate(-4deg)}75%{transform:scale(0.95) rotate(2deg)}100%{transform:scale(1)}}
+#bipo-el.victory #bipo-svg{animation:bvic .45s ease-in-out infinite alternate}
+@keyframes bvic{from{transform:translateY(0) scale(1) rotate(-6deg)}to{transform:translateY(-8px) scale(1.1) rotate(6deg)}}
+#bipo-el.spin #bipo-svg{animation:bspin .35s linear infinite}
+@keyframes bspin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+
+/* SPEECH BUBBLE */
+#speech{position:absolute;background:#fff;border-radius:14px;padding:5px 11px;font-size:clamp(10px,2.3vw,13px);font-weight:700;color:#222;box-shadow:0 4px 14px rgba(0,0,0,0.35);pointer-events:none;z-index:40;white-space:nowrap;display:none;max-width:180px;text-align:center;line-height:1.3}
+#speech::after{content:'';position:absolute;bottom:-7px;left:50%;transform:translateX(-50%);border:7px solid transparent;border-top-color:#fff;border-bottom:none}
+
+/* PARTICLES */
+.bstar{position:absolute;pointer-events:none;z-index:35;font-size:14px;animation:bstaranim .8s ease-out forwards}
+@keyframes bstaranim{0%{opacity:1;transform:rotate(0) translateY(0) scale(1)}100%{opacity:0;transform:rotate(540deg) translateY(-35px) scale(0.3)}}
+.confetti{position:absolute;border-radius:3px;pointer-events:none;animation:cfall linear forwards;z-index:80}
+@keyframes cfall{0%{transform:translateY(-10px) rotate(0deg);opacity:1}100%{transform:translateY(105vh) rotate(900deg);opacity:0}}
+
+/* COMMAND PANEL */
+.cmd-panel{width:100%;background:linear-gradient(to top,#020a16,#0a1428);border-top:2px solid #00f5ff22;padding:7px 8px 10px;flex-shrink:0;z-index:20}
+.q-label{color:#4a5a8a;font-size:10px;text-align:center;margin-bottom:3px;letter-spacing:1px;text-transform:uppercase}
+.cmd-queue{display:flex;gap:5px;min-height:42px;background:#030c1a;border-radius:11px;padding:5px 8px;margin-bottom:7px;overflow-x:auto;align-items:center;flex-wrap:nowrap;scrollbar-width:none;border:1px solid #0d1e40}
+.cmd-queue::-webkit-scrollbar{display:none}
+.qs{min-width:36px;height:36px;background:linear-gradient(135deg,#1e3a8a,#1e40af);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:17px;cursor:pointer;border:1px solid #3b82f644;animation:qsbounce .28s ease-out;flex-shrink:0;position:relative}
+.qs.loop{background:linear-gradient(135deg,#065f46,#047857);border-color:#10b98144;min-width:52px}
+.qs .lbadge{position:absolute;top:-5px;right:-5px;background:#ffd700;color:#111;border-radius:50%;width:15px;height:15px;font-size:9px;font-weight:900;display:flex;align-items:center;justify-content:center}
+.qs:active{transform:scale(0.82)}
+@keyframes qsbounce{0%{transform:scale(0) rotate(25deg);opacity:0}60%{transform:scale(1.2) rotate(-5deg)}100%{transform:scale(1) rotate(0)}}
+.qs-empty{color:#2a3a6a;font-size:12px;padding:4px 8px}
+.cmd-btns{display:flex;gap:5px;justify-content:center;flex-wrap:wrap;align-items:center}
+.cb{border:none;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-direction:column;transition:transform .1s,box-shadow .1s;flex-shrink:0}
+.cb:active{transform:scale(0.85)!important}
+.cb .lbl{font-size:clamp(6px,1.5vw,8px);color:#90a0c0;font-weight:700;margin-top:1px;letter-spacing:.4px;line-height:1}
+.cb.arrow{background:linear-gradient(135deg,#1a44cc,#2563eb);width:clamp(44px,10.5vw,56px);height:clamp(44px,10.5vw,56px);font-size:clamp(17px,4.5vw,22px);box-shadow:0 4px 12px #2563eb44}
+.cb.grab{background:linear-gradient(135deg,#065f46,#059669);width:clamp(44px,10.5vw,56px);height:clamp(44px,10.5vw,56px);font-size:clamp(17px,4.5vw,22px);box-shadow:0 4px 12px #05966944}
+.cb.loop{background:linear-gradient(135deg,#6d28d9,#7c3aed);width:clamp(44px,10.5vw,56px);height:clamp(44px,10.5vw,56px);font-size:clamp(17px,4.5vw,22px);box-shadow:0 4px 12px #7c3aed44}
+.cb.launch{background:linear-gradient(135deg,#15803d,#22c55e);width:clamp(54px,13vw,68px);height:clamp(54px,13vw,68px);font-size:clamp(20px,5.5vw,26px);box-shadow:0 6px 20px #22c55e55;animation:lpulse 1.4s ease-in-out infinite}
+@keyframes lpulse{0%,100%{box-shadow:0 6px 20px #22c55e55}50%{box-shadow:0 6px 28px #22c55e99}}
+.cb.clr{background:linear-gradient(135deg,#991b1b,#dc2626);width:clamp(38px,9vw,48px);height:clamp(38px,9vw,48px);font-size:clamp(15px,4vw,18px);box-shadow:0 4px 10px #dc262644}
+
+/* LOOP POPUP */
+#loop-popup{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:linear-gradient(135deg,#1a1740,#2d2a80);border:2px solid #8b5cf6;border-radius:22px;padding:16px 22px;z-index:60;text-align:center;color:#e0e7ff;display:none;box-shadow:0 12px 50px rgba(0,0,0,0.7);min-width:220px}
+#loop-popup h3{font-size:clamp(14px,3.5vw,17px);font-weight:900;margin-bottom:12px;color:#c4b5fd}
+.loop-choices{display:flex;gap:10px;justify-content:center}
+.lc{background:linear-gradient(135deg,#7c3aed,#a855f7);color:#fff;border:none;border-radius:50%;width:52px;height:52px;font-size:22px;font-weight:900;cursor:pointer;transition:transform .1s;box-shadow:0 4px 12px #a855f744}
+.lc:active{transform:scale(0.88)}
+.loop-cancel{margin-top:11px;color:#6b7db0;font-size:12px;cursor:pointer;text-decoration:underline}
+
+/* TOOLTIP */
+#tip{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(135deg,#1e1b4b,#312e81);border-top:2px solid #818cf8;padding:10px 14px;color:#e0e7ff;font-size:clamp(11px,2.8vw,13px);line-height:1.55;z-index:50;transform:translateY(100%);transition:transform .4s ease-out}
+#tip.on{transform:translateY(0)}
+#tip .tc{float:right;cursor:pointer;font-size:18px;margin-left:10px;margin-top:-2px}
+#tip .tt{font-weight:900;color:#a5b4fc;margin-bottom:4px;font-size:clamp(12px,3vw,14px)}
+
+/* PHASE 3 */
+.p3wrap{flex:1;display:flex;flex-direction:column;align-items:center;padding:10px 12px;width:100%;overflow-y:auto;min-height:0;gap:8px}
+.p3prompt{color:#e0e8ff;font-size:clamp(13px,3.2vw,16px);font-weight:800;text-align:center;padding:9px 16px;background:rgba(0,245,255,0.08);border-radius:14px;border:1px solid #00f5ff33;width:100%;max-width:460px}
+.p3step{color:#556;font-size:11px;letter-spacing:1px}
+.p3cards{display:flex;flex-direction:column;gap:8px;width:100%;max-width:460px}
+.p3c{border:none;border-radius:14px;padding:11px 16px;font-size:clamp(13px,3.2vw,15px);font-weight:700;cursor:pointer;text-align:left;transition:transform .12s,box-shadow .12s;display:flex;align-items:center;gap:11px;line-height:1.3}
+.p3c:active{transform:scale(0.95)}
+.p3c.bl{background:linear-gradient(135deg,#1e3a8a,#2563eb);color:#fff;box-shadow:0 4px 15px #2563eb33}
+.p3c.yl{background:linear-gradient(135deg,#78350f,#d97706);color:#fff;box-shadow:0 4px 15px #d9770633}
+.p3c.rd{background:linear-gradient(135deg,#7f1d1d,#dc2626);color:#fff;box-shadow:0 4px 15px #dc262633}
+.p3c.off{opacity:0.45;pointer-events:none}
+.p3c .ci{font-size:1.8em;flex-shrink:0}
+.p3anim{min-height:65px;display:flex;align-items:center;justify-content:center;color:#ffd700;font-size:clamp(12px,3vw,15px);font-weight:700;text-align:center;padding:5px;line-height:1.5;max-width:460px;width:100%}
+
+/* PHASE TRANSITION */
+#s-trans{background:rgba(11,16,38,0.97);justify-content:center;gap:12px;padding:20px;z-index:70}
+.pt-em{font-size:clamp(55px,16vw,90px);animation:ptb .55s ease-in-out infinite alternate}
+@keyframes ptb{from{transform:scale(1)}to{transform:scale(1.12)}}
+.pt-title{font-size:clamp(22px,6vw,34px);font-weight:900;color:#00f5ff;text-shadow:0 0 20px #00f5ff;text-align:center}
+.pt-sub{color:#8899bb;font-size:clamp(13px,3.3vw,17px);text-align:center}
+.pt-stats{color:#ffd700;font-size:clamp(13px,3.2vw,16px);line-height:1.9;text-align:center}
+
+/* FINALE */
+#s-fin{background:#0B1026;justify-content:flex-start;overflow-y:auto;padding:14px;gap:8px}
+.fin-title{font-size:clamp(20px,5.5vw,30px);font-weight:900;color:#ffd700;text-shadow:0 0 20px #ffd70088;text-align:center}
+.fin-bipo{font-size:clamp(55px,14vw,80px);text-align:center;animation:fbipo .5s ease-in-out infinite alternate;cursor:pointer}
+@keyframes fbipo{from{transform:translateY(0) rotate(-5deg)}to{transform:translateY(-8px) rotate(5deg)}}
+.fin-phases{color:#e0e8ff;font-size:clamp(13px,3vw,15px);line-height:2.1;text-align:center}
+.fin-stats{color:#a5b4fc;font-size:clamp(11px,2.8vw,13px);text-align:center;line-height:1.9}
+.fin-learn{background:rgba(0,245,255,0.04);border:1px solid #00f5ff22;border-radius:16px;padding:12px 16px;width:100%;max-width:500px}
+.fin-learn h3{color:#00f5ff;font-size:clamp(12px,3vw,15px);margin-bottom:9px;text-align:center}
+.fin-li{color:#e0e8ff;font-size:clamp(11px,2.7vw,13px);line-height:1.6;margin-bottom:7px;padding-left:10px;border-left:3px solid #60a5fa}
+.fin-li.gold{border-color:#ffd700}
+.fin-btns{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;padding-bottom:10px}
+.fin-btn{background:linear-gradient(135deg,#1d4ed8,#3b82f6);color:#fff;border:none;border-radius:50px;padding:12px 24px;font-size:clamp(14px,3.5vw,16px);font-weight:900;cursor:pointer;transition:transform .1s;letter-spacing:.5px}
+.fin-btn:active{transform:scale(0.92)}
+.fin-btn.grn{background:linear-gradient(135deg,#15803d,#22c55e)}
+
+/* OVERLAY */
+#ovl{position:absolute;top:45%;left:50%;transform:translate(-50%,-50%);background:rgba(2,8,22,0.92);border:1.5px solid #00f5ff55;border-radius:18px;padding:12px 22px;color:#fff;font-size:clamp(13px,3.5vw,17px);font-weight:700;z-index:55;text-align:center;display:none;max-width:78vw;pointer-events:none}
+#ovl.on{display:block;animation:ovlpop .25s ease-out}
+@keyframes ovlpop{from{transform:translate(-50%,-50%) scale(0.6)}to{transform:translate(-50%,-50%) scale(1)}}
+</style>
+</head>
+<body>
+<div id="root">
+  <div class="starbg" id="starbg"></div>
+
+  <!-- ===== INTRO ===== -->
+  <div class="scr on" id="s-intro">
+    <div class="alarm"></div>
+    <div class="intro-card">
+      <div class="intro-logo">🤖 БИПО: РОБОТ-ПОМОЩНИК</div>
+      <div id="intro-typed"></div>
+    </div>
+    <div id="intro-bipo-wrap">🤖</div>
+    <button class="big-btn" id="btn-start" style="display:none" onclick="startGame()">НАЧАТЬ →</button>
+  </div>
+
+  <!-- ===== GAME ===== -->
+  <div class="scr" id="s-game">
+    <div class="g-header">
+      <div class="phase-lbl" id="phase-lbl">ФАЗА 1</div>
+      <div class="hearts-disp" id="hearts-disp"></div>
+      <div class="score-lbl">⭐ <span id="score-n">0</span></div>
+    </div>
+
+    <!-- Grid -->
+    <div class="grid-wrap" id="grid-wrap">
+      <div class="maze-box" id="maze-box">
+        <div class="maze-grid" id="maze-grid"></div>
+        <!-- BIPO SVG character -->
+        <div id="bipo-el" style="position:absolute;z-index:30;pointer-events:none">
+          <svg id="bipo-svg" viewBox="0 0 60 70" xmlns="http://www.w3.org/2000/svg" overflow="visible">
+            <!-- Antenna -->
+            <line id="ant-stick" x1="30" y1="5" x2="30" y2="16" stroke="#93c5fd" stroke-width="2.5" stroke-linecap="round"/>
+            <circle id="ant-ball" cx="30" cy="4" r="4.5" fill="#ffd700">
+              <animate attributeName="cy" values="4;1;4" dur="1.2s" repeatCount="indefinite"/>
+              <animate attributeName="r" values="4.5;5.5;4.5" dur="1.2s" repeatCount="indefinite"/>
+            </circle>
+            <!-- Body -->
+            <circle cx="30" cy="40" r="22" fill="url(#bodyGrad)" stroke="#60a5fa" stroke-width="2"/>
+            <defs>
+              <radialGradient id="bodyGrad" cx="35%" cy="30%" r="60%">
+                <stop offset="0%" stop-color="#93c5fd"/>
+                <stop offset="100%" stop-color="#2563eb"/>
+              </radialGradient>
+            </defs>
+            <!-- Shine -->
+            <ellipse cx="22" cy="30" rx="6" ry="4" fill="rgba(255,255,255,0.25)" transform="rotate(-30,22,30)"/>
+            <!-- Eyes -->
+            <circle cx="22" cy="37" r="7" fill="#fff"/>
+            <circle cx="38" cy="37" r="7" fill="#fff"/>
+            <circle id="pupil-l" cx="22" cy="37" r="3.5" fill="#1a1a2e"/>
+            <circle id="pupil-r" cx="38" cy="37" r="3.5" fill="#1a1a2e"/>
+            <!-- Eye shine -->
+            <circle cx="23.5" cy="35" r="1.5" fill="#fff" opacity="0.9"/>
+            <circle cx="39.5" cy="35" r="1.5" fill="#fff" opacity="0.9"/>
+            <!-- Mouth -->
+            <g id="mouth-g">
+              <!-- happy default -->
+              <path id="mouth-happy" d="M22 47 Q30 53 38 47" stroke="#1e3a8a" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+              <path id="mouth-dizzy" d="M22 50 Q30 44 38 50" stroke="#7c2d12" stroke-width="2.5" fill="none" stroke-linecap="round" display="none"/>
+              <path id="mouth-sad" d="M22 51 Q30 45 38 51" stroke="#1e3a8a" stroke-width="2.5" fill="none" stroke-linecap="round" display="none"/>
+              <path id="mouth-excited" d="M20 46 Q30 56 40 46" stroke="#ffd700" stroke-width="3" fill="#ffd70033" stroke-linecap="round" display="none"/>
+            </g>
+            <!-- Small arm details -->
+            <ellipse cx="9" cy="42" rx="5" ry="3.5" fill="#3b82f6" stroke="#60a5fa" stroke-width="1.5" transform="rotate(-20,9,42)"/>
+            <ellipse cx="51" cy="42" rx="5" ry="3.5" fill="#3b82f6" stroke="#60a5fa" stroke-width="1.5" transform="rotate(20,51,42)"/>
+            <!-- Feet -->
+            <rect x="20" y="60" width="9" height="6" rx="3" fill="#1d4ed8" stroke="#60a5fa" stroke-width="1"/>
+            <rect x="31" y="60" width="9" height="6" rx="3" fill="#1d4ed8" stroke="#60a5fa" stroke-width="1"/>
+          </svg>
+        </div>
+        <!-- Speech bubble -->
+        <div id="speech"></div>
+      </div>
+    </div>
+
+    <!-- P1/P2 Command Panel -->
+    <div class="cmd-panel" id="cmd-panel">
+      <div class="q-label">Программа БИПО — нажми команду, потом жми ▶ ЗАПУСК</div>
+      <div class="cmd-queue" id="cmd-queue"></div>
+      <div class="cmd-btns">
+        <button class="cb arrow" onclick="addCmd('up')">⬆️<span class="lbl">ВВЕРХ</span></button>
+        <button class="cb arrow" onclick="addCmd('down')">⬇️<span class="lbl">ВНИЗ</span></button>
+        <button class="cb arrow" onclick="addCmd('left')">⬅️<span class="lbl">ВЛЕВО</span></button>
+        <button class="cb arrow" onclick="addCmd('right')">➡️<span class="lbl">ВПРАВО</span></button>
+        <button class="cb grab" onclick="addCmd('grab')">🤏<span class="lbl">ВЗЯТЬ</span></button>
+        <button class="cb loop" id="loop-btn" onclick="openLoop()" style="display:none">🔄<span class="lbl">ЦИКЛ</span></button>
+        <button class="cb smash" id="smash-btn" onclick="addCmd('smash')" style="display:none;position:relative">💥<span class="lbl">СНОС</span><span class="smash-counter" id="smash-count">3</span></button>
+        <button class="cb launch" onclick="launch()">▶️<span class="lbl">ЗАПУСК!</span></button>
+        <button class="cb clr" onclick="clearQ()">🗑️<span class="lbl">СТЕРЕТЬ</span></button>
+      </div>
+    </div>
+
+    <!-- P3 Area -->
+    <div class="p3wrap" id="p3wrap" style="display:none">
+      <div class="p3prompt" id="p3prompt">Выбери команду:</div>
+      <div class="p3step" id="p3step"></div>
+      <div class="p3cards" id="p3cards"></div>
+      <div class="p3anim" id="p3anim"></div>
+    </div>
+  </div>
+
+  <!-- ===== PHASE TRANSITION ===== -->
+  <div class="scr" id="s-trans">
+    <div class="pt-em" id="pt-em">✅</div>
+    <div class="pt-title" id="pt-title">ОТЛИЧНО!</div>
+    <div class="pt-sub" id="pt-sub"></div>
+    <div class="pt-stats" id="pt-stats"></div>
+    <button class="big-btn" onclick="nextPhase()">ДАЛЬШЕ →</button>
+  </div>
+
+  <!-- ===== FINALE ===== -->
+  <div class="scr" id="s-fin">
+    <div class="fin-bipo">🤖</div>
+    <div class="fin-title">🤖 МИССИЯ БИПО ВЫПОЛНЕНА!</div>
+    <div class="fin-phases">Фаза 1: ✅ Маршрут проложен<br>Фаза 2: ✅ Циклы освоены<br>Фаза 3: ✅ Точные команды</div>
+    <div class="fin-stats" id="fin-stats"></div>
+    <div class="fin-learn">
+      <h3>🧠 ЧЕМУ ТЫ НАУЧИЛСЯ:</h3>
+      <div class="fin-li">1. ИИ не думает — он ВЫПОЛНЯЕТ инструкции (как БИПО шёл в стену, потому что ты сказал «прямо»)</div>
+      <div class="fin-li">2. ЦИКЛЫ экономят время (вместо ➡️➡️➡️ можно написать ➡️🔄x3)</div>
+      <div class="fin-li">3. ТОЧНОСТЬ команды = точность результата («Возьми всё блестящее» ≠ «Возьми модуль»)</div>
+      <div class="fin-li gold">🎯 ЧЕМ ТОЧНЕЕ ВОПРОС — ТЕМ ЛУЧШЕ ОТВЕТ!</div>
+    </div>
+    <div class="fin-btns">
+      <button class="fin-btn" onclick="restart()">ЕЩЁ РАЗ 🔄</button>
+      <button class="fin-btn grn" onclick="notifyDone()">К КОРАБЛЮ 🚀</button>
+    </div>
+  </div>
+
+  <!-- Loop popup -->
+  <div id="loop-popup">
+    <h3>🔄 Сколько раз повторить последнюю команду?</h3>
+    <div class="loop-choices">
+      <button class="lc" onclick="applyLoop(2)">2</button>
+      <button class="lc" onclick="applyLoop(3)">3</button>
+      <button class="lc" onclick="applyLoop(4)">4</button>
+      <button class="lc" onclick="applyLoop(5)">5</button>
+    </div>
+    <div class="loop-cancel" onclick="closeLoop()">отмена</div>
+  </div>
+
+  <!-- Tooltip -->
+  <div id="tip">
+    <span class="tc" onclick="closeTip()">✕</span>
+    <div class="tt" id="tip-t"></div>
+    <div id="tip-b"></div>
+  </div>
+
+  <!-- Overlay -->
+  <div id="ovl"></div>
+</div>
+
+<script>
+// ==================== GAME STATE ====================
+const S = {
+  phase:1, score:0, hearts:3,
+  totalWalls:0, totalCmds:0, p3wrong:0,
+  funniest:'',
+  queue:[], running:false,
+  bRow:0, bCol:0,
+  cellSz:60, rows:4, cols:4,
+  maze:null, modPos:null, gotModule:false,
+  firstFail:true,
+  p3step:0, p3lock:false,
+  // Smash mechanic
+  smashCharges:0,   // hits accumulated toward next charge
+  smashReady:0,     // charges available to use
+  SMASH_NEED:3,     // hits needed per charge
+  brokenWalls:new Set(), // track which walls have been smashed
+};
+
+// ==================== MAZE DEFINITIONS ====================
+// Maze 1 (4x4): BIPO at [3,0], module at [0,3]
+// Solution path: RIGHT→[3,1], UP→[2,1], UP→[1,1], RIGHT→[1,2], RIGHT→[1,3], UP→[0,3], GRAB
+// Walls block wrong paths but never the solution.
+//
+// Maze 2 (5x5): BIPO at [4,0], module at [0,4]
+// Solution path: UP→[3,0], UP→[2,0], UP→[1,0], RIGHT→[1,1], RIGHT→[1,2]... hmm
+// Safe path: UP,UP,UP,RIGHT,RIGHT,RIGHT,RIGHT,UP,UP,UP is blocked by col-wall.
+// Guaranteed path: [4,0]→[3,0]→[2,0]→[1,0]→[0,0]→[0,1]→[0,2]→[0,3]→[0,4], GRAB
+// Walls placed to NOT block this route.
+const MAZES = {
+  1:{
+    rows:4,cols:4,
+    // Solution: RIGHT [3,1] → UP [2,1] → UP [1,1] → RIGHT [1,2] → RIGHT [1,3] → UP [0,3] → GRAB
+    // Walls: top-left corner trap, bottom-right detour - none block the solution path
+    walls:[[0,0],[0,1],[2,0],[2,2],[3,2],[3,3]],
+    danger:[],
+    bipo:[3,0], mod:[0,3]
+  },
+  2:{
+    rows:5,cols:5,
+    // Solution: UP [3,0] → UP [2,0] → UP [1,0] → UP [0,0] → RIGHT [0,1] → RIGHT [0,2] → RIGHT [0,3] → RIGHT [0,4] → GRAB
+    // Walls create interesting dead-ends without blocking the top-row path
+    walls:[[1,1],[1,3],[2,1],[2,3],[3,1],[3,3],[4,2]],
+    danger:[[1,2],[3,2],[4,4]],
+    bipo:[4,0], mod:[0,4]
+  }
+};
+
+// ==================== STARS ====================
+(()=>{
+  const bg=document.getElementById('starbg');
+  for(let i=0;i<90;i++){
+    const s=document.createElement('div');s.className='star';
+    const sz=Math.random()*2.5+0.5;
+    s.style.cssText=`width:${sz}px;height:${sz}px;top:${Math.random()*100}%;left:${Math.random()*100}%;--d:${1.2+Math.random()*3.5}s;--o:${0.2+Math.random()*0.7}`;
+    bg.appendChild(s);
+  }
+})();
+
+// ==================== INTRO ====================
+const INTRO_TEXT = `🔧 ВНИМАНИЕ, КАПИТАН!\n\nВ вентиляционной шахте застрял\nэнергомодуль корабля!\n\nРобот БИПО готов помочь.\nНо есть проблема —\nБИПО делает ТОЛЬКО то, что ты скажешь.\nБуквально. 😅\n\nОн не догадывается — он выполняет!\n\nЗапрограммируй маршрут для БИПО!`;
+
+let introChar=0;
+const introEl=document.getElementById('intro-typed');
+function typeChar(){
+  if(introChar<INTRO_TEXT.length){
+    introEl.innerHTML=INTRO_TEXT.slice(0,introChar).replace(/\n/g,'<br>')+'<span class="cursor"></span>';
+    introChar++;
+    setTimeout(typeChar,introChar<60?28:16);
+  } else {
+    introEl.innerHTML=INTRO_TEXT.replace(/\n/g,'<br>');
+    document.getElementById('intro-bipo-wrap').style.display='block';
+    document.getElementById('btn-start').style.display='inline-block';
+  }
+}
+document.getElementById('s-intro').addEventListener('click',()=>{
+  if(document.getElementById('btn-start').style.display==='none'){
+    introChar=INTRO_TEXT.length; typeChar();
+  }
+});
+typeChar();
+
+// ==================== SCREEN MANAGEMENT ====================
+function showScr(id){
+  document.querySelectorAll('.scr').forEach(s=>s.classList.remove('on'));
+  if(id) document.getElementById(id).classList.add('on');
+}
+
+// ==================== START ====================
+function startGame(){showScr('s-game');initPhase(1);}
+
+// ==================== PHASE INIT ====================
+function initPhase(ph){
+  S.phase=ph; S.queue=[]; S.running=false; S.gotModule=false; S.firstFail=true; S.p3step=0;
+  S.smashCharges=0; S.smashReady=0; S.brokenWalls=new Set();
+  const m=MAZES[Math.min(ph,2)];
+  S.rows=m.rows; S.cols=m.cols; S.maze=m;
+  S.bRow=m.bipo[0]; S.bCol=m.bipo[1];
+  S.modPos={r:m.mod[0],c:m.mod[1]};
+  if(ph===2){S.hearts=3;} else {S.hearts=3;}
+
+  document.getElementById('phase-lbl').textContent=`ФАЗА ${ph}: ${ph===1?'ПРОСТОЙ МАРШРУТ':ph===2?'УМНЫЙ МАРШРУТ':'ГОЛОСОВЫЕ КОМАНДЫ'}`;
+  document.getElementById('hearts-disp').textContent=ph===2?'❤️❤️❤️':'';
+  document.getElementById('score-n').textContent=S.score;
+  document.getElementById('loop-btn').style.display=ph===2?'':'none';
+
+  if(ph<=2){
+    document.getElementById('cmd-panel').style.display='';
+    document.getElementById('p3wrap').style.display='none';
+    buildGrid(); renderQ(); setMood('happy'); setIdle(true);
+    updateSmash();
+  } else {
+    document.getElementById('cmd-panel').style.display='none';
+    document.getElementById('p3wrap').style.display='flex';
+    buildP3Grid(); initP3(); setMood('happy'); setIdle(true);
+  }
+}
+
+// ==================== GRID BUILDING ====================
+function buildGrid(){
+  if(!S.maze) return;
+  const wrap=document.getElementById('grid-wrap');
+  const aw=wrap.offsetWidth||320, ah=wrap.offsetHeight||220;
+  const maxW=Math.floor((aw-24)/S.cols)-4;
+  const maxH=Math.floor((ah-24)/S.rows)-4;
+  S.cellSz=Math.max(44,Math.min(maxW,maxH,78));
+
+  const grid=document.getElementById('maze-grid');
+  grid.style.gridTemplateColumns=`repeat(${S.cols},${S.cellSz}px)`;
+  grid.style.gridTemplateRows=`repeat(${S.rows},${S.cellSz}px)`;
+  grid.innerHTML='';
+
+  const wSet=new Set(S.maze.walls.map(([r,c])=>`${r},${c}`));
+  const dSet=new Set((S.maze.danger||[]).map(([r,c])=>`${r},${c}`));
+
+  for(let r=0;r<S.rows;r++){
+    for(let c=0;c<S.cols;c++){
+      const cell=document.createElement('div');
+      cell.className='cell'; cell.id=`c${r}_${c}`;
+      cell.style.width=S.cellSz+'px'; cell.style.height=S.cellSz+'px';
+      const k=`${r},${c}`;
+      if(wSet.has(k)){
+        cell.classList.add('wall');
+      } else if(dSet.has(k)){
+        cell.classList.add('danger','danger-stripe');
+        cell.innerHTML=`<span style="font-size:${S.cellSz*0.38}px;opacity:.8">⚠️</span>`;
+      } else if(r===S.modPos.r&&c===S.modPos.c){
+        cell.classList.add('module');
+        cell.innerHTML=`<span style="font-size:${S.cellSz*0.5}px" class="mod-icon">⚡</span>`;
+      }
+      grid.appendChild(cell);
+    }
+  }
+  sizeBipo(); placeBipo(false);
+}
+
+function buildP3Grid(){
+  // Simple 4x4 grid for P3 visual — matches Maze 1 layout
+  const fake={rows:4,cols:4,walls:[[0,0],[0,1],[2,0],[2,2],[3,2],[3,3]],danger:[],bipo:[3,0],mod:[0,3]};
+  S.rows=4; S.cols=4; S.maze=fake;
+  S.bRow=3; S.bCol=0; S.modPos={r:0,c:3};
+  buildGrid();
+}
+
+// ==================== BIPO POSITIONING ====================
+function sizeBipo(){
+  const bs=Math.round(S.cellSz*0.85);
+  const el=document.getElementById('bipo-el');
+  el.style.width=bs+'px'; el.style.height=bs+'px';
+}
+
+function placeBipo(anim){
+  const el=document.getElementById('bipo-el');
+  const cell=document.getElementById(`c${S.bRow}_${S.bCol}`);
+  if(!cell){return;}
+  const gr=document.getElementById('maze-grid').getBoundingClientRect();
+  const cr=cell.getBoundingClientRect();
+  const box=document.getElementById('maze-box').getBoundingClientRect();
+  const bs=parseInt(el.style.width)||50;
+  const x=cr.left-box.left+S.cellSz/2-bs/2;
+  const y=cr.top-box.top+S.cellSz/2-bs/2;
+  if(anim){
+    el.style.transition='left .3s cubic-bezier(.4,0,.2,1),top .3s cubic-bezier(.4,0,.2,1)';
+  } else {
+    el.style.transition='none';
+  }
+  el.style.left=x+'px'; el.style.top=y+'px';
+}
+
+// ==================== BIPO EXPRESSIONS ====================
+function setMood(mood){
+  const mouths=['happy','dizzy','sad','excited'];
+  mouths.forEach(m=>{
+    const el=document.getElementById('mouth-'+m);
+    if(el) el.setAttribute('display',m===mood?'':'none');
+  });
+  // Pupils
+  const pl=document.getElementById('pupil-l'), pr=document.getElementById('pupil-r');
+  if(mood==='dizzy'){
+    pl.setAttribute('r','4'); pr.setAttribute('r','4');
+    pl.style.fill='#7c2d12'; pr.style.fill='#7c2d12';
+  } else if(mood==='excited'){
+    pl.setAttribute('r','4.5'); pr.setAttribute('r','4.5');
+    pl.style.fill='#1a1a2e'; pr.style.fill='#1a1a2e';
+  } else {
+    pl.setAttribute('r','3.5'); pr.setAttribute('r','3.5');
+    pl.style.fill='#1a1a2e'; pr.style.fill='#1a1a2e';
+  }
+}
+
+function setPupils(dir){
+  const pl=document.getElementById('pupil-l'), pr=document.getElementById('pupil-r');
+  const base={l:{cx:22,cy:37},r:{cx:38,cy:37}};
+  const off={up:[0,-2.5],down:[0,2.5],left:[-2.5,0],right:[2.5,0],none:[0,0]};
+  const [dx,dy]=off[dir]||[0,0];
+  pl.setAttribute('cx',base.l.cx+dx); pl.setAttribute('cy',base.l.cy+dy);
+  pr.setAttribute('cx',base.r.cx+dx); pr.setAttribute('cy',base.r.cy+dy);
+}
+
+function setIdle(on){
+  const el=document.getElementById('bipo-el');
+  if(on) el.classList.add('idle'); else el.classList.remove('idle');
+}
+
+function setAnim(cls){
+  const el=document.getElementById('bipo-el');
+  ['idle','bonk','walk-r','walk-l','walk-u','walk-d','zap','victory','spin'].forEach(c=>el.classList.remove(c));
+  if(cls) el.classList.add(cls);
+}
+
+// ==================== SPEECH ====================
+function speak(txt, dur=2000){
+  const sb=document.getElementById('speech');
+  const bel=document.getElementById('bipo-el');
+  const box=document.getElementById('maze-box').getBoundingClientRect();
+  const br=bel.getBoundingClientRect();
+  sb.textContent=txt; sb.style.display='block';
+  const sbw=Math.max(100,txt.length*8);
+  const lx=br.left-box.left+parseInt(bel.style.width)/2-sbw/2;
+  const ly=br.top-box.top-55;
+  sb.style.left=Math.max(4,lx)+'px';
+  sb.style.top=Math.max(4,ly)+'px';
+  sb.style.maxWidth=Math.min(200,sbw+20)+'px';
+  if(sb._t) clearTimeout(sb._t);
+  sb._t=setTimeout(()=>{sb.style.display='none';},dur);
+}
+
+function bonkStars(){
+  const bel=document.getElementById('bipo-el');
+  const box=document.getElementById('maze-box').getBoundingClientRect();
+  const br=bel.getBoundingClientRect();
+  const cx=br.left-box.left+parseInt(bel.style.width)/2;
+  const cy=br.top-box.top+parseInt(bel.style.height)/4;
+  const emojis=['⭐','💫','✨'];
+  for(let i=0;i<5;i++){
+    const st=document.createElement('div'); st.className='bstar';
+    st.textContent=emojis[i%3];
+    const angle=(i/5)*360;
+    st.style.left=(cx+Math.cos(angle*Math.PI/180)*22-7)+'px';
+    st.style.top=(cy+Math.sin(angle*Math.PI/180)*22-7)+'px';
+    st.style.animationDelay=(i*0.08)+'s';
+    document.getElementById('maze-box').appendChild(st);
+    setTimeout(()=>st.remove(),900);
+  }
+}
+
+// ==================== COMMAND QUEUE ====================
+const CMD_ICONS={up:'⬆️',down:'⬇️',left:'⬅️',right:'➡️',grab:'🤏',smash:'💥'};
+
+function addCmd(type){
+  if(S.running) return;
+  if(S.queue.length>=10){showOvl('Очередь полна! 🗑️ стереть');return;}
+  S.queue.push({type});
+  renderQ();
+  S.totalCmds++;
+}
+
+function openLoop(){
+  if(S.running) return;
+  if(S.queue.length===0){showOvl('Сначала добавь команду!');return;}
+  document.getElementById('loop-popup').style.display='block';
+}
+
+function closeLoop(){document.getElementById('loop-popup').style.display='none';}
+
+function applyLoop(n){
+  closeLoop();
+  if(S.queue.length===0) return;
+  const last=S.queue[S.queue.length-1];
+  if(last.loop){showOvl('Нельзя зациклить цикл!');return;}
+  last.loop=n;
+  renderQ();
+  speak('О, циклы! Я люблю циклы! 🔄😍',1800);
+}
+
+function clearQ(){
+  if(S.running) return;
+  S.queue=[];renderQ();
+}
+
+function removeQ(i){
+  if(S.running) return;
+  S.queue.splice(i,1);renderQ();
+}
+
+function renderQ(){
+  const el=document.getElementById('cmd-queue');
+  el.innerHTML='';
+  if(!S.queue.length){el.innerHTML='<span class="qs-empty">Добавь команды ➡️ ⬆️ ⬇️ ⬅️ 🤏</span>';return;}
+  S.queue.forEach((cmd,i)=>{
+    const s=document.createElement('div');
+    s.className='qs'+(cmd.loop?' loop':'');
+    s.title='Нажми чтобы удалить';
+    s.innerHTML=(CMD_ICONS[cmd.type]||'?')+(cmd.loop?`<span class="lbadge">${cmd.loop}</span>`:'');
+    s.onclick=()=>removeQ(i);
+    el.appendChild(s);
+  });
+}
+
+// ==================== LAUNCH ====================
+async function launch(){
+  if(S.running) return;
+  if(!S.queue.length){showOvl('Добавь команды сначала! 😅');return;}
+  S.running=true; setIdle(false); setMood('happy');
+
+  // Expand loops
+  const expanded=[];
+  S.queue.forEach(cmd=>{
+    const n=cmd.loop||1;
+    for(let t=0;t<n;t++) expanded.push(cmd.type);
+  });
+
+  const wSet=new Set(S.maze.walls.map(([r,c])=>`${r},${c}`));
+  const dSet=new Set((S.maze.danger||[]).map(([r,c])=>`${r},${c}`));
+  let wallHits=0, grabbed=false, missedGrab=false;
+
+  for(let i=0;i<expanded.length;i++){
+    const cmd=expanded[i];
+    await wait(120);
+    if(cmd==='grab'){
+      if(S.bRow===S.modPos.r&&S.bCol===S.modPos.c&&!grabbed){
+        grabbed=true; S.gotModule=true;
+        setMood('excited'); setAnim('victory');
+        speak('Ура! Нашёл! 🤩',2000);
+        confetti(8);
+        const mc=document.getElementById(`c${S.modPos.r}_${S.modPos.c}`);
+        if(mc){mc.classList.remove('module');mc.innerHTML='✅';}
+        S.score+=60;
+      } else if(!grabbed){
+        speak('Тут ничего нет! 🤔',1500);
+        setMood('sad'); await wait(900); setMood('happy');
+      }
+    } else if(cmd==='smash'){
+      // Find adjacent wall to smash
+      const adj=[[-1,0],[1,0],[0,-1],[0,1]];
+      let smashed=false;
+      for(const [dr2,dc2] of adj){
+        const wr=S.bRow+dr2, wc2=S.bCol+dc2;
+        const wk=`${wr},${wc2}`;
+        if(wr>=0&&wr<S.rows&&wc2>=0&&wc2<S.cols&&wSet.has(wk)&&!S.brokenWalls.has(wk)){
+          // SMASH IT!
+          wSet.delete(wk);
+          S.brokenWalls.add(wk);
+          S.smashReady=Math.max(0,S.smashReady-1);
+          const wcel=document.getElementById(`c${wr}_${wc2}`);
+          if(wcel){
+            speak('КА-БУММ! 💥🤩',1800);
+            setMood('excited'); setAnim('victory');
+            bonkStars(); bonkStars();
+            confetti(6);
+            await wait(600);
+            wcel.classList.remove('wall','wall-broken','wall-cracked');
+            wcel.innerHTML='';
+            // Reset cell to floor
+            wcel.style.background=''; wcel.style.border=''; wcel.style.boxShadow='';
+          }
+          smashed=true;
+          await wait(700); setMood('happy'); setAnim('');
+          break;
+        }
+      }
+      if(!smashed){
+        speak('Стены нет рядом! 🤔',1400);
+        setMood('sad'); await wait(700); setMood('happy');
+      }
+      updateSmash();
+    } else {
+      const deltas={up:[-1,0],down:[1,0],left:[0,-1],right:[0,1]};
+      const [dr,dc]=deltas[cmd];
+      const dirCls={up:'walk-u',down:'walk-d',left:'walk-l',right:'walk-r'};
+      setPupils(cmd); await wait(180);
+      const nr=S.bRow+dr, nc=S.bCol+dc;
+      const k=`${nr},${nc}`;
+
+      if(nr<0||nr>=S.rows||nc<0||nc>=S.cols||wSet.has(k)){
+        // WALL BONK!
+        wallHits++; S.totalWalls++;
+        // Accumulate smash charges
+        S.smashCharges++;
+        if(S.smashCharges>=S.SMASH_NEED){
+          S.smashCharges=0;
+          S.smashReady++;
+          speak('Терплю! Копит силу... 💪',1400);
+        } else {
+          speak('Ой! Стена! 🤕',1500);
+        }
+        setMood('dizzy'); setAnim('bonk'); bonkStars();
+        // Flash wall cell if valid; mark cracked after 1st hit
+        if(nr>=0&&nr<S.rows&&nc>=0&&nc<S.cols){
+          const wc=document.getElementById(`c${nr}_${nc}`);
+          if(wc){
+            wc.classList.add('wall-hit');
+            setTimeout(()=>{
+              wc.classList.remove('wall-hit');
+              wc.classList.add('wall-cracked');
+              // add crack svg lines inside
+              if(!wc.querySelector('.crack-lines')){
+                const cl=document.createElement('div'); cl.className='crack-lines';
+                cl.innerHTML=`<svg width="100%" height="100%" style="position:absolute;inset:0"><line x1="30%" y1="10%" x2="55%" y2="55%" stroke="#ff8c00" stroke-width="1.5" opacity=".7"/><line x1="55%" y1="55%" x2="80%" y2="80%" stroke="#ff8c00" stroke-width="1" opacity=".5"/><line x1="55%" y1="55%" x2="35%" y2="85%" stroke="#ff8c00" stroke-width="1" opacity=".5"/></svg>`;
+                wc.appendChild(cl);
+              }
+            },500);
+          }
+        }
+        updateSmash();
+        await wait(900); setMood('happy'); setAnim('');
+      } else {
+        // Mark trail
+        const old=document.getElementById(`c${S.bRow}_${S.bCol}`);
+        if(old&&!old.classList.contains('wall')&&!old.classList.contains('module')){old.classList.add('trail');}
+        setAnim(dirCls[cmd]);
+        S.bRow=nr; S.bCol=nc;
+        placeBipo(true);
+        await wait(370); setAnim('');
+
+        // Danger zone (P2)
+        if(S.phase===2&&dSet.has(k)){
+          S.hearts=Math.max(0,S.hearts-1);
+          updateHearts();
+          setAnim('zap'); setMood('dizzy');
+          speak('Ааа! Электричество! ⚡😵',1800);
+          await wait(900); setMood('happy'); setAnim('');
+        }
+
+        // Oblivious pass over module
+        if(nr===S.modPos.r&&nc===S.modPos.c&&!grabbed&&!S.gotModule){
+          missedGrab=true;
+          speak('Ла-ла-ла~ 🎵',1200);
+        }
+      }
+    }
+    if(S.hearts<=0&&S.phase===2) break;
+  }
+
+  await wait(300);
+  setPupils('none'); S.running=false; setIdle(true);
+
+  if(grabbed){
+    S.score+=120+(10-Math.min(S.queue.length,10))*8;
+    document.getElementById('score-n').textContent=S.score;
+    phaseEnd(true,wallHits);
+  } else {
+    const msgs=['Попробуем ещё раз! 💪','Почти! Ещё разок! 🤖','Я верю в тебя! 🌟','Не сдавайся! 🤩'];
+    speak(msgs[Math.floor(Math.random()*msgs.length)],2500);
+    setMood('sad'); await wait(600); setMood('happy');
+    if(S.firstFail){
+      S.firstFail=false;
+      showTip('💡 Подсказка!','БИПО выполняет команды по порядку. Он не думает сам — как настоящий ИИ! Не забудь команду 🤏 ВЗЯТЬ когда БИПО стоит на ⚡');
+    }
+    resetBipo();
+  }
+}
+
+function updateHearts(){
+  document.getElementById('hearts-disp').textContent='❤️'.repeat(S.hearts)+'🖤'.repeat(3-S.hearts);
+}
+
+function updateSmash(){
+  const btn=document.getElementById('smash-btn');
+  const cnt=document.getElementById('smash-count');
+  if(S.smashReady>0){
+    btn.style.display='';
+    cnt.textContent=S.smashReady;
+  } else {
+    // Show progress towards next charge (hits remaining)
+    const rem=S.SMASH_NEED-S.smashCharges;
+    if(rem<=S.SMASH_NEED){
+      btn.style.display='';
+      btn.style.opacity='0.45';
+      btn.style.pointerEvents='none';
+      cnt.textContent=`+${rem}`;
+      cnt.style.background='#64748b';
+    } else {
+      btn.style.display='none';
+    }
+  }
+  if(S.smashReady>0){
+    btn.style.opacity='';
+    btn.style.pointerEvents='';
+    cnt.style.background='';
+  }
+}
+
+function resetBipo(){
+  document.querySelectorAll('.cell.trail').forEach(c=>c.classList.remove('trail'));
+  const mc=document.getElementById(`c${S.modPos.r}_${S.modPos.c}`);
+  if(mc&&!mc.querySelector('.mod-icon')){mc.classList.add('module');mc.innerHTML=`<span style="font-size:${S.cellSz*0.5}px" class="mod-icon">⚡</span>`;}
+  S.bRow=S.maze.bipo[0]; S.bCol=S.maze.bipo[1];
+  S.gotModule=false; S.hearts=S.phase===2?3:3;
+  if(S.phase===2) updateHearts();
+  placeBipo(false); S.queue=[]; renderQ();
+  // Show smash button state
+  updateSmash();
+}
+
+// ==================== PHASE TRANSITION ====================
+function phaseEnd(ok,wallHits){
+  if(S.phase===1){
+    document.getElementById('pt-em').textContent='✅';
+    document.getElementById('pt-title').textContent='МАРШРУТ ПРОЛОЖЕН!';
+    document.getElementById('pt-sub').textContent='БИПО добрался до модуля!';
+    document.getElementById('pt-stats').innerHTML=`Команд: ${S.queue.length} | Столкновений со стеной: ${wallHits} 😅<br>Очки: ${S.score} ⭐`;
+    showTip('💡 Ты понял главное!','БИПО не думает сам — он выполняет команды по порядку, одну за другой. Точно как настоящий ИИ! Это и есть алгоритм.');
+  } else if(S.phase===2){
+    const usedLoop=S.queue.some(q=>q.loop);
+    document.getElementById('pt-em').textContent=usedLoop?'🌟':'✅';
+    document.getElementById('pt-title').textContent=usedLoop?'🌟 ОПТИМАЛЬНЫЙ МАРШРУТ!':'УМНЫЙ МАРШРУТ ПРОЙДЕН!';
+    document.getElementById('pt-sub').textContent=usedLoop?'Ты использовал ЦИКЛЫ — настоящий программист!':'Отлично! Попробуй 🔄 ЦИКЛ в следующий раз!';
+    document.getElementById('pt-stats').innerHTML=`Команд: ${S.queue.length} | Столкновений: ${wallHits} 😅<br>Очки: ${S.score} ⭐`;
+    showTip('💡 Ты открыл ЦИКЛЫ!','Цикл — когда одно действие повторяется несколько раз. Вместо ➡️➡️➡️➡️ можно написать ➡️🔄x4. Настоящие программисты используют циклы каждый день!');
+  }
+  showScr('s-trans');
+}
+
+function nextPhase(){
+  closeTip();
+  if(S.phase===1){showScr('s-game');initPhase(2);}
+  else if(S.phase===2){showScr('s-game');initPhase(3);}
+  else{showFinale();}
+}
+
+// ==================== PHASE 3 ====================
+const P3STEPS=[
+  {
+    prompt:'🗺️ Шаг 1: Добраться до модуля',
+    cards:[
+      {cls:'bl',icon:'🔵',text:'Иди к энергомодулю',ok:true},
+      {cls:'yl',icon:'🟡',text:'Иди к чему-нибудь жёлтому',ok:false,
+       funny:'🤖 БИПО резко побежал к жёлтой предупредительной табличке... крепко обнял её:\n"Вот! Жёлтое! Красивое! 💛 Такое тёплое..."\nСтоит и не отходит 😂'},
+      {cls:'rd',icon:'🔴',text:'Иди прямо',ok:false,
+       funny:'🤖 БИПО чеканным шагом пошёл прямо...\nПРЯМО В СТЕНУ.\nБОНК! 🤕\n"Ты сказал прямо! Я иду прямо! Логика! 🤷😵"'},
+    ]
+  },
+  {
+    prompt:'📦 Шаг 2: Взять энергомодуль',
+    cards:[
+      {cls:'bl',icon:'🔵',text:'Возьми энергомодуль',ok:true},
+      {cls:'yl',icon:'🟡',text:'Возьми всё блестящее',ok:false,
+       funny:'🤖 БИПО схватил модуль... потом болт... фольгу...\nблёстки... гайку... бумажку с золотом...\n"БЛЕСТЯЩЕЕЕЕ! ✨🤩 ДААААА!"\nРуки переполнены — всё рассыпалось 💥😂'},
+      {cls:'rd',icon:'🔴',text:'Хватай!',ok:false,
+       funny:'🤖 БИПО подумал секунду...\nИ схватил ПЛИТКУ ПОЛА! 🔴\nВырвал с грохотом CRASH! 💥\n"Это же не... ну ладно, раз сказал хватай! 😤"\nДержит плитку очень гордо 😂'},
+    ]
+  },
+  {
+    prompt:'🚀 Шаг 3: Вернуться на базу',
+    cards:[
+      {cls:'bl',icon:'🔵',text:'Вернись на базу',ok:true},
+      {cls:'yl',icon:'🟡',text:'Иди домой',ok:false,
+       funny:'🤖 БИПО остановился. Долгая пауза.\n"...Где мой дом? 🤔"\n"У роботов есть дом? 😢"\n"Я вообще... кто я?"\nЭкзистенциальный кризис. Стоит и смотрит в пустоту 🥺😂'},
+      {cls:'rd',icon:'🔴',text:'Быстрее!',ok:false,
+       funny:'🤖 БИПО начал крутиться на месте.\nМедленно... быстрее... БЫСТРЕЕЕЕ! 🌀\n"БЫСТРЕЕЕЕ! БЫСТРЕЕЕЕЕЕЕЕ! ААААА!"\nЗакружился и плюхнулся 😵‍💫 Дистанция до базы: 0 прогресса 😂'},
+    ]
+  }
+];
+
+function initP3(){
+  S.p3step=0; S.p3lock=false;
+  showP3(0);
+}
+
+function showP3(step){
+  const st=P3STEPS[step];
+  document.getElementById('p3prompt').textContent=st.prompt;
+  document.getElementById('p3step').textContent=`Шаг ${step+1} из ${P3STEPS.length}`;
+  document.getElementById('p3anim').textContent='';
+  const cards=document.getElementById('p3cards');
+  cards.innerHTML='';
+  // Shuffle
+  [...st.cards].sort(()=>Math.random()-.5).forEach(card=>{
+    const b=document.createElement('button');
+    b.className=`p3c ${card.cls}`;
+    b.innerHTML=`<span class="ci">${card.icon}</span><span>${card.text}</span>`;
+    b.onclick=()=>p3pick(card,step);
+    cards.appendChild(b);
+  });
+  S.p3lock=false;
+}
+
+function findPath(sr,sc,er,ec){
+  const wSet=new Set(S.maze.walls.map(([r,c])=>`${r},${c}`));
+  const dirs=[[-1,0],[1,0],[0,-1],[0,1]];
+  const q=[[sr,sc,[[sr,sc]]]];
+  const seen=new Set([`${sr},${sc}`]);
+  while(q.length){
+    const[r,c,path]=q.shift();
+    if(r===er&&c===ec) return path;
+    for(const[dr,dc] of dirs){
+      const nr=r+dr,nc=c+dc,k=`${nr},${nc}`;
+      if(nr>=0&&nr<S.rows&&nc>=0&&nc<S.cols&&!wSet.has(k)&&!seen.has(k)){
+        seen.add(k);
+        q.push([nr,nc,[...path,[nr,nc]]]);
+      }
+    }
+  }
+  return[[sr,sc]];
+}
+
+async function bipoWalkTo(destR,destC){
+  const path=findPath(S.bRow,S.bCol,destR,destC);
+  const dirMap={'-1,0':'up','1,0':'down','0,-1':'left','0,1':'right'};
+  const animMap={up:'walk-u',down:'walk-d',left:'walk-l',right:'walk-r'};
+  for(let i=1;i<path.length;i++){
+    const[nr,nc]=path[i];
+    const dr=nr-S.bRow,dc=nc-S.bCol;
+    const dir=dirMap[`${dr},${dc}`];
+    setPupils(dir);
+    const old=document.getElementById(`c${S.bRow}_${S.bCol}`);
+    if(old&&!old.classList.contains('wall')&&!old.classList.contains('module')) old.classList.add('trail');
+    setAnim(animMap[dir]);
+    S.bRow=nr; S.bCol=nc;
+    placeBipo(true);
+    await wait(380);
+    setAnim('');
+  }
+}
+
+async function p3pick(card,step){
+  if(S.p3lock) return;
+  S.p3lock=true;
+  document.querySelectorAll('.p3c').forEach(c=>c.classList.add('off'));
+
+  if(card.ok){
+    document.getElementById('p3anim').textContent='';
+    speak('Выполняю! 🤖✅',800);
+
+    if(step===0){
+      // Шаг 1: иди к модулю
+      setMood('happy');
+      await bipoWalkTo(S.modPos.r,S.modPos.c);
+      setMood('excited'); setAnim('victory');
+      speak('Нашёл! 🤩',1500);
+      confetti(7);
+      await wait(1600);
+    } else if(step===1){
+      // Шаг 2: взять модуль
+      setMood('excited'); setAnim('victory');
+      speak('Есть! Взял! 🤩',1800);
+      const mc=document.getElementById(`c${S.modPos.r}_${S.modPos.c}`);
+      if(mc){mc.classList.remove('module');mc.innerHTML='✅';}
+      S.gotModule=true;
+      confetti(8);
+      await wait(1800);
+    } else if(step===2){
+      // Шаг 3: вернись на базу
+      setMood('happy');
+      await bipoWalkTo(S.maze.bipo[0],S.maze.bipo[1]);
+      setMood('excited'); setAnim('victory');
+      speak('База! Миссия выполнена! 🎉',1800);
+      confetti(12);
+      await wait(1800);
+    } else {
+      setMood('excited'); setAnim('victory');
+      confetti(7);
+      await wait(1800);
+    }
+
+    setAnim(''); setMood('happy');
+    S.score+=90; S.p3step++;
+    document.getElementById('score-n').textContent=S.score;
+    if(S.p3step>=P3STEPS.length){
+      await wait(300);
+      showTip('💡 Точность команды = точность результата!','"Возьми всё блестящее" ≠ "Возьми модуль". Когда пишешь ChatGPT — "Напиши текст" даст что угодно. "Напиши короткий текст про котов для детей 8 лет" — то, что нужно!');
+      endP3();
+    } else {
+      showP3(S.p3step);
+    }
+  } else {
+    S.p3wrong++; S.totalWalls++;
+    if(!S.funniest) S.funniest=card.text;
+    // Funny animation
+    if(card.text.includes('прямо')){setAnim('bonk');setMood('dizzy');bonkStars();}
+    else if(card.text.includes('Быстрее')){setAnim('spin');setMood('dizzy');}
+    else{setAnim('walk-r');setMood('happy');}
+
+    // Type out funny text
+    const animEl=document.getElementById('p3anim');
+    animEl.textContent='';
+    const txt=card.funny||'БИПО запутался! 😵';
+    let idx=0;
+    const t=setInterval(()=>{
+      idx++;
+      animEl.textContent=txt.slice(0,idx);
+      if(idx>=txt.length) clearInterval(t);
+    },22);
+
+    await wait(3200);
+    setAnim(''); setMood('happy');
+    showP3(step);
+  }
+}
+
+function endP3(){
+  document.getElementById('pt-em').textContent='🎉';
+  document.getElementById('pt-title').textContent='ГОЛОСОВЫЕ КОМАНДЫ ПРОЙДЕНЫ!';
+  document.getElementById('pt-sub').textContent='БИПО доставил энергомодуль на базу!';
+  document.getElementById('pt-stats').innerHTML=`Очки: ${S.score} ⭐<br>Смешных провалов: ${S.p3wrong} 😂<br>Лучший момент: "${S.funniest||'неизвестно'}"`;
+  setAnim('victory'); setMood('excited'); confetti(20);
+  showScr('s-trans');
+}
+
+// ==================== FINALE ====================
+function showFinale(){
+  setTimeout(notifyDone, 7000);
+  document.getElementById('fin-stats').innerHTML=
+    `Команд использовано: ${S.totalCmds}<br>Столкновений со стеной: ${S.totalWalls} 😅<br>${S.funniest?`Самый смешной провал: "${S.funniest}" 😂<br>`:''}<br>💫 Очки: <b style="color:#ffd700;font-size:1.3em">${S.score.toLocaleString('ru')}</b>`;
+  confetti(35);
+  const hs=parseInt(localStorage.getItem('bipo_hs')||'0');
+  if(S.score>hs) localStorage.setItem('bipo_hs',S.score);
+  showScr('s-fin');
+}
+
+function restart(){
+  Object.assign(S,{phase:1,score:0,hearts:3,totalWalls:0,totalCmds:0,p3wrong:0,funniest:'',queue:[],running:false,gotModule:false,firstFail:true,p3step:0,p3lock:false,smashCharges:0,smashReady:0,brokenWalls:new Set()});
+  closeTip();
+  showScr('s-game');
+  initPhase(1);
+}
+
+// ==================== TOOLTIP ====================
+let tipTmr=null;
+function showTip(title,body){
+  document.getElementById('tip-t').textContent=title;
+  document.getElementById('tip-b').textContent=body;
+  document.getElementById('tip').classList.add('on');
+  if(tipTmr) clearTimeout(tipTmr);
+  tipTmr=setTimeout(closeTip,9000);
+}
+function closeTip(){document.getElementById('tip').classList.remove('on');}
+
+// ==================== CONFETTI ====================
+function confetti(n){
+  const root=document.getElementById('root');
+  const cols=['#ff6b6b','#ffd700','#00f5ff','#a855f7','#22c55e','#f97316','#ec4899'];
+  for(let i=0;i<n;i++){
+    setTimeout(()=>{
+      const c=document.createElement('div'); c.className='confetti';
+      c.style.left=(Math.random()*100)+'%';
+      c.style.top='-10px';
+      c.style.width=(6+Math.random()*6)+'px';
+      c.style.height=(6+Math.random()*6)+'px';
+      c.style.background=cols[Math.floor(Math.random()*cols.length)];
+      c.style.animationDuration=(1.5+Math.random()*2)+'s';
+      c.style.animationDelay=(Math.random()*0.4)+'s';
+      root.appendChild(c);
+      setTimeout(()=>c.remove(),3500);
+    },i*55);
+  }
+}
+
+// ==================== OVERLAY ====================
+let ovlTmr=null;
+function showOvl(txt){
+  const el=document.getElementById('ovl');
+  el.textContent=txt; el.classList.add('on');
+  if(ovlTmr) clearTimeout(ovlTmr);
+  ovlTmr=setTimeout(()=>el.classList.remove('on'),1800);
+}
+
+// ==================== UTILS ====================
+function wait(ms){return new Promise(r=>setTimeout(r,ms));}
+
+// ==================== PREVENT DOUBLE SCROLL ====================
+document.addEventListener('touchmove',e=>{
+  if(!e.target.closest('.cmd-queue')&&!e.target.closest('.p3wrap')&&!e.target.closest('#s-fin')) e.preventDefault();
+},{passive:false});
+
+// Window resize – rebuild grid
+window.addEventListener('resize',()=>{
+  if(S.phase<=2 && S.maze) {buildGrid(); placeBipo(false);}
+});
+
+function notifyDone() {
+  window.parent.postMessage({type:'level_done', earned:9, total:10}, '*');
+}
+</script>
+</body>
+</html>
