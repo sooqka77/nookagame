@@ -115,6 +115,32 @@
 .dwacc__v span{font-weight:700;font-size:12px;color:#8B7BAE;}
 .dwacc__n{margin-top:9px;font-weight:700;font-size:12px;line-height:1.45;color:#A896C9;}
 
+/* судейство: где Нейро ошибся */
+.dwjudge{margin:11px 14px 0;padding:14px;border-radius:22px;
+  background:linear-gradient(180deg,#181227,#0D0A18);
+  box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.08);}
+.dwjudge__h{display:flex;align-items:baseline;gap:10px;margin-bottom:11px;}
+.dwjudge__h b{font-family:var(--nk-brand),var(--nk-body);font-weight:700;font-size:15px;color:#F4EEFF;}
+.dwjudge__h span{margin-left:auto;font-weight:800;font-size:11.5px;color:#8B7BAE;}
+.dwjudge__r{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+.dwjc{position:relative;padding:0 0 5px;border:none;cursor:pointer;border-radius:14px;overflow:hidden;
+  background:#0C0918;box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.12);
+  display:flex;flex-direction:column;align-items:center;font-family:inherit;
+  transition:transform .12s,box-shadow .15s;}
+.dwjc:hover:not(:disabled){transform:translateY(-2px);}
+.dwjc img{width:100%;aspect-ratio:1;object-fit:cover;display:block;}
+.dwjc em{font-style:normal;font-weight:900;font-size:10.5px;color:#C9BAE6;margin-top:4px;}
+.dwjc span{font-weight:800;font-size:9px;margin-top:2px;color:#8B7BAE;}
+.dwjc--on{box-shadow:inset 0 0 0 2.5px #FFC83C;background:rgba(255,200,60,.1);}
+.dwjc--found{box-shadow:inset 0 0 0 2.5px #4ED99B;background:rgba(78,217,155,.12);}
+.dwjc--found span{color:#8DEFC2;}
+.dwjc--missed{box-shadow:inset 0 0 0 2.5px #FF6B6B;background:rgba(255,107,107,.12);}
+.dwjc--missed span{color:#FFB0A4;}
+.dwjc--false{box-shadow:inset 0 0 0 2px rgba(255,200,60,.5);}
+.dwjc--false span{color:#FFD98F;}
+.dwjc--fine{opacity:.5;}
+.dwjudge__n{margin-top:11px;font-weight:700;font-size:12px;line-height:1.45;color:#A896C9;}
+
 /* лаборатория: сколько примеров дать */
 .dwlab{margin:11px 14px 0;padding:16px;border-radius:22px;
   background:linear-gradient(180deg,#181227,#0D0A18);
@@ -451,24 +477,64 @@ function dwSketch(kind, jit, variant) {
       line([[200, 125], [210, 72], [166, 110]]);
       line([[92, 168], [46, 158]]);
       line([[208, 168], [254, 158]]);
-    } else if (v % 4 === 1) {              // кот целиком: сидит, с хвостом
+    } else if (v % 4 === 1) {              // сидит, с хвостом
       ring(150, 96, 34, 30);
-      line([[124, 74], [118, 44], [144, 66]]);
-      line([[176, 74], [182, 44], [156, 66]]);
+      line([[124, 74], [118, 40], [146, 64]]);
+      line([[176, 74], [182, 40], [154, 64]]);
+      line([[126, 102], [96, 96]]);         // усы
+      line([[174, 102], [204, 96]]);
       line([[122, 124], [116, 214], [186, 214], [180, 124]]);
       line([[186, 206], [232, 190], [240, 140]]);
-    } else if (v % 4 === 2) {              // лежит: вытянутый силуэт
-      ring(96, 168, 30, 26);
-      line([[74, 148], [70, 122], [92, 142]]);
-      line([[118, 148], [124, 122], [102, 142]]);
-      ring(176, 176, 62, 32);
-      line([[236, 168], [268, 130]]);
+    } else if (v % 4 === 2) {              // стоит боком, хвост трубой
+      ring(104, 150, 32, 28);
+      line([[82, 128], [76, 96], [100, 120]]);
+      line([[126, 128], [132, 96], [108, 120]]);
+      line([[80, 158], [50, 152]]);         // усы
+      line([[128, 158], [158, 152]]);
+      line([[104, 178], [104, 208], [206, 208], [206, 178]]);
+      line([[206, 186], [236, 150], [230, 116]]);
+      line([[124, 208], [124, 244]]);
+      line([[188, 208], [188, 244]]);
     } else {                               // худой, длинные уши
       ring(150, 150, 40, 46);
       line([[126, 112], [112, 52], [148, 100]]);
       line([[174, 112], [190, 52], [152, 100]]);
+      line([[124, 156], [88, 150]]);        // усы
+      line([[176, 156], [212, 150]]);
       line([[150, 196], [150, 246]]);
       line([[118, 246], [182, 246]]);
+    }
+  } else if (kind === 'dog') {              // висячие уши и вытянутая морда
+    if (v % 4 === 0) {                      // морда крупным планом
+      ring(150, 158, 54, 48);
+      line([[106, 122], [78, 176], [104, 190], [116, 154]]);    // висячее ухо
+      line([[194, 122], [222, 176], [196, 190], [184, 154]]);
+      line([[150, 166], [150, 184]]);
+      line([[150, 184], [128, 196]]);
+      line([[150, 184], [172, 196]]);
+      line([[150, 192], [150, 212]]);        // язык
+    } else if (v % 4 === 1) {               // сидит анфас, уши до плеч
+      ring(150, 104, 36, 32);
+      line([[118, 78], [96, 140], [120, 150], [130, 108]]);
+      line([[182, 78], [204, 140], [180, 150], [170, 108]]);
+      line([[150, 112], [150, 126]]);
+      line([[126, 136], [116, 216], [184, 216], [174, 136]]);
+      line([[184, 200], [222, 196], [228, 156]]);
+    } else if (v % 4 === 2) {               // сидит анфас
+      ring(150, 140, 44, 38);
+      line([[118, 112], [100, 168], [124, 164]]);
+      line([[182, 112], [200, 168], [176, 164]]);
+      line([[150, 178], [150, 240]]);
+      line([[112, 240], [188, 240]]);
+    } else {                                // такса: длинное тело
+      ring(96, 150, 28, 24);
+      line([[76, 132], [64, 172], [84, 168]]);
+      line([[116, 132], [128, 172], [108, 168]]);
+      line([[96, 174], [96, 196]]);
+      line([[96, 196], [220, 196], [220, 168]]);
+      line([[220, 168], [248, 150]]);
+      line([[120, 196], [120, 238]]);
+      line([[196, 196], [196, 238]]);
     }
   } else {                                  // дома тоже разные
     if (v % 4 === 0) {
@@ -622,29 +688,29 @@ const DW_LEVELS = {
   6: {
     title: 'Ещё разок',
     mid: 'data6', xp: 90,
-    law: 'Нейро ошибся — покажи ему этот самый рисунок.\nВ следующий раз он его узнает.',
-    tip: 'Дай по одному примеру, а дальше учи Нейро на его же промахах.',
-    rounds: 3,
+    law: 'Нейро сам не знает, где ошибся.\nПоказать ему промах — работа человека.',
+    tip: 'Дай два примера, а дальше смотри его ответы и отмечай, где он неправ.',
+    rounds: 3, judge: { cards: 6, kinds: ['cat', 'dog'] },
     steps: [
       { kind: 'draw', label: 'cat', word: 'кота', wordN: 'кот', many: 'коты', more: 'ещё одного кота', need: 1,
-        say: 'В этот раз начнём со <b>скупого набора</b>: всего один кот.' },
-      { kind: 'draw', label: 'house', word: 'дом', wordN: 'дом', many: 'дома', more: 'ещё один дом', need: 1,
-        say: 'И один дом. Двух примеров мало — я буду ошибаться. Это нормально: <b>так и учатся</b>.' },
-      { kind: 'test', word: 'кота', wordN: 'кот', many: 'коты', more: 'ещё одного кота', expect: 'cat', round: true,
-        say: 'Круг первый. Нарисуй кота — и посмотрим, насколько я уверен.' },
+        say: 'Сегодня различаем <b>котов и собак</b> — это куда труднее, чем кот и дом. Нарисуй одного кота.' },
+      { kind: 'draw', label: 'dog', word: 'собаку', wordN: 'собака', many: 'собаки', more: 'ещё одну собаку', need: 1,
+        say: 'Теперь <b>одну собаку</b>. Всего два примера — я точно буду ошибаться, и это нормально.' },
+      { kind: 'judge',
+        say: 'Смотри мои ответы. Где я <b>ошибся</b> — нажми на карточку. Ошибки уйдут ко мне в набор, и в следующий раз я буду точнее.' },
     ],
     quiz: {
-      q: 'Почему Нейро стал отвечать увереннее?',
+      q: 'Кто находил ошибки Нейро?',
       opts: [
-        { t: 'Каждый раз я отдавал ему рисунок, на котором он спотыкался', ok: true },
-        { t: 'Он думал дольше и наконец понял', ok: false },
-        { t: 'Рисунки стали красивее', ok: false },
+        { t: 'Я — он сам их не видел', ok: true },
+        { t: 'Нейро находил их сам', ok: false },
+        { t: 'Ошибки исчезали со временем', ok: false },
       ],
-      okSay: 'Именно. Ты показывал ему то, чего ему не хватало, — и он подтягивался. Так дообучают настоящие модели.',
-      badSay: 'Думать дольше он не умеет — считает он мгновенно. Меняется только набор примеров: ты добавлял туда как раз те рисунки, на которых он спотыкался.',
+      okSay: 'Да. Модель не знает, где ошиблась: для неё все ответы одинаково правильные. Ошибку показывает человек — так и работают те, кто учит ИИ.',
+      badSay: 'Сам он ошибку не видит: для него любой его ответ — правильный. Пока ты не отметил промах, Нейро о нём не знал.',
     },
-    win: { show: 'rounds', law: 'ИИ не рождается умным — его доучивают',
-      sub: 'Каждый круг ты давал Нейро ровно тот пример, которого ему не хватало. Настоящие модели растут так же: ошибка, разбор, новый пример.' },
+    win: { show: 'judge', law: 'Ошибку показывает человек',
+      sub: 'Каждый круг ты находил его промахи и отдавал ему как примеры. Настоящие модели дообучают так же — руками людей.' },
   },
 
   7: {
@@ -731,6 +797,8 @@ function LevelDraw({ n, onWin, onHome }) {
   const [tryLog, setTryLog] = useState([]);        // попытки: {take, ok, total}
   const lab = useRef(null);
   if (!lab.current && L.lab) lab.current = { lib: dwLibrary(L.lab.max), exam: dwExam(L.lab.exam) };
+  const [judge, setJudge] = useState(null);        // круг судейства: {cards, marked, checked}
+
   const [saved, setSaved] = useState(false);
   const api = useRef({});
   const tRef = useRef([]);
@@ -741,13 +809,12 @@ function LevelDraw({ n, onWin, onHome }) {
   useEffect(() => {
     if (!q.get('demo')) return;
     const m = [];
-    [10, 13, 11].forEach(j => {
-      const cv = dwSketch('cat', j);
-      m.push({ label: 'cat', f: dwFeatures(cv).f, thumb: dwThumb(cv, 64) });
-    });
-    [10, 13, 11].forEach(j => {
-      const cv = dwSketch('house', j);
-      m.push({ label: 'house', f: dwFeatures(cv).f, thumb: dwThumb(cv, 64) });
+    const labels = L.steps.filter(x => x.kind === 'draw').map(x => x.label);
+    (labels.length ? labels : ['cat', 'house']).forEach(lb => {
+      [10, 13, 11].forEach(j => {
+        const cv = dwSketch(lb, j, 0);
+        m.push({ label: lb, f: dwFeatures(cv).f, thumb: dwThumb(cv, 64) });
+      });
     });
     setModel(m);
     let ti = L.steps.findIndex(x => x.kind === 'test');
@@ -821,8 +888,54 @@ function LevelDraw({ n, onWin, onHome }) {
     if (!step.unknown && (p.unsure || p.label !== step.expect)) setTries(tries + 1);
   };
 
-  const WORD = { cat: 'кот', house: 'дом', fish: 'рыба' };
+  const WORD = { cat: 'кот', house: 'дом', fish: 'рыба', dog: 'собака' };
   const FLIP = { cat: 'house', house: 'cat' };
+
+  /* Круг судейства: Нейро отвечает на новые рисунки, ребёнок ищет промахи.
+     Отмеченные уходят в набор с истинной подписью — это и есть дообучение.
+     Пропущенные ошибки остаются: внимательность имеет цену. */
+  const dealRound = (m, done) => {
+    const k = L.judge.cards, kinds = L.judge.kinds || ['cat', 'house'];
+    const cards = [];
+    for (let i = 0; i < k; i++) {
+      const kind = kinds[i % kinds.length];
+      const variant = (Math.floor(i / kinds.length) + done) % 4;   // виды вперемешку, круги равны по сложности
+      const cv = dwSketch(kind, 10 + ((i + done) % 3) * 4, variant);
+      const F = dwFeatures(cv);
+      const p = dwPredict(m, F.f);
+      cards.push({ thumb: dwThumb(cv, 64), truth: kind, f: F.f, said: p ? p.label : kind, conf: p ? p.conf : 50 });
+    }
+    setJudge({ cards: cards, marked: [], checked: false });
+  };
+
+  useEffect(() => {
+    if (step && step.kind === 'judge' && !judge && model.length >= 2) dealRound(model, rounds.length);
+  }, [si, model.length]);
+
+  const mark = i => {
+    if (!judge || judge.checked) return;
+    const has = judge.marked.indexOf(i) > -1;
+    setJudge(Object.assign({}, judge, {
+      marked: has ? judge.marked.filter(x => x !== i) : judge.marked.concat([i]),
+    }));
+  };
+
+  const checkJudge = () => {
+    const wrong = judge.cards.map((c, i) => c.said !== c.truth ? i : -1).filter(i => i > -1);
+    const found = judge.marked.filter(i => wrong.indexOf(i) > -1);
+    setJudge(Object.assign({}, judge, { checked: true }));
+    setRounds(rounds.concat([{ errs: wrong.length, found: found.length, total: judge.cards.length }]));
+    /* в набор идёт то, что ребёнок отметил, — с верной подписью */
+    const add = judge.marked.map(i => ({
+      label: judge.cards[i].truth, f: judge.cards[i].f, thumb: judge.cards[i].thumb,
+    }));
+    if (add.length) { setModel(model.concat(add)); setFlash(true); }
+  };
+
+  const nextRound = () => {
+    if (rounds.length >= (L.rounds || 3)) { setPhase('quiz'); return; }
+    dealRound(model, rounds.length);
+  };
 
   /* экзамен: Нейро отвечает на рисунки, которых в обучении не было */
   const runExam = () => {
@@ -893,6 +1006,20 @@ function LevelDraw({ n, onWin, onHome }) {
       React.createElement('div', { className: 'dwbody dwdone' },
         hasArt
           ? React.createElement(DwPet, { shots: shots, conf: guess ? guess.conf : 70, u: 'p' })
+          : L.win.show === 'judge'
+          ? React.createElement('div', { className: 'dwwords' },
+              React.createElement('div', { className: 'dwwords__t' }, 'Ошибки Нейро по кругам'),
+              React.createElement('div', { className: 'dwrounds__r', style: { marginTop: 14 } },
+                rounds.map((r, i) => React.createElement('div', { key: i, className: 'dwrd' },
+                  React.createElement('i', { style: { height: Math.max(12, r.errs / r.total * 100) + '%' } }),
+                  React.createElement('b', null, r.errs + ' из ' + r.total),
+                  React.createElement('span', null, 'круг ' + (i + 1))))),
+              React.createElement('div', { className: 'dwwords__n' },
+                rounds.length > 1
+                  ? 'В первом круге он ошибся ' + rounds[0].errs + ' ' +
+                    plural(rounds[0].errs, 'раз', 'раза', 'раз') + ', в последнем — ' +
+                    rounds[rounds.length - 1].errs + '. Между ними только твой разбор.'
+                  : 'Ты показал ему промахи, и он их выучил.'))
           : L.win.show === 'lab'
           ? React.createElement('div', { className: 'dwwords' },
               React.createElement('div', { className: 'dwwords__t' }, 'Твои попытки'),
@@ -975,7 +1102,8 @@ function LevelDraw({ n, onWin, onHome }) {
   const isTest = step.kind === 'test';
   const isClean = step.kind === 'clean';
   const isLab = step.kind === 'lab';
-  const noBoard = isClean || isLab;
+  const isJudge = step.kind === 'judge';
+  const noBoard = isClean || isLab || isJudge;
   const examDone = exam && exam.i >= exam.res.length;
   const doneCount = isTest || noBoard ? 0 : mine(step.label).length;
   /* точность пересчитывается на каждый рендер: правка подписи видна сразу */
@@ -1004,7 +1132,8 @@ function LevelDraw({ n, onWin, onHome }) {
 
       React.createElement('div', { className: 'dwtask' },
         React.createElement('b', null,
-          isLab ? 'Сколько хватит?'
+          isJudge ? 'Где Нейро ошибся?'
+            : isLab ? 'Сколько хватит?'
             : isClean ? 'Найди, где подпись врёт'
             : fix ? 'Нарисуй ' + (step.more || step.word)
             : 'Нарисуй ' + step.word),
@@ -1013,6 +1142,37 @@ function LevelDraw({ n, onWin, onHome }) {
         !isTest && !noBoard && React.createElement('span', null, doneCount + ' из ' + step.need),
         isTest && tries > 0 && React.createElement('span', null,
           'примеров: ' + mine(step.expect).length)),
+
+      isJudge && judge && React.createElement('div', { className: 'dwjudge' },
+        React.createElement('div', { className: 'dwjudge__h' },
+          React.createElement('b', null, 'Круг ' + (rounds.length + (judge.checked ? 0 : 1)) + ' из ' + (L.rounds || 3)),
+          React.createElement('span', null, judge.checked
+            ? 'нашёл ' + judge.marked.filter(i => judge.cards[i].said !== judge.cards[i].truth).length +
+              ' из ' + judge.cards.filter(c => c.said !== c.truth).length
+            : 'отмечено: ' + judge.marked.length)),
+        React.createElement('div', { className: 'dwjudge__r' },
+          judge.cards.map((c, C) => {
+            const bad = c.said !== c.truth;
+            const on = judge.marked.indexOf(C) > -1;
+            let st = on ? ' dwjc--on' : '';
+            if (judge.checked) {
+              st = bad && on ? ' dwjc--found' : bad && !on ? ' dwjc--missed' : !bad && on ? ' dwjc--false' : ' dwjc--fine';
+            }
+            return React.createElement('button', {
+              key: C, className: 'dwjc' + st, onClick: () => mark(C), disabled: judge.checked,
+            },
+              React.createElement('img', { src: c.thumb, alt: '' }),
+              React.createElement('em', null, 'Нейро: ', WORD[c.said] || c.said),
+              judge.checked && React.createElement('span', null,
+                bad && on ? 'промах найден' : bad && !on ? 'промах пропущен' : !bad && on ? 'а тут он прав' : 'верно'));
+          })),
+        judge.checked && React.createElement('div', { className: 'dwjudge__n' },
+          judge.cards.filter(c => c.said !== c.truth).length === 0
+            ? 'В этом круге Нейро не ошибся ни разу.'
+            : judge.marked.filter(i => judge.cards[i].said !== judge.cards[i].truth).length ===
+              judge.cards.filter(c => c.said !== c.truth).length
+              ? 'Все промахи найдены — они ушли к Нейро в набор.'
+              : 'Что не отметил — то и осталось неисправленным: сам он свои ошибки не видит.')),
 
       isLab && React.createElement('div', { className: 'dwlab' },
         React.createElement('div', { className: 'dwlab__h' },
@@ -1141,6 +1301,13 @@ function LevelDraw({ n, onWin, onHome }) {
             React.createElement('div', { className: 'dwslot', key: 's' + i }))))),
 
     React.createElement('div', { className: 'dwfoot' },
+      isJudge && judge && React.createElement('button', {
+        className: 'nk-btn ' + (judge.checked ? 'nk-btn--ok' : 'nk-btn--pri'), style: { width: '100%' },
+        onClick: judge.checked ? nextRound : checkJudge,
+      }, judge.checked
+        ? (rounds.length >= (L.rounds || 3) ? 'Дальше' : 'Следующий круг')
+        : judge.marked.length ? 'Проверить разбор' : 'Здесь всё верно'),
+
       isLab && React.createElement('div', { className: 'dwlabbtns' },
         tryLog.length > 0 && React.createElement('button', {
           className: 'nk-btn nk-btn--soft', onClick: () => setPhase('quiz'),
