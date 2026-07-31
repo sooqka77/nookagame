@@ -79,6 +79,8 @@
 .dwex--fish{box-shadow:inset 0 0 0 1.5px rgba(127,231,255,.6);}
 .dwex--near{box-shadow:inset 0 0 0 2px #A98BFF,0 0 18px -4px #A98BFF;}
 .dwex--ext{outline:2px dashed rgba(255,200,60,.55);outline-offset:-2px;}
+.dwex--mem::after{content:'';position:absolute;left:3px;top:3px;width:6px;height:6px;border-radius:50%;
+  background:#7FE7FF;box-shadow:0 0 8px #7FE7FF;}
 .dwex--miss{box-shadow:inset 0 0 0 2px #FF6B6B,0 0 16px -4px #FF6B6B;}
 .dwex--edit{cursor:pointer;transition:transform .12s;width:70px;height:70px;}
 .dwex--edit:hover{transform:translateY(-3px) scale(1.04);}
@@ -590,6 +592,35 @@ function dwThumb(cv, size) {
   return t.toDataURL('image/png');
 }
 
+/* ── ПАМЯТЬ ДОСКИ ──
+   Нейро помнит рисунки ребёнка между уровнями: третий уровень уже не
+   заставляет заново рисовать котов, а девятый ломает модель, обученную
+   на его же каракулях. Держим до 12 примеров, миниатюры мелкие. */
+const dwMemory = {
+  KEY: 'nooka_draw_mem',
+  load: function () {
+    try { return JSON.parse(localStorage.getItem(this.KEY)) || []; } catch (e) { return []; }
+  },
+  save: function (model) {
+    var keep = model.filter(function (m) { return m.f && m.thumb; }).slice(-12)
+      .map(function (m) { return { label: m.label, f: m.f, thumb: m.thumb }; });
+    try { localStorage.setItem(this.KEY, JSON.stringify(keep)); } catch (e) {}
+  },
+  /* примеры нужных классов: сначала свои, чем не хватило — дорисуем сами */
+  get: function (kinds, each) {
+    var mem = this.load(), out = [];
+    kinds.forEach(function (k) {
+      var mine = mem.filter(function (m) { return m.label === k; }).slice(-each);
+      mine.forEach(function (m) { out.push({ label: k, f: m.f, thumb: m.thumb, mem: true }); });
+      for (var i = mine.length; i < each; i++) {
+        var cv = dwSketch(k, 9 + i * 4, i);
+        out.push({ label: k, f: dwFeatures(cv).f, thumb: dwThumb(cv, 64) });
+      }
+    });
+    return out;
+  },
+};
+
 /* ── библиотека чужих рисунков и отложенный экзамен ──
    Уровень «Сколько примеров хватит» ничего не рисует: ребёнок решает,
    сколько примеров дать Нейро, и смотрит, как тот сдаёт экзамен на
@@ -622,12 +653,12 @@ const DW_LEVELS = {
     title: 'Нарисуй — и научи',
     mid: 'data2', xp: 80,
     law: 'Нейро не знает, как выглядит кот.\nОн выучит только то, что ты нарисуешь.',
-    tip: 'Рисуй пальцем прямо на доске. Сначала три кота, потом три дома.',
+    tip: 'Рисуй пальцем прямо на доске. Сначала два кота, потом два дома.',
     steps: [
-      { kind: 'draw', label: 'cat', word: 'кота', wordN: 'кот', many: 'коты', more: 'ещё одного кота', need: 3,
-        say: 'Я <b>никогда не видел кота</b>. Нарисуй мне трёх — я запомню, как они выглядят.' },
-      { kind: 'draw', label: 'house', word: 'дом', wordN: 'дом', many: 'дома', more: 'ещё один дом', need: 3,
-        say: 'Теперь трижды нарисуй <b>дом</b>. Чтобы узнавать кота, мне надо знать и то, что котом <b>не</b> является.' },
+      { kind: 'draw', label: 'cat', word: 'кота', wordN: 'кот', many: 'коты', more: 'ещё одного кота', need: 2,
+        say: 'Я <b>никогда не видел кота</b>. Нарисуй мне двух — я запомню, как они выглядят.' },
+      { kind: 'draw', label: 'house', word: 'дом', wordN: 'дом', many: 'дома', more: 'ещё один дом', need: 2,
+        say: 'Теперь <b>два дома</b>. Чтобы узнавать кота, мне надо знать и то, что котом <b>не</b> является.' },
       { kind: 'test', word: 'кота', wordN: 'кот', many: 'коты', more: 'ещё одного кота', expect: 'cat',
         say: 'Проверим. Нарисуй кота ещё раз — я попробую узнать его сам.' },
     ],
@@ -642,23 +673,20 @@ const DW_LEVELS = {
       badSay: 'Не совсем. До твоих рисунков он про котов не знал ничего: он сравнил новый рисунок с примерами.',
     },
     win: { art: true, title: 'Питомец обучен', law: 'Нейро знает ровно то, что ты ему показал',
-      sub: 'Ты дал шесть примеров — и он начал различать. Больше примеров, больше разных — точнее узнавание.' },
+      sub: 'Ты дал четыре примера — и он начал различать. Больше примеров, больше разных — точнее узнавание.' },
   },
 
   3: {
     title: 'Чего я не видел',
     mid: 'data3', xp: 80,
     law: 'Нейро знает только те слова, которым ты его научил.\nВсё остальное он назовёт знакомым словом.',
-    tip: 'Сначала научи двум словам. Потом нарисуй третье — то, которому не учил.',
+    tip: 'Нейро уже знает кота и дом. Нарисуй то, чему его никто не учил.',
+    preset: { kinds: ['cat', 'house'], each: 2 },
     steps: [
-      { kind: 'draw', label: 'cat', word: 'кота', wordN: 'кот', many: 'коты', more: 'ещё одного кота', need: 2,
-        say: 'Начнём быстро: нарисуй мне <b>двух котов</b>.' },
-      { kind: 'draw', label: 'house', word: 'дом', wordN: 'дом', many: 'дома', more: 'ещё один дом', need: 2,
-        say: 'И <b>два дома</b>. Теперь я знаю два слова: кот и дом.' },
       { kind: 'test', word: 'рыбу', wordN: 'рыба', many: 'рыбы', more: 'ещё одну рыбу', expect: 'fish', unknown: true,
-        say: 'А теперь нарисуй <b>рыбу</b>. Я никогда её не видел — посмотрим, что я скажу.' },
-      { kind: 'draw', label: 'fish', word: 'рыбу', wordN: 'рыба', many: 'рыбы', more: 'ещё одну рыбу', need: 3,
-        say: 'Теперь научи меня: нарисуй <b>трёх рыб</b>. Тогда у меня появится третье слово.' },
+        say: 'Я помню два слова с прошлого раза: <b>кот и дом</b> — вот мой набор. А теперь нарисуй <b>рыбу</b>. Её я не видел никогда.' },
+      { kind: 'draw', label: 'fish', word: 'рыбу', wordN: 'рыба', many: 'рыбы', more: 'ещё одну рыбу', need: 2,
+        say: 'Теперь научи меня: нарисуй <b>двух рыб</b>. Тогда у меня появится третье слово.' },
       { kind: 'test', word: 'рыбу', wordN: 'рыба', many: 'рыбы', more: 'ещё одну рыбу', expect: 'fish',
         say: 'Проверим ещё раз. Нарисуй рыбу — я попробую снова.' },
     ],
@@ -682,12 +710,12 @@ const DW_LEVELS = {
     law: 'Нейро верит подписи под рисунком.\nЕсли подпись врёт — он выучит неправду.',
     tip: 'Соберём примеры, посмотрим, где Нейро путается, и починим подписи.',
     steps: [
-      { kind: 'draw', label: 'cat', word: 'кота', wordN: 'кот', many: 'коты', more: 'ещё одного кота', need: 2,
-        say: 'Нарисуй мне <b>двух котов</b> — с них начнём набор.' },
-      { kind: 'draw', label: 'house', word: 'дом', wordN: 'дом', many: 'дома', more: 'ещё один дом', need: 2,
-        say: 'И <b>два дома</b>. Пока в наборе только твои рисунки, все подписаны верно.' },
+      { kind: 'draw', label: 'cat', word: 'кота', wordN: 'кот', many: 'коты', more: 'ещё одного кота', need: 1,
+        say: 'Нарисуй <b>одного кота</b> — с него начнём набор.' },
+      { kind: 'draw', label: 'house', word: 'дом', wordN: 'дом', many: 'дома', more: 'ещё один дом', need: 1,
+        say: 'И <b>один дом</b>. Пока в наборе только твои рисунки, оба подписаны верно.' },
       { kind: 'clean',
-        copy: ['cat', 'house', 'house', 'cat'],   // копии его же рисунков, две подписи врут
+        copy: ['cat', 'house', 'house', 'cat'],   // две копии каждого рисунка, две подписи врут
         say: 'Я скопировал твои рисунки себе в набор — вот они, с пунктиром. Только <b>две подписи при переносе слетели</b>. Найди их: я уже путаюсь.' },
       { kind: 'test', word: 'кота', wordN: 'кот', many: 'коты', more: 'ещё одного кота', expect: 'cat',
         say: 'Набор почищен. Теперь по-настоящему: нарисуй кота.' },
@@ -920,11 +948,14 @@ function LevelDraw({ n, onWin, onHome }) {
      единственная причина путаницы, и после починки Нейро перестаёт ошибаться. */
   useEffect(() => {
     if (!step || !step.copy || model.some(m => m.ext)) return;
-    const cats = model.filter(m => m.label === 'cat').slice(0, 2);
-    const houses = model.filter(m => m.label === 'house').slice(0, 2);
-    const src = cats.concat(houses);
-    if (src.length < step.copy.length) return;
-    const add = src.map((m, i) => ({ label: step.copy[i], f: m.f, thumb: m.thumb, ext: true }));
+    const cats = model.filter(m => m.label === 'cat');
+    const houses = model.filter(m => m.label === 'house');
+    if (!cats.length || !houses.length) return;
+    /* копий больше, чем рисунков, — берём по кругу: у каждого своя подпись */
+    const add = step.copy.map((label, i) => {
+      const src = i % 2 === 0 ? cats[Math.floor(i / 2) % cats.length] : houses[Math.floor(i / 2) % houses.length];
+      return { label: label, f: src.f, thumb: src.thumb, ext: true };
+    });
     setModel(m => m.concat(add));
   }, [si, model.length]);
 
@@ -968,19 +999,19 @@ function LevelDraw({ n, onWin, onHome }) {
   const WORD = { cat: 'кот', house: 'дом', fish: 'рыба', dog: 'собака' };
   const FLIP = { cat: 'house', house: 'cat' };
 
-  /* Уровень «Уверен, но неправ»: Нейро уже обучен, ломать его — задача ребёнка.
-     Набор готовим сразу, чтобы уверенность была высокой и обман чего-то стоил. */
+  /* Стартовый набор: сначала то, чему ребёнок учил Нейро раньше, потом добор.
+     Так третий уровень не заставляет заново рисовать котов, а девятый ломает
+     модель, обученную на его же каракулях. */
   useEffect(() => {
-    if (!L.hack || model.length) return;
-    const m = [];
-    ['cat', 'dog'].forEach(k => {
-      for (let v = 0; v < L.hack.ready; v++) {
-        const cv = dwSketch(k, 9 + v * 3, v);
-        m.push({ label: k, f: dwFeatures(cv).f, thumb: dwThumb(cv, 64) });
-      }
-    });
-    setModel(m);
+    if (model.length) return;
+    if (L.preset) setModel(dwMemory.get(L.preset.kinds, L.preset.each));
+    else if (L.hack) setModel(dwMemory.get(['cat', 'dog'], L.hack.ready));
   }, []);
+
+  /* что ребёнок нарисовал — остаётся у Нейро на следующий уровень */
+  useEffect(() => {
+    if (model.length && (phase === 'quiz' || phase === 'done')) dwMemory.save(model);
+  }, [phase]);
 
   const tryHack = () => {
     const cv = api.current.canvas;
@@ -1424,12 +1455,13 @@ function LevelDraw({ n, onWin, onHome }) {
         React.createElement('div', { className: 'dwset__t' },
           isClean ? 'Набор Нейро · пунктиром — копии твоих рисунков'
             : isHack ? 'На этом Нейро учился — по ним он и узнаёт'
+            : model.some(m => m.mem) ? 'Набор Нейро · часть помнит с прошлых уровней'
             : 'Чему ты его научил'),
         React.createElement('div', { className: 'dwrow' },
           model.map((m, i) => React.createElement('div', {
             key: i,
             className: 'dwex dwex--' + (m.label === 'cat' ? 'cat' : m.label === 'fish' ? 'fish' : 'other') +
-              (m.ext ? ' dwex--ext' : '') + (isClean ? ' dwex--edit' : '') +
+              (m.ext ? ' dwex--ext' : '') + (m.mem ? ' dwex--mem' : '') + (isClean ? ' dwex--edit' : '') +
 
               (guess && guess.near && guess.near.i === i ? ' dwex--near' : ''),
             onClick: isClean ? () => relabel(i) : null,
