@@ -117,6 +117,36 @@
 .dwacc__v span{font-weight:700;font-size:12px;color:#8B7BAE;}
 .dwacc__n{margin-top:9px;font-weight:700;font-size:12px;line-height:1.45;color:#A896C9;}
 
+/* разметка спорных */
+.dwtags{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+.dwtag{border-radius:14px;overflow:hidden;background:#0C0918;
+  box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.12);}
+.dwtag img{width:100%;aspect-ratio:1;object-fit:cover;display:block;}
+.dwtag__b{display:flex;}
+.dwtag__b button{flex:1;padding:7px 0;border:none;cursor:pointer;font-family:inherit;
+  font-weight:900;font-size:10.5px;color:#8B7BAE;background:rgba(255,255,255,.04);}
+.dwtag__b button+button{box-shadow:inset 1px 0 0 rgba(255,255,255,.09);}
+.dwtag__b button.on{color:#0F0A1C;background:#7FE7FF;}
+.dwtag--diff{box-shadow:inset 0 0 0 2px #FFC83C;}
+.dwtag__cmp{padding:6px;text-align:center;}
+.dwtag__cmp b{display:block;font-weight:900;font-size:10px;color:#7FE7FF;}
+.dwtag__cmp span{display:block;margin-top:2px;font-weight:800;font-size:10px;color:#C9BAE6;}
+
+/* спор двух моделей */
+.dwduel{margin:12px 14px 0;padding:14px 16px;border-radius:20px;
+  background:rgba(255,255,255,.05);box-shadow:inset 0 0 0 1px rgba(255,255,255,.09);}
+.dwduel__t{font-weight:900;font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;
+  color:#8B7BAE;margin-bottom:10px;}
+.dwduel__row{display:flex;align-items:center;gap:9px;padding:8px 0;
+  border-top:1px solid rgba(255,255,255,.07);}
+.dwduel__row:first-of-type{border-top:none;}
+.dwduel__row img{width:50px;height:50px;border-radius:12px;background:#0C0918;flex-shrink:0;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.12);}
+.dwduel__a{flex:1;min-width:0;}
+.dwduel__a b{display:block;font-weight:800;font-size:9.5px;color:#8B7BAE;}
+.dwduel__a span{display:block;margin-top:2px;font-weight:900;font-size:13px;color:#DDD2F2;}
+.dwduel__a--diff span{color:#FFC48F;}
+
 /* взлом: обмани Нейро */
 .dwguess--broke{background:linear-gradient(180deg,rgba(255,122,100,.18),rgba(255,200,60,.06));
   box-shadow:inset 0 0 0 1.5px rgba(255,150,90,.55);animation:dwShake .5s ease-in-out;}
@@ -527,6 +557,50 @@ function dwSketch(kind, jit, variant) {
       line([[150, 196], [150, 246]]);
       line([[118, 246], [182, 246]]);
     }
+  } else if (kind === 'mix') {              // спорные: признаки обоих сразу
+    if (v % 6 === 0) {                      // одно ухо торчком, другое висит
+      ring(150, 158, 54, 48);
+      line([[112, 122], [100, 74], [140, 112]]);
+      line([[190, 124], [218, 176], [192, 188], [180, 154]]);
+      line([[124, 166], [88, 160]]);
+      line([[176, 166], [212, 160]]);
+    } else if (v % 6 === 1) {               // длинное тело, острые уши, без усов
+      ring(94, 152, 28, 25);
+      line([[74, 132], [68, 104], [90, 126]]);
+      line([[114, 132], [120, 104], [98, 126]]);
+      line([[94, 176], [94, 200], [216, 200], [216, 176]]);
+      line([[216, 190], [246, 178]]);
+      line([[118, 200], [118, 240]]);
+      line([[192, 200], [192, 240]]);
+    } else if (v % 6 === 2) {               // висячие уши, но с усами
+      ring(150, 156, 52, 46);
+      line([[108, 122], [82, 174], [106, 186], [118, 152]]);
+      line([[192, 122], [218, 174], [194, 186], [182, 152]]);
+      line([[122, 164], [84, 158]]);
+      line([[178, 164], [216, 158]]);
+      line([[150, 166], [150, 182]]);
+    } else if (v % 6 === 3) {               // морда собаки, хвост трубой
+      ring(112, 132, 34, 30);
+      line([[88, 112], [72, 158], [94, 164]]);
+      line([[136, 112], [152, 158], [130, 164]]);
+      line([[112, 162], [112, 202], [196, 202]]);
+      line([[196, 202], [204, 152], [186, 128]]);
+      line([[134, 202], [134, 242]]);
+      line([[178, 202], [178, 242]]);
+    } else if (v % 6 === 4) {               // круглая голова, крошечные уши
+      ring(150, 150, 48, 44);
+      line([[124, 110], [118, 88], [140, 104]]);
+      line([[176, 110], [182, 88], [160, 104]]);
+      line([[150, 160], [150, 176]]);
+      line([[128, 188], [172, 188]]);
+    } else {                                // длинные уши вверх, вытянутая морда
+      ring(146, 168, 40, 42);
+      line([[124, 132], [110, 62], [144, 122]]);
+      line([[168, 132], [182, 62], [148, 122]]);
+      line([[124, 176], [92, 170]]);
+      line([[168, 176], [200, 170]]);
+      line([[146, 210], [146, 244]]);
+    }
   } else if (kind === 'dog') {              // висячие уши и вытянутая морда
     if (v % 4 === 0) {                      // морда крупным планом
       ring(150, 158, 54, 48);
@@ -762,6 +836,32 @@ const DW_LEVELS = {
       sub: 'Каждый круг ты находил его промахи и отдавал ему как примеры. Настоящие модели дообучают так же — руками людей.' },
   },
 
+  8: {
+    title: 'Кто размечает',
+    mid: 'data8', xp: 90,
+    law: 'У спорной картинки нет правильного ответа.\nЕсть решение человека — и оно попадает внутрь ИИ.',
+    tip: 'Подпиши шесть спорных рисунков. Потом сравним с тем, кто размечал их до тебя.',
+    preset: { kinds: ['cat', 'dog'], each: 2 },
+    tag: { count: 6, kinds: ['cat', 'dog'],
+      /* как эти же рисунки подписал другой разметчик */
+      other: ['dog', 'cat', 'cat', 'dog', 'cat', 'dog'],
+      who: 'Даня, 9 лет' },
+    steps: [{ kind: 'tag' }],
+    tagSay: 'Меня учат на подписанных картинках — а подписывают их <b>люди</b>. Сегодня разметчик ты. Вот шесть рисунков, которые прислали ребята: <b>кот или собака</b>, решай сам.',
+    quiz: {
+      q: 'Почему две модели ответили по-разному?',
+      opts: [
+        { t: 'Их учили на одних картинках, но с разными подписями', ok: true },
+        { t: 'Одна из моделей сломана', ok: false },
+        { t: 'Одна умнее другой', ok: false },
+      ],
+      okSay: 'Верно. Картинки те же, подписи разные — и модели выросли разными. Всё, что решил разметчик, оказывается внутри ИИ.',
+      badSay: 'Обе исправны и одинаково устроены. Разница только в подписях: ты решил так, Даня иначе — и модели разошлись.',
+    },
+    win: { show: 'tag', law: 'За каждым ИИ стоят люди',
+      sub: 'Спорные случаи кто-то размечает руками. Его решение становится частью модели — и её ошибкой тоже.' },
+  },
+
   9: {
     title: 'Уверен, но неправ',
     mid: 'data9', xp: 100,
@@ -902,6 +1002,16 @@ function LevelDraw({ n, onWin, onHome }) {
   if (!lab.current && L.lab) lab.current = { lib: dwLibrary(L.lab.max), exam: dwExam(L.lab.exam) };
   const [judge, setJudge] = useState(null);        // круг судейства: {cards, marked, checked}
   const [hacks, setHacks] = useState([]);          // попытки взлома: {conf, ok}
+  const [tags, setTags] = useState([]);            // мои подписи спорных рисунков
+  const [duel, setDuel] = useState(null);          // спор двух моделей
+  const tagSet = useRef(null);
+  if (!tagSet.current && L.tag) {
+    tagSet.current = [];
+    for (let i = 0; i < L.tag.count; i++) {
+      const cv = dwSketch('mix', 9, i);
+      tagSet.current.push({ f: dwFeatures(cv).f, thumb: dwThumb(cv, 96) });
+    }
+  }
   const [shot, setShot] = useState(null);          // рисунок, которым сбил Нейро
 
   const [saved, setSaved] = useState(false);
@@ -942,6 +1052,9 @@ function LevelDraw({ n, onWin, onHome }) {
   const mine = lbl => model.filter(m => m.label === lbl);
   const best = tryLog.filter(t => t.ok === t.total)
     .reduce((a, t) => a === null || t.take < a ? t.take : a, null);
+  /* объявляем до финального экрана — он рендерится раньше игровых веток */
+  const tagged = L.tag ? tags.filter(Boolean).length : 0;
+  const diff = L.tag ? tags.filter((t, i) => t && t !== L.tag.other[i]).length : 0;
 
   /* Копии рисунков ребёнка с частично слетевшими подписями — в этом и урок.
      Берём именно его рисунки, а не нарисованные за него: тогда чужая подпись —
@@ -1012,6 +1125,22 @@ function LevelDraw({ n, onWin, onHome }) {
   useEffect(() => {
     if (model.length && (phase === 'quiz' || phase === 'done')) dwMemory.save(model);
   }, [phase]);
+
+  /* две модели: одна с моими подписями, другая с чужими — и один и тот же вопрос */
+  const runDuel = () => {
+    const mine = model.concat(tagSet.current.map((c, i) => ({ label: tags[i], f: c.f, thumb: c.thumb })));
+    const other = model.concat(tagSet.current.map((c, i) => ({ label: L.tag.other[i], f: c.f, thumb: c.thumb })));
+    /* спрашиваем про то, где разметки разошлись: рисуем похожие на спорные,
+       но не те же самые — иначе модели ответят одинаково и спора не выйдет */
+    let idx = tags.map((t, i) => t !== L.tag.other[i] ? i : -1).filter(i => i > -1);
+    if (!idx.length) idx = [0, 1, 2];
+    const asks = idx.slice(0, 3).map(i => {
+      const cv = dwSketch('mix', 15, i);
+      const F = dwFeatures(cv);
+      return { thumb: dwThumb(cv, 96), mine: dwPredict(mine, F.f), other: dwPredict(other, F.f) };
+    });
+    setDuel(asks);
+  };
 
   const tryHack = () => {
     const cv = api.current.canvas;
@@ -1148,6 +1277,23 @@ function LevelDraw({ n, onWin, onHome }) {
                 'Ты нарисовал кота — а он не усомнился ни на секунду.'))
           : hasArt
           ? React.createElement(DwPet, { shots: shots, conf: guess ? guess.conf : 70, u: 'p' })
+          : L.win.show === 'tag'
+          ? React.createElement('div', { className: 'dwwords' },
+              React.createElement('div', { className: 'dwwords__t' }, 'Твоя разметка против чужой'),
+              React.createElement('div', { className: 'dwrounds__r', style: { marginTop: 14 } },
+                React.createElement('div', { className: 'dwrd' },
+                  React.createElement('i', { style: { height: Math.max(12, (L.tag.count - diff) / L.tag.count * 100) + '%' } }),
+                  React.createElement('b', null, L.tag.count - diff),
+                  React.createElement('span', null, 'совпало')),
+                React.createElement('div', { className: 'dwrd' },
+                  React.createElement('i', { style: { height: Math.max(12, diff / L.tag.count * 100) + '%',
+                    background: 'linear-gradient(180deg,#FF7A64,#FFC83C)' } }),
+                  React.createElement('b', null, diff),
+                  React.createElement('span', null, 'разошлось'))),
+              React.createElement('div', { className: 'dwwords__n' },
+                diff
+                  ? 'На ' + diff + ' из ' + L.tag.count + ' вы решили по-разному — и обе модели считают себя правыми.'
+                  : 'Вы совпали во всём, но это случайность: на других рисунках разошлись бы.'))
           : L.win.show === 'judge'
           ? React.createElement('div', { className: 'dwwords' },
               React.createElement('div', { className: 'dwwords__t' }, 'Ошибки Нейро по кругам'),
@@ -1246,7 +1392,8 @@ function LevelDraw({ n, onWin, onHome }) {
   const isLab = step.kind === 'lab';
   const isJudge = step.kind === 'judge';
   const isHack = step.kind === 'hack';
-  const noBoard = isClean || isLab || isJudge;
+  const isTag = step.kind === 'tag';
+  const noBoard = isClean || isLab || isJudge || isTag;
   const broke = isHack && guess && guess.label === L.hack.goal;
   const bestHack = hacks.filter(h => h.ok).reduce((a, h) => h.conf > a ? h.conf : a, 0);
   const fails = hacks.filter(h => !h.ok).length;
@@ -1274,11 +1421,12 @@ function LevelDraw({ n, onWin, onHome }) {
             ? React.createElement('span', null,
                 'Ещё один пример — и я пересчитаю. Нарисуй ' + step.word +
                 ' немного иначе, чем раньше: так я пойму, что тут главное.')
-            : React.createElement('span', { dangerouslySetInnerHTML: { __html: step.say || L.labSay || L.hackSay || '' } })),
+            : React.createElement('span', { dangerouslySetInnerHTML: { __html: step.say || L.labSay || L.hackSay || L.tagSay || '' } })),
 
       React.createElement('div', { className: 'dwtask' },
         React.createElement('b', null,
-          isHack ? 'Обмани Нейро'
+          isTag ? (duel ? 'Две модели спорят' : 'Ты — разметчик')
+            : isHack ? 'Обмани Нейро'
             : isJudge ? 'Где Нейро ошибся?'
             : isLab ? 'Сколько хватит?'
             : isClean ? 'Найди, где подпись врёт'
@@ -1291,6 +1439,56 @@ function LevelDraw({ n, onWin, onHome }) {
         !isTest && !noBoard && !isHack && React.createElement('span', null, doneCount + ' из ' + step.need),
         isTest && tries > 0 && React.createElement('span', null,
           'примеров: ' + mine(step.expect).length)),
+
+      isTag && !duel && React.createElement('div', { className: 'dwjudge' },
+        React.createElement('div', { className: 'dwjudge__h' },
+          React.createElement('b', null, 'Подпиши каждый рисунок'),
+          React.createElement('span', null, tagged + ' из ' + L.tag.count)),
+        React.createElement('div', { className: 'dwtags' },
+          tagSet.current.map((c, i) => React.createElement('div', { key: i, className: 'dwtag' },
+            React.createElement('img', { src: c.thumb, alt: '' }),
+            React.createElement('div', { className: 'dwtag__b' },
+              L.tag.kinds.map(k => React.createElement('button', {
+                key: k, className: tags[i] === k ? 'on' : '',
+                onClick: () => setTags(prev => { const t = prev.slice(); t[i] = k; return t; }),
+              }, WORD[k])))))),
+        tagged === L.tag.count && React.createElement('div', { className: 'dwjudge__n' },
+          'Готово. Теперь посмотрим, как эти же рисунки подписал ' + L.tag.who + '.')),
+
+      isTag && duel && React.createElement('div', null,
+        React.createElement('div', { className: 'dwjudge' },
+          React.createElement('div', { className: 'dwjudge__h' },
+            React.createElement('b', null, 'Твоя разметка и чужая'),
+            React.createElement('span', null, diff ? 'разошлись: ' + diff : 'совпали полностью')),
+          React.createElement('div', { className: 'dwtags' },
+            tagSet.current.map((c, i) => React.createElement('div', {
+              key: i, className: 'dwtag' + (tags[i] !== L.tag.other[i] ? ' dwtag--diff' : ''),
+            },
+              React.createElement('img', { src: c.thumb, alt: '' }),
+              React.createElement('div', { className: 'dwtag__cmp' },
+                React.createElement('b', null, 'ты: ', WORD[tags[i]]),
+                React.createElement('span', null, L.tag.who.split(',')[0], ': ', WORD[L.tag.other[i]]))))),
+          React.createElement('div', { className: 'dwjudge__n' },
+            diff
+              ? 'Ни ты, ни он не ошиблись: у этих рисунков нет верного ответа. Но модели вырастут разные.'
+              : 'Вы совпали во всём — редкий случай. Обычно разметчики расходятся.')),
+
+        React.createElement('div', { className: 'dwduel' },
+          React.createElement('div', { className: 'dwduel__t' }, 'Один вопрос — два ответа'),
+          duel.map((d, i) => React.createElement('div', { key: i, className: 'dwduel__row' },
+            React.createElement('img', { src: d.thumb, alt: '' }),
+            React.createElement('div', { className: 'dwduel__a' },
+              React.createElement('b', null, 'на твоих подписях'),
+              React.createElement('span', null, WORD[d.mine.label], ' · ', d.mine.conf, '%')),
+            React.createElement('div', {
+              className: 'dwduel__a' + (d.mine.label !== d.other.label ? ' dwduel__a--diff' : ''),
+            },
+              React.createElement('b', null, 'на подписях ' + L.tag.who.split(',')[0]),
+              React.createElement('span', null, WORD[d.other.label], ' · ', d.other.conf, '%')))),
+          React.createElement('div', { className: 'dwjudge__n' },
+            duel.some(d => d.mine.label !== d.other.label)
+              ? 'Одинаковые картинки, одинаковый код — а ответы разные. Разница только в том, что решили люди.'
+              : 'В этот раз модели сошлись. Но подписи у них разные, и на других картинках они разойдутся.'))),
 
       isJudge && judge && React.createElement('div', { className: 'dwjudge' },
         React.createElement('div', { className: 'dwjudge__h' },
@@ -1477,6 +1675,14 @@ function LevelDraw({ n, onWin, onHome }) {
             React.createElement('div', { className: 'dwslot', key: 's' + i }))))),
 
     React.createElement('div', { className: 'dwfoot' },
+      isTag && React.createElement('button', {
+        className: 'nk-btn ' + (duel ? 'nk-btn--ok' : 'nk-btn--pri'), style: { width: '100%' },
+        disabled: !duel && tagged < L.tag.count,
+        onClick: duel ? () => setPhase('quiz') : runDuel,
+      }, duel ? 'Дальше'
+        : tagged < L.tag.count ? 'Подпиши все ' + L.tag.count
+        : 'Сравнить с другим разметчиком'),
+
       isHack && React.createElement('div', { className: 'dwlabbtns' },
         bestHack > 0 && React.createElement('button', {
           className: 'nk-btn nk-btn--ok', style: { flex: 1 }, onClick: () => setPhase('quiz'),
