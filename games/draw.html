@@ -115,6 +115,26 @@
 .dwacc__v span{font-weight:700;font-size:12px;color:#8B7BAE;}
 .dwacc__n{margin-top:9px;font-weight:700;font-size:12px;line-height:1.45;color:#A896C9;}
 
+/* взлом: обмани Нейро */
+.dwguess--broke{background:linear-gradient(180deg,rgba(255,122,100,.18),rgba(255,200,60,.06));
+  box-shadow:inset 0 0 0 1.5px rgba(255,150,90,.55);animation:dwShake .5s ease-in-out;}
+@keyframes dwShake{0%,100%{transform:translateX(0);}25%{transform:translateX(-5px);}75%{transform:translateX(5px);}}
+.dwguess--broke .dwguess__t{color:#FFC48F;}
+.dwnear{margin-top:10px;display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:14px;
+  background:rgba(0,0,0,.28);}
+.dwnear img{width:46px;height:46px;border-radius:11px;background:#0C0918;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.14);}
+.dwnear span{font-weight:800;font-size:11.5px;line-height:1.4;color:#C9BAE6;}
+.dwhint{margin-top:10px;padding:10px 12px;border-radius:14px;font-weight:700;font-size:12px;
+  line-height:1.45;color:#FFE7C2;background:rgba(255,200,60,.12);
+  box-shadow:inset 0 0 0 1px rgba(255,200,60,.35);}
+.dwhint b{color:#FFD84D;font-weight:900;}
+.dwtrophy{margin-top:12px;display:flex;flex-direction:column;align-items:center;gap:6px;}
+.dwtrophy img{width:120px;height:120px;border-radius:20px;background:#0C0918;
+  box-shadow:inset 0 0 0 2px rgba(255,150,90,.6),0 16px 34px -18px rgba(255,150,90,.6);}
+.dwtrophy b{font-family:var(--nk-brand),var(--nk-body);font-weight:700;font-size:26px;color:#FFC48F;}
+.dwtrophy span{font-weight:700;font-size:11.5px;color:#A896C9;text-align:center;max-width:220px;}
+
 /* судейство: где Нейро ошибся */
 .dwjudge{margin:11px 14px 0;padding:14px;border-radius:22px;
   background:linear-gradient(180deg,#181227,#0D0A18);
@@ -218,6 +238,7 @@
 /* финал */
 .dwdone{display:flex;flex-direction:column;align-items:center;padding-top:4px;}
 .dwpet{width:216px;animation:dwPop .5s cubic-bezier(.2,.8,.3,1) both;}
+.dwbadge{width:216px;display:block;margin:0 auto;animation:dwPop .5s cubic-bezier(.2,.8,.3,1) both;}
 .dwlaw{margin:10px 18px 0;text-align:center;}
 .dwlaw b{display:block;font-family:var(--nk-brand),var(--nk-body);font-weight:700;
   font-size:17px;line-height:1.3;color:#F4EEFF;}
@@ -713,6 +734,33 @@ const DW_LEVELS = {
       sub: 'Каждый круг ты находил его промахи и отдавал ему как примеры. Настоящие модели дообучают так же — руками людей.' },
   },
 
+  9: {
+    title: 'Уверен, но неправ',
+    mid: 'data9', xp: 100,
+    law: 'Нейро уверен всегда — даже когда ошибается.\nУверенность не доказывает правоту.',
+    tip: 'Твоя задача — обмануть его. Нарисуй кота так, чтобы он сказал «собака».',
+    hack: { ready: 4, goal: 'dog', from: 'cat' },
+    steps: [{ kind: 'hack' }],
+    hackSay: 'Я потренировался на <b>восьми рисунках</b> и теперь почти не ошибаюсь. Спорим, ты меня не проведёшь? Нарисуй <b>кота</b> так, чтобы я сказал «собака».',
+    hints: [
+      'Я смотрю на форму целиком, а не на детали. Что у собаки не так, как у кота?',
+      'Попробуй нарисовать коту <b>висячие уши</b> — я ведь по ним и узнаю собаку.',
+      'Или вытяни тело подлиннее, как у таксы. Форма для меня важнее, чем усы.',
+    ],
+    quiz: {
+      q: 'Нейро сказал «собака» и был уверен на 90%. Что это значит?',
+      opts: [
+        { t: 'Только то, что рисунок похож на его примеры собак', ok: true },
+        { t: 'Что это точно собака — он же уверен', ok: false },
+        { t: 'Что он специально поддался', ok: false },
+      ],
+      okSay: 'Верно. Проценты говорят лишь о похожести на то, что он видел. К правде они отношения не имеют.',
+      badSay: 'Нет. Ты же сам нарисовал кота — и он ошибся, оставаясь уверенным. Проценты показывают похожесть на его примеры, а не правоту.',
+    },
+    win: { show: 'hack', art: true, law: 'Уверенность — не доказательство',
+      sub: 'Ты обманул Нейро, и он не заметил подвоха. Так же обманывают и большие модели: чуть изменил картинку — и уверенный ответ стал неверным.' },
+  },
+
   7: {
     labSay: 'Ребята прислали <b>кучу рисунков</b>. Мне не нужны все — выбери, сколько дать, и отправь меня на экзамен: там будут рисунки, которых я не видел.',
     title: 'Сколько примеров хватит',
@@ -773,6 +821,33 @@ function DwPet({ shots, conf, u }) {
         strokeWidth: 2, strokeLinecap: 'round' })));
 }
 
+/* ── артефакт уровня «Уверен, но неправ» ── */
+function DwBadge({ shot, tries, u }) {
+  const id = s => s + (u || '');
+  return React.createElement('svg', { viewBox: '0 0 200 250', className: 'dwbadge' },
+    React.createElement('defs', null,
+      React.createElement('linearGradient', { id: id('dwbg'), x1: '0', y1: '0', x2: '0', y2: '1' },
+        React.createElement('stop', { offset: '0%', stopColor: '#2A1A2E' }),
+        React.createElement('stop', { offset: '100%', stopColor: '#120C1C' }))),
+    React.createElement('rect', { x: 10, y: 8, width: 180, height: 234, rx: 20,
+      fill: `url(#${id('dwbg')})`, stroke: 'rgba(255,150,90,.45)', strokeWidth: 1.6 }),
+    React.createElement('text', { x: 100, y: 36, textAnchor: 'middle', fill: '#FFC48F',
+      style: { font: '900 10.5px Nunito, sans-serif', letterSpacing: '1.3px' } }, 'ЗНАЧОК ВЗЛОМЩИКА'),
+    React.createElement('text', { x: 100, y: 57, textAnchor: 'middle', fill: '#F4EEFF',
+      style: { font: "700 14px 'Unbounded', Nunito, sans-serif" } }, 'Сбил Нейро'),
+    shot && React.createElement('g', null,
+      React.createElement('rect', { x: 58, y: 70, width: 84, height: 84, rx: 16,
+        fill: '#0C0918', stroke: 'rgba(255,150,90,.5)', strokeWidth: 1.4 }),
+      React.createElement('image', { href: shot.thumb, x: 58, y: 70, width: 84, height: 84 })),
+    React.createElement('text', { x: 100, y: 178, textAnchor: 'middle', fill: '#FFC48F',
+      style: { font: "700 26px 'Unbounded', Nunito, sans-serif" } }, (shot ? shot.conf : 0) + '%'),
+    React.createElement('text', { x: 100, y: 196, textAnchor: 'middle', fill: '#A896C9',
+      style: { font: '700 9.5px Nunito, sans-serif' } }, 'с такой уверенностью он ошибся'),
+    React.createElement('text', { x: 100, y: 222, textAnchor: 'middle', fill: '#DDD2F2',
+      style: { font: '900 10px Nunito, sans-serif' } },
+      'попыток: ' + (tries || 1) + ' · это был кот'));
+}
+
 /* ── уровень ── */
 function LevelDraw({ n, onWin, onHome }) {
   const L = DW_LEVELS[n] || DW_LEVELS[2];
@@ -798,6 +873,8 @@ function LevelDraw({ n, onWin, onHome }) {
   const lab = useRef(null);
   if (!lab.current && L.lab) lab.current = { lib: dwLibrary(L.lab.max), exam: dwExam(L.lab.exam) };
   const [judge, setJudge] = useState(null);        // круг судейства: {cards, marked, checked}
+  const [hacks, setHacks] = useState([]);          // попытки взлома: {conf, ok}
+  const [shot, setShot] = useState(null);          // рисунок, которым сбил Нейро
 
   const [saved, setSaved] = useState(false);
   const api = useRef({});
@@ -890,6 +967,32 @@ function LevelDraw({ n, onWin, onHome }) {
 
   const WORD = { cat: 'кот', house: 'дом', fish: 'рыба', dog: 'собака' };
   const FLIP = { cat: 'house', house: 'cat' };
+
+  /* Уровень «Уверен, но неправ»: Нейро уже обучен, ломать его — задача ребёнка.
+     Набор готовим сразу, чтобы уверенность была высокой и обман чего-то стоил. */
+  useEffect(() => {
+    if (!L.hack || model.length) return;
+    const m = [];
+    ['cat', 'dog'].forEach(k => {
+      for (let v = 0; v < L.hack.ready; v++) {
+        const cv = dwSketch(k, 9 + v * 3, v);
+        m.push({ label: k, f: dwFeatures(cv).f, thumb: dwThumb(cv, 64) });
+      }
+    });
+    setModel(m);
+  }, []);
+
+  const tryHack = () => {
+    const cv = api.current.canvas;
+    const F = dwFeatures(cv);
+    if (!F) { setNote({ m: 'bad', t: 'Пусто. Нарисуй кота — иначе меня не обмануть.' }); return; }
+    const p = dwPredict(model, F.f);
+    const broke = p.label === L.hack.goal;
+    setGuess(p);
+    setHacks(hacks.concat([{ conf: p.conf, ok: broke }]));
+    if (broke && (!shot || p.conf > shot.conf)) setShot({ thumb: dwThumb(cv, 96), conf: p.conf });
+    setNote(null);
+  };
 
   /* Круг судейства: Нейро отвечает на новые рисунки, ребёнок ищет промахи.
      Отмеченные уходят в набор с истинной подписью — это и есть дообучение.
@@ -984,13 +1087,16 @@ function LevelDraw({ n, onWin, onHome }) {
   };
 
   const savePet = () => {
-    const svg = document.querySelector('.dwpet');
+    const isBadge = L.win.show === 'hack';
+    const svg = document.querySelector(isBadge ? '.dwbadge' : '.dwpet');
     if (svg && window.nookaGallery) {
-      window.nookaGallery.add({
-        kind: 'pet', game: 'Откуда ИИ знает', title: 'Питомец Нейро',
-        note: 'Узнаёт котов по трём рисункам, которые ты сделал сам',
-        svg: svg.outerHTML,
-      });
+      window.nookaGallery.add(isBadge
+        ? { kind: 'badge', game: 'Откуда ИИ знает', title: 'Значок взломщика',
+            note: 'Рисунок, которым ты сбил Нейро — он был уверен и всё равно ошибся',
+            svg: svg.outerHTML }
+        : { kind: 'pet', game: 'Откуда ИИ знает', title: 'Питомец Нейро',
+            note: 'Узнаёт котов по трём рисункам, которые ты сделал сам',
+            svg: svg.outerHTML });
     }
     setSaved(true);
   };
@@ -1004,7 +1110,12 @@ function LevelDraw({ n, onWin, onHome }) {
     return React.createElement('div', { className: 'dw' },
       React.createElement(TopBar, { level: n, title: L.title, onHome, step: 1, total: 1 }),
       React.createElement('div', { className: 'dwbody dwdone' },
-        hasArt
+        L.win.show === 'hack'
+          ? React.createElement('div', null,
+              React.createElement(DwBadge, { shot: shot, tries: hacks.length, u: 'h' }),
+              React.createElement('div', { className: 'dwwords__n', style: { textAlign: 'center', margin: '10px 20px 0' } },
+                'Ты нарисовал кота — а он не усомнился ни на секунду.'))
+          : hasArt
           ? React.createElement(DwPet, { shots: shots, conf: guess ? guess.conf : 70, u: 'p' })
           : L.win.show === 'judge'
           ? React.createElement('div', { className: 'dwwords' },
@@ -1068,7 +1179,7 @@ function LevelDraw({ n, onWin, onHome }) {
       React.createElement('div', { className: 'dwfoot' },
         hasArt && !saved
           ? React.createElement('button', { className: 'nk-btn nk-btn--cta', style: { width: '100%' }, onClick: savePet },
-              'Забрать питомца')
+              L.win.show === 'hack' ? 'Забрать значок' : 'Забрать питомца')
           : React.createElement('button', {
               className: 'nk-btn nk-btn--ok', style: { width: '100%' }, onClick: onWin,
             }, 'Готово')));
@@ -1103,7 +1214,11 @@ function LevelDraw({ n, onWin, onHome }) {
   const isClean = step.kind === 'clean';
   const isLab = step.kind === 'lab';
   const isJudge = step.kind === 'judge';
+  const isHack = step.kind === 'hack';
   const noBoard = isClean || isLab || isJudge;
+  const broke = isHack && guess && guess.label === L.hack.goal;
+  const bestHack = hacks.filter(h => h.ok).reduce((a, h) => h.conf > a ? h.conf : a, 0);
+  const fails = hacks.filter(h => !h.ok).length;
   const examDone = exam && exam.i >= exam.res.length;
   const doneCount = isTest || noBoard ? 0 : mine(step.label).length;
   /* точность пересчитывается на каждый рендер: правка подписи видна сразу */
@@ -1128,18 +1243,21 @@ function LevelDraw({ n, onWin, onHome }) {
             ? React.createElement('span', null,
                 'Ещё один пример — и я пересчитаю. Нарисуй ' + step.word +
                 ' немного иначе, чем раньше: так я пойму, что тут главное.')
-            : React.createElement('span', { dangerouslySetInnerHTML: { __html: step.say || L.labSay || '' } })),
+            : React.createElement('span', { dangerouslySetInnerHTML: { __html: step.say || L.labSay || L.hackSay || '' } })),
 
       React.createElement('div', { className: 'dwtask' },
         React.createElement('b', null,
-          isJudge ? 'Где Нейро ошибся?'
+          isHack ? 'Обмани Нейро'
+            : isJudge ? 'Где Нейро ошибся?'
             : isLab ? 'Сколько хватит?'
             : isClean ? 'Найди, где подпись врёт'
             : fix ? 'Нарисуй ' + (step.more || step.word)
             : 'Нарисуй ' + step.word),
+        isHack && hacks.length > 0 && React.createElement('span', null,
+          bestHack ? 'рекорд: ' + bestHack + '%' : 'попыток: ' + hacks.length),
         step.round && React.createElement('span', null,
           'круг ' + Math.min(rounds.length + 1, L.rounds || 3) + ' из ' + (L.rounds || 3)),
-        !isTest && !noBoard && React.createElement('span', null, doneCount + ' из ' + step.need),
+        !isTest && !noBoard && !isHack && React.createElement('span', null, doneCount + ' из ' + step.need),
         isTest && tries > 0 && React.createElement('span', null,
           'примеров: ' + mine(step.expect).length)),
 
@@ -1224,7 +1342,10 @@ function LevelDraw({ n, onWin, onHome }) {
       !noBoard && React.createElement('div', { className: 'dwtools' },
         React.createElement('button', { className: 'dwtool--side',
           onClick: () => { api.current.clear(); setGuess(null); }, disabled: !has }, 'Заново'),
-        (!isTest || fix)
+        isHack
+          ? React.createElement('button', { className: 'dwtool--main', onClick: tryHack, disabled: !has },
+              'Показать Нейро')
+          : (!isTest || fix)
           ? React.createElement('button', { className: 'dwtool--main', onClick: accept, disabled: !has },
               'Отдать Нейро')
           : React.createElement('button', { className: 'dwtool--main', onClick: check, disabled: !has || !!guess },
@@ -1245,7 +1366,28 @@ function LevelDraw({ n, onWin, onHome }) {
             ? 'Смотри на карточки с пунктиром: рисунок и подпись должны сходиться. Нажми на карточку — подпись поменяется.'
             : 'Каждый рисунок подписан верно — и Нейро перестал путаться.')),
 
-      guess && React.createElement('div', { className: 'dwguess' },
+      isHack && guess && React.createElement('div', {
+        className: 'dwguess' + (broke ? ' dwguess--broke' : ''), key: hacks.length,
+      },
+        React.createElement('div', { className: 'dwguess__t' }, broke ? 'Взлом' : 'Нейро говорит'),
+        React.createElement('div', { className: 'dwguess__v' },
+          'Это ' + (WORD[guess.label] || guess.label), broke ? '!' : ''),
+        React.createElement('div', { className: 'dwbar' },
+          React.createElement('i', { style: { width: guess.conf + '%',
+            background: broke ? 'linear-gradient(90deg,#FF7A64,#FFC83C)' : 'linear-gradient(90deg,#A98BFF,#7FE7FF)' } })),
+        React.createElement('div', { className: 'dwguess__n' },
+          broke
+            ? 'Уверен на ' + guess.conf + '% — и всё равно неправ: ты рисовал кота. Вот пример, на который это, по-моему, похоже:'
+            : 'Уверен на ' + guess.conf + '%. Пока не обманул — я всё ещё вижу кота.'),
+        guess.near && React.createElement('div', { className: 'dwnear' },
+          React.createElement('img', { src: model[guess.near.i].thumb, alt: '' }),
+          React.createElement('span', null, broke
+            ? 'Форма похожа — а слово я взял отсюда'
+            : 'Больше всего похоже вот на это')),
+        !broke && fails >= 1 && React.createElement('div', { className: 'dwhint',
+          dangerouslySetInnerHTML: { __html: L.hints[Math.min(fails - 1, L.hints.length - 1)] } })),
+
+      !isHack && guess && React.createElement('div', { className: 'dwguess' },
         React.createElement('div', { className: 'dwguess__t' }, 'Нейро говорит'),
         React.createElement('div', { className: 'dwguess__v' }, guessText(guess)),
         React.createElement('div', { className: 'dwbar' },
@@ -1280,7 +1422,9 @@ function LevelDraw({ n, onWin, onHome }) {
         onAnimationEnd: () => setFlash(false),
       },
         React.createElement('div', { className: 'dwset__t' },
-          isClean ? 'Набор Нейро · пунктиром — копии твоих рисунков' : 'Чему ты его научил'),
+          isClean ? 'Набор Нейро · пунктиром — копии твоих рисунков'
+            : isHack ? 'На этом Нейро учился — по ним он и узнаёт'
+            : 'Чему ты его научил'),
         React.createElement('div', { className: 'dwrow' },
           model.map((m, i) => React.createElement('div', {
             key: i,
@@ -1301,6 +1445,17 @@ function LevelDraw({ n, onWin, onHome }) {
             React.createElement('div', { className: 'dwslot', key: 's' + i }))))),
 
     React.createElement('div', { className: 'dwfoot' },
+      isHack && React.createElement('div', { className: 'dwlabbtns' },
+        bestHack > 0 && React.createElement('button', {
+          className: 'nk-btn nk-btn--ok', style: { flex: 1 }, onClick: () => setPhase('quiz'),
+        }, 'Хватит, я его сломал'),
+        React.createElement('button', {
+          className: 'nk-btn ' + (bestHack ? 'nk-btn--soft' : 'nk-btn--pri'),
+          style: bestHack ? {} : { width: '100%' },
+          onClick: () => { setGuess(null); api.current.clear(); },
+          disabled: !guess,
+        }, bestHack ? 'Ещё попытка' : 'Попробовать снова')),
+
       isJudge && judge && React.createElement('button', {
         className: 'nk-btn ' + (judge.checked ? 'nk-btn--ok' : 'nk-btn--pri'), style: { width: '100%' },
         onClick: judge.checked ? nextRound : checkJudge,
@@ -1324,11 +1479,11 @@ function LevelDraw({ n, onWin, onHome }) {
         onClick: () => { setSi(si + 1); setGuess(null); api.current.clear(); },
       }, audit && !audit.wrong.length ? 'Готово, проверяем Нейро' : 'Всё равно дальше'),
 
-      guess && step.round
+      !isHack && guess && step.round
         ? React.createElement('button', {
             className: 'nk-btn nk-btn--pri', style: { width: '100%' }, onClick: teach,
           }, 'Отдать Нейро этот рисунок')
-        : guess && (hit
+        : !isHack && guess && (hit
         ? React.createElement('button', {
             className: 'nk-btn nk-btn--ok', style: { width: '100%' },
             onClick: () => {
