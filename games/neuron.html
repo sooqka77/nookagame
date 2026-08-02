@@ -1,0 +1,367 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1">
+<meta name="theme-color" content="#0E0719">
+<title>Один нейрон — Nooka</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&family=Unbounded:wght@700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="nooka-ui.css">
+<style>
+/* ============ ОДИН НЕЙРОН ============ */
+.nnroot{height:100vh;overflow:hidden;max-width:480px;margin:0 auto;position:relative;}
+.nn{height:100%;display:flex;flex-direction:column;overflow:hidden;
+  background:linear-gradient(180deg,#161226 0%,#0F0B1E 62%,#090711 100%);}
+.nnbody{flex:1;overflow-y:auto;padding:0 0 6px;-webkit-overflow-scrolling:touch;}
+
+.nnsay{display:flex;gap:10px;align-items:flex-start;margin:2px 14px 0;padding:13px 15px;
+  border-radius:20px;background:rgba(255,255,255,.055);
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.09);animation:nnIn .3s ease-out both;}
+.nnsay i{flex-shrink:0;line-height:0;}
+.nnsay span{font-weight:700;font-size:13.5px;line-height:1.45;color:#DDD2F2;}
+.nnsay b{color:#FFD84D;font-weight:900;}
+
+/* схема нейрона */
+.nnwire{margin:11px 14px 0;border-radius:22px;overflow:hidden;
+  background:linear-gradient(180deg,#1A1430,#0D0A18);
+  box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.08);}
+.nnwire svg{width:100%;display:block;}
+.nnlamp{transition:opacity .25s;}
+
+/* формула */
+.nnsum{margin:10px 14px 0;padding:12px 15px;border-radius:17px;text-align:center;
+  font-family:var(--nk-brand),var(--nk-body);font-weight:700;font-size:15px;color:#EFE7FF;
+  background:rgba(255,255,255,.05);box-shadow:inset 0 0 0 1px rgba(255,255,255,.08);}
+.nnsum em{font-style:normal;color:#8B7BAE;}
+.nnsum b{color:#FFD84D;}
+.nnsum.on b{color:#7CE9B7;}
+
+/* ползунки весов */
+.nnw{margin:12px 14px 0;padding:14px 16px;border-radius:20px;
+  background:rgba(255,255,255,.045);box-shadow:inset 0 0 0 1px rgba(255,255,255,.08);}
+.nnw+.nnw{margin-top:9px;}
+.nnw__h{display:flex;align-items:baseline;gap:8px;margin-bottom:4px;}
+.nnw__h b{font-weight:900;font-size:13px;color:#F2ECFF;}
+.nnw__h span{margin-left:auto;font-family:var(--nk-brand),var(--nk-body);font-weight:700;
+  font-size:18px;color:#FFD84D;}
+.nnw__n{font-weight:700;font-size:11.5px;color:#8B7BAE;margin-bottom:4px;}
+.nnrange{-webkit-appearance:none;appearance:none;width:100%;height:30px;background:transparent;cursor:pointer;}
+.nnrange::-webkit-slider-runnable-track{height:8px;border-radius:999px;
+  background:linear-gradient(90deg,#4B3A7A,#FFD84D);}
+.nnrange::-webkit-slider-thumb{-webkit-appearance:none;width:26px;height:26px;margin-top:-9px;
+  border-radius:50%;background:#fff;box-shadow:0 4px 12px -3px rgba(0,0,0,.9),inset 0 -3px 0 #C9BAE6;}
+
+/* существа, на которых проверяем нейрон */
+.nnset{margin:12px 14px 0;padding:13px 15px;border-radius:20px;
+  background:rgba(255,255,255,.04);box-shadow:inset 0 0 0 1px rgba(255,255,255,.07);}
+.nnset__t{font-weight:900;font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;
+  color:#8B7BAE;margin-bottom:10px;}
+.nnrow{display:flex;align-items:center;gap:10px;padding:8px 0;border-top:1px solid rgba(255,255,255,.07);}
+.nnrow:first-of-type{border-top:none;}
+.nnrow img,.nnrow svg{width:46px;height:46px;flex-shrink:0;border-radius:12px;background:#0C0918;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.1);}
+.nnrow__n{flex:1;min-width:0;}
+.nnrow__n b{display:block;font-weight:900;font-size:13px;color:#F2ECFF;}
+.nnrow__n span{display:block;margin-top:1px;font-weight:700;font-size:11px;color:#8B7BAE;}
+.nnbulb{flex-shrink:0;width:74px;text-align:center;font-weight:900;font-size:10.5px;
+  padding:7px 0;border-radius:12px;}
+.nnbulb--on{color:#0B1620;background:#FFD84D;}
+.nnbulb--off{color:#8B7BAE;background:rgba(255,255,255,.06);box-shadow:inset 0 0 0 1px rgba(255,255,255,.1);}
+.nnrow--bad .nnbulb{box-shadow:0 0 0 2px #FF6B6B;}
+.nnrow--ok .nnrow__n b{color:#C4F4E0;}
+
+.nnfoot{flex-shrink:0;padding:10px 14px calc(14px + env(safe-area-inset-bottom));
+  background:linear-gradient(180deg,rgba(9,7,17,0),#090711 42%);}
+
+/* финал */
+.nndone{display:flex;flex-direction:column;align-items:center;padding-top:6px;}
+.nnlaw{margin:12px 18px 0;text-align:center;}
+.nnlaw b{display:block;font-family:var(--nk-brand),var(--nk-body);font-weight:700;
+  font-size:17px;line-height:1.3;color:#F4EEFF;}
+.nnlaw span{display:block;margin-top:8px;font-weight:700;font-size:13.5px;color:#A896C9;line-height:1.45;}
+.nncard{width:220px;animation:nnPop .5s cubic-bezier(.2,.8,.3,1) both;}
+
+/* проверка связи */
+.nnq{margin:12px 14px 0;padding:14px 16px;border-radius:20px;
+  background:rgba(255,255,255,.045);box-shadow:inset 0 0 0 1px rgba(255,255,255,.08);}
+.nnq__t{font-weight:900;font-size:13.5px;color:#F2ECFF;line-height:1.35;margin-bottom:10px;}
+.nnq button{display:block;width:100%;margin-bottom:7px;padding:12px 14px;border:none;
+  border-radius:15px;cursor:pointer;text-align:left;font-family:inherit;font-weight:700;
+  font-size:13px;color:#DDD2F2;background:rgba(255,255,255,.05);
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.09);}
+.nnq button.on--ok{background:rgba(78,217,155,.16);box-shadow:inset 0 0 0 1.5px rgba(78,217,155,.5);color:#C4F4E0;}
+.nnq button.on--bad{background:rgba(255,107,107,.14);box-shadow:inset 0 0 0 1.5px rgba(255,107,107,.45);color:#FFD6CF;}
+
+@keyframes nnIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
+@keyframes nnPop{0%{opacity:0;transform:scale(.72);}68%{transform:scale(1.05);}100%{opacity:1;transform:scale(1);}}
+@media (prefers-reduced-motion: reduce){.nn *{animation:none !important;}}
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script src="react-bundle.js"></script>
+<script src="nooka-core.js"></script>
+<script src="nooka-levels.js"></script>
+<script src="nooka-access.js"></script>
+<script src="nooka-gallery.js"></script>
+<script src="nooka-ui.js"></script>
+<script>
+/* ============================================================
+   ОДИН НЕЙРОН — уровень 1 игры «Что у ИИ внутри».
+   Настоящий перцептрон с двумя входами: ребёнок крутит веса,
+   нейрон складывает и зажигается, если сумма больше порога.
+   Никакой имитации: числа считаются на глазах, лампочки на всех
+   четырёх существах пересчитываются от каждого движения ползунка.
+
+   Открытие уровня: важен не «побольше всего», а какой признак
+   с каким весом. Уши решают, хвост почти ни при чём.
+   ============================================================ */
+
+const NN_T = 0.5;                     // порог срабатывания
+
+const NN_BEINGS = [
+  { who: 'Кот Мурзик',  cat: true,  ears: 0.9, tail: 0.8, kind: 'cat', v: 0 },
+  { who: 'Кошка Луна',  cat: true,  ears: 0.8, tail: 0.3, kind: 'cat', v: 3 },
+  { who: 'Пёс Бублик',  cat: false, ears: 0.1, tail: 0.7, kind: 'dog', v: 0 },
+  { who: 'Такса Стрелка', cat: false, ears: 0.2, tail: 0.2, kind: 'dog', v: 3 },
+];
+
+/* мордочки: острые уши против висячих — то, что нейрон и считает */
+function NnFace({ kind, size }) {
+  const s = size || 46;
+  const ear = kind === 'cat'
+    ? [React.createElement('path', { key: 'a', d: 'M16 22 L12 6 L28 18', fill: 'none' }),
+       React.createElement('path', { key: 'b', d: 'M48 22 L52 6 L36 18', fill: 'none' })]
+    : [React.createElement('path', { key: 'a', d: 'M17 20 Q8 42 20 46 Q24 34 26 26', fill: 'none' }),
+       React.createElement('path', { key: 'b', d: 'M47 20 Q56 42 44 46 Q40 34 38 26', fill: 'none' })];
+  return React.createElement('svg', { viewBox: '0 0 64 64', width: s, height: s },
+    React.createElement('g', {
+      fill: 'none', stroke: kind === 'cat' ? '#7FE7FF' : '#FFB37A',
+      strokeWidth: 3.4, strokeLinecap: 'round', strokeLinejoin: 'round',
+    },
+      React.createElement('circle', { cx: 32, cy: 36, r: 18 }),
+      ear,
+      React.createElement('circle', { cx: 26, cy: 34, r: 1.6, fill: kind === 'cat' ? '#7FE7FF' : '#FFB37A' }),
+      React.createElement('circle', { cx: 38, cy: 34, r: 1.6, fill: kind === 'cat' ? '#7FE7FF' : '#FFB37A' })));
+}
+
+/* схема: два входа, два веса, сумматор и лампа */
+function NnScheme({ w1, w2, ears, tail, sum, on }) {
+  const lit = c => on ? c : 'rgba(255,255,255,.18)';
+  return React.createElement('svg', { viewBox: '0 0 340 190' },
+    React.createElement('defs', null,
+      React.createElement('radialGradient', { id: 'nnglow', cx: '.5', cy: '.5' },
+        React.createElement('stop', { offset: '0%', stopColor: '#FFD84D', stopOpacity: on ? .55 : 0 }),
+        React.createElement('stop', { offset: '100%', stopColor: '#FFD84D', stopOpacity: 0 }))),
+
+    /* провода */
+    React.createElement('path', { d: 'M78 56 L170 92', stroke: '#FFD84D', strokeWidth: Math.max(1, Math.abs(w1) * 4), opacity: .55, fill: 'none' }),
+    React.createElement('path', { d: 'M78 134 L170 100', stroke: '#FFD84D', strokeWidth: Math.max(1, Math.abs(w2) * 4), opacity: .55, fill: 'none' }),
+    React.createElement('path', { d: 'M212 96 L286 96', stroke: lit('#FFD84D'), strokeWidth: 3, fill: 'none' }),
+
+    /* входы */
+    React.createElement('g', null,
+      React.createElement('circle', { cx: 56, cy: 56, r: 26, fill: '#1A1430', stroke: 'rgba(127,231,255,.6)', strokeWidth: 2 }),
+      React.createElement('text', { x: 56, y: 52, textAnchor: 'middle', fill: '#7FE7FF', style: { font: "700 13px 'Unbounded',Nunito,sans-serif" } }, ears.toFixed(1)),
+      React.createElement('text', { x: 56, y: 66, textAnchor: 'middle', fill: '#8B7BAE', style: { font: '800 8.5px Nunito,sans-serif' } }, 'УШИ')),
+    React.createElement('g', null,
+      React.createElement('circle', { cx: 56, cy: 134, r: 26, fill: '#1A1430', stroke: 'rgba(127,231,255,.35)', strokeWidth: 2 }),
+      React.createElement('text', { x: 56, y: 130, textAnchor: 'middle', fill: '#7FE7FF', style: { font: "700 13px 'Unbounded',Nunito,sans-serif" } }, tail.toFixed(1)),
+      React.createElement('text', { x: 56, y: 144, textAnchor: 'middle', fill: '#8B7BAE', style: { font: '800 8.5px Nunito,sans-serif' } }, 'ХВОСТ')),
+
+    /* веса на проводах */
+    React.createElement('text', { x: 126, y: 66, textAnchor: 'middle', fill: '#FFD84D', style: { font: "700 12px 'Unbounded',Nunito,sans-serif" } }, '×' + w1.toFixed(1)),
+    React.createElement('text', { x: 126, y: 132, textAnchor: 'middle', fill: '#FFD84D', style: { font: "700 12px 'Unbounded',Nunito,sans-serif" } }, '×' + w2.toFixed(1)),
+
+    /* сумматор */
+    React.createElement('circle', { cx: 191, cy: 96, r: 30, fill: '#241B3E', stroke: '#FFD84D', strokeWidth: 2.4 }),
+    React.createElement('text', { x: 191, y: 92, textAnchor: 'middle', fill: '#FFE9A0', style: { font: "700 15px 'Unbounded',Nunito,sans-serif" } }, sum.toFixed(2)),
+    React.createElement('text', { x: 191, y: 107, textAnchor: 'middle', fill: '#8B7BAE', style: { font: '800 8px Nunito,sans-serif' } }, 'СУММА'),
+
+    /* лампа */
+    React.createElement('circle', { cx: 300, cy: 96, r: 46, fill: 'url(#nnglow)' }),
+    React.createElement('circle', { cx: 300, cy: 96, r: 22, className: 'nnlamp',
+      fill: on ? '#FFD84D' : '#191233', stroke: on ? '#FFF3C4' : 'rgba(255,255,255,.2)', strokeWidth: 2 }),
+    React.createElement('text', { x: 300, y: 101, textAnchor: 'middle',
+      fill: on ? '#3A2A00' : '#5E4E80', style: { font: '900 11px Nunito,sans-serif' } }, on ? 'КОТ' : 'нет'));
+}
+
+function LevelNeuron({ onWin, onHome }) {
+  const q = new URLSearchParams(window.location.search);
+  const [phase, setPhase] = useState(() => {
+    const p = q.get('p');
+    return ['play', 'quiz', 'done'].indexOf(p) > -1 ? p : 'intro';
+  });
+  const [w1, setW1] = useState(0.3);
+  const [w2, setW2] = useState(0.9);
+  const [pick, setPick] = useState(null);
+  const [best, setBest] = useState(0);
+
+  const fire = b => b.ears * w1 + b.tail * w2;
+  const rows = NN_BEINGS.map(b => {
+    const s = fire(b), on = s > NN_T;
+    return { b: b, sum: s, on: on, ok: on === b.cat };
+  });
+  const good = rows.filter(r => r.ok).length;
+  useEffect(() => { if (good > best) setBest(good); }, [good]);
+  const solved = good === rows.length;
+
+  const first = rows[0];
+
+  /* ── финал ── */
+  if (phase === 'done') {
+    return React.createElement('div', { className: 'nn' },
+      React.createElement(TopBar, { level: 1, title: 'Один нейрон', onHome, step: 1, total: 1 }),
+      React.createElement('div', { className: 'nnbody nndone' },
+        React.createElement('svg', { viewBox: '0 0 200 230', className: 'nncard' },
+          React.createElement('rect', { x: 10, y: 8, width: 180, height: 214, rx: 20,
+            fill: '#2A2145', stroke: '#FFD84D', strokeWidth: 2 }),
+          React.createElement('text', { x: 100, y: 38, textAnchor: 'middle', fill: '#FFD84D',
+            style: { font: '900 11px Nunito,sans-serif', letterSpacing: '1.4px' } }, 'НЕЙРОН НАСТРОЕН'),
+          React.createElement('g', { transform: 'translate(100,112)' },
+            React.createElement('circle', { r: 48, fill: 'rgba(255,216,77,.26)' }),
+            React.createElement('circle', { r: 34, fill: '#3A2E5E', stroke: '#FFE9A0', strokeWidth: 3 }),
+            React.createElement('text', { y: -5, textAnchor: 'middle', fill: '#FFF6DC',
+              style: { font: "700 16px 'Unbounded',Nunito,sans-serif" } }, 'уши'),
+            React.createElement('text', { y: 16, textAnchor: 'middle', fill: '#FFD84D',
+              style: { font: "700 18px 'Unbounded',Nunito,sans-serif" } }, '×' + w1.toFixed(1))),
+          React.createElement('text', { x: 100, y: 188, textAnchor: 'middle', fill: '#F4EEFF',
+            style: { font: '900 13px Nunito,sans-serif' } }, 'хвост ×' + w2.toFixed(1)),
+          React.createElement('text', { x: 100, y: 208, textAnchor: 'middle', fill: '#C0B0E0',
+            style: { font: '700 10px Nunito,sans-serif' } }, 'все четверо распознаны верно')),
+        React.createElement('div', { className: 'nnlaw' },
+          React.createElement('b', null, 'Нейрон просто складывает числа'),
+          React.createElement('span', null,
+            'Вес показывает, насколько признак тянет сумму вверх. Ты подобрал пару чисел, ' +
+            'и один нейрон стал различать котов и собак. В настоящей сети таких нейронов миллионы, ' +
+            'а веса подбирает не человек, а само обучение.'))),
+      React.createElement('div', { className: 'nnfoot' },
+        React.createElement('button', {
+          className: 'nk-btn nk-btn--ok', style: { width: '100%' }, onClick: onWin,
+        }, 'Готово')));
+  }
+
+  /* ── проверка связи ── */
+  if (phase === 'quiz') {
+    const opts = [
+      { t: 'Насколько сильно признак влияет на ответ', ok: true },
+      { t: 'Сколько весит существо на картинке', ok: false },
+      { t: 'Сколько нейронов включилось', ok: false },
+    ];
+    return React.createElement('div', { className: 'nn' },
+      React.createElement(TopBar, { level: 1, title: 'Один нейрон', onHome, step: 1, total: 1 }),
+      React.createElement('div', { className: 'nnbody' },
+        React.createElement('div', { className: 'nnq' },
+          React.createElement('div', { className: 'nnq__t' }, 'Что показывает вес?'),
+          opts.map((o, i) => React.createElement('button', {
+            key: i, className: pick === i ? (o.ok ? 'on--ok' : 'on--bad') : '',
+            onClick: () => setPick(i),
+          }, o.t))),
+        pick !== null && React.createElement('div', { className: 'nnsay', style: { marginTop: 12 } },
+          React.createElement('i', null, NKM(opts[pick].ok ? 'win' : 'think', 30)),
+          React.createElement('span', null, opts[pick].ok
+            ? 'Верно. Чем больше вес, тем сильнее этот вход тянет сумму к порогу. Уши у котов и собак различаются заметнее, поэтому через них решить проще всего.'
+            : 'Не то. Вес живёт на проводе, а не на существе: он говорит, насколько сильно этот вход тянет сумму вверх.'))),
+      React.createElement('div', { className: 'nnfoot' },
+        React.createElement('button', {
+          className: 'nk-btn nk-btn--pri', style: { width: '100%' },
+          disabled: pick === null || !opts[pick].ok,
+          onClick: () => setPhase('done'),
+        }, pick !== null && !opts[pick].ok ? 'Выбери верное' : 'Дальше')));
+  }
+
+  /* ── игра ── */
+  return React.createElement('div', { className: 'nn' },
+    React.createElement(TopBar, { level: 1, title: 'Один нейрон', onHome, step: 1, total: 1 }),
+
+    phase === 'intro' && React.createElement(IntroModal, {
+      emoji: NKM('hello', 88),
+      title: 'Один нейрон',
+      law: 'Внутри меня нет волшебства.\nЕсть нейрон: он складывает числа и зажигается,\nкогда сумма перевалит за порог.',
+      tip: 'Крути веса, пока лампочка не загорится на обоих котах и погаснет на собаках.',
+      onStart: () => setPhase('play'),
+    }),
+
+    React.createElement('div', { className: 'nnbody' },
+      React.createElement('div', { className: 'nnsay' },
+        React.createElement('i', null, NKM(solved ? 'win' : 'hello', 30)),
+        React.createElement('span', null, solved
+          ? (w1 > w2
+              ? 'Готово! Ты дал ушам вес больше, чем хвосту, — и нейрон стал смотреть в основном на уши.'
+              : 'Готово! Такие веса тоже работают: сумма на котах перевалила за порог, а на собаках нет.')
+          : 'Вот мой единственный нейрон. Он берёт два числа, умножает каждое на свой ' +
+            'вес и складывает. Если сумма больше ' + NN_T + ' — лампочка горит и я говорю «кот».')),
+
+      React.createElement('div', { className: 'nnwire' },
+        React.createElement(NnScheme, {
+          w1: w1, w2: w2, ears: first.b.ears, tail: first.b.tail,
+          sum: first.sum, on: first.on,
+        })),
+
+      React.createElement('div', { className: 'nnsum' + (first.on ? ' on' : '') },
+        React.createElement('em', null, first.b.who + ': '),
+        first.b.ears.toFixed(1) + ' × ' + w1.toFixed(1) + ' + ' + first.b.tail.toFixed(1) + ' × ' + w2.toFixed(1) + ' = ',
+        React.createElement('b', null, first.sum.toFixed(2)),
+        React.createElement('em', null, first.on ? ' > ' : ' < '),
+        NN_T),
+
+      React.createElement('div', { className: 'nnw' },
+        React.createElement('div', { className: 'nnw__h' },
+          React.createElement('b', null, 'Вес ушей'),
+          React.createElement('span', null, w1.toFixed(1))),
+        React.createElement('div', { className: 'nnw__n' }, 'острые уши дают число побольше'),
+        React.createElement('input', {
+          type: 'range', min: 0, max: 1.5, step: 0.1, value: w1, className: 'nnrange',
+          onChange: e => setW1(parseFloat(e.target.value)),
+        })),
+
+      React.createElement('div', { className: 'nnw' },
+        React.createElement('div', { className: 'nnw__h' },
+          React.createElement('b', null, 'Вес хвоста'),
+          React.createElement('span', null, w2.toFixed(1))),
+        React.createElement('div', { className: 'nnw__n' }, 'хвост есть у всех, но разной длины'),
+        React.createElement('input', {
+          type: 'range', min: 0, max: 1.5, step: 0.1, value: w2, className: 'nnrange',
+          onChange: e => setW2(parseFloat(e.target.value)),
+        })),
+
+      React.createElement('div', { className: 'nnset' },
+        React.createElement('div', { className: 'nnset__t' },
+          'Проверка на четверых · верно ' + good + ' из ' + rows.length),
+        rows.map((r, i) => React.createElement('div', {
+          key: i, className: 'nnrow ' + (r.ok ? 'nnrow--ok' : 'nnrow--bad'),
+        },
+          React.createElement(NnFace, { kind: r.b.kind }),
+          React.createElement('div', { className: 'nnrow__n' },
+            React.createElement('b', null, r.b.who),
+            React.createElement('span', null,
+              'уши ' + r.b.ears.toFixed(1) + ' · хвост ' + r.b.tail.toFixed(1) + ' · сумма ' + r.sum.toFixed(2))),
+          React.createElement('div', {
+            className: 'nnbulb ' + (r.on ? 'nnbulb--on' : 'nnbulb--off'),
+          }, r.on ? 'кот' : 'не кот'))))),
+
+    React.createElement('div', { className: 'nnfoot' },
+      React.createElement('button', {
+        className: 'nk-btn ' + (solved ? 'nk-btn--ok' : 'nk-btn--soft'), style: { width: '100%' },
+        disabled: !solved,
+        onClick: () => setPhase('quiz'),
+      }, solved ? 'Нейрон настроен, дальше' : 'Пока верно ' + good + ' из ' + rows.length)));
+}
+
+function App() {
+  return React.createElement('div', { className: 'nnroot' },
+    React.createElement(LevelNeuron, {
+      onWin: () => {
+        if (window.nooka) window.nooka.missionWin('in1', 90, { nextLabel: 'К игре →' });
+        setTimeout(() => { window.location.href = 'game.html?g=inside'; }, 400);
+      },
+      onHome: () => { window.location.href = 'game.html?g=inside'; },
+    }));
+}
+ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(App, null));
+</script>
+</body>
+</html>
