@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 400" width="500" height="400">
+  <defs>
+    <linearGradient id="wallC" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#1B1030"/>
+      <stop offset="60%" stop-color="#140B24"/>
+      <stop offset="100%" stop-color="#0B0616"/>
+    </linearGradient>
+    <linearGradient id="beamC" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="rgba(190,140,255,.30)"/>
+      <stop offset="100%" stop-color="rgba(190,140,255,0)"/>
+    </linearGradient>
+    <linearGradient id="bladeC" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#FFD84D"/>
+      <stop offset="42%" stop-color="#8E7BD6"/>
+      <stop offset="100%" stop-color="#241B48"/>
+    </linearGradient>
+    <linearGradient id="gripC" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#241B48"/>
+      <stop offset="45%" stop-color="#8E7BD6"/>
+      <stop offset="100%" stop-color="#241B48"/>
+    </linearGradient>
+    <radialGradient id="coalC" cx=".5" cy=".5">
+      <stop offset="0%" stop-color="#FFD84D"/>
+      <stop offset="45%" stop-color="#FF7A1F"/>
+      <stop offset="100%" stop-color="rgba(255,90,20,0)"/>
+    </radialGradient>
+    <filter id="softC" x="-60%" y="-60%" width="220%" height="220%">
+      <feGaussianBlur stdDeviation="10"/>
+    </filter>
+  </defs>
+
+  <rect width="500" height="400" fill="url(#wallC)"/>
+
+  <!-- горн кузницы -->
+  <path d="M396 400 L396 232 Q396 214 416 214 L482 214 Q500 214 500 232 L500 400 Z" fill="#1E1330"/>
+  <rect x="410" y="246" width="82" height="60" rx="10" fill="#0C0714"/>
+  <ellipse cx="451" cy="276" rx="45" ry="28" fill="url(#coalC)" filter="url(#softC)"/>
+
+  <!-- луч света на наковальню -->
+  <path d="M186 8 L314 8 L356 330 L144 330 Z" fill="url(#beamC)"/>
+  <path d="M166 330 L334 330 L318 356 L182 356 Z" fill="#2A1B3E"/>
+  <path d="M190 356 L310 356 L300 384 L200 384 Z" fill="#1C1230"/>
+  <ellipse cx="250" cy="330" rx="80" ry="9" fill="#3A2752"/>
+
+  <!-- посох, выкованный ребёнком -->
+  <g transform="translate(250,40) scale(1.02)">
+    <ellipse cx="0" cy="120" rx="62" ry="92" fill="#7FDCFF" opacity=".3" filter="url(#softC)"/>
+    <rect x="-6" y="60" width="12" height="212" rx="6" fill="url(#gripC)" stroke="#241B48" stroke-width="1.2"/>
+    <rect x="-10" y="150" width="20" height="10" rx="4" fill="#6B4E33" stroke="#3A2818" stroke-width=".9"/>
+    <rect x="-10" y="176" width="20" height="10" rx="4" fill="#6B4E33" stroke="#3A2818" stroke-width=".9"/>
+    <rect x="-10" y="202" width="20" height="10" rx="4" fill="#6B4E33" stroke="#3A2818" stroke-width=".9"/>
+    <path d="M-5 96 h10 M0 90 v12" stroke="#7FDCFF" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <path d="M-5 124 l10 10 M5 124 l-10 10" stroke="#7FDCFF" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <path d="M-18 72 Q-21 44 0 40 Q21 44 18 72 Q0 62 -18 72 Z" fill="url(#gripC)" stroke="#241B48" stroke-width="1.2"/>
+    <path d="M0 -8 L20 26 L0 54 L-20 26 Z" fill="url(#bladeC)" stroke="#FFD84D" stroke-width="1.7"/>
+    <path d="M0 -8 L20 26 L0 54 Z" fill="#000" opacity=".16"/>
+    <path d="M-38 34 l6 -16 l6 16 l-6 6 Z" fill="#BFEEFF" opacity=".9"/>
+    <path d="M26 34 l6 -16 l6 16 l-6 6 Z" fill="#BFEEFF" opacity=".9"/>
+    <path d="M-48 82 l6 -16 l6 16 l-6 6 Z" fill="#BFEEFF" opacity=".85"/>
+    <path d="M36 82 l6 -16 l6 16 l-6 6 Z" fill="#BFEEFF" opacity=".85"/>
+  </g>
+
+  <!-- подпись предмета, как в игре -->
+  <text x="250" y="366" text-anchor="middle" fill="#EDE6FF" style="font:700 19px 'Unbounded',Nunito,system-ui,sans-serif">Ледяной посох с рунами</text>
+</svg>

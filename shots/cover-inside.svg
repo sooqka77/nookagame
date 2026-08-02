@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 400" width="500" height="400">
+  <defs>
+    <linearGradient id="bgI" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#1C1730"/>
+      <stop offset="60%" stop-color="#120D22"/>
+      <stop offset="100%" stop-color="#0A0716"/>
+    </linearGradient>
+    <radialGradient id="glowI" cx=".5" cy=".5">
+      <stop offset="0%" stop-color="#FFD84D" stop-opacity=".18"/>
+      <stop offset="100%" stop-color="#FFD84D" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="wireI" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#FFD84D" stop-opacity=".15"/>
+      <stop offset="100%" stop-color="#FFD84D" stop-opacity=".55"/>
+    </linearGradient>
+    <filter id="softI" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="6"/>
+    </filter>
+  </defs>
+
+  <rect width="500" height="400" fill="url(#bgI)"/>
+  <ellipse cx="250" cy="200" rx="220" ry="160" fill="url(#glowI)"/>
+
+  <!-- связи между нейронами -->
+  <g stroke="url(#wireI)" stroke-width="2.4" fill="none">
+    <path d="M104 126 L232 92"/><path d="M104 126 L232 200"/><path d="M104 126 L232 308"/>
+    <path d="M104 200 L232 92"/><path d="M104 200 L232 200"/><path d="M104 200 L232 308"/>
+    <path d="M104 274 L232 200"/><path d="M104 274 L232 308"/>
+    <path d="M232 92 L380 154"/><path d="M232 200 L380 154"/>
+    <path d="M232 200 L380 250"/><path d="M232 308 L380 250"/>
+  </g>
+
+  <!-- сигнал, идущий по сети -->
+  <g fill="#FFF3C4">
+    <circle cx="168" cy="146" r="4.5"/>
+    <circle cx="306" cy="177" r="4.5"/>
+    <circle cx="168" cy="250" r="3.6" opacity=".7"/>
+  </g>
+
+  <!-- нейроны -->
+  <g>
+    <circle cx="104" cy="126" r="20" fill="#1A1330" stroke="#FFD84D" stroke-width="2.4"/>
+    <circle cx="104" cy="200" r="20" fill="#1A1330" stroke="#FFD84D" stroke-width="2.4"/>
+    <circle cx="104" cy="274" r="20" fill="#1A1330" stroke="rgba(255,216,77,.45)" stroke-width="2.4"/>
+
+    <circle cx="232" cy="92" r="24" fill="#20193A" stroke="#FFD84D" stroke-width="2.6"/>
+    <circle cx="232" cy="200" r="24" fill="#20193A" stroke="#FFD84D" stroke-width="2.6"/>
+    <circle cx="232" cy="308" r="24" fill="#20193A" stroke="rgba(255,216,77,.45)" stroke-width="2.6"/>
+
+    <circle cx="380" cy="154" r="30" fill="#2A2140" stroke="#FFD84D" stroke-width="3"/>
+    <circle cx="380" cy="250" r="30" fill="#1A1330" stroke="rgba(255,216,77,.35)" stroke-width="2.4"/>
+  </g>
+
+  <!-- горит тот выход, который победил -->
+  <circle cx="380" cy="154" r="42" fill="#FFD84D" opacity=".22" filter="url(#softI)"/>
+  <text x="380" y="161" text-anchor="middle" fill="#FFE9A0" style="font:700 17px 'Unbounded',Nunito,system-ui,sans-serif">кот</text>
+  <text x="380" y="257" text-anchor="middle" fill="#6E6390" style="font:700 15px 'Unbounded',Nunito,system-ui,sans-serif">пёс</text>
+
+  <!-- веса на связях -->
+  <g fill="#8B7BAE" style="font:700 12px Nunito,system-ui,sans-serif">
+    <text x="150" y="104">0.8</text>
+    <text x="150" y="292">0.2</text>
+    <text x="300" y="120">1.4</text>
+  </g>
+</svg>
