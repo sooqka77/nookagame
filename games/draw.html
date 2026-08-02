@@ -132,6 +132,17 @@
 .dwtag__cmp b{display:block;font-weight:900;font-size:10px;color:#7FE7FF;}
 .dwtag__cmp span{display:block;margin-top:2px;font-weight:800;font-size:10px;color:#C9BAE6;}
 
+/* выпускной: сбор набора */
+.dwtags--4{grid-template-columns:repeat(4,1fr);}
+.dwtag--pick img{cursor:pointer;}
+.dwtag--pick.on{box-shadow:inset 0 0 0 2.5px #7FE7FF,0 8px 22px -10px #7FE7FF;}
+.dwtag--pick.on img{opacity:1;}
+.dwtag--pick img{opacity:.55;transition:opacity .15s;}
+.dwtag--pick:hover img{opacity:.85;}
+.dwtag__lb{width:100%;padding:6px 0;border:none;cursor:pointer;font-family:inherit;
+  font-weight:900;font-size:10px;color:#C9BAE6;background:rgba(255,255,255,.06);}
+.dwtag__lb:hover{background:rgba(255,255,255,.12);color:#fff;}
+
 /* спор двух моделей */
 .dwduel{margin:12px 14px 0;padding:14px 16px;border-radius:20px;
   background:rgba(255,255,255,.05);box-shadow:inset 0 0 0 1px rgba(255,255,255,.09);}
@@ -270,7 +281,7 @@
 /* финал */
 .dwdone{display:flex;flex-direction:column;align-items:center;padding-top:4px;}
 .dwpet{width:216px;animation:dwPop .5s cubic-bezier(.2,.8,.3,1) both;}
-.dwbadge{width:216px;display:block;margin:0 auto;animation:dwPop .5s cubic-bezier(.2,.8,.3,1) both;}
+.dwbadge,.dwdiploma{width:216px;display:block;margin:0 auto;animation:dwPop .5s cubic-bezier(.2,.8,.3,1) both;}
 .dwlaw{margin:10px 18px 0;text-align:center;}
 .dwlaw b{display:block;font-family:var(--nk-brand),var(--nk-body);font-weight:700;
   font-size:17px;line-height:1.3;color:#F4EEFF;}
@@ -836,6 +847,28 @@ const DW_LEVELS = {
       sub: 'Каждый круг ты находил его промахи и отдавал ему как примеры. Настоящие модели дообучают так же — руками людей.' },
   },
 
+  10: {
+    title: 'Выпускной питомца',
+    mid: 'data10', xp: 120,
+    law: 'Собери набор, проверь подписи, сдай экзамен.\nВсё, чему научила игра, — за один раз.',
+    tip: 'Карточек больше, чем можно взять. Часть подписана неверно. Экзамен строгий.',
+    final: { budget: 8, lib: 12, bad: 4, exam: 8, pass: 7 },
+    steps: [{ kind: 'final' }],
+    finalSay: 'Меня берут работать в <b>приют</b>: отличать котов от собак. Собери мне набор — но не больше <b>восьми карточек</b>. И проверь подписи: их ставили второпях.',
+    quiz: {
+      q: 'Что было важнее для экзамена?',
+      opts: [
+        { t: 'Верные подписи и разные примеры', ok: true },
+        { t: 'Взять как можно больше карточек', ok: false },
+        { t: 'Выбрать самые красивые рисунки', ok: false },
+      ],
+      okSay: 'Именно. Восемь верных и разных примеров бьют дюжину похожих или подписанных наспех.',
+      badSay: 'Количество тут ни при чём — больше восьми и не дали бы. Работают верные подписи и разные примеры.',
+    },
+    win: { show: 'diploma', art: true, law: 'Ты обучил ИИ от начала до конца',
+      sub: 'Выбрал данные, проверил подписи, отправил на экзамен и дообучил, где он спотыкался. Так это и делают взрослые.' },
+  },
+
   8: {
     title: 'Кто размечает',
     mid: 'data8', xp: 90,
@@ -976,6 +1009,36 @@ function DwBadge({ shot, tries, u }) {
       'попыток: ' + (tries || 1) + ' · это был кот'));
 }
 
+/* ── диплом: артефакт выпускного ── */
+function DwDiploma({ res, kit, u }) {
+  const id = s => s + (u || '');
+  return React.createElement('svg', { viewBox: '0 0 200 250', className: 'dwdiploma' },
+    React.createElement('defs', null,
+      React.createElement('linearGradient', { id: id('dwdg'), x1: '0', y1: '0', x2: '0', y2: '1' },
+        React.createElement('stop', { offset: '0%', stopColor: '#1B2440' }),
+        React.createElement('stop', { offset: '100%', stopColor: '#100C1F' }))),
+    React.createElement('rect', { x: 10, y: 8, width: 180, height: 234, rx: 20,
+      fill: `url(#${id('dwdg')})`, stroke: 'rgba(255,216,77,.45)', strokeWidth: 1.6 }),
+    React.createElement('text', { x: 100, y: 34, textAnchor: 'middle', fill: '#FFD84D',
+      style: { font: '900 10px Nunito, sans-serif', letterSpacing: '1.4px' } }, 'ДИПЛОМ'),
+    React.createElement('text', { x: 100, y: 55, textAnchor: 'middle', fill: '#F4EEFF',
+      style: { font: "700 13px 'Unbounded', Nunito, sans-serif" } }, 'Питомец обучен'),
+    /* карточки, которые ребёнок отобрал */
+    (kit || []).slice(0, 8).map((c, i) => React.createElement('image', {
+      key: i, href: c.thumb, x: 24 + (i % 4) * 39, y: 70 + Math.floor(i / 4) * 39,
+      width: 34, height: 34,
+    })),
+    React.createElement('text', { x: 100, y: 162, textAnchor: 'middle', fill: '#A896C9',
+      style: { font: '700 9px Nunito, sans-serif' } }, 'набор, который ты собрал сам'),
+    React.createElement('text', { x: 100, y: 194, textAnchor: 'middle', fill: '#7CE9B7',
+      style: { font: "700 26px 'Unbounded', Nunito, sans-serif" } },
+      (res ? res.ok : 0) + ' из ' + (res ? res.res.length : 8)),
+    React.createElement('text', { x: 100, y: 212, textAnchor: 'middle', fill: '#DDD2F2',
+      style: { font: '900 9.5px Nunito, sans-serif' } }, 'на экзамене по невиданным рисункам'),
+    React.createElement('text', { x: 100, y: 230, textAnchor: 'middle', fill: '#8B7BAE',
+      style: { font: '700 8.5px Nunito, sans-serif' } }, 'данные · подписи · проверка · дообучение'));
+}
+
 /* ── уровень ── */
 function LevelDraw({ n, onWin, onHome }) {
   const L = DW_LEVELS[n] || DW_LEVELS[2];
@@ -1004,6 +1067,30 @@ function LevelDraw({ n, onWin, onHome }) {
   const [hacks, setHacks] = useState([]);          // попытки взлома: {conf, ok}
   const [tags, setTags] = useState([]);            // мои подписи спорных рисунков
   const [duel, setDuel] = useState(null);          // спор двух моделей
+  const [kit, setKit] = useState([]);              // карточки, взятые в набор на выпускном
+  const [fin, setFin] = useState(null);            // результат выпускного экзамена
+  const fset = useRef(null);
+  if (!fset.current && L.final) {
+    const F = L.final, lib = [], exam = [];
+    /* Позиции вранья выбраны замером: на них подпись реально ломает экзамен
+       (4 из 8 против 8 из 8 после чистки). На других позициях одиночная ложь
+       тонула среди верных соседей, и проверять подписи было незачем. */
+    const LIES = [1, 4, 7, 10];
+    for (let i = 0; i < F.lib; i++) {
+      const truth = i % 2 ? 'dog' : 'cat';
+      const cv = dwSketch(truth, 8 + (i % 3) * 5, Math.floor(i / 2) % 4);
+      const lying = LIES.indexOf(i) > -1;
+      lib.push({ truth: truth, label: lying ? (truth === 'cat' ? 'dog' : 'cat') : truth,
+        f: dwFeatures(cv).f, thumb: dwThumb(cv, 64) });
+    }
+    for (let i = 0; i < F.exam; i++) {
+      const truth = i % 2 ? 'dog' : 'cat';
+      const cv = dwSketch(truth, 12 + (i % 3) * 5, i + 2);
+      exam.push({ truth: truth, f: dwFeatures(cv).f, thumb: dwThumb(cv, 64) });
+    }
+    fset.current = { lib: lib, exam: exam };
+  }
+
   const tagSet = useRef(null);
   if (!tagSet.current && L.tag) {
     tagSet.current = [];
@@ -1126,6 +1213,29 @@ function LevelDraw({ n, onWin, onHome }) {
     if (model.length && (phase === 'quiz' || phase === 'done')) dwMemory.save(model);
   }, [phase]);
 
+  /* выпускной экзамен: обучаем на выбранном наборе и проверяем на невиданном */
+  const runFinal = () => {
+    const M = kit.map(i => fset.current.lib[i]);
+    const res = fset.current.exam.map(e => {
+      const p = dwPredict(M, e.f);
+      return { thumb: e.thumb, truth: e.truth, said: p.label, conf: p.conf, ok: p.label === e.truth };
+    });
+    setFin({ res: res, ok: res.filter(r => r.ok).length });
+  };
+
+  const flipLabel = i => {
+    const lib = fset.current.lib;
+    lib[i] = Object.assign({}, lib[i], { label: lib[i].label === 'cat' ? 'dog' : 'cat' });
+    setFin(null);
+    setKit(kit.slice());            // перерисовать подписи
+  };
+
+  const togglePick = i => {
+    setFin(null);
+    setKit(prev => prev.indexOf(i) > -1 ? prev.filter(x => x !== i)
+      : prev.length < L.final.budget ? prev.concat([i]) : prev);
+  };
+
   /* две модели: одна с моими подписями, другая с чужими — и один и тот же вопрос */
   const runDuel = () => {
     const mine = model.concat(tagSet.current.map((c, i) => ({ label: tags[i], f: c.f, thumb: c.thumb })));
@@ -1247,16 +1357,17 @@ function LevelDraw({ n, onWin, onHome }) {
   };
 
   const savePet = () => {
-    const isBadge = L.win.show === 'hack';
-    const svg = document.querySelector(isBadge ? '.dwbadge' : '.dwpet');
+    const kind = L.win.show === 'hack' ? 'badge' : L.win.show === 'diploma' ? 'diploma' : 'pet';
+    const sel = { badge: '.dwbadge', diploma: '.dwdiploma', pet: '.dwpet' }[kind];
+    const meta = {
+      badge: { title: 'Значок взломщика', note: 'Рисунок, которым ты сбил Нейро — он был уверен и всё равно ошибся' },
+      diploma: { title: 'Диплом питомца', note: 'Набор собран, подписи проверены, экзамен сдан на невиданных рисунках' },
+      pet: { title: 'Питомец Нейро', note: 'Узнаёт котов по рисункам, которые ты сделал сам' },
+    }[kind];
+    const svg = document.querySelector(sel);
     if (svg && window.nookaGallery) {
-      window.nookaGallery.add(isBadge
-        ? { kind: 'badge', game: 'Откуда ИИ знает', title: 'Значок взломщика',
-            note: 'Рисунок, которым ты сбил Нейро — он был уверен и всё равно ошибся',
-            svg: svg.outerHTML }
-        : { kind: 'pet', game: 'Откуда ИИ знает', title: 'Питомец Нейро',
-            note: 'Узнаёт котов по трём рисункам, которые ты сделал сам',
-            svg: svg.outerHTML });
+      window.nookaGallery.add({ kind: kind, game: 'Откуда ИИ знает',
+        title: meta.title, note: meta.note, svg: svg.outerHTML });
     }
     setSaved(true);
   };
@@ -1270,7 +1381,10 @@ function LevelDraw({ n, onWin, onHome }) {
     return React.createElement('div', { className: 'dw' },
       React.createElement(TopBar, { level: n, title: L.title, onHome, step: 1, total: 1 }),
       React.createElement('div', { className: 'dwbody dwdone' },
-        L.win.show === 'hack'
+        L.win.show === 'diploma'
+          ? React.createElement(DwDiploma, {
+              res: fin, kit: (kit || []).map(i => fset.current.lib[i]), u: 'd' })
+          : L.win.show === 'hack'
           ? React.createElement('div', null,
               React.createElement(DwBadge, { shot: shot, tries: hacks.length, u: 'h' }),
               React.createElement('div', { className: 'dwwords__n', style: { textAlign: 'center', margin: '10px 20px 0' } },
@@ -1356,7 +1470,8 @@ function LevelDraw({ n, onWin, onHome }) {
       React.createElement('div', { className: 'dwfoot' },
         hasArt && !saved
           ? React.createElement('button', { className: 'nk-btn nk-btn--cta', style: { width: '100%' }, onClick: savePet },
-              L.win.show === 'hack' ? 'Забрать значок' : 'Забрать питомца')
+              L.win.show === 'hack' ? 'Забрать значок'
+                : L.win.show === 'diploma' ? 'Забрать диплом' : 'Забрать питомца')
           : React.createElement('button', {
               className: 'nk-btn nk-btn--ok', style: { width: '100%' }, onClick: onWin,
             }, 'Готово')));
@@ -1393,7 +1508,9 @@ function LevelDraw({ n, onWin, onHome }) {
   const isJudge = step.kind === 'judge';
   const isHack = step.kind === 'hack';
   const isTag = step.kind === 'tag';
-  const noBoard = isClean || isLab || isJudge || isTag;
+  const isFinal = step.kind === 'final';
+  const noBoard = isClean || isLab || isJudge || isTag || isFinal;
+  const passed = isFinal && fin && fin.ok >= L.final.pass;
   const broke = isHack && guess && guess.label === L.hack.goal;
   const bestHack = hacks.filter(h => h.ok).reduce((a, h) => h.conf > a ? h.conf : a, 0);
   const fails = hacks.filter(h => !h.ok).length;
@@ -1421,11 +1538,12 @@ function LevelDraw({ n, onWin, onHome }) {
             ? React.createElement('span', null,
                 'Ещё один пример — и я пересчитаю. Нарисуй ' + step.word +
                 ' немного иначе, чем раньше: так я пойму, что тут главное.')
-            : React.createElement('span', { dangerouslySetInnerHTML: { __html: step.say || L.labSay || L.hackSay || L.tagSay || '' } })),
+            : React.createElement('span', { dangerouslySetInnerHTML: { __html: step.say || L.labSay || L.hackSay || L.tagSay || L.finalSay || '' } })),
 
       React.createElement('div', { className: 'dwtask' },
         React.createElement('b', null,
-          isTag ? (duel ? 'Две модели спорят' : 'Ты — разметчик')
+          isFinal ? 'Выпускной'
+            : isTag ? (duel ? 'Две модели спорят' : 'Ты — разметчик')
             : isHack ? 'Обмани Нейро'
             : isJudge ? 'Где Нейро ошибся?'
             : isLab ? 'Сколько хватит?'
@@ -1439,6 +1557,35 @@ function LevelDraw({ n, onWin, onHome }) {
         !isTest && !noBoard && !isHack && React.createElement('span', null, doneCount + ' из ' + step.need),
         isTest && tries > 0 && React.createElement('span', null,
           'примеров: ' + mine(step.expect).length)),
+
+      isFinal && React.createElement('div', { className: 'dwjudge' },
+        React.createElement('div', { className: 'dwjudge__h' },
+          React.createElement('b', null, 'Собери набор'),
+          React.createElement('span', null, kit.length + ' из ' + L.final.budget)),
+        React.createElement('div', { className: 'dwtags dwtags--4' },
+          fset.current.lib.map((c, i) => React.createElement('div', {
+            key: i, className: 'dwtag dwtag--pick' + (kit.indexOf(i) > -1 ? ' on' : ''),
+          },
+            React.createElement('img', { src: c.thumb, alt: '', onClick: () => togglePick(i) }),
+            React.createElement('button', {
+              className: 'dwtag__lb', onClick: () => flipLabel(i),
+            }, WORD[c.label])))),
+        React.createElement('div', { className: 'dwjudge__n' },
+          'Нажми на рисунок — берёшь в набор. Нажми на подпись — меняешь её.')),
+
+      isFinal && fin && React.createElement('div', { className: 'dwexam' },
+        React.createElement('div', { className: 'dwexam__t' },
+          'Экзамен: ' + fin.ok + ' из ' + fin.res.length + (passed ? ' — сдан' : '')),
+        React.createElement('div', { className: 'dwexam__r' },
+          fin.res.map((r, i) => React.createElement('div', {
+            key: i, className: 'dwec ' + (r.ok ? 'dwec--ok' : 'dwec--bad'),
+          },
+            React.createElement('img', { src: r.thumb, alt: '' }),
+            React.createElement('span', null, WORD[r.said])))),
+        React.createElement('div', { className: 'dwexam__n' },
+          passed
+            ? 'Питомец принят на работу. Он ни разу не видел этих картинок — и всё равно справился.'
+            : 'Нужно ' + L.final.pass + ' из ' + fin.res.length + '. Посмотри, на чём он спотыкается: проверь подписи и возьми более разные примеры.')),
 
       isTag && !duel && React.createElement('div', { className: 'dwjudge' },
         React.createElement('div', { className: 'dwjudge__h' },
@@ -1675,6 +1822,14 @@ function LevelDraw({ n, onWin, onHome }) {
             React.createElement('div', { className: 'dwslot', key: 's' + i }))))),
 
     React.createElement('div', { className: 'dwfoot' },
+      isFinal && React.createElement('button', {
+        className: 'nk-btn ' + (passed ? 'nk-btn--ok' : 'nk-btn--pri'), style: { width: '100%' },
+        disabled: !kit.length,
+        onClick: passed ? () => setPhase('quiz') : runFinal,
+      }, passed ? 'Забрать диплом'
+        : !kit.length ? 'Выбери карточки'
+        : fin ? 'Попробовать снова' : 'На экзамен'),
+
       isTag && React.createElement('button', {
         className: 'nk-btn ' + (duel ? 'nk-btn--ok' : 'nk-btn--pri'), style: { width: '100%' },
         disabled: !duel && tagged < L.tag.count,
