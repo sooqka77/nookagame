@@ -178,7 +178,9 @@ h1 .p{color:var(--nk-pri-3)} h1 .s{color:var(--nk-sun-3)}
 .price-tier{text-transform:uppercase;letter-spacing:.12em}
 .price-amt{font-family:var(--nk-brand);font-weight:900;font-size:52px;line-height:1;margin:10px 0 4px}
 .pf{display:flex;flex-direction:column;gap:12px;margin-bottom:26px;font-weight:700;font-size:14px}
-.pf div{display:flex;gap:10px}
+.pf div{display:flex;gap:10px;align-items:flex-start}
+.pf div>span:first-child{flex:none}
+.pf .pt{flex:1;min-width:0}
 .pf .ok{color:var(--nk-ok-3);font-weight:900}
 .pf .no{color:var(--nk-ink-3)}
 .price-box.pro{border-radius:var(--nk-r-xl);color:#fff;position:relative;
@@ -238,20 +240,29 @@ footer{border-top:2px solid rgba(123,79,242,.12);background:#FFF6E9}
 
 /* ── первый ряд: курс ИИ-грамотности ── */
 .course-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(276px,1fr));gap:18px;margin-top:8px}
-.cc{position:relative;display:flex;flex-direction:column;gap:11px;padding:26px 24px 22px;
+.cc{position:relative;display:flex;flex-direction:column;gap:0;padding:0 0 20px;
   border-radius:30px;color:#fff;overflow:hidden;cursor:pointer;border:none;text-align:left;
   font-family:inherit;background:linear-gradient(165deg,#241844,#150E2A 62%,#100A1F);
   box-shadow:0 22px 44px -20px rgba(45,27,69,.55),inset 0 0 0 1px rgba(255,255,255,.08);
   transition:transform .16s cubic-bezier(.2,.8,.3,1),box-shadow .16s}
+.cc-shot{position:relative;aspect-ratio:5/4;overflow:hidden;background:#0D0A18}
+.cc-shot img{width:100%;height:100%;object-fit:cover;object-position:top center;display:block}
+.cc-shot::after{content:'';position:absolute;inset:auto 0 0;height:64px;
+  background:linear-gradient(180deg,transparent,#191033)}
+.cc-body{display:flex;flex-direction:column;gap:9px;padding:16px 22px 0;position:relative;z-index:1}
 .cc:hover{transform:translateY(-5px);box-shadow:0 30px 56px -22px rgba(45,27,69,.62),inset 0 0 0 1px rgba(255,255,255,.16)}
 .cc::after{content:'';position:absolute;right:-46px;top:-46px;width:176px;height:176px;border-radius:50%;
   background:radial-gradient(circle,var(--t) 0%,transparent 68%);opacity:.38;pointer-events:none}
 .cc-top{display:flex;align-items:center;justify-content:space-between;font-size:12px;font-weight:800}
+.cc-tag{position:absolute;left:16px;top:16px;z-index:2;padding:6px 12px;border-radius:999px;
+  font-size:11px;font-weight:900;color:#150E2A;background:var(--t);box-shadow:0 6px 16px -6px rgba(0,0,0,.7)}
+.cc-tag--soon{color:#EBE2FF;background:rgba(20,13,38,.86);box-shadow:inset 0 0 0 1px rgba(255,255,255,.22)}
 .cc-no{color:var(--t)}
 .cc-age{color:#9C8CBE}
 .cc-name{font-family:var(--nk-brand);font-weight:900;font-size:21px;line-height:1.15;letter-spacing:-.01em}
 .cc-sub{font-size:13px;font-weight:800;color:var(--t);margin-top:-4px}
 .cc-about{font-size:13px;font-weight:500;line-height:1.5;color:#B4A5D0}
+.cc-foot{padding-left:22px;padding-right:22px}
 .cc-list{list-style:none;padding:0;margin:4px 0 0;display:flex;flex-direction:column;gap:7px}
 .cc-list li{position:relative;padding-left:20px;font-size:12.5px;font-weight:700;color:#DCD2EE;line-height:1.35}
 .cc-list li::before{content:'';position:absolute;left:4px;top:6px;width:7px;height:7px;border-radius:50%;
@@ -261,11 +272,25 @@ footer{border-top:2px solid rgba(123,79,242,.12);background:#FFF6E9}
 .cc-foot b{font-family:var(--nk-brand);font-weight:700;font-size:14px}
 .cc-foot span{font-size:13.5px;font-weight:800;color:var(--t)}
 .cc-soon{font-size:11.5px;font-weight:700;color:#8878A8;margin-top:2px}
+.utp{display:grid;grid-template-columns:repeat(auto-fit,minmax(212px,1fr));gap:14px;margin:22px 0 26px}
+.utp-i{padding:16px 18px;border-radius:20px;background:var(--nk-card,#fff);
+  box-shadow:0 14px 30px -22px rgba(45,27,69,.5),inset 0 0 0 1px rgba(45,27,69,.07)}
+.utp-i b{display:block;font-family:var(--nk-brand);font-weight:700;font-size:14.5px;
+  line-height:1.25;color:var(--nk-ink);margin-bottom:6px}
+.utp-i span{display:block;font-size:12.5px;font-weight:600;line-height:1.5;color:var(--nk-ink-2)}
+.course-frame{margin:16px auto 0;max-width:720px;text-align:center;font-size:12.5px;
+  font-weight:600;line-height:1.6;color:var(--nk-ink-2)}
+.course-frame b{color:var(--nk-ink)}
 .course-note{margin-top:20px;padding:15px 20px;border-radius:20px;text-align:center;
   font-weight:700;font-size:13.5px;color:var(--nk-ink);
   background:linear-gradient(180deg,var(--nk-sun-1),#FFE9A8);
   box-shadow:0 10px 22px -12px rgba(232,174,31,.5)}
 .price-grid{grid-template-columns:repeat(auto-fit,minmax(238px,1fr))!important}
+.price-why{margin-bottom:18px;padding:9px 12px;border-radius:14px;font-size:12.5px;
+  font-weight:800;line-height:1.4;color:var(--nk-ink);background:rgba(45,27,69,.06)}
+.price-why--pro{color:#2D1B45;background:rgba(255,255,255,.72)}
+.price-why--free{color:var(--nk-ink-2);background:rgba(45,27,69,.05)}
+.pf b{font-weight:900}
 .price-hint{margin-top:18px;text-align:center;font-size:13px;font-weight:600;color:var(--nk-ink-2);line-height:1.5}
 </style>
 </head>
@@ -323,10 +348,19 @@ footer{border-top:2px solid rgba(123,79,242,.12);background:#FFF6E9}
 
   <section class="wrap section" id="course">
     <div class="nk-chip sec-head-chip">Главное на платформе</div>
-    <h2 class="nk-t-h1 sec-h">ИИ-грамотность <span>для детей 8–12</span></h2>
-    <p class="nk-t-body sec-sub">Три игры, тридцать уровней. Программа собрана по рамке AI4K12 — «Пять больших идей об ИИ» от AAAI и CSTA, по ней учат в американских школах. Ребёнок не слушает про ИИ, а обучает его, ломает и проверяет на вранье.</p>
+    <h2 class="nk-t-h1 sec-h">Ребёнок не слушает про ИИ — <span>он им управляет</span></h2>
+    <p class="nk-t-body sec-sub">Один курс из трёх игр, тридцать уровней подряд. Ребёнок обучает нейросеть на своих рисунках, ловит её на вранье и находит, чем её сбить. К концу он объясняет вам за ужином, почему ИИ ошибается — и это не пересказ ролика, а его собственный опыт.</p>
+
+    <div class="utp">
+      <div class="utp-i"><b>Это один путь, а не набор мини-игр</b><span>Нейро помнит, чему его учили в прошлых уровнях. Курс идёт от «что такое ИИ» до «где ему нельзя доверять».</span></div>
+      <div class="utp-i"><b>В каждом уровне своя механика</b><span>Рисует пальцем, судит ответы, размечает спорное, ломает обученную модель. Ни один уровень не повторяет предыдущий.</span></div>
+      <div class="utp-i"><b>Ребёнок уносит свои работы</b><span>Питомец из его рисунков, значок взломщика, диплом. Всё лежит в коллекции — есть что показать вам и бабушке.</span></div>
+      <div class="utp-i"><b>Понимание вместо страха</b><span>ИИ уже рядом — в поиске, в играх, в школьных заданиях. Ребёнок, который сам его обучил и сам обманул, не боится его и не верит на слово.</span></div>
+    </div>
+
     <div class="course-grid" id="courseGrid"></div>
     <div class="course-note">Первая игра — пять уровней бесплатно. Без регистрации и без карты.</div>
+    <p class="course-frame">Программа собрана по рамке <b>AI4K12</b> — «Пять больших идей об ИИ» от AAAI и CSTA, по ней учат в школах США. Каждый уровень закрывает конкретную идею, а не просто занимает ребёнка.</p>
   </section>
 
   <section class="wrap section" id="subjects">
@@ -366,23 +400,25 @@ footer{border-top:2px solid rgba(123,79,242,.12);background:#FFF6E9}
         <div class="nk-t-caption price-tier">Бесплатно</div>
         <div class="price-amt">0 ₽</div>
         <div class="nk-t-caption" style="margin-bottom:24px">без регистрации</div>
+        <div class="price-why price-why--free">Попробовать можно прямо сейчас — ничего вводить не надо</div>
         <div class="pf">
-          <div><span class="ok">✓</span> Первая игра: уровни 1–5</div>
-          <div><span class="ok">✓</span> Прогресс, опыт и звания</div>
-          <div><span class="ok">✓</span> Коллекция работ ребёнка</div>
-          <div class="no"><span>—</span> Остальные 25 уровней</div>
+          <div><span class="ok">✓</span> <span class="pt">Первая игра, уровни 1–5 — <b>примерно час</b></span></div>
+          <div><span class="ok">✓</span> <span class="pt">Ребёнок обучит своего первого питомца</span></div>
+          <div><span class="ok">✓</span> <span class="pt">Прогресс и коллекция сохранятся</span></div>
+          <div class="no"><span>—</span> Остальные 25 уровней закрыты</div>
         </div>
         <button class="nk-btn nk-btn--soft" style="width:100%" data-play>Начать →</button>
       </div>
       <div class="nk-clay price-box">
         <div class="nk-t-caption price-tier">Месяц</div>
         <div class="price-amt">490 ₽</div>
-        <div class="nk-t-caption" style="margin-bottom:24px">31 день, без автопродления</div>
+        <div class="nk-t-caption" style="margin-bottom:8px">31 день, без автопродления</div>
+        <div class="price-why">16 ₽ в день — дешевле поездки на автобусе</div>
         <div class="pf">
-          <div><span class="ok">✓</span> Три игры, 30 уровней</div>
-          <div><span class="ok">✓</span> Все механики и артефакты</div>
-          <div><span class="ok">✓</span> Один код — одна семья</div>
-          <div><span class="ok">✓</span> Ничего не спишется потом</div>
+          <div><span class="ok">✓</span> <span class="pt"><b>30 уровней</b> — по 15 минут, хватит на месяц</span></div>
+          <div><span class="ok">✓</span> <span class="pt">Один код на <b>всю семью</b>, а не на одного ребёнка</span></div>
+          <div><span class="ok">✓</span> <span class="pt">Работы ребёнка остаются у вас: питомец, значок, диплом</span></div>
+          <div><span class="ok">✓</span> <span class="pt">Карта не привязывается — <b>списать нечего</b></span></div>
         </div>
         <button class="nk-btn nk-btn--soft" style="width:100%" data-buy>Оформить доступ</button>
       </div>
@@ -390,12 +426,13 @@ footer{border-top:2px solid rgba(123,79,242,.12);background:#FFF6E9}
         <span class="price-badge">ВЫГОДНЕЕ</span>
         <div class="nk-t-caption price-tier">Год вперёд</div>
         <div class="price-amt">1450 ₽</div>
-        <div class="nk-t-caption price-amt-sub" style="margin-bottom:24px">12 месяцев — как 3 по месяцу</div>
+        <div class="nk-t-caption price-amt-sub" style="margin-bottom:8px">это 121 ₽ в месяц вместо 490</div>
+        <div class="price-why price-why--pro">Год стоит как три месяца. Дешевле одного занятия с репетитором</div>
         <div class="pf">
-          <div><span class="ok">✓</span> Те же три игры на год</div>
-          <div><span class="ok">✓</span> Плюс новые игры платформы, которые выйдут за этот год</div>
-          <div><span class="ok">✓</span> В планах — науки и технологии</div>
-          <div><span class="ok">✓</span> Возврат в течение 14 дней</div>
+          <div><span class="ok">✓</span> <span class="pt">Всё из месячного — <b>на весь год</b></span></div>
+          <div><span class="ok">✓</span> <span class="pt">Плюс каждая игра, которая выйдет за этот год</span></div>
+          <div><span class="ok">✓</span> <span class="pt">В планах науки и технологии — <b>доплачивать не нужно</b></span></div>
+          <div><span class="ok">✓</span> <span class="pt">Не подошло — <b>вернём деньги</b> в течение 14 дней</span></div>
         </div>
         <button class="nk-btn nk-btn--cta" style="width:100%" data-buy>Взять год</button>
       </div>
@@ -507,14 +544,21 @@ document.querySelectorAll('[data-buy]').forEach(function(b){ b.addEventListener(
     var card = document.createElement('button');
     card.className = 'cc';
     card.style.setProperty('--t', g.tint);
+    var SHOT = { data: 'cover-data', control: 'cover-control', inside: 'cover-inside' };
+    var full = st.ready === st.total;
     card.innerHTML =
-      '<div class="cc-top"><span class="cc-no">'+NO[i+1]+'</span><span class="cc-age">'+g.age+'</span></div>' +
-      '<div class="cc-name">'+g.name+'</div>' +
-      '<div class="cc-sub">'+g.sub+'</div>' +
-      '<div class="cc-about">'+g.about+'</div>' +
-      '<ul class="cc-list">' + pick.map(function(l){ return '<li>'+l.t+'</li>'; }).join('') + '</ul>' +
-      '<div class="cc-foot"><b>'+st.total+' уровней</b><span>Открыть →</span></div>' +
-      (st.ready < st.total ? '<div class="cc-soon">Готово '+st.ready+', остальные в работе</div>' : '');
+      '<div class="cc-shot">' +
+        '<span class="cc-tag' + (full ? '' : ' cc-tag--soon') + '">' +
+          (full ? 'Готова целиком' : 'Готово ' + st.ready + ' из ' + st.total) + '</span>' +
+        '<img src="shots/' + SHOT[g.key] + '.webp" alt="Кадр из игры «' + g.name + '»" loading="lazy">' +
+      '</div>' +
+      '<div class="cc-body">' +
+        '<div class="cc-top"><span class="cc-no">'+NO[i+1]+'</span><span class="cc-age">'+g.age+'</span></div>' +
+        '<div class="cc-name">'+g.name+'</div>' +
+        '<div class="cc-sub">'+g.sub+'</div>' +
+        '<ul class="cc-list">' + pick.map(function(l){ return '<li>'+l.t+'</li>'; }).join('') + '</ul>' +
+      '</div>' +
+      '<div class="cc-foot"><b>'+st.total+' уровней</b><span>Открыть →</span></div>';
     card.addEventListener('click', function(){ openGame('games/game.html?g='+g.key); });
     box.appendChild(card);
   });
