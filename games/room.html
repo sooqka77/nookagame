@@ -178,9 +178,11 @@ function RmRoom({ light, done, active, onMove, all }) {
   /* вещи нарисованы цветом, а не контуром: контурные иконки
      читались как схема, а не как комната ребёнка */
   const thing = t => {
-    const o = lit(t.x, t.y);
     const isDone = done[t.id] !== undefined;
     const isAct = active && active.id === t.id;
+    /* выбранная вещь не гаснет, даже если фонарь увели в сторону —
+       иначе непонятно, про что сейчас кнопки внизу */
+    const o = isAct ? Math.max(.9, lit(t.x, t.y)) : lit(t.x, t.y);
     const mark = isDone ? (done[t.id] ? '#4ED99B' : '#FF9F3C') : null;
     let g;
 
@@ -324,25 +326,41 @@ function LevelRoom({ onWin, onHome }) {
     const p = q.get('p');
     return ['play', 'quiz', 'done'].indexOf(p) > -1 ? p : 'intro';
   });
-  const [light, setLight] = useState({ x: 170, y: 180 });
+  const [light, setLight] = useState({ x: 170, y: 150 });
+  const [picked, setPicked] = useState(null);    // выбранный предмет — не слетает
   const [done, setDone] = useState({});          // id → верно ли ответил
   const [last, setLast] = useState(null);        // что только что разобрали
   const [q1, setQ1] = useState(null);
   const [q2, setQ2] = useState(null);
 
-  /* активен тот предмет, что ближе всех к центру луча */
-  let active = null, best = 1e9;
-  RM_THINGS.forEach(t => {
-    if (done[t.id] !== undefined) return;
-    const d = Math.hypot(t.x - light.x, t.y - light.y);
-    if (d < RM_R * .72 && d < best) { best = d; active = t; }
-  });
+  /* Выбор залипает. Раньше активным считался предмет под лучом,
+     и стоило повести руку вниз к кнопкам — выбор слетал, ответить
+     было нечем. Теперь попавший в луч предмет остаётся выбранным,
+     пока не ответишь или пока не наведёшь на другой. */
+  const aim = (l) => {
+    let hit = null, best = 1e9;
+    RM_THINGS.forEach(t => {
+      if (done[t.id] !== undefined) return;
+      const d = Math.hypot(t.x - l.x, t.y - l.y);
+      if (d < RM_R * .72 && d < best) { best = d; hit = t; }
+    });
+    return hit;
+  };
+
+  const moveLight = l => {
+    setLight(l);
+    const hit = aim(l);
+    if (hit) setPicked(hit.id);
+  };
+
+  const active = RM_THINGS.find(t => t.id === picked && done[t.id] === undefined) || null;
 
   const answer = isAi => {
     if (!active) return;
     const ok = isAi === active.ai;
     setDone(Object.assign({}, done, { [active.id]: ok }));
     setLast({ t: active, ok: ok });
+    setPicked(null);
   };
 
   const found = Object.keys(done).length;
@@ -443,10 +461,12 @@ function LevelRoom({ onWin, onHome }) {
           : 'Программу человек написал по шагам. Меня по шагам никто не писал — мне показали примеры.')),
 
       React.createElement('div', { className: 'rmscene' },
-        React.createElement(RmRoom, { light: light, done: done, active: active, onMove: setLight, all: all })),
+        React.createElement(RmRoom, { light: light, done: done, active: active, onMove: moveLight, all: all })),
 
       React.createElement('div', { className: 'rmhow' },
-        all ? 'Все шесть разобраны' : 'Что попало в круг — о том и решай'),
+        all ? 'Все шесть разобраны'
+            : active ? 'Реши про эту вещь — или наведи фонарь на другую'
+            : 'Наведи фонарь на вещь'),
 
       React.createElement('div', { className: 'rmscore' },
         RM_THINGS.map(t => React.createElement('div', {
