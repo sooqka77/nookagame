@@ -1,0 +1,521 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1">
+<meta name="theme-color" content="#0E0719">
+<title>Диджей — Nooka</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&family=Unbounded:wght@700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="nooka-ui.css">
+<style>
+/* ============ ДИДЖЕЙ: мелодия и смелость ============ */
+.djroot{height:100vh;overflow:hidden;max-width:480px;margin:0 auto;position:relative;}
+.dj{height:100%;display:flex;flex-direction:column;overflow:hidden;
+  background:linear-gradient(180deg,#1B1230 0%,#120C22 62%,#0A0714 100%);}
+.djbody{flex:1;overflow-y:auto;padding:0 0 6px;-webkit-overflow-scrolling:touch;}
+
+.djsay{display:flex;gap:10px;align-items:flex-start;margin:2px 14px 0;padding:13px 15px;
+  border-radius:20px;background:rgba(255,255,255,.055);
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.09);animation:djIn .3s ease-out both;}
+.djsay i{flex-shrink:0;line-height:0;}
+.djsay span{font-weight:700;font-size:13.5px;line-height:1.45;color:#E2D6F5;}
+.djsay b{color:#FF6FC4;font-weight:900;}
+
+/* дорожка мелодии */
+.djtrack{margin:11px 14px 0;border-radius:20px;overflow:hidden;
+  background:linear-gradient(180deg,#211636,#0E0A1C);
+  box-shadow:inset 0 0 0 1.5px rgba(255,111,196,.16);}
+.djtrack svg{width:100%;display:block;}
+
+.djhow{margin:10px 14px 0;padding:10px 14px;border-radius:15px;text-align:center;
+  font-weight:800;font-size:12.5px;line-height:1.4;color:#FFA8DA;
+  background:rgba(255,111,196,.12);box-shadow:inset 0 0 0 1px rgba(255,111,196,.28);}
+
+/* клавиши */
+.djkeys{margin:11px 14px 0;display:flex;gap:5px;}
+.djkeys button{flex:1;height:74px;border:none;cursor:pointer;border-radius:13px;padding:0 0 9px;
+  display:flex;align-items:flex-end;justify-content:center;
+  font-family:inherit;font-weight:900;font-size:11px;color:#9C8CBE;
+  background:linear-gradient(180deg,rgba(255,255,255,.09),rgba(255,255,255,.035));
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.1);transition:transform .07s;}
+.djkeys button.lit{color:#22102C;background:linear-gradient(180deg,#FFB3E0,#FF6FC4);
+  box-shadow:0 8px 20px -8px #FF6FC4;transform:translateY(2px);}
+
+/* что бывает после */
+.djafter{margin:12px 14px 0;padding:13px 15px;border-radius:20px;
+  background:rgba(255,255,255,.04);box-shadow:inset 0 0 0 1px rgba(255,255,255,.07);}
+.djafter__t{font-weight:900;font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;
+  color:#9182B0;margin-bottom:11px;}
+.djbars{display:flex;align-items:flex-end;gap:6px;height:62px;}
+.djbar{flex:1;display:flex;flex-direction:column;justify-content:flex-end;height:100%;gap:5px;}
+.djbar i{display:block;border-radius:7px 7px 3px 3px;background:linear-gradient(180deg,#FF6FC4,#A24BD8);
+  min-height:4px;}
+.djbar span{display:block;text-align:center;font-weight:900;font-size:10.5px;color:#B9A8D8;}
+
+/* смелость */
+.djbrave{margin:12px 14px 0;padding:14px 16px;border-radius:20px;
+  background:rgba(255,255,255,.045);box-shadow:inset 0 0 0 1px rgba(255,255,255,.08);}
+.djbrave__h{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+.djbrave__h b{font-weight:900;font-size:14px;color:#F2ECFF;}
+.djbrave__h em{margin-left:auto;font-style:normal;font-weight:900;font-size:12px;color:#FF6FC4;}
+.djsteps{display:flex;gap:6px;}
+.djsteps button{flex:1;padding:11px 3px;border:none;cursor:pointer;border-radius:13px;
+  font-family:inherit;font-weight:900;font-size:11px;color:#9C8CBE;
+  background:rgba(255,255,255,.05);box-shadow:inset 0 0 0 1px rgba(255,255,255,.09);}
+.djsteps button.on{color:#22102C;background:#FF6FC4;box-shadow:0 6px 16px -8px #FF6FC4;}
+
+.djacts{margin:12px 14px 0;display:flex;gap:8px;}
+.djacts button{flex:1;}
+.djhint{margin:9px 14px 0;text-align:center;font-weight:800;font-size:11.5px;color:#7C6D9B;}
+
+.djfoot{flex-shrink:0;padding:10px 14px calc(14px + env(safe-area-inset-bottom));
+  background:linear-gradient(180deg,rgba(10,7,20,0),#0A0714 42%);}
+
+/* финал */
+.djdone{display:flex;flex-direction:column;align-items:center;padding-top:6px;}
+.djlaw{margin:14px 18px 0;text-align:center;}
+.djlaw b{display:block;font-family:var(--nk-brand),var(--nk-body);font-weight:700;
+  font-size:17px;line-height:1.3;color:#F4EEFF;}
+.djlaw span{display:block;margin-top:8px;font-weight:700;font-size:13.5px;color:#A896C9;line-height:1.45;}
+.djcard{width:238px;animation:djPop .5s cubic-bezier(.2,.8,.3,1) both;}
+
+/* проверка связи */
+.djq{margin:12px 14px 0;padding:14px 16px;border-radius:20px;
+  background:rgba(255,255,255,.045);box-shadow:inset 0 0 0 1px rgba(255,255,255,.08);}
+.djq__t{font-weight:900;font-size:14px;color:#F2ECFF;line-height:1.35;margin-bottom:10px;}
+.djq button{display:block;width:100%;margin-bottom:7px;padding:13px 14px;border:none;
+  border-radius:15px;cursor:pointer;text-align:left;font-family:inherit;font-weight:700;
+  font-size:13.5px;color:#DDD2F2;background:rgba(255,255,255,.05);
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.09);}
+.djq button.on--ok{background:rgba(78,217,155,.16);box-shadow:inset 0 0 0 1.5px rgba(78,217,155,.5);color:#C4F4E0;}
+.djq button.on--bad{background:rgba(255,107,107,.14);box-shadow:inset 0 0 0 1.5px rgba(255,107,107,.45);color:#FFD6CF;}
+
+@keyframes djIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
+@keyframes djPop{0%{opacity:0;transform:scale(.72);}68%{transform:scale(1.05);}100%{opacity:1;transform:scale(1);}}
+@media (prefers-reduced-motion: reduce){.dj *{animation:none !important;}}
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script src="react-bundle.js"></script>
+<script src="nooka-core.js"></script>
+<script src="nooka-levels.js"></script>
+<script src="nooka-access.js"></script>
+<script src="nooka-gallery.js"></script>
+<script src="nooka-ui.js"></script>
+<script>
+/* ============================================================
+   ДИДЖЕЙ — уровень 7 игры «Что у ИИ внутри».
+
+   Ребёнок наигрывает начало мелодии, Нейро её продолжает.
+   Это та же механика, что у языковой модели: выбрать следующий
+   шаг по тому, что чаще шло следом, — и так снова и снова.
+
+   Модель честная. Нейро «слушал» девять мелодий (DJ_CORPUS),
+   из них построена таблица: после какой ноты какая сколько раз
+   встречалась. Продолжение выбирается из этой таблицы.
+
+   Ползунок смелости — это температура, но слова такого нет.
+   Замер до написания уровня: на «как чаще всего» мелодия
+   зацикливается почти всегда (до-ми-до-ми), на «наугад»
+   рассыпается на скачки. Ровно это ребёнок и должен услышать.
+
+   Пентатоника выбрана не для красоты: в ней любые ноты звучат
+   вместе сносно, поэтому провал на «наугад» слышен как
+   бессвязность, а не как фальшь.
+   ============================================================ */
+
+const DJ_FREQ = [261.63, 293.66, 329.63, 392.00, 440.00, 523.25, 587.33, 659.25];
+const DJ_NAME = ['до', 'ре', 'ми', 'соль', 'ля', 'до', 'ре', 'ми'];
+const DJ_N = 8;
+
+/* то, что Нейро слушал до встречи с ребёнком */
+const DJ_CORPUS = [
+  [0,1,2,3,2,1,0,0],
+  [2,3,4,3,2,1,2,0],
+  [0,2,4,5,4,2,0,0],
+  [3,4,5,4,3,2,3,3],
+  [0,1,2,4,5,7,5,4],
+  [5,4,3,2,3,4,5,5],
+  [2,2,3,4,5,4,2,1,0],
+  [4,5,6,7,6,5,4,4],
+  [0,2,3,2,0,1,2,2],
+];
+
+/* таблица: после ноты i нота j встретилась M[i][j] раз */
+const DJ_M = (() => {
+  const m = [];
+  for (let i = 0; i < DJ_N; i++) m.push(new Array(DJ_N).fill(0));
+  DJ_CORPUS.forEach(mel => { for (let i = 0; i < mel.length - 1; i++) m[mel[i]][mel[i + 1]]++; });
+  return m;
+})();
+
+const DJ_BRAVE = [
+  { t: 'Как чаще', T: 0.08, say: 'Каждый раз беру то, что встречалось чаще всего' },
+  { t: 'Спокойно', T: 0.55, say: 'Держусь частого, но иногда сворачиваю' },
+  { t: 'Смело',    T: 1.0,  say: 'Редкое тоже беру, если оно вообще встречалось' },
+  { t: 'Наугад',   T: 3.0,  say: 'Беру почти что угодно, даже чего не слышал' },
+];
+
+function djNext(prev, T) {
+  const eps = 0.3 * T;                       // на смелости появляются и невиданные ходы
+  const w = DJ_M[prev].map(c => Math.pow(c + eps, 1 / T));
+  const sum = w.reduce((a, b) => a + b, 0);
+  let r = Math.random() * sum;
+  for (let i = 0; i < DJ_N; i++) { r -= w[i]; if (r <= 0) return i; }
+  return DJ_N - 1;
+}
+
+function djGen(seed, T, n) {
+  const out = [];
+  let p = seed[seed.length - 1];
+  for (let i = 0; i < n; i++) { p = djNext(p, T); out.push(p); }
+  return out;
+}
+
+/* ── звук ─────────────────────────────────────────────────── */
+let djCtx = null;
+function djAudio() {
+  if (!djCtx) {
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if (AC) djCtx = new AC();
+  }
+  if (djCtx && djCtx.state === 'suspended') djCtx.resume();
+  return djCtx;
+}
+
+/* нота: треугольник с быстрым спадом — получается ксилофон */
+function djTone(n, at, dur, vol) {
+  const ctx = djAudio();
+  if (!ctx) return;
+  const o = ctx.createOscillator(), g = ctx.createGain();
+  o.type = 'triangle';
+  o.frequency.value = DJ_FREQ[n];
+  g.gain.setValueAtTime(0.0001, at);
+  g.gain.linearRampToValueAtTime(vol, at + 0.015);
+  g.gain.exponentialRampToValueAtTime(0.0001, at + dur);
+  o.connect(g); g.connect(ctx.destination);
+  o.start(at); o.stop(at + dur + 0.05);
+}
+
+/* ── дорожка мелодии ──────────────────────────────────────── */
+function DjTrack({ mine, tail, at }) {
+  const all = mine.concat(tail);
+  const W = 340, H = 150, pad = 16;
+  const slots = Math.max(14, all.length);
+  const dx = (W - pad * 2) / slots;
+  const y = n => H - 22 - n * ((H - 52) / (DJ_N - 1));
+  const dots = [], line = [];
+
+  all.forEach((n, i) => {
+    const cx = pad + dx * (i + .5), cy = y(n);
+    const own = i < mine.length;
+    line.push((i ? 'L' : 'M') + cx + ',' + cy);
+    dots.push(React.createElement('g', { key: i },
+      at === i && React.createElement('circle', { cx: cx, cy: cy, r: 13, fill: 'rgba(255,216,77,.3)' }),
+      React.createElement('circle', {
+        cx: cx, cy: cy, r: at === i ? 8 : 6,
+        fill: at === i ? '#FFD84D' : own ? '#7FE7FF' : '#FF6FC4',
+      })));
+  });
+
+  return React.createElement('svg', { viewBox: '0 0 ' + W + ' ' + H },
+    /* линия раздела: где кончился ребёнок и начался Нейро */
+    mine.length > 0 && all.length > mine.length && React.createElement('line', {
+      x1: pad + dx * mine.length, y1: 14, x2: pad + dx * mine.length, y2: H - 12,
+      stroke: 'rgba(255,255,255,.22)', strokeWidth: 1.5, strokeDasharray: '4 5',
+    }),
+    line.length > 1 && React.createElement('path', {
+      d: line.join(' '), fill: 'none', stroke: 'rgba(255,255,255,.2)', strokeWidth: 2,
+    }),
+    dots,
+    !all.length && React.createElement('text', {
+      x: W / 2, y: H / 2, textAnchor: 'middle', fill: '#6B5C8C',
+      style: { font: '900 13px Nunito,sans-serif' },
+    }, 'нажимай на клавиши'),
+    mine.length > 0 && React.createElement('text', {
+      x: pad, y: 14, fill: '#7FE7FF', style: { font: '900 10px Nunito,sans-serif' },
+    }, 'ТВОЁ'),
+    tail.length > 0 && React.createElement('text', {
+      x: pad + dx * mine.length + 6, y: 14, fill: '#FF6FC4',
+      style: { font: '900 10px Nunito,sans-serif' },
+    }, 'НЕЙРО'));
+}
+
+/* столбики: что бывало после последней ноты ребёнка */
+function DjAfter({ note, live }) {
+  const row = DJ_M[note];
+  const max = Math.max.apply(null, row) || 1;
+  return React.createElement('div', { className: 'djafter' },
+    React.createElement('div', { className: 'djafter__t', style: live ? { color: '#FF6FC4' } : null },
+      'Что бывало после ноты «' + DJ_NAME[note] + '»'),
+    React.createElement('div', { className: 'djbars' },
+      row.map((c, i) => React.createElement('div', { key: i, className: 'djbar' },
+        React.createElement('i', { style: { height: (c / max * 100) + '%', opacity: c ? 1 : .18 } }),
+        React.createElement('span', null, DJ_NAME[i])))));
+}
+
+/* карточка в коллекцию */
+function DjCard({ mine, tail, brave }) {
+  const all = mine.concat(tail);
+  const W = 210, H = 250, pad = 18;
+  const dx = (W - pad * 2) / Math.max(1, all.length);
+  const y = n => 168 - n * 11;
+  const line = all.map((n, i) => (i ? 'L' : 'M') + (pad + dx * (i + .5)) + ',' + y(n));
+  return React.createElement('svg', { viewBox: '0 0 210 250', className: 'djcard' },
+    React.createElement('rect', { x: 8, y: 8, width: 194, height: 234, rx: 20,
+      fill: '#211636', stroke: '#FF6FC4', strokeWidth: 2 }),
+    React.createElement('text', { x: 105, y: 36, textAnchor: 'middle', fill: '#FF6FC4',
+      style: { font: '900 10px Nunito,sans-serif', letterSpacing: '1.4px' } }, 'МОЯ МЕЛОДИЯ'),
+    React.createElement('path', { d: line.join(' '), fill: 'none',
+      stroke: 'rgba(255,255,255,.25)', strokeWidth: 2 }),
+    all.map((n, i) => React.createElement('circle', {
+      key: i, cx: pad + dx * (i + .5), cy: y(n), r: 5,
+      fill: i < mine.length ? '#7FE7FF' : '#FF6FC4' })),
+    React.createElement('text', { x: 105, y: 202, textAnchor: 'middle', fill: '#F4EEFF',
+      style: { font: '900 12.5px Nunito,sans-serif' } }, 'начал я, дописал Нейро'),
+    React.createElement('text', { x: 105, y: 222, textAnchor: 'middle', fill: '#A896C9',
+      style: { font: '900 11px Nunito,sans-serif' } }, 'смелость: ' + DJ_BRAVE[brave].t.toLowerCase()));
+}
+
+function LevelDj({ onWin, onHome }) {
+  const q = new URLSearchParams(window.location.search);
+  const [phase, setPhase] = useState(() => {
+    const p = q.get('p');
+    return ['play', 'quiz', 'done'].indexOf(p) > -1 ? p : 'intro';
+  });
+  const [mine, setMine] = useState([]);
+  const [tail, setTail] = useState([]);
+  const [brave, setBrave] = useState(2);
+  const [tried, setTried] = useState([]);
+  const [at, setAt] = useState(-1);
+  const [saved, setSaved] = useState(false);
+  const [q1, setQ1] = useState(null);
+  const [q2, setQ2] = useState(null);
+  const timers = React.useRef([]);
+
+  const stop = () => { timers.current.forEach(clearTimeout); timers.current = []; setAt(-1); };
+
+  /* проигрывание: ноты планируются в звуке, подсветка — таймерами */
+  const playAll = seq => {
+    stop();
+    const ctx = djAudio();
+    if (!ctx) return;
+    const step = .30, t0 = ctx.currentTime + .07;
+    seq.forEach((n, i) => djTone(n, t0 + i * step, .5, .2));
+    seq.forEach((n, i) => timers.current.push(setTimeout(() => setAt(i), i * step * 1000 + 60)));
+    timers.current.push(setTimeout(() => setAt(-1), seq.length * step * 1000 + 260));
+  };
+
+  const hitKey = n => {
+    if (mine.length >= 8 || tail.length) return;
+    djTone(n, djAudio() ? djAudio().currentTime + .01 : 0, .5, .22);
+    const next = mine.concat([n]);
+    setMine(next);
+    setAt(next.length - 1);
+    timers.current.push(setTimeout(() => setAt(-1), 260));
+  };
+
+  const askNeuro = b => {
+    const t = djGen(mine, DJ_BRAVE[b].T, 10);
+    setTail(t);
+    setBrave(b);
+    if (tried.indexOf(b) < 0) setTried(tried.concat([b]));
+    playAll(mine.concat(t));
+  };
+
+  const reset = () => { stop(); setMine([]); setTail([]); };
+
+  /* «как чаще» обязательна: на ней слышно зацикливание, и об этом
+     спрашивает проверка связи. Без неё вопрос был бы про то,
+     чего ребёнок не слышал */
+  const heard = tried.length;
+  const ready = heard >= 3 && tried.indexOf(0) > -1;
+
+  /* ── финал ── */
+  if (phase === 'done') {
+    return React.createElement('div', { className: 'dj' },
+      React.createElement(TopBar, { level: 7, title: 'Диджей', onHome, step: 1, total: 1 }),
+      React.createElement('div', { className: 'djbody djdone' },
+        /* по карточке можно постучать и послушать, что вышло */
+        React.createElement('div', {
+          style: { cursor: 'pointer' },
+          onClick: () => playAll(mine.concat(tail)),
+        }, React.createElement(DjCard, { mine: mine.length ? mine : [0, 1, 2, 3], tail: tail, brave: brave })),
+        React.createElement('div', { className: 'djhint', style: { marginTop: 8 } },
+          'нажми на карточку, чтобы послушать'),
+        React.createElement('div', { className: 'djlaw' },
+          React.createElement('b', null, 'Нейро не сочиняет'),
+          React.createElement('span', null,
+            'Он послушал чужие мелодии и запомнил, какая нота чаще идёт следом. ' +
+            'Дальше он просто выбирает следующую ноту — и так снова и снова. ' +
+            'ИИ, который пишет текст, работает точно так же, только выбирает слово. ' +
+            'Смелость решает, брать ли самое частое или иногда рискнуть.'))),
+      React.createElement('div', { className: 'djfoot' },
+        React.createElement('div', { style: { display: 'flex', gap: 8 } },
+          React.createElement('button', {
+            className: 'nk-btn nk-btn--soft', style: { flex: 1 }, disabled: saved,
+            onClick: () => {
+              const svg = document.querySelector('.djcard');
+              if (svg && window.nookaGallery) {
+                window.nookaGallery.add({
+                  kind: 'tune', game: 'Диджей', title: 'Моя мелодия',
+                  note: 'Начал сам, продолжил ИИ. Услышал, что осторожный ИИ ходит по кругу',
+                  svg: svg.outerHTML,
+                });
+              }
+              setSaved(true);
+            },
+          }, saved ? 'Мелодия в коллекции' : 'Забрать мелодию'),
+          React.createElement('button', {
+            className: 'nk-btn nk-btn--ok', style: { flex: 1 }, onClick: onWin,
+          }, 'Готово'))));
+  }
+
+  /* ── проверка связи ── */
+  if (phase === 'quiz') {
+    const o1 = [
+      { t: 'Он каждый раз брал самое частое, и оно пошло по кругу', ok: true },
+      { t: 'Он забыл, что уже играл', ok: false },
+      { t: 'У него закончились ноты', ok: false },
+    ];
+    const o2 = [
+      { t: 'Он послушал чужие мелодии и запомнил, что за чем идёт', ok: true },
+      { t: 'Он придумал их сам, когда родился', ok: false },
+      { t: 'Он подсмотрел, что играю я', ok: false },
+    ];
+    const both = q1 !== null && o1[q1].ok && q2 !== null && o2[q2].ok;
+    return React.createElement('div', { className: 'dj' },
+      React.createElement(TopBar, { level: 7, title: 'Диджей', onHome, step: 1, total: 1 }),
+      React.createElement('div', { className: 'djbody' },
+        React.createElement('div', { className: 'djq' },
+          React.createElement('div', { className: 'djq__t' }, 'На смелости «как чаще» мелодия начала топтаться: две ноты по кругу. Почему?'),
+          o1.map((o, i) => React.createElement('button', {
+            key: i, className: q1 === i ? (o.ok ? 'on--ok' : 'on--bad') : '',
+            onClick: () => setQ1(i),
+          }, o.t))),
+        q1 !== null && React.createElement('div', { className: 'djsay', style: { marginTop: 10 } },
+          React.createElement('i', null, NKM(o1[q1].ok ? 'win' : 'think', 30)),
+          React.createElement('span', null, o1[q1].ok
+            ? 'Точно. После «ля» у меня чаще всего идёт «до», а после «до» — снова «ля». Беру самое частое — и хожу между ними, пока не остановишь.'
+            : 'Не поэтому. Ноты у меня те же, и я всё помню. Просто на низкой смелости я каждый раз беру самое частое, а оно ведёт по кругу.')),
+
+        React.createElement('div', { className: 'djq' },
+          React.createElement('div', { className: 'djq__t' }, 'Откуда Нейро знает, какая нота бывает после какой?'),
+          o2.map((o, i) => React.createElement('button', {
+            key: i, className: q2 === i ? (o.ok ? 'on--ok' : 'on--bad') : '',
+            onClick: () => setQ2(i),
+          }, o.t))),
+        q2 !== null && React.createElement('div', { className: 'djsay', style: { marginTop: 10 } },
+          React.createElement('i', null, NKM(o2[q2].ok ? 'win' : 'think', 30)),
+          React.createElement('span', null, o2[q2].ok
+            ? 'Да, девять штук. Больше я ничего про музыку не знаю: только кто за кем ходил.'
+            : 'Нет. Всё, что у меня есть, — девять чужих мелодий. Я посчитал, какая нота за какой шла, и других знаний у меня нет.'))),
+      React.createElement('div', { className: 'djfoot' },
+        React.createElement('button', {
+          className: 'nk-btn nk-btn--pri', style: { width: '100%' }, disabled: !both,
+          onClick: () => setPhase('done'),
+        }, both ? 'Дальше' : 'Ответь на оба')));
+  }
+
+  /* ── игра ── */
+  const enough = mine.length >= 4;
+  const seq = mine.concat(tail);
+  const nowNote = at >= 0 && at < seq.length ? seq[at] : -1;
+  return React.createElement('div', { className: 'dj' },
+    React.createElement(TopBar, { level: 7, title: 'Диджей', onHome, step: 1, total: 1 }),
+
+    phase === 'intro' && React.createElement(IntroModal, {
+      emoji: NKM('hello', 88),
+      title: 'Диджей',
+      law: 'Я послушал девять мелодий.\nБольше про музыку я ничего не знаю.',
+      tip: 'Наиграй начало — я попробую продолжить.',
+      onStart: () => setPhase('play'),
+    }),
+
+    React.createElement('div', { className: 'djbody' },
+      React.createElement('div', { className: 'djsay' },
+        React.createElement('i', null, NKM(tail.length ? 'win' : 'hello', 30)),
+        React.createElement('span', null,
+          tail.length ? DJ_BRAVE[brave].say
+            : enough ? 'Хватит, дальше я. Или доиграй ещё — как хочешь.'
+            : 'Нажми хотя бы четыре клавиши подряд.')),
+
+      React.createElement('div', { className: 'djtrack' },
+        React.createElement(DjTrack, { mine: mine, tail: tail, at: at })),
+
+      React.createElement('div', { className: 'djhow' },
+        tail.length
+          ? 'Я смотрю на последнюю ноту и выбираю, какая бывает после неё'
+          : 'Твои ноты синие. То, что допишу я, будет розовым'),
+
+      /* светится та клавиша, чья нота звучит: и когда играет ребёнок,
+         и когда мелодию проигрывает Нейро */
+      React.createElement('div', { className: 'djkeys' },
+        DJ_FREQ.map((f, i) => React.createElement('button', {
+          key: i, className: nowNote === i ? 'lit' : '',
+          onClick: () => hitKey(i),
+        }, DJ_NAME[i]))),
+
+      /* во время проигрывания столбики идут за звучащей нотой —
+         видно, из чего Нейро выбирал каждый следующий шаг */
+      mine.length > 0 && React.createElement(DjAfter, {
+        note: nowNote >= 0 ? nowNote : mine[mine.length - 1],
+        live: nowNote >= 0 && tail.length > 0,
+      }),
+
+      tail.length > 0 && React.createElement('div', { className: 'djbrave' },
+        React.createElement('div', { className: 'djbrave__h' },
+          React.createElement('b', null, 'Насколько смело выбирать'),
+          React.createElement('em', null, DJ_BRAVE[brave].t)),
+        React.createElement('div', { className: 'djsteps' },
+          DJ_BRAVE.map((b, i) => React.createElement('button', {
+            key: i, className: brave === i ? 'on' : '', onClick: () => askNeuro(i),
+          }, b.t)))),
+
+      React.createElement('div', { className: 'djacts' },
+        tail.length > 0
+          ? [
+              React.createElement('button', {
+                key: 'a', className: 'nk-btn nk-btn--soft',
+                onClick: () => playAll(mine.concat(tail)),
+              }, 'Сыграть'),
+              React.createElement('button', {
+                key: 'b', className: 'nk-btn nk-btn--soft', onClick: reset,
+              }, 'Заново'),
+            ]
+          : React.createElement('button', {
+              className: 'nk-btn ' + (enough ? 'nk-btn--pri' : 'nk-btn--soft'),
+              disabled: !enough, onClick: () => askNeuro(brave),
+            }, enough ? 'Пусть Нейро продолжит' : 'Нужно ещё ' + (4 - mine.length))),
+
+      tail.length > 0 && React.createElement('div', { className: 'djhint' },
+        ready ? 'Все нужные варианты послушаны'
+              : tried.indexOf(0) < 0 && heard >= 2
+                ? 'Осталось послушать «как чаще» — там самое интересное'
+                : 'Послушано смелостей: ' + heard + ' из 3')),
+
+    React.createElement('div', { className: 'djfoot' },
+      React.createElement('button', {
+        className: 'nk-btn ' + (ready ? 'nk-btn--ok' : 'nk-btn--soft'), style: { width: '100%' },
+        disabled: !ready, onClick: () => { stop(); setPhase('quiz'); },
+      }, ready ? 'Готово, дальше' : 'Попробуй разную смелость')));
+}
+
+function App() {
+  return React.createElement('div', { className: 'djroot' },
+    React.createElement(LevelDj, {
+      onWin: () => {
+        if (window.nooka) window.nooka.missionWin('in7', 110, { nextLabel: 'К игре →' });
+        setTimeout(() => { window.location.href = 'game.html?g=inside'; }, 400);
+      },
+      onHome: () => { window.location.href = 'game.html?g=inside'; },
+    }));
+}
+ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(App, null));
+</script>
+</body>
+</html>
