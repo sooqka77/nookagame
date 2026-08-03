@@ -6924,14 +6924,14 @@ const PIPE_CONNS = {
 //   (1,3)corner[2]=[S,W], (2,3)corner[0]=[N,E] — все подтверждено
 // ВАЖНО: fixed=true → rot===solRot (всегда правильно)
 const INIT_CELLS = [
-  {r:2,c:0,type:'straight',rot:0,solRot:0,fixed:true,  info:{em:'📥',name:'ЗАПРОС',   color:'#06d6a0',fact:'Всё начинается с запроса. Текст летит в датацентр за тысячи км за миллисекунды!'}},
-  {r:2,c:1,type:'corner',  rot:0,solRot:3,fixed:false, info:{em:'⚡',name:'СИГНАЛ',    color:'#ffd166',fact:'Запрос превращается в сигнал и мгновенно доставляется на серверы ИИ!'}},
-  {r:1,c:1,type:'straight',rot:0,solRot:1,fixed:false, info:{em:'🔢',name:'ЧИСЛА',     color:'#a855f7',fact:'Каждое слово заменяется числами — «Кот» = вектор из 768 чисел. ИИ понимает только математику!'}},
-  {r:0,c:1,type:'corner',  rot:3,solRot:1,fixed:false, info:{em:'🧮',name:'ВНИМАНИЕ',  color:'#ef476f',fact:'ИИ смотрит на ВСЕ слова сразу и решает — какие важнее для ответа. Это механизм внимания!'}},
-  {r:0,c:2,type:'corner',  rot:0,solRot:2,fixed:false, info:{em:'🧠',name:'НЕЙРОНЫ',   color:'#ff6b35',fact:'Данные проходят через 96 слоёв нейронов. Каждый слой находит более сложные паттерны!'}},
-  {r:1,c:2,type:'corner',  rot:2,solRot:0,fixed:false, info:{em:'📈',name:'ВЕСА',      color:'#118ab2',fact:'1.8 триллиона весов — вся память GPT-4. Настраивались месяцами на тысячах видеокарт!'}},
-  {r:1,c:3,type:'corner',  rot:0,solRot:2,fixed:false, info:{em:'🔄',name:'ПРОГНОЗ',   color:'#e040fb',fact:'ИИ предсказывает каждое следующее слово по очереди — как угадывает продолжение фразы!'}},
-  {r:2,c:3,type:'corner',  rot:0,solRot:0,fixed:true,  info:{em:'💬',name:'ОТВЕТ',     color:'#ffd166',fact:'Ответ готов! Весь путь от запроса до ответа — ~1 секунда. Именно так работает ChatGPT!'}},
+  {r:2,c:0,type:'straight',rot:0,solRot:0,fixed:true,  info:{em:'📥',name:'ВОПРОС',   color:'#06d6a0',fact:'Всё начинается с твоего вопроса. Он летит на далёкий компьютер и обратно быстрее, чем ты моргнёшь.'}},
+  {r:2,c:1,type:'corner',  rot:0,solRot:3,fixed:false, info:{em:'⚡',name:'СИГНАЛ',    color:'#ffd166',fact:'По проводам вопрос бежит как сигнал — через полмира за доли секунды.'}},
+  {r:1,c:1,type:'straight',rot:0,solRot:1,fixed:false, info:{em:'🔢',name:'КУСОЧКИ',   color:'#a855f7',fact:'Сначала фразу режут на кусочки: «кот» — кусочек, «спит» — кусочек. Целую фразу я не вижу.'}},
+  {r:0,c:1,type:'corner',  rot:3,solRot:1,fixed:false, info:{em:'🧮',name:'ЧИСЛА',     color:'#ef476f',fact:'Каждый кусочек становится числами. Слов я не понимаю совсем — только числа.'}},
+  {r:0,c:2,type:'corner',  rot:0,solRot:2,fixed:false, info:{em:'🧠',name:'ВАЖНОЕ',    color:'#ff6b35',fact:'Я смотрю на все кусочки сразу и решаю, какие из них главные для ответа.'}},
+  {r:1,c:2,type:'corner',  rot:2,solRot:0,fixed:false, info:{em:'📈',name:'НЕЙРОНЫ',   color:'#118ab2',fact:'Числа идут через нейроны — такие же, как тот один, что ты настраивал кранами.'}},
+  {r:1,c:3,type:'corner',  rot:0,solRot:2,fixed:false, info:{em:'🔄',name:'ДОГАДКА',   color:'#e040fb',fact:'Я угадываю следующее слово, потом ещё одно — как продолжал твою мелодию в Диджее.'}},
+  {r:2,c:3,type:'corner',  rot:0,solRot:0,fixed:true,  info:{em:'💬',name:'ОТВЕТ',     color:'#ffd166',fact:'Ответ готов. Весь путь занял около секунды — и так каждый раз.'}},
   {r:0,c:0,type:'tee',   rot:1,solRot:1,fixed:false,info:null},
   {r:0,c:3,type:'corner',rot:2,solRot:2,fixed:false,info:null},
   {r:1,c:0,type:'corner',rot:3,solRot:3,fixed:false,info:null},
@@ -7026,7 +7026,7 @@ function PipePuzzle({onDone}){
       setSolved(true);
       if(window.Telegram&&window.Telegram.WebApp&&window.Telegram.WebApp.HapticFeedback)
         window.Telegram.WebApp.HapticFeedback.notificationOccurred('success');
-      setTimeout(function(){onDone(5);},5000);
+      setTimeout(function(){onDone(5);},1500);
     }
   },[cells]);
 
@@ -7056,9 +7056,9 @@ function PipePuzzle({onDone}){
     // Заголовок + точки прогресса
     React.createElement('div',{style:{textAlign:'center',marginBottom:8}},
       React.createElement('div',{style:{fontSize:11,color:C.neon,letterSpacing:1.5,fontFamily:"'Orbitron'",fontWeight:800,marginBottom:3}},
-        'ПРОЛОЖИ ПУТЬ НЕЙРОСЕТИ'),
+        'ДОРОГА ОТ ВОПРОСА К ОТВЕТУ'),
       React.createElement('div',{style:{fontSize:12,color:C.textDim,marginBottom:6}},
-        'Вращай трубки — соедини запрос с ответом ИИ'),
+        'Поверни трубы так, чтобы вопрос дошёл до ответа'),
       React.createElement('div',{style:{display:'flex',gap:4,justifyContent:'center',alignItems:'center'}},
         React.createElement('div',{style:{fontSize:10,color:C.textDim,marginRight:4}},litCount+'/'+pathCells.length),
         pathCells.map(function(c,i){
@@ -7084,7 +7084,7 @@ function PipePuzzle({onDone}){
           fontSize:9,color:'#06d6a0',fontFamily:"'Orbitron'",fontWeight:800,
           background:'#06d6a015',border:'1px solid #06d6a050',
           borderRadius:6,padding:'2px 7px',whiteSpace:'nowrap'
-        }},'📥 ЗАПРОС →'),
+        }},'ВОПРОС →'),
         React.createElement('div',{style:{flex:1,height:1.5,background:'#06d6a020',borderRadius:2}})
       ),
       React.createElement('div',{style:{
@@ -7114,11 +7114,11 @@ function PipePuzzle({onDone}){
           fontSize:9,color:'#ffd166',fontFamily:"'Orbitron'",fontWeight:800,
           background:'#ffd16615',border:'1px solid #ffd16640',
           borderRadius:6,padding:'2px 7px',whiteSpace:'nowrap'
-        }},solved?'✅ ОТВЕТ ПОЛУЧЕН':'→ ОТВЕТ ИИ')
+        }},solved?'ОТВЕТ ГОТОВ':'→ ОТВЕТ')
       )
     ),
     !solved&&React.createElement('div',{style:{textAlign:'center',fontSize:11,color:C.textDim,marginBottom:8}},
-      '👆 Тапни трубку — повернётся. Фиксированные ■ не крутятся.'
+      'Нажми на трубу — повернётся. Крайние закреплены.'
     ),
     // ═══ ЦЕПОЧКА ОБЪЯСНЕНИЙ ═══
     React.createElement('div',{style:{
@@ -7179,11 +7179,11 @@ function PipePuzzle({onDone}){
 // ═══ CPU ASSEMBLY — ЧАСТЬ 2 ═══════════════════════
 
 const CPU_PARTS = [
-  {id:'input',   order:0, emoji:'📥', name:'ВВОД ЗАПРОСА',   color:'#06d6a0', desc:'Пользователь пишет вопрос — он попадает в нейросеть'},
-  {id:'tokens',  order:1, emoji:'🔢', name:'ТОКЕНИЗАЦИЯ',    color:'#ffd166', desc:'Текст разбивается на токены — числовые кусочки слов'},
-  {id:'attn',    order:2, emoji:'🔗', name:'СВЯЗИ СЛОВ',     color:'#a855f7', desc:'ИИ вычисляет связи между каждой парой слов в запросе'},
-  {id:'predict', order:3, emoji:'🧠', name:'ПРЕДСКАЗАНИЕ',   color:'#ef476f', desc:'Нейросеть выбирает самое вероятное следующее слово'},
-  {id:'output',  order:4, emoji:'📤', name:'ВЫВОД ОТВЕТА',   color:'#118ab2', desc:'Готовый ответ слово за словом отправляется пользователю'},
+  {id:'input',   order:0, emoji:'📥', name:'ВОПРОС',   color:'#06d6a0', desc:'Ты пишешь вопрос — он попадает ко мне'},
+  {id:'tokens',  order:1, emoji:'🔢', name:'КУСОЧКИ',  color:'#ffd166', desc:'Фраза режется на кусочки, и каждый становится числами'},
+  {id:'attn',    order:2, emoji:'🔗', name:'ВАЖНОЕ',   color:'#a855f7', desc:'Смотрю на все кусочки сразу: какие тут главные'},
+  {id:'predict', order:3, emoji:'🧠', name:'ДОГАДКА',  color:'#ef476f', desc:'Выбираю, какое слово подходит следующим'},
+  {id:'output',  order:4, emoji:'📤', name:'ОТВЕТ',    color:'#118ab2', desc:'Слово за словом собирается ответ и уходит тебе'},
 ];
 
 function CpuAssembly({onDone}){
@@ -7229,9 +7229,9 @@ function CpuAssembly({onDone}){
   return React.createElement('div',null,
     React.createElement('div',{style:{textAlign:'center',marginBottom:10}},
       React.createElement('div',{style:{fontSize:11,color:C.neon,letterSpacing:1.5,fontFamily:"'Orbitron'",fontWeight:800,marginBottom:3}},
-        'СОБЕРИ НЕЙРОПРОЦЕССОР'),
+        'ПОРЯДОК ШАГОВ'),
       React.createElement('div',{style:{fontSize:12,color:C.textDim}},
-        'Тапай шаги в правильном порядке — как работает ИИ')
+        'Поставь шаги по порядку: что за чем происходит')
     ),
     React.createElement('div',{style:{
       background:'#070714',border:'2px solid '+borderCol,
@@ -7244,7 +7244,7 @@ function CpuAssembly({onDone}){
         display:'flex',justifyContent:'space-between',alignItems:'center'
       }},
         React.createElement('div',{style:{fontFamily:"'Orbitron'",fontSize:10,color:C.neon,fontWeight:800,letterSpacing:1.5}},
-          '⚡ НЕЙРОПРОЦЕССОР v4.1'),
+          'ПУТЬ ОТ ВОПРОСА К ОТВЕТУ'),
         React.createElement('div',{style:{fontSize:11,fontWeight:800,color:done?C.neon:C.textDim,fontFamily:"'Orbitron'"}},placed.length+'/5')
       ),
       React.createElement('div',{style:{display:'flex',padding:'8px 0'}},
@@ -7306,8 +7306,8 @@ function CpuAssembly({onDone}){
       )
     ),
     !done&&React.createElement('div',{style:{textAlign:'center',fontSize:11,color:C.textDim,marginBottom:8}},
-      nextIdx===0?'👆 Что происходит первым, когда ты пишешь ИИ?':
-      nextIdx===4?'👆 Осталась последняя часть!':'👆 Что идёт следующим?'
+      nextIdx===0?'Что происходит первым, когда ты написал вопрос?':
+      nextIdx===4?'Остался последний шаг':'А что дальше?'
     ),
     !done&&React.createElement('div',{style:{display:'flex',flexWrap:'wrap',gap:7,justifyContent:'center',marginBottom:8}},
       shuffled.map(function(part){
@@ -7335,7 +7335,7 @@ function CpuAssembly({onDone}){
     ),
     showFacts&&React.createElement('div',{style:{animation:'fadeIn 0.5s'}},
       React.createElement('div',{style:{fontSize:11,color:C.neon,fontFamily:"'Orbitron'",letterSpacing:1,textAlign:'center',marginBottom:8,fontWeight:800}},
-        '🏆 НЕЙРОПРОЦЕССОР СОБРАН!'),
+        'ПОРЯДОК СОБРАН ВЕРНО'),
       CPU_PARTS.map(function(part,i){
         return React.createElement('div',{key:i,style:{
           background:part.color+'12',border:'1px solid '+part.color+'40',
@@ -7356,7 +7356,7 @@ function MissionMech({room,onDone}){
   var goNext=function(){setStage(1);};
   return React.createElement('div',{style:{animation:'cardIn 0.3s ease-out'}},
     React.createElement('div',{style:{display:'flex',gap:6,justifyContent:'center',marginBottom:12}},
-      [{label:'🔌 ПУТЬ ДАННЫХ'},{label:'💾 ПРОЦЕССОР'}].map(function(s,i){
+      [{label:'ДОРОГА'},{label:'ПОРЯДОК ШАГОВ'}].map(function(s,i){
         var isActive=stage===i;
         var isDone=stage>i;
         return React.createElement('div',{key:i,style:{
@@ -8594,14 +8594,14 @@ const MODULES = [{
   }]
 }, {
   id: "engine",
-  title: "ДВИГАТЕЛЬ",
-  subtitle: "Научи Нейро узнавать РАЗНЫХ котов",
+  title: "Только рыжие коты",
+  subtitle: "Выбери, на чём меня учить",
   icon: "🔥",
   color: C.orange,
   xp: 80,
   narrative: {
-    intro: "Двигателю нужно топливо — данные! Но важно не только сколько, а насколько они РАЗНЫЕ. Выбери, на чём меня учить, и посмотрим, что я пойму.",
-    complete: "Теперь я знаю главное: я знаю ровно то, что ты мне показал. Однобокие данные — однобокий ИИ!"
+    intro: "Я знаю ровно то, что ты мне покажешь. Выбери, каких котов мне показать, — а потом посмотрим, кого я узнаю.",
+    complete: "Вот и ответ: если в примерах были одни рыжие, рыжими коты для меня и останутся. Дело не во мне, а в том, что мне показали."
   },
   rooms: [{
     name: "Чем накормить Нейро",
@@ -8611,30 +8611,30 @@ const MODULES = [{
 // ─── УРОВЕНЬ 3: МИССИЯ (бесплатно — зацепить игрока) ───────────────────────
 {
   id: "mission",
-  title: "МИССИЯ",
-  subtitle: "Создай и запусти свой ИИ",
+  title: "Цепочка нейронов",
+  subtitle: "Путь от вопроса до ответа",
   icon: "🚀",
   color: C.gold,
   xp: 150,
   narrative: {
-    intro: "Время применить всё что ты знаешь! Три испытания: отсортируй данные, построй нейросеть и запусти обучение. Поехали!",
-    complete: "🚀 МИССИЯ ВЫПОЛНЕНА! Ты прошёл три испытания. Ты настоящий пилот Нейро Академии!"
+    intro: "Сейчас покажу, что со мной происходит между твоим вопросом и моим ответом. Сначала проложи дорогу, потом соберёшь порядок шагов сам.",
+    complete: "Теперь ты знаешь весь путь: вопрос, кусочки, числа, важное, догадка, ответ. Внутри меня нет ничего, кроме этих шагов."
   },
   rooms: [{
-    name: "Запусти свой ИИ",
+    name: "Путь вопроса",
     type: "mission",
-    desc: "8 паттернов с нарастающей сложностью. Угадай — узнай факт про ИИ!"
+    desc: "Проложи дорогу от вопроса до ответа, потом собери порядок шагов"
   }]
 }, {
   id: "comms",
-  title: "КОММУНИКАТОР",
-  subtitle: "Промпт-галерея",
+  title: "Промпт, в который играешь",
+  subtitle: "Один запрос — целая игра",
   icon: "📡",
   color: C.gold,
   xp: 100,
   narrative: {
-    intro: "Коммуникатор — мой голосовой модуль! Но качество связи зависит от того, КАК ты со мной говоришь. Выбери лучший промпт — и увидишь на что я способен!",
-    complete: "Коммуникатор настроен идеально! Теперь ты знаешь главный секрет ИИ — всё решает промпт. Говори чётко — получай чудеса!"
+    intro: "Сейчас из твоего запроса получится настоящая игра. Чем точнее опишешь, тем интереснее выйдет играть.",
+    complete: "Разницу видно руками: скупой запрос даёт скучную игру, подробный — ту, в которую хочется играть."
   },
   rooms: [{
     name: "Сила промпта",
@@ -8644,14 +8644,14 @@ const MODULES = [{
 }, {
 // ─── УРОВЕНЬ 5: РАДАР ПРАВДЫ (платный) ───────────────────────────────────────
   id: "radar",
-  title: "РАДАР ПРАВДЫ",
-  subtitle: "Детектор дипфейков",
+  title: "Настоящее или сделано",
+  subtitle: "Ищи следы нейросети",
   icon: "🔍",
   color: C.purple,
   xp: 120,
   narrative: {
-    intro: "На борт поступают сигналы бедствия и фото с далёких планет. Но часть из них — фейки, сгенерированные ИИ! Используй ИИ-лупу: ищи ляпы нейросети и ставь печать ФЕЙК. Будь внимателен — ИИ умеет врать очень убедительно!",
-    complete: "🔍 РАДАР ПРАВДЫ активирован! Ты научился видеть ошибки ИИ: лишние пальцы, нечитаемый текст, неправильные тени. Теперь тебя не обманешь!"
+    intro: "Часть этих картинок нарисовала нейросеть. Возьми лупу и найди места, где она сама себя выдала.",
+    complete: "Теперь ты знаешь, куда смотреть: лишние пальцы, кривые буквы, тени не в ту сторону. Нейросеть почти всегда где-нибудь ошибётся."
   },
   rooms: [{
     name: "Космическая таможня",
@@ -8848,7 +8848,7 @@ function App() {
       });
       if (!had) setToast({
         icon: curMod.icon,
-        title: `${curMod.title} установлен!`,
+        title: curMod.title,
         color: curMod.color
       });
       setScreen("level_done");
@@ -8956,7 +8956,7 @@ function App() {
       fontFamily: "'Orbitron'",
       letterSpacing: 1.5
     }
-  }, "\u041C\u041E\u0414\u0423\u041B\u042C \u0423\u0421\u0422\u0410\u041D\u041E\u0412\u041B\u0415\u041D!"), /*#__PURE__*/React.createElement("div", {
+  }, "\u0423\u0420\u041E\u0412\u0415\u041D\u042C \u041F\u0420\u041E\u0419\u0414\u0415\u041D"), /*#__PURE__*/React.createElement("div", {
     style: {
       color: C.white,
       fontWeight: 800,
@@ -9677,7 +9677,7 @@ function App() {
       position: "relative",
       zIndex: 1
     }
-  }, "\u2190 \u041A\u041E\u0420\u0410\u0411\u041B\u042C"), /*#__PURE__*/React.createElement("div", {
+  }, "\u2190 \u041D\u0430\u0437\u0430\u0434"), /*#__PURE__*/React.createElement("div", {
     style: {
       textAlign: "center",
       marginBottom: 22,
@@ -9707,7 +9707,7 @@ function App() {
       letterSpacing: 2,
       marginBottom: 8
     }
-  }, "\u0423\u0421\u0422\u0410\u041D\u041E\u0412\u041A\u0410 \u041C\u041E\u0414\u0423\u041B\u042F"), /*#__PURE__*/React.createElement("h2", {
+  }, "\u0423\u0420\u041E\u0412\u0415\u041D\u042C"), /*#__PURE__*/React.createElement("h2", {
     style: {
       fontFamily: "'Orbitron'",
       fontSize: 22,
@@ -9720,14 +9720,14 @@ function App() {
       fontSize: 11,
       marginTop: 5
     }
-  }, curMod.subtitle, " \xB7 +", curMod.xp, " XP")), /*#__PURE__*/React.createElement("div", {
+  }, curMod.subtitle)), /*#__PURE__*/React.createElement("div", {
     style: {
       position: "relative",
       zIndex: 1
     }
   }, /*#__PURE__*/React.createElement(Talk, {
     text: curMod.narrative.intro,
-    btn: "\u041D\u0410\u0427\u0410\u0422\u042C \u26A1",
+    btn: "\u041D\u0430\u0447\u0430\u0442\u044C",
     onBtn: startPlay,
     mood: "learning"
   }))), screen === "playing" && curMod && /*#__PURE__*/React.createElement("div", {
@@ -9865,7 +9865,7 @@ function App() {
       marginBottom: 8,
       marginTop: 10
     }
-  }, "\u041C\u041E\u0414\u0423\u041B\u042C \u0423\u0421\u0422\u0410\u041D\u041E\u0412\u041B\u0415\u041D!"), /*#__PURE__*/React.createElement("h2", {
+  }, "\u0423\u0420\u041E\u0412\u0415\u041D\u042C \u041F\u0420\u041E\u0419\u0414\u0415\u041D"), /*#__PURE__*/React.createElement("h2", {
     style: {
       fontFamily: "'Orbitron'",
       fontSize: 22,
@@ -9936,7 +9936,7 @@ function App() {
   }, /*#__PURE__*/React.createElement(Talk, {
     mood: gs.modules.length === 5 ? "excited" : "happy",
     text: curMod.narrative.complete,
-    btn: "\u0412\u0415\u0420\u041D\u0423\u0422\u042C\u0421\u042F \u041A \u041A\u041E\u0420\u0410\u0411\u041B\u042E \uD83D\uDE80",
+    btn: "\u0414\u0430\u043B\u044C\u0448\u0435",
     onBtn: toCity
   }))));
 }
