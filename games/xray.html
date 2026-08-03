@@ -1,0 +1,625 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1">
+<meta name="theme-color" content="#0E0719">
+<title>Рентгенолог — Nooka</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&family=Unbounded:wght@700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="nooka-ui.css">
+<style>
+/* ============ РЕНТГЕНОЛОГ: смена из четырёх снимков ============ */
+.xrroot{height:100vh;overflow:hidden;max-width:480px;margin:0 auto;position:relative;}
+.xr{height:100%;display:flex;flex-direction:column;overflow:hidden;
+  background:linear-gradient(180deg,#141A26 0%,#0C111C 62%,#070A11 100%);}
+.xrbody{flex:1;overflow-y:auto;padding:0 0 6px;-webkit-overflow-scrolling:touch;}
+
+.xrsay{display:flex;gap:10px;align-items:flex-start;margin:2px 14px 0;padding:13px 15px;
+  border-radius:20px;background:rgba(255,255,255,.055);
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.09);animation:xrIn .3s ease-out both;}
+.xrsay i{flex-shrink:0;line-height:0;}
+.xrsay span{font-weight:700;font-size:13.5px;line-height:1.45;color:#D5E3F2;}
+.xrsay b{color:#FFD84D;font-weight:900;}
+.xrsay--ok{background:rgba(78,217,155,.13);box-shadow:inset 0 0 0 1px rgba(78,217,155,.32);}
+.xrsay--bad{background:rgba(255,107,107,.11);box-shadow:inset 0 0 0 1px rgba(255,107,107,.3);}
+
+/* карточка пациента */
+.xrwho{margin:11px 14px 0;padding:11px 14px;border-radius:18px;display:flex;align-items:center;gap:11px;
+  background:rgba(255,255,255,.05);box-shadow:inset 0 0 0 1px rgba(255,255,255,.09);}
+.xrwho b{display:block;font-family:var(--nk-brand),var(--nk-body);font-weight:700;
+  font-size:15px;color:#EAF3FF;}
+.xrwho span{display:block;margin-top:2px;font-weight:700;font-size:12px;color:#7E8EA6;}
+.xrwho em{margin-left:auto;flex-shrink:0;font-style:normal;font-weight:900;font-size:11px;
+  color:#7E8EA6;letter-spacing:.05em;text-transform:uppercase;}
+
+/* негатоскоп — подсвеченная рамка для снимка */
+.xrfilm{margin:11px 14px 0;border-radius:20px;overflow:hidden;position:relative;
+  background:#05080E;box-shadow:inset 0 0 0 1.5px rgba(126,190,255,.18),0 0 34px -14px rgba(126,190,255,.5);}
+.xrfilm svg{width:100%;display:block;touch-action:manipulation;cursor:crosshair;}
+
+/* что сейчас показано и как это читать */
+.xrhow{margin:10px 14px 0;padding:10px 14px;border-radius:15px;text-align:center;
+  font-weight:800;font-size:12.5px;line-height:1.4;color:#9FD4FF;
+  background:rgba(126,190,255,.11);box-shadow:inset 0 0 0 1px rgba(126,190,255,.26);}
+
+/* переключатель взгляда */
+.xrtabs{margin:10px 14px 0;display:flex;gap:6px;}
+.xrtabs button{flex:1;padding:10px 3px;border:none;cursor:pointer;border-radius:13px;
+  font-family:inherit;font-weight:900;font-size:11.5px;color:#8195AD;
+  background:rgba(255,255,255,.05);box-shadow:inset 0 0 0 1px rgba(255,255,255,.09);}
+.xrtabs button.on{color:#08131F;background:#7FC8FF;box-shadow:0 6px 16px -8px #7FC8FF;}
+
+/* вердикт */
+.xracts{margin:12px 14px 0;display:flex;gap:8px;}
+.xracts button{flex:1;}
+.xrhint{margin:9px 14px 0;text-align:center;font-weight:800;font-size:11.5px;color:#65758C;}
+
+.xrfoot{flex-shrink:0;padding:10px 14px calc(14px + env(safe-area-inset-bottom));
+  background:linear-gradient(180deg,rgba(7,10,17,0),#070A11 42%);}
+
+/* финал */
+.xrdone{display:flex;flex-direction:column;align-items:center;padding-top:6px;}
+.xrlaw{margin:14px 18px 0;text-align:center;}
+.xrlaw b{display:block;font-family:var(--nk-brand),var(--nk-body);font-weight:700;
+  font-size:17px;line-height:1.3;color:#EAF3FF;}
+.xrlaw span{display:block;margin-top:8px;font-weight:700;font-size:13.5px;color:#93A4BC;line-height:1.45;}
+.xrcard{width:230px;animation:xrPop .5s cubic-bezier(.2,.8,.3,1) both;}
+
+/* проверка связи */
+.xrq{margin:12px 14px 0;padding:14px 16px;border-radius:20px;
+  background:rgba(255,255,255,.045);box-shadow:inset 0 0 0 1px rgba(255,255,255,.08);}
+.xrq__t{font-weight:900;font-size:14px;color:#EAF3FF;line-height:1.35;margin-bottom:10px;}
+.xrq button{display:block;width:100%;margin-bottom:7px;padding:13px 14px;border:none;
+  border-radius:15px;cursor:pointer;text-align:left;font-family:inherit;font-weight:700;
+  font-size:13.5px;color:#D5E3F2;background:rgba(255,255,255,.05);
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.09);}
+.xrq button.on--ok{background:rgba(78,217,155,.16);box-shadow:inset 0 0 0 1.5px rgba(78,217,155,.5);color:#C4F4E0;}
+.xrq button.on--bad{background:rgba(255,107,107,.14);box-shadow:inset 0 0 0 1.5px rgba(255,107,107,.45);color:#FFD6CF;}
+
+@keyframes xrIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
+@keyframes xrPop{0%{opacity:0;transform:scale(.72);}68%{transform:scale(1.05);}100%{opacity:1;transform:scale(1);}}
+@keyframes xrPulse{0%,100%{opacity:.55;}50%{opacity:1;}}
+.xrpulse{animation:xrPulse 1.6s ease-in-out infinite;}
+@keyframes xrMark{0%{transform:scale(.3);opacity:0;}70%{transform:scale(1.12);}100%{transform:scale(1);opacity:1;}}
+.xrmark{animation:xrMark .28s cubic-bezier(.2,.8,.3,1) both;transform-origin:center;}
+@media (prefers-reduced-motion: reduce){.xr *{animation:none !important;}}
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script src="react-bundle.js"></script>
+<script src="nooka-core.js"></script>
+<script src="nooka-levels.js"></script>
+<script src="nooka-access.js"></script>
+<script src="nooka-gallery.js"></script>
+<script src="nooka-ui.js"></script>
+<script>
+/* ============================================================
+   РЕНТГЕНОЛОГ — уровень 6 игры «Что у ИИ внутри».
+
+   Здесь ИИ впервые не предмет изучения, а инструмент в руках:
+   ребёнок дежурит рентгенологом, а Нейро подчёркивает места,
+   которые ему кажутся подозрительными.
+
+   «Ага» уровня: ИИ не видит кость. Он находит резкие линии и
+   подчёркивает те, что похожи на трещину. Царапина на плёнке,
+   металлический браслет и край сустава для него такие же линии.
+   Какая из них перелом — понимает человек.
+
+   Поэтому подсказка Нейро честно врёт в двух снимках из четырёх,
+   и оба раза её можно перепроверить глазами: слой «линии»
+   показывает, что царапина продолжается там, где кости нет,
+   а браслет идёт сплошной полосой поперёк всей руки.
+
+   Взгляды на снимок (вкладки) повторяют порядок, в котором
+   работает зрение сети: сначала края, потом форма, потом вывод.
+   Слов «слой», «свёртка», «признак» на экране нет.
+   ============================================================ */
+
+/* ── как рисуется кость ───────────────────────────────────────
+   Кость — капсула: отрезок с закруглёнными концами. Контур
+   считается честным path'ом, а не толстым stroke: тогда во
+   взгляде «линии» ту же форму можно показать одними краями. */
+function cap(x1, y1, x2, y2, w) {
+  const dx = x2 - x1, dy = y2 - y1, L = Math.hypot(dx, dy) || 1, r = w / 2;
+  const nx = -dy / L * r, ny = dx / L * r;
+  /* sweep=0: дуги должны обходить концы снаружи. С единицей
+     они вырезались внутрь и кость выглядела надкушенной. */
+  return 'M' + (x1 + nx) + ',' + (y1 + ny) +
+         'L' + (x2 + nx) + ',' + (y2 + ny) +
+         'A' + r + ',' + r + ' 0 0 0 ' + (x2 - nx) + ',' + (y2 - ny) +
+         'L' + (x1 - nx) + ',' + (y1 - ny) +
+         'A' + r + ',' + r + ' 0 0 0 ' + (x1 + nx) + ',' + (y1 + ny) + 'Z';
+}
+
+/* Четыре снимка смены. Прогрессия ролей ребёнка:
+   согласиться с Нейро → не поверить ему → найти то, что он
+   почти пропустил → выбрать одно из двух его подозрений.       */
+const XR_CASES = [
+  {
+    id: 'arm',
+    who: 'Тимур, 9 лет',
+    story: 'упал с самоката',
+    part: 'Предплечье',
+    soft: 'M84 -12 Q56 170 76 374 L224 374 Q244 170 216 -12 Z',
+    bones: [
+      /* лучевая: два куска с зазором и сдвигом — это и есть перелом */
+      { d: [116, -4, 116, 34, 36] },
+      { d: [116, 20, 110, 168, 26] },
+      { d: [128, 182, 116, 330, 26] },
+      { d: [116, 318, 114, 352, 34] },
+      /* локтевая целая */
+      { d: [184, -4, 186, 32, 32] },
+      { d: [186, 20, 196, 332, 21] },
+      { d: [196, 320, 196, 352, 30] },
+    ],
+    truth: { x: 120, y: 174, r: 46 },
+    ai: [{ x: 120, y: 174, r: 34, p: 91 }],
+    ask: 'Нажми на снимок там, где кость сломана',
+    okSay: 'Тут мы согласны. Кость разошлась в стороны, это видно и без меня.',
+    badSay: 'Перелом вот здесь: кость обрывается и дальше идёт со сдвигом.',
+    noSay: 'Перелом всё-таки есть. Посмотри, где кость обрывается и дальше идёт со сдвигом.',
+  },
+  {
+    id: 'leg',
+    who: 'Вера, 11 лет',
+    story: 'болит нога после тренировки',
+    part: 'Голень',
+    soft: 'M88 -12 Q62 170 80 374 L226 374 Q246 170 218 -12 Z',
+    bones: [
+      { d: [126, -6, 128, 40, 40] },
+      { d: [128, 24, 122, 318, 32] },
+      { d: [122, 300, 124, 352, 30] },
+      { d: [188, 26, 190, 44, 22] },
+      { d: [190, 36, 194, 296, 14] },
+      { d: [194, 284, 196, 318, 20] },
+    ],
+    /* царапина на плёнке — она идёт через весь снимок, в том числе
+       там, где кости нет. Нейро подчёркивает её ровно в том месте,
+       где она пересекает кость.                                   */
+    scratch: [46, 272, 268, 76],
+    truth: null,
+    ai: [{ x: 125, y: 202, r: 34, p: 88 }],
+    ask: 'Нажми туда, где кость сломана. Если кость цела — так и скажи',
+    okSay: 'Верно, кость целая. Это царапина на плёнке. Для меня она такая же резкая линия, как трещина, — я их не различаю.',
+    badSay: 'Кость цела. Посмотри на линии: эта царапина тянется через весь снимок, даже там, где кости нет.',
+    noSay: '',
+  },
+  {
+    id: 'wrist',
+    who: 'Соня, 12 лет',
+    story: 'гимнастка, браслет снять не успели',
+    part: 'Запястье',
+    soft: 'M90 -12 Q70 140 84 300 Q100 372 150 372 Q200 372 216 300 Q230 140 210 -12 Z',
+    bones: [
+      { d: [114, -6, 114, 30, 32] },
+      { d: [114, 10, 110, 238, 30] },
+      { d: [110, 228, 112, 258, 36] },
+      { d: [178, -6, 178, 28, 28] },
+      { d: [178, 10, 186, 232, 22] },
+      { d: [186, 224, 186, 252, 30] },
+      /* кисть */
+      { d: [104, 278, 112, 308, 16] },
+      { d: [134, 276, 138, 310, 16] },
+      { d: [164, 276, 166, 310, 16] },
+      { d: [192, 278, 188, 306, 16] },
+    ],
+    /* металл светится ярче кости и тянется поперёк всей руки */
+    band: { x: 72, y: 150, w: 156, h: 26 },
+    crack: [98, 84, 130, 94],
+    truth: { x: 114, y: 88, r: 42 },
+    /* браслет перетягивает внимание: 84 против 24 у настоящей трещины */
+    /* обводка стоит там, где браслет ложится поверх кости: иначе
+       Нейро подчёркивал пустоту между костями и это читалось как сбой */
+    ai: [{ x: 184, y: 163, r: 36, p: 84, down: true }, { x: 114, y: 88, r: 26, p: 24 }],
+    ask: 'Нажми на снимок там, где кость сломана',
+    okSay: 'Ты нашёл то, что я почти пропустил. Браслет ярче и заметнее, он перетянул на себя всё моё внимание.',
+    badSay: 'Это браслет, металл. Он светится ярче кости, поэтому я и подчеркнул его сильнее всего. Трещина тоньше — вот она.',
+    noSay: 'Трещина тонкая, но она есть — вот здесь. Я дал ей всего 24 процента, потому что она бледнее браслета.',
+  },
+  {
+    id: 'clav',
+    who: 'Марк, 10 лет',
+    story: 'упал на плечо',
+    part: 'Ключица',
+    soft: 'M-6 44 Q150 14 306 58 L306 374 L-6 374 Z',
+    bones: [
+      { d: [46, 128, 146, 98, 22] },
+      { d: [168, 112, 252, 134, 22] },
+      { d: [240, 206, 254, 340, 44] },
+    ],
+    joint: { x: 238, y: 176, r: 40 },
+    /* рёбра — фон, чтобы было понятно, что это грудная клетка */
+    extra: [
+      'M-10 150 Q90 158 174 214', 'M-10 210 Q84 218 162 276',
+      'M-10 270 Q78 278 150 338',
+    ],
+    truth: { x: 157, y: 104, r: 44 },
+    ai: [{ x: 157, y: 104, r: 34, p: 76 }, { x: 238, y: 172, r: 40, p: 71 }],
+    ask: 'Я подчеркнул два места. Нажми на то, где перелом',
+    okSay: 'Да. Второе место — просто край сустава: там кости сходятся, и линия резкая по-нормальному.',
+    badSay: 'Здесь кости сходятся в сустав, так и должно быть. Перелом там, где ключица разошлась.',
+    noSay: 'Перелом есть — ключица разошлась вот здесь.',
+  },
+];
+
+const XR_VIEWS = [
+  { k: 'raw',   t: 'Снимок' },
+  { k: 'edge',  t: 'Линии' },
+  { k: 'shape', t: 'Форма' },
+  { k: 'ai',    t: 'Нейро' },
+];
+
+const XR_HOW = {
+  raw:   'Так снимок видит врач',
+  edge:  'Сначала Нейро находит все резкие линии',
+  shape: 'Потом складывает линии в форму кости',
+  ai:    'И подчёркивает те линии, что похожи на трещину',
+};
+
+/* ── снимок ──────────────────────────────────────────────────
+   view: raw · edge · shape · ai. Метка ребёнка живёт поверх
+   любого взгляда, чтобы её было видно при сравнении.          */
+function XrFilm({ c, view, mark, onTap, reveal }) {
+  const ref = React.useRef(null);
+  const bone = view === 'shape' ? '#4EE0B4' : '#CFE8F5';
+  const boneOp = view === 'edge' ? 0 : view === 'shape' ? .5 : .92;
+
+  const tap = e => {
+    if (!onTap) return;
+    const svg = ref.current;
+    const pt = svg.createSVGPoint();
+    const t = e.touches ? e.touches[0] : e;
+    pt.x = t.clientX; pt.y = t.clientY;
+    const p = pt.matrixTransform(svg.getScreenCTM().inverse());
+    onTap({ x: Math.round(p.x), y: Math.round(p.y) });
+  };
+
+  const shapes = [];
+
+  /* мягкие ткани — чтобы было видно, где кончается рука */
+  if (view !== 'shape') {
+    shapes.push(React.createElement('path', {
+      key: 'soft', d: c.soft,
+      fill: view === 'edge' ? 'none' : 'rgba(126,190,255,.07)',
+      stroke: view === 'edge' ? 'rgba(126,190,255,.5)' : 'none', strokeWidth: 1.6,
+    }));
+  }
+
+  /* рёбра — только фон, к задаче отношения не имеют */
+  if (c.extra && view !== 'shape') {
+    c.extra.forEach((d, i) => shapes.push(React.createElement('path', {
+      key: 'x' + i, d: d, fill: 'none',
+      stroke: view === 'edge' ? 'rgba(159,212,255,.45)' : 'rgba(207,232,245,.17)',
+      strokeWidth: view === 'edge' ? 1.4 : 14, strokeLinecap: 'round',
+    })));
+  }
+
+  c.bones.forEach((b, i) => {
+    const w = b.d[4];
+    shapes.push(React.createElement('path', {
+      key: 'b' + i, d: cap(b.d[0], b.d[1], b.d[2], b.d[3], w),
+      fill: bone, fillOpacity: boneOp,
+      stroke: view === 'edge' ? '#9FD4FF' : 'rgba(255,255,255,.35)',
+      strokeWidth: view === 'edge' ? 2 : 1,
+    }));
+    /* костный канал: у настоящей кости края плотнее середины */
+    if (w >= 20 && view !== 'shape') {
+      shapes.push(React.createElement('path', {
+        key: 'm' + i, d: cap(b.d[0], b.d[1], b.d[2], b.d[3], w * .46),
+        fill: view === 'edge' ? 'none' : '#8FB6CC', fillOpacity: view === 'edge' ? 0 : .45,
+        stroke: view === 'edge' ? 'rgba(159,212,255,.6)' : 'none', strokeWidth: 1.4,
+      }));
+    }
+  });
+
+  if (c.joint) {
+    shapes.push(React.createElement('circle', {
+      key: 'j', cx: c.joint.x, cy: c.joint.y, r: c.joint.r,
+      fill: bone, fillOpacity: boneOp,
+      stroke: view === 'edge' ? '#9FD4FF' : 'rgba(255,255,255,.35)',
+      strokeWidth: view === 'edge' ? 2 : 1,
+    }));
+  }
+
+  /* царапина и браслет — не кость, поэтому в «форме» их нет */
+  if (c.scratch && view !== 'shape') {
+    shapes.push(React.createElement('line', {
+      key: 's', x1: c.scratch[0], y1: c.scratch[1], x2: c.scratch[2], y2: c.scratch[3],
+      stroke: view === 'edge' ? '#9FD4FF' : 'rgba(226,244,255,.75)',
+      strokeWidth: view === 'edge' ? 2 : 2.4,
+    }));
+  }
+  if (c.band && view !== 'shape') {
+    shapes.push(React.createElement('rect', {
+      key: 'bd', x: c.band.x, y: c.band.y, width: c.band.w, height: c.band.h, rx: 7,
+      fill: view === 'edge' ? 'none' : '#F2FBFF', fillOpacity: view === 'edge' ? 0 : .95,
+      stroke: view === 'edge' ? '#9FD4FF' : 'none', strokeWidth: 2,
+    }));
+  }
+  if (c.crack && view !== 'shape') {
+    shapes.push(React.createElement('line', {
+      key: 'cr', x1: c.crack[0], y1: c.crack[1], x2: c.crack[2], y2: c.crack[3],
+      stroke: view === 'edge' ? '#9FD4FF' : '#0A1017',
+      strokeWidth: view === 'edge' ? 2 : 2.6, strokeLinecap: 'round',
+    }));
+  }
+
+  /* подозрения Нейро */
+  if (view === 'ai') {
+    c.ai.forEach((a, i) => {
+      /* down: подпись уходит под круг — иначе на снимке с двумя
+         подозрениями плашки наезжали друг на друга */
+      const ly = a.down ? a.y + a.r + 6 : a.y - a.r - 26;
+      shapes.push(React.createElement('g', { key: 'a' + i, className: 'xrpulse' },
+        React.createElement('circle', {
+          cx: a.x, cy: a.y, r: a.r, fill: 'rgba(255,216,77,.1)',
+          stroke: '#FFD84D', strokeWidth: 2.4, strokeDasharray: '7 6',
+        }),
+        /* плашка под процентом: на светлой кости жёлтые цифры терялись */
+        React.createElement('rect', {
+          x: a.x - 25, y: ly, width: 50, height: 22, rx: 11,
+          fill: '#0A1017', stroke: '#FFD84D', strokeWidth: 1.4,
+        }),
+        React.createElement('text', {
+          x: a.x, y: ly + 16, textAnchor: 'middle', fill: '#FFD84D',
+          style: { font: '900 13px Nunito,sans-serif' },
+        }, a.p + '%')));
+    });
+  }
+
+  /* где перелом на самом деле — показываем после вердикта */
+  if (reveal && c.truth) {
+    shapes.push(React.createElement('circle', {
+      key: 'tr', cx: c.truth.x, cy: c.truth.y, r: c.truth.r,
+      fill: 'none', stroke: '#4ED99B', strokeWidth: 3, strokeDasharray: '9 7',
+    }));
+  }
+
+  if (mark) {
+    shapes.push(React.createElement('g', { key: 'mk', className: 'xrmark' },
+      React.createElement('circle', {
+        cx: mark.x, cy: mark.y, r: 20, fill: 'rgba(78,217,155,.16)',
+        stroke: '#4ED99B', strokeWidth: 2.6,
+      }),
+      React.createElement('path', {
+        d: 'M' + (mark.x - 7) + ',' + mark.y + 'h14M' + mark.x + ',' + (mark.y - 7) + 'v14',
+        stroke: '#4ED99B', strokeWidth: 2.6, strokeLinecap: 'round',
+      })));
+  }
+
+  return React.createElement('svg', {
+    ref: ref, viewBox: '0 0 300 360',
+    onClick: onTap ? tap : null,
+  },
+    React.createElement('rect', { x: 0, y: 0, width: 300, height: 360, fill: '#05080E' }),
+    shapes);
+}
+
+/* карточка в коллекцию */
+function XrCard({ right, u }) {
+  const c = XR_CASES[0];
+  return React.createElement('svg', { viewBox: '0 0 210 250', className: 'xrcard' + (u === 'c' ? '' : ' xrcard') },
+    React.createElement('rect', { x: 8, y: 8, width: 194, height: 234, rx: 20,
+      fill: '#101A28', stroke: '#7FC8FF', strokeWidth: 2 }),
+    React.createElement('text', { x: 105, y: 36, textAnchor: 'middle', fill: '#7FC8FF',
+      style: { font: '900 10px Nunito,sans-serif', letterSpacing: '1.4px' } }, 'ДЕЖУРСТВО ЗАКРЫТО'),
+    /* крупный план места перелома: на всю руку целиком снимок
+       в карточке ужимался до нечитаемых палочек */
+    React.createElement('svg', { x: 38, y: 48, width: 134, height: 126, viewBox: '54 110 156 146' },
+      React.createElement('rect', { x: 40, y: 100, width: 200, height: 180, fill: '#05080E' }),
+      React.createElement('path', { d: c.soft, fill: 'rgba(126,190,255,.07)' }),
+      c.bones.map((b, i) => React.createElement('path', {
+        key: i, d: cap(b.d[0], b.d[1], b.d[2], b.d[3], b.d[4]),
+        fill: '#CFE8F5', fillOpacity: .92, stroke: 'rgba(255,255,255,.35)', strokeWidth: 1 })),
+      React.createElement('circle', { cx: c.truth.x, cy: c.truth.y, r: c.truth.r,
+        fill: 'none', stroke: '#4ED99B', strokeWidth: 3.4 })),
+    React.createElement('text', { x: 105, y: 200, textAnchor: 'middle', fill: '#EAF3FF',
+      style: { font: "700 14px 'Unbounded',Nunito,sans-serif" } }, 'Перелом найден'),
+    React.createElement('text', { x: 105, y: 222, textAnchor: 'middle', fill: '#7E8EA6',
+      style: { font: '900 11px Nunito,sans-serif' } }, 'смена: верно ' + right + ' из 4'));
+}
+
+function LevelXray({ onWin, onHome }) {
+  const q = new URLSearchParams(window.location.search);
+  const [phase, setPhase] = useState(() => {
+    const p = q.get('p');
+    return ['play', 'quiz', 'done'].indexOf(p) > -1 ? p : 'intro';
+  });
+  const [idx, setIdx] = useState(0);
+  const [view, setView] = useState('raw');
+  const [mark, setMark] = useState(null);
+  const [verdict, setVerdict] = useState(null);   // {ok, kind}
+  const [right, setRight] = useState(0);
+  const [saved, setSaved] = useState(false);
+  const [q1, setQ1] = useState(null);
+  const [q2, setQ2] = useState(null);
+
+  const c = XR_CASES[idx];
+
+  const near = (m, t) => Math.hypot(m.x - t.x, m.y - t.y) <= t.r;
+
+  /* ребёнок говорит «перелом здесь» */
+  const sayBreak = () => {
+    const ok = !!c.truth && near(mark, c.truth);
+    if (ok) setRight(right + 1);
+    setVerdict({ ok: ok, kind: 'break' });
+    setView('raw');
+  };
+
+  /* ребёнок говорит «кость целая» */
+  const sayClean = () => {
+    const ok = !c.truth;
+    if (ok) setRight(right + 1);
+    setVerdict({ ok: ok, kind: 'clean' });
+    setView('raw');
+  };
+
+  const nextCase = () => {
+    if (idx + 1 < XR_CASES.length) {
+      setIdx(idx + 1); setMark(null); setVerdict(null); setView('raw');
+    } else {
+      setPhase('quiz');
+    }
+  };
+
+  const saveScan = () => {
+    const svg = document.querySelector('.xrcard');
+    if (svg && window.nookaGallery) {
+      window.nookaGallery.add({
+        kind: 'scan', game: 'Рентгенолог', title: 'Снимок со смены',
+        note: 'Нашёл перелом сам и не поверил подсказке там, где она вела не туда',
+        svg: svg.outerHTML,
+      });
+    }
+    setSaved(true);
+  };
+
+  /* ── финал ── */
+  if (phase === 'done') {
+    return React.createElement('div', { className: 'xr' },
+      React.createElement(TopBar, { level: 6, title: 'Рентгенолог', onHome, step: 4, total: 1 }),
+      React.createElement('div', { className: 'xrbody xrdone' },
+        React.createElement(XrCard, { right: right }),
+        React.createElement('div', { className: 'xrlaw' },
+          React.createElement('b', null, 'Нейро не видит кость'),
+          React.createElement('span', null,
+            'Он находит резкие линии и подчёркивает похожие на трещину. Царапина, браслет, ' +
+            'край сустава — для него это тоже линии. Какая из них перелом, понимает врач. ' +
+            'Поэтому в больнице ИИ не ставит диагноз, а показывает, куда посмотреть.'))),
+      React.createElement('div', { className: 'xrfoot' },
+        React.createElement('div', { style: { display: 'flex', gap: 8 } },
+          React.createElement('button', {
+            className: 'nk-btn nk-btn--soft', style: { flex: 1 }, disabled: saved, onClick: saveScan,
+          }, saved ? 'Снимок в коллекции' : 'Забрать снимок'),
+          React.createElement('button', {
+            className: 'nk-btn nk-btn--ok', style: { flex: 1 }, onClick: onWin,
+          }, 'Готово'))));
+  }
+
+  /* ── проверка связи ── */
+  if (phase === 'quiz') {
+    const o1 = [
+      { t: 'Царапина — тоже резкая линия, а он ищет линии', ok: true },
+      { t: 'Он сломался и показал случайное место', ok: false },
+      { t: 'Он проверял, внимательный ли я', ok: false },
+    ];
+    const o2 = [
+      { t: 'Браслет ярче и заметнее — вот он и вылез вперёд', ok: true },
+      { t: 'Браслет опаснее перелома', ok: false },
+      { t: 'Он решил, что браслет надо снять', ok: false },
+    ];
+    const both = q1 !== null && o1[q1].ok && q2 !== null && o2[q2].ok;
+    return React.createElement('div', { className: 'xr' },
+      React.createElement(TopBar, { level: 6, title: 'Рентгенолог', onHome, step: 4, total: 1 }),
+      React.createElement('div', { className: 'xrbody' },
+        React.createElement('div', { className: 'xrq' },
+          React.createElement('div', { className: 'xrq__t' }, 'На снимке Веры кость была целая. Почему Нейро всё равно подчеркнул место?'),
+          o1.map((o, i) => React.createElement('button', {
+            key: i, className: q1 === i ? (o.ok ? 'on--ok' : 'on--bad') : '',
+            onClick: () => setQ1(i),
+          }, o.t))),
+        q1 !== null && React.createElement('div', { className: 'xrsay ' + (o1[q1].ok ? 'xrsay--ok' : 'xrsay--bad'), style: { marginTop: 10 } },
+          React.createElement('i', null, NKM(o1[q1].ok ? 'win' : 'think', 30)),
+          React.createElement('span', null, o1[q1].ok
+            ? 'Так и есть. Я не знаю, что такое кость и что такое плёнка. Я вижу резкую линию и говорю: похоже на трещину.'
+            : 'Не в этом дело. Я работал как обычно: нашёл резкую линию и подчеркнул её. Что царапина не в кости, мне неоткуда знать.')),
+
+        React.createElement('div', { className: 'xrq' },
+          React.createElement('div', { className: 'xrq__t' }, 'У Сони браслет получил 84 процента, а трещина — 24. Почему?'),
+          o2.map((o, i) => React.createElement('button', {
+            key: i, className: q2 === i ? (o.ok ? 'on--ok' : 'on--bad') : '',
+            onClick: () => setQ2(i),
+          }, o.t))),
+        q2 !== null && React.createElement('div', { className: 'xrsay ' + (o2[q2].ok ? 'xrsay--ok' : 'xrsay--bad'), style: { marginTop: 10 } },
+          React.createElement('i', null, NKM(o2[q2].ok ? 'win' : 'think', 30)),
+          React.createElement('span', null, o2[q2].ok
+            ? 'Да. Проценты говорят, насколько мне что-то бросилось в глаза, а не насколько это важно для врача.'
+            : 'Нет, про опасность я ничего не понимаю. Проценты — это про то, что заметнее, а не про то, что важнее.'))),
+      React.createElement('div', { className: 'xrfoot' },
+        React.createElement('button', {
+          className: 'nk-btn nk-btn--pri', style: { width: '100%' },
+          disabled: !both,
+          onClick: () => setPhase('done'),
+        }, both ? 'Дальше' : 'Ответь на оба')));
+  }
+
+  /* ── смена ── */
+  const answered = !!verdict;
+  const explain = !verdict ? '' :
+    verdict.ok ? c.okSay :
+    verdict.kind === 'clean' ? c.noSay : c.badSay;
+
+  return React.createElement('div', { className: 'xr' },
+    React.createElement(TopBar, { level: 6, title: 'Рентгенолог', onHome, step: idx, total: 4 }),
+
+    phase === 'intro' && React.createElement(IntroModal, {
+      emoji: NKM('hello', 88),
+      title: 'Рентгенолог',
+      law: 'Сегодня ты дежурный рентгенолог.\nЧетыре снимка за смену.',
+      tip: 'Я смотрю снимки вместе с тобой и подчёркиваю подозрительные места. Последнее слово всё равно за тобой.',
+      onStart: () => setPhase('play'),
+    }),
+
+    React.createElement('div', { className: 'xrbody' },
+      React.createElement('div', { className: 'xrsay' + (answered ? (verdict.ok ? ' xrsay--ok' : ' xrsay--bad') : '') },
+        React.createElement('i', null, NKM(answered ? (verdict.ok ? 'win' : 'think') : 'hello', 30)),
+        React.createElement('span', null, answered ? explain : c.ask)),
+
+      React.createElement('div', { className: 'xrwho' },
+        React.createElement('div', null,
+          React.createElement('b', null, c.who),
+          React.createElement('span', null, c.story)),
+        React.createElement('em', null, c.part)),
+
+      React.createElement('div', { className: 'xrfilm' },
+        React.createElement(XrFilm, {
+          c: c, view: view, mark: mark, reveal: answered,
+          onTap: answered ? null : (p => setMark(p)),
+        })),
+
+      React.createElement('div', { className: 'xrhow' }, XR_HOW[view]),
+
+      React.createElement('div', { className: 'xrtabs' },
+        XR_VIEWS.map(v => React.createElement('button', {
+          key: v.k, className: view === v.k ? 'on' : '', onClick: () => setView(v.k),
+        }, v.t))),
+
+      !answered && React.createElement('div', { className: 'xracts' },
+        React.createElement('button', {
+          className: 'nk-btn ' + (mark ? 'nk-btn--pri' : 'nk-btn--soft'),
+          disabled: !mark, onClick: sayBreak,
+        }, 'Здесь перелом'),
+        React.createElement('button', {
+          className: 'nk-btn nk-btn--soft', onClick: sayClean,
+        }, 'Кость целая')),
+
+      !answered && !mark && React.createElement('div', { className: 'xrhint' },
+        'Нажми на снимок, чтобы поставить метку')),
+
+    React.createElement('div', { className: 'xrfoot' },
+      answered
+        ? React.createElement('button', {
+            className: 'nk-btn nk-btn--ok', style: { width: '100%' }, onClick: nextCase,
+          }, idx + 1 < XR_CASES.length ? 'Следующий снимок' : 'Смена закончена')
+        : React.createElement('div', { className: 'xrhint', style: { margin: 0 } },
+            'Снимок ' + (idx + 1) + ' из 4')));
+}
+
+function App() {
+  return React.createElement('div', { className: 'xrroot' },
+    React.createElement(LevelXray, {
+      onWin: () => {
+        if (window.nooka) window.nooka.missionWin('in6', 110, { nextLabel: 'К игре →' });
+        setTimeout(() => { window.location.href = 'game.html?g=inside'; }, 400);
+      },
+      onHome: () => { window.location.href = 'game.html?g=inside'; },
+    }));
+}
+ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(App, null));
+</script>
+</body>
+</html>
