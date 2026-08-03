@@ -1,0 +1,526 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1">
+<meta name="theme-color" content="#0E0719">
+<title>Метеоролог — Nooka</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&family=Unbounded:wght@700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="nooka-ui.css">
+<style>
+/* ============ МЕТЕОРОЛОГ: проценты и решение ============ */
+.wtroot{height:100vh;overflow:hidden;max-width:480px;margin:0 auto;position:relative;}
+.wt{height:100%;display:flex;flex-direction:column;overflow:hidden;
+  background:linear-gradient(180deg,#12203A 0%,#0C1526 62%,#080D18 100%);}
+.wtbody{flex:1;overflow-y:auto;padding:0 0 6px;-webkit-overflow-scrolling:touch;}
+
+.wtsay{display:flex;gap:10px;align-items:flex-start;margin:2px 14px 0;padding:13px 15px;
+  border-radius:20px;background:rgba(255,255,255,.055);
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.09);animation:wtIn .3s ease-out both;}
+.wtsay i{flex-shrink:0;line-height:0;}
+.wtsay span{font-weight:700;font-size:13.5px;line-height:1.45;color:#D8E6F7;}
+.wtsay--ok{background:rgba(78,217,155,.13);box-shadow:inset 0 0 0 1px rgba(78,217,155,.3);}
+.wtsay--wet{background:rgba(90,150,255,.14);box-shadow:inset 0 0 0 1px rgba(90,150,255,.34);}
+
+/* какой сегодня день и что задумано */
+.wtday{margin:11px 14px 0;padding:11px 14px;border-radius:18px;display:flex;align-items:center;gap:11px;
+  background:rgba(255,255,255,.05);box-shadow:inset 0 0 0 1px rgba(255,255,255,.09);}
+.wtday b{display:block;font-family:var(--nk-brand),var(--nk-body);font-weight:700;
+  font-size:15px;color:#EAF3FF;}
+.wtday span{display:block;margin-top:2px;font-weight:700;font-size:12px;color:#7E93AE;}
+.wtday em{margin-left:auto;flex-shrink:0;font-style:normal;font-weight:900;font-size:11px;
+  color:#7E93AE;letter-spacing:.05em;text-transform:uppercase;text-align:right;}
+
+.wtscene{margin:11px 14px 0;border-radius:20px;overflow:hidden;
+  background:#0A1220;box-shadow:inset 0 0 0 1.5px rgba(126,190,255,.14);}
+.wtscene svg{width:100%;display:block;}
+
+.wthow{margin:10px 14px 0;padding:10px 14px;border-radius:15px;text-align:center;
+  font-weight:800;font-size:12.5px;line-height:1.4;color:#9FD4FF;
+  background:rgba(126,190,255,.11);box-shadow:inset 0 0 0 1px rgba(126,190,255,.26);}
+
+/* прогноз */
+.wtfc{margin:12px 14px 0;padding:15px 16px;border-radius:20px;text-align:center;
+  background:rgba(255,255,255,.045);box-shadow:inset 0 0 0 1px rgba(255,255,255,.08);}
+.wtfc__t{font-weight:900;font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;
+  color:#7E93AE;margin-bottom:8px;}
+.wtfc__n{font-family:var(--nk-brand),var(--nk-body);font-weight:700;font-size:38px;
+  line-height:1;color:#7FC8FF;}
+.wtfc__s{margin-top:7px;font-weight:800;font-size:12px;color:#8FA5C0;}
+.wtbarline{margin-top:11px;height:9px;border-radius:5px;overflow:hidden;
+  background:rgba(255,255,255,.07);}
+.wtbarline i{display:block;height:100%;border-radius:5px;
+  background:linear-gradient(90deg,#4E9BE0,#7FC8FF);transition:width .35s;}
+
+.wtacts{margin:12px 14px 0;display:flex;gap:8px;}
+.wtacts button{flex:1;}
+.wthint{margin:9px 14px 0;text-align:center;font-weight:800;font-size:11.5px;color:#6B7F97;}
+
+.wtfoot{flex-shrink:0;padding:10px 14px calc(14px + env(safe-area-inset-bottom));
+  background:linear-gradient(180deg,rgba(8,13,24,0),#080D18 42%);}
+
+/* разбор: сбывались ли проценты */
+.wtcal{margin:12px 14px 0;padding:14px 16px;border-radius:20px;
+  background:rgba(255,255,255,.045);box-shadow:inset 0 0 0 1px rgba(255,255,255,.08);}
+.wtcal__t{font-weight:900;font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;
+  color:#7E93AE;margin-bottom:12px;}
+.wtrow{display:flex;align-items:center;gap:9px;margin-bottom:9px;}
+.wtrow__l{width:58px;flex-shrink:0;font-weight:900;font-size:11.5px;color:#C9DCF0;}
+.wtrow__b{flex:1;height:19px;border-radius:6px;position:relative;
+  background:rgba(255,255,255,.07);overflow:hidden;}
+.wtrow__b i{display:block;height:100%;background:linear-gradient(90deg,#4E9BE0,#7FC8FF);}
+.wtrow__v{width:52px;flex-shrink:0;text-align:right;font-weight:900;font-size:11.5px;color:#7FC8FF;}
+
+/* финал */
+.wtdone{display:flex;flex-direction:column;align-items:center;padding-top:6px;}
+.wtlaw{margin:14px 18px 0;text-align:center;}
+.wtlaw b{display:block;font-family:var(--nk-brand),var(--nk-body);font-weight:700;
+  font-size:17px;line-height:1.3;color:#EAF3FF;}
+.wtlaw span{display:block;margin-top:8px;font-weight:700;font-size:13.5px;color:#93A8C2;line-height:1.45;}
+.wtcard{width:240px;animation:wtPop .5s cubic-bezier(.2,.8,.3,1) both;}
+
+/* проверка связи */
+.wtq{margin:12px 14px 0;padding:14px 16px;border-radius:20px;
+  background:rgba(255,255,255,.045);box-shadow:inset 0 0 0 1px rgba(255,255,255,.08);}
+.wtq__t{font-weight:900;font-size:14px;color:#EAF3FF;line-height:1.35;margin-bottom:10px;}
+.wtq button{display:block;width:100%;margin-bottom:7px;padding:13px 14px;border:none;
+  border-radius:15px;cursor:pointer;text-align:left;font-family:inherit;font-weight:700;
+  font-size:13.5px;color:#D8E6F7;background:rgba(255,255,255,.05);
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.09);}
+.wtq button.on--ok{background:rgba(78,217,155,.16);box-shadow:inset 0 0 0 1.5px rgba(78,217,155,.5);color:#C4F4E0;}
+.wtq button.on--bad{background:rgba(255,107,107,.14);box-shadow:inset 0 0 0 1.5px rgba(255,107,107,.45);color:#FFD6CF;}
+
+@keyframes wtIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
+@keyframes wtPop{0%{opacity:0;transform:scale(.72);}68%{transform:scale(1.05);}100%{opacity:1;transform:scale(1);}}
+@keyframes wtDrop{from{transform:translateY(-14px);opacity:0;}60%{opacity:.9;}to{transform:translateY(52px);opacity:0;}}
+.wtrain line{animation:wtDrop 1s linear infinite;}
+@media (prefers-reduced-motion: reduce){.wt *{animation:none !important;}}
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script src="react-bundle.js"></script>
+<script src="nooka-core.js"></script>
+<script src="nooka-levels.js"></script>
+<script src="nooka-access.js"></script>
+<script src="nooka-gallery.js"></script>
+<script src="nooka-ui.js"></script>
+<script>
+/* ============================================================
+   МЕТЕОРОЛОГ — уровень 8 игры «Что у ИИ внутри».
+
+   Ребёнок дежурит синоптиком неделю. Спрашивает станции,
+   получает от Нейро процент и решает: брать зонт или нет.
+
+   «Ага» уровня двойное:
+   1. Проценты — не обещание. Восемьдесят значит: из десяти
+      таких дней в восьми был дождь, в двух не было.
+   2. Решение оценивают по тому, что было известно, а не по тому,
+      чем кончилось. Взять зонт при 80% — правильно, даже если
+      день оказался сухим.
+
+   Модель честная и калиброванная. У дня есть исход, станции дают
+   сигнал с точностью 65%, прогноз считается по Байесу. Замер
+   на 200 000 дней (_weather-model-check.js): когда прогноз
+   попадал в 60–80%, дождь шёл в 69% случаев. Поэтому экран
+   «сбывались ли мои проценты» не нарисован, а посчитан на месте.
+
+   Число станций ограничено на всю неделю: чем меньше спросил,
+   тем ближе прогноз к 50 на 50. Это делает данные ресурсом,
+   а не декорацией.
+   ============================================================ */
+
+const WT_ACC = 0.65;                       // как часто станция угадывает погоду
+const WT_L = WT_ACC / (1 - WT_ACC);
+const WT_STATIONS = 5;
+const WT_BUDGET = 15;                      // вызовов на всю неделю
+
+const WT_DAYS = [
+  { d: 'Понедельник', plan: 'идти в школу' },
+  { d: 'Вторник',     plan: 'футбол во дворе' },
+  { d: 'Среда',       plan: 'ехать к бабушке' },
+  { d: 'Четверг',     plan: 'кататься на велосипеде' },
+  { d: 'Пятница',     plan: 'идти в кино' },
+  { d: 'Суббота',     plan: 'пикник у реки' },
+];
+
+function wtRollDays() {
+  return WT_DAYS.map(x => {
+    const rain = Math.random() < 0.5;
+    const sig = [];
+    for (let i = 0; i < WT_STATIONS; i++) {
+      sig.push(Math.random() < (rain ? WT_ACC : 1 - WT_ACC));
+    }
+    return { d: x.d, plan: x.plan, rain: rain, sig: sig };
+  });
+}
+
+/* «1 раз», «2 раза», «5 раз» */
+function wtTimes(n) {
+  const t = n % 100, o = n % 10;
+  if (t > 10 && t < 20) return n + ' раз';
+  if (o === 1) return n + ' раз';
+  if (o >= 2 && o <= 4) return n + ' раза';
+  return n + ' раз';
+}
+
+/* прогноз по опрошенным станциям: шансы 50 на 50, дальше по сигналам */
+function wtForecast(sig, opened) {
+  let odds = 1;
+  opened.forEach(i => { odds *= sig[i] ? WT_L : 1 / WT_L; });
+  return odds / (1 + odds);
+}
+
+/* архив Нейро: сбывались ли его проценты раньше.
+   считается той же моделью — поэтому это не украшение, а проверка */
+const WT_BINS = [[0, 20], [20, 40], [40, 60], [60, 80], [80, 101]];
+const WT_ARCHIVE = (() => {
+  const hit = WT_BINS.map(() => ({ n: 0, rain: 0 }));
+  for (let i = 0; i < 4000; i++) {
+    const rain = Math.random() < 0.5;
+    const k = 1 + Math.floor(Math.random() * WT_STATIONS);
+    let odds = 1;
+    for (let j = 0; j < k; j++) {
+      odds *= (Math.random() < (rain ? WT_ACC : 1 - WT_ACC)) ? WT_L : 1 / WT_L;
+    }
+    const pc = odds / (1 + odds) * 100;
+    for (let b = 0; b < WT_BINS.length; b++) {
+      if (pc >= WT_BINS[b][0] && pc < WT_BINS[b][1]) { hit[b].n++; if (rain) hit[b].rain++; break; }
+    }
+  }
+  return hit;
+})();
+
+/* ── сцена: станции в поле, небо над ними ─────────────────── */
+function WtScene({ sig, opened, show, rain }) {
+  const W = 340, H = 178;
+  const sky = show ? (rain ? '#141E33' : '#31578A') : '#1B2A45';
+  const marks = [];
+
+  for (let i = 0; i < WT_STATIONS; i++) {
+    const x = 34 + i * 68, base = 132;
+    const on = opened.indexOf(i) > -1;
+    marks.push(React.createElement('g', { key: i },
+      /* мачта */
+      React.createElement('line', { x1: x, y1: base, x2: x, y2: base - 30,
+        stroke: '#4A5F7E', strokeWidth: 3, strokeLinecap: 'round' }),
+      React.createElement('circle', { cx: x, cy: base + 4, r: 4, fill: '#3B4E69' }),
+      /* датчик */
+      React.createElement('rect', { x: x - 17, y: base - 62, width: 34, height: 34, rx: 11,
+        fill: on ? (sig[i] ? '#24405F' : '#3E3A22') : '#1B2740',
+        stroke: on ? (sig[i] ? '#7FC8FF' : '#FFD84D') : 'rgba(255,255,255,.16)',
+        strokeWidth: 2 }),
+      on
+        ? (sig[i]
+            /* станция за дождь — тучка */
+            ? React.createElement('path', {
+                d: 'M' + (x - 9) + ',' + (base - 42) + ' a6,6 0 0 1 5,-9 a7,7 0 0 1 13,2 a5,5 0 0 1 -1,10 z',
+                fill: '#7FC8FF' })
+            /* станция за ясно — солнце */
+            : React.createElement('g', null,
+                React.createElement('circle', { cx: x, cy: base - 45, r: 6.5, fill: '#FFD84D' }),
+                [0, 45, 90, 135, 180, 225, 270, 315].map(a => {
+                  const r = a * Math.PI / 180;
+                  return React.createElement('line', {
+                    key: a, x1: x + Math.cos(r) * 9, y1: base - 45 + Math.sin(r) * 9,
+                    x2: x + Math.cos(r) * 12, y2: base - 45 + Math.sin(r) * 12,
+                    stroke: '#FFD84D', strokeWidth: 1.8, strokeLinecap: 'round' });
+                })))
+        : React.createElement('text', { x: x, y: base - 39, textAnchor: 'middle',
+            fill: '#5C6E8A', style: { font: '900 15px Nunito,sans-serif' } }, '?')));
+  }
+
+  return React.createElement('svg', { viewBox: '0 0 ' + W + ' ' + H },
+    React.createElement('rect', { x: 0, y: 0, width: W, height: H, fill: sky }),
+
+    /* что случилось в этот день */
+    show && rain && React.createElement('g', { className: 'wtrain' },
+      Array.from({ length: 22 }, (_, i) => React.createElement('line', {
+        key: i, x1: 8 + i * 15.5, y1: 6, x2: 4 + i * 15.5, y2: 20,
+        stroke: '#8FD0FF', strokeWidth: 2, strokeLinecap: 'round',
+        style: { animationDelay: (i % 7) * .14 + 's' } }))),
+    show && !rain && React.createElement('g', null,
+      React.createElement('circle', { cx: 292, cy: 34, r: 19, fill: '#FFD84D', opacity: .95 }),
+      React.createElement('circle', { cx: 292, cy: 34, r: 29, fill: '#FFD84D', opacity: .16 })),
+
+    /* земля */
+    React.createElement('path', { d: 'M0 140 Q80 128 170 138 Q260 148 340 134 L340 178 L0 178 Z',
+      fill: show && !rain ? '#2E5140' : '#22384E' }),
+    marks);
+}
+
+/* карточка недели в коллекцию */
+function WtCard({ log }) {
+  return React.createElement('svg', { viewBox: '0 0 220 250', className: 'wtcard' },
+    React.createElement('rect', { x: 8, y: 8, width: 204, height: 234, rx: 20,
+      fill: '#16283F', stroke: '#7FC8FF', strokeWidth: 2 }),
+    React.createElement('text', { x: 110, y: 36, textAnchor: 'middle', fill: '#7FC8FF',
+      style: { font: '900 10px Nunito,sans-serif', letterSpacing: '1.4px' } }, 'МОЯ НЕДЕЛЯ'),
+    log.map((e, i) => {
+      const y = 58 + i * 27;
+      return React.createElement('g', { key: i },
+        React.createElement('text', { x: 26, y: y + 4, fill: '#C9DCF0',
+          style: { font: '900 11px Nunito,sans-serif' } }, e.d.slice(0, 2).toUpperCase()),
+        React.createElement('text', { x: 62, y: y + 4, fill: '#7FC8FF',
+          style: { font: '900 12px Nunito,sans-serif' } }, Math.round(e.p * 100) + '%'),
+        /* что было на самом деле */
+        e.rain
+          ? React.createElement('path', {
+              d: 'M108,' + (y - 4) + ' a6,6 0 0 1 5,-9 a7,7 0 0 1 13,2 a5,5 0 0 1 -1,10 z',
+              fill: '#7FC8FF' })
+          : React.createElement('circle', { cx: 117, cy: y - 2, r: 7, fill: '#FFD84D' }),
+        React.createElement('text', { x: 140, y: y + 4, fill: e.good ? '#4ED99B' : '#8FA5C0',
+          style: { font: '900 11px Nunito,sans-serif' } }, e.pick ? 'с зонтом' : 'без зонта'));
+    }),
+    React.createElement('text', { x: 110, y: 228, textAnchor: 'middle', fill: '#8FA5C0',
+      style: { font: '900 11px Nunito,sans-serif' } },
+      'сухим остался ' + wtTimes(log.filter(e => e.good).length) + ' из 6'));
+}
+
+function LevelWeather({ onWin, onHome }) {
+  const q = new URLSearchParams(window.location.search);
+  const [phase, setPhase] = useState(() => {
+    const p = q.get('p');
+    return ['play', 'review', 'quiz', 'done'].indexOf(p) > -1 ? p : 'intro';
+  });
+  const [days] = useState(wtRollDays);
+  const [idx, setIdx] = useState(0);
+  const [opened, setOpened] = useState([]);
+  const [budget, setBudget] = useState(WT_BUDGET);
+  const [pick, setPick] = useState(null);
+  const [log, setLog] = useState([]);
+  const [saved, setSaved] = useState(false);
+  const [q1, setQ1] = useState(null);
+  const [q2, setQ2] = useState(null);
+
+  const cur = days[idx] || days[0];
+  const p = wtForecast(cur.sig, opened);
+  const pc = Math.round(p * 100);
+
+  const askStation = i => {
+    if (budget <= 0 || opened.indexOf(i) > -1 || pick !== null) return;
+    setOpened(opened.concat([i]));
+    setBudget(budget - 1);
+  };
+
+  const decide = umbrella => {
+    /* сухим ребёнок остаётся, если угадал с зонтом или день выдался ясным */
+    const good = umbrella ? cur.rain : !cur.rain;
+    setPick(umbrella);
+    setLog(log.concat([{ d: cur.d, p: p, pick: umbrella, rain: cur.rain, good: good, k: opened.length }]));
+  };
+
+  const nextDay = () => {
+    if (idx + 1 < days.length) { setIdx(idx + 1); setOpened([]); setPick(null); }
+    else setPhase('review');
+  };
+
+  /* ── финал ── */
+  if (phase === 'done') {
+    const shown = log.length ? log : days.map(d => ({ d: d.d, p: .5, pick: true, rain: d.rain, good: d.rain }));
+    return React.createElement('div', { className: 'wt' },
+      React.createElement(TopBar, { level: 8, title: 'Метеоролог', onHome, step: 6, total: 1 }),
+      React.createElement('div', { className: 'wtbody wtdone' },
+        React.createElement(WtCard, { log: shown }),
+        React.createElement('div', { className: 'wtlaw' },
+          React.createElement('b', null, 'Проценты — это не обещание'),
+          React.createElement('span', null,
+            'Восемьдесят процентов значит: из десяти таких дней в восьми был дождь, а в двух не было. ' +
+            'Если прогноз не сбылся, он не был неправильным — просто выпал тот самый редкий день. ' +
+            'И зонт в такое утро ты взял верно: решение оценивают по тому, что было известно, ' +
+            'а не по тому, чем всё кончилось.'))),
+      React.createElement('div', { className: 'wtfoot' },
+        React.createElement('div', { style: { display: 'flex', gap: 8 } },
+          React.createElement('button', {
+            className: 'nk-btn nk-btn--soft', style: { flex: 1 }, disabled: saved,
+            onClick: () => {
+              const svg = document.querySelector('.wtcard');
+              if (svg && window.nookaGallery) {
+                window.nookaGallery.add({
+                  kind: 'forecast', game: 'Метеоролог', title: 'Моя неделя прогнозов',
+                  note: 'Понял, что 80% — это не обещание, и что решение судят по тому, что было известно',
+                  svg: svg.outerHTML,
+                });
+              }
+              setSaved(true);
+            },
+          }, saved ? 'Неделя в коллекции' : 'Забрать прогноз'),
+          React.createElement('button', {
+            className: 'nk-btn nk-btn--ok', style: { flex: 1 }, onClick: onWin,
+          }, 'Готово'))));
+  }
+
+  /* ── проверка связи ── */
+  if (phase === 'quiz') {
+    const o1 = [
+      { t: 'Нет. Из десяти таких дней в двух дождя и не бывает', ok: true },
+      { t: 'Да, раз дождя не было — прогноз неверный', ok: false },
+      { t: 'Да, ему надо было сказать сто процентов', ok: false },
+    ];
+    const o2 = [
+      { t: 'Данных стало больше, и он стал увереннее', ok: true },
+      { t: 'Погода за это время испортилась', ok: false },
+      { t: 'Он передумал и решил напугать', ok: false },
+    ];
+    const both = q1 !== null && o1[q1].ok && q2 !== null && o2[q2].ok;
+    return React.createElement('div', { className: 'wt' },
+      React.createElement(TopBar, { level: 8, title: 'Метеоролог', onHome, step: 6, total: 1 }),
+      React.createElement('div', { className: 'wtbody' },
+        React.createElement('div', { className: 'wtq' },
+          React.createElement('div', { className: 'wtq__t' }, 'Нейро сказал «дождь 80%», а день вышел сухой. Он ошибся?'),
+          o1.map((o, i) => React.createElement('button', {
+            key: i, className: q1 === i ? (o.ok ? 'on--ok' : 'on--bad') : '',
+            onClick: () => setQ1(i),
+          }, o.t))),
+        q1 !== null && React.createElement('div', { className: 'wtsay ' + (o1[q1].ok ? 'wtsay--ok' : ''), style: { marginTop: 10 } },
+          React.createElement('i', null, NKM(o1[q1].ok ? 'win' : 'think', 30)),
+          React.createElement('span', null, o1[q1].ok
+            ? 'Верно. Я и не обещал дождь. Я сказал, насколько он вероятен, — и два дня из десяти обязаны быть сухими, иначе восемьдесят было бы враньём.'
+            : 'Нет. Сто процентов я сказать не могу почти никогда. Восемьдесят — это честно: в двух днях из десяти дождя не будет, и это не ошибка.')),
+
+        React.createElement('div', { className: 'wtq' },
+          React.createElement('div', { className: 'wtq__t' }, 'Ты спросил одну станцию — вышло 65%. Спросил ещё три — стало 92%. Почему?'),
+          o2.map((o, i) => React.createElement('button', {
+            key: i, className: q2 === i ? (o.ok ? 'on--ok' : 'on--bad') : '',
+            onClick: () => setQ2(i),
+          }, o.t))),
+        q2 !== null && React.createElement('div', { className: 'wtsay ' + (o2[q2].ok ? 'wtsay--ok' : ''), style: { marginTop: 10 } },
+          React.createElement('i', null, NKM(o2[q2].ok ? 'win' : 'think', 30)),
+          React.createElement('span', null, o2[q2].ok
+            ? 'Да. Одна станция может и напутать, а когда четыре говорят одно и то же — сомнений меньше. Погода при этом не менялась, менялось только то, сколько я знаю.'
+            : 'Не угадал. Погода не менялась — менялось то, сколько я про неё знаю. Одна станция ошибается чаще, чем четыре сразу.'))),
+      React.createElement('div', { className: 'wtfoot' },
+        React.createElement('button', {
+          className: 'nk-btn nk-btn--pri', style: { width: '100%' }, disabled: !both,
+          onClick: () => setPhase('done'),
+        }, both ? 'Дальше' : 'Ответь на оба')));
+  }
+
+  /* ── разбор недели: сбывались ли проценты ── */
+  if (phase === 'review') {
+    const miss = log.filter(e => (e.p > .7 && !e.rain) || (e.p < .3 && e.rain));
+    return React.createElement('div', { className: 'wt' },
+      React.createElement(TopBar, { level: 8, title: 'Метеоролог', onHome, step: 6, total: 1 }),
+      React.createElement('div', { className: 'wtbody' },
+        React.createElement('div', { className: 'wtsay' },
+          React.createElement('i', null, NKM('think', 30)),
+          React.createElement('span', null, miss.length
+            ? 'За неделю я ' + wtTimes(miss.length) + ' назвал большой процент, а вышло наоборот. Значит ли это, что мне нельзя верить? Смотри мой архив.'
+            : 'Неделя удалась. Но чтобы понять, можно ли мне верить, одной недели мало — смотри мой архив.')),
+        React.createElement('div', { className: 'wtcal' },
+          React.createElement('div', { className: 'wtcal__t' },
+            'Четыре тысячи прошлых дней · что обещал → как вышло'),
+          WT_BINS.map(([a, z], i) => {
+            const h = WT_ARCHIVE[i];
+            const real = h.n ? h.rain / h.n : 0;
+            return React.createElement('div', { key: i, className: 'wtrow' },
+              React.createElement('div', { className: 'wtrow__l' }, a + '–' + Math.min(z, 100) + '%'),
+              React.createElement('div', { className: 'wtrow__b' },
+                React.createElement('i', { style: { width: (real * 100) + '%' } })),
+              React.createElement('div', { className: 'wtrow__v' }, Math.round(real * 100) + '%'));
+          })),
+        React.createElement('div', { className: 'wthow' },
+          'Слева — что я обещал. Справа — как часто дождь правда шёл'),
+        React.createElement('div', { className: 'wtsay', style: { marginTop: 11 } },
+          React.createElement('i', null, NKM('win', 30)),
+          React.createElement('span', null,
+            'Сходится. Когда я говорю «около 70», дождь идёт примерно в семи днях из десяти. ' +
+            'Значит проценты честные — просто они не про один день, а про то, как часто.'))),
+      React.createElement('div', { className: 'wtfoot' },
+        React.createElement('button', {
+          className: 'nk-btn nk-btn--pri', style: { width: '100%' },
+          onClick: () => setPhase('quiz'),
+        }, 'Понятно')));
+  }
+
+  /* ── неделя ── */
+  const done = pick !== null;
+  const result = !done ? '' :
+    pick && cur.rain ? 'Сухой. Зонт пригодился.' :
+    pick && !cur.rain ? 'Дождя не было — зонт проездил зря.' :
+    !pick && !cur.rain ? 'Ясно весь день. Хорошо, что не таскал.' :
+    'Промок. Дождь всё-таки пошёл.';
+
+  return React.createElement('div', { className: 'wt' },
+    React.createElement(TopBar, { level: 8, title: 'Метеоролог', onHome, step: idx, total: 6 }),
+
+    phase === 'intro' && React.createElement(IntroModal, {
+      emoji: NKM('hello', 88),
+      title: 'Метеоролог',
+      law: 'Неделя дежурства.\nКаждое утро решаешь: брать зонт или нет.',
+      tip: 'Спрашивай станции — я посчитаю шанс дождя. Но вызовов на всю неделю пятнадцать, трать с умом.',
+      onStart: () => setPhase('play'),
+    }),
+
+    React.createElement('div', { className: 'wtbody' },
+      React.createElement('div', { className: 'wtsay' + (done ? (log[log.length - 1].good ? ' wtsay--ok' : ' wtsay--wet') : '') },
+        React.createElement('i', null, NKM(done ? (log[log.length - 1].good ? 'win' : 'think') : 'hello', 30)),
+        React.createElement('span', null, done ? result
+          : opened.length ? 'Спроси ещё станцию или решай.'
+          : 'Нажми на станцию, чтобы её опросить.')),
+
+      React.createElement('div', { className: 'wtday' },
+        React.createElement('div', null,
+          React.createElement('b', null, cur.d),
+          React.createElement('span', null, cur.plan)),
+        React.createElement('em', null, 'вызовов' + ' ' + budget)),
+
+      React.createElement('div', { className: 'wtscene' },
+        React.createElement(WtScene, { sig: cur.sig, opened: opened, show: done, rain: cur.rain })),
+
+      /* по станциям кликают прямо на сцене — дублирую кнопками,
+         иначе на маленьком экране в мачту трудно попасть */
+      !done && React.createElement('div', { className: 'wtacts' },
+        Array.from({ length: WT_STATIONS }, (_, i) => React.createElement('button', {
+          key: i, className: 'nk-btn nk-btn--soft',
+          style: { padding: '11px 0', opacity: opened.indexOf(i) > -1 ? .4 : 1 },
+          disabled: opened.indexOf(i) > -1 || budget <= 0,
+          onClick: () => askStation(i),
+        }, i + 1))),
+
+      React.createElement('div', { className: 'wtfc' },
+        React.createElement('div', { className: 'wtfc__t' }, 'Шанс дождя'),
+        React.createElement('div', { className: 'wtfc__n' }, pc + '%'),
+        React.createElement('div', { className: 'wtfc__s' },
+          opened.length === 0 ? 'ни одной станции — знаю не больше твоего'
+            : 'опрошено станций: ' + opened.length + ' из ' + WT_STATIONS),
+        React.createElement('div', { className: 'wtbarline' },
+          React.createElement('i', { style: { width: pc + '%' } }))),
+
+      !done && React.createElement('div', { className: 'wtacts' },
+        React.createElement('button', {
+          className: 'nk-btn nk-btn--pri', onClick: () => decide(true),
+        }, 'Взять зонт'),
+        React.createElement('button', {
+          className: 'nk-btn nk-btn--soft', onClick: () => decide(false),
+        }, 'Оставить дома')),
+
+      !done && budget <= 0 && React.createElement('div', { className: 'wthint' },
+        'Вызовы кончились — дальше решаешь сам')),
+
+    React.createElement('div', { className: 'wtfoot' },
+      done
+        ? React.createElement('button', {
+            className: 'nk-btn nk-btn--ok', style: { width: '100%' }, onClick: nextDay,
+          }, idx + 1 < days.length ? 'Следующий день' : 'Неделя закончилась')
+        : React.createElement('div', { className: 'wthint', style: { margin: 0 } },
+            'День ' + (idx + 1) + ' из 6')));
+}
+
+function App() {
+  return React.createElement('div', { className: 'wtroot' },
+    React.createElement(LevelWeather, {
+      onWin: () => {
+        if (window.nooka) window.nooka.missionWin('in8', 110, { nextLabel: 'К игре →' });
+        setTimeout(() => { window.location.href = 'game.html?g=inside'; }, 400);
+      },
+      onHome: () => { window.location.href = 'game.html?g=inside'; },
+    }));
+}
+ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(App, null));
+</script>
+</body>
+</html>
