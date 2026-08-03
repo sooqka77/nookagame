@@ -41,6 +41,11 @@
   box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.08);}
 .nnscene svg{width:100%;display:block;}
 
+/* объяснение сцены одной строкой */
+.nnhow{margin:11px 14px 0;padding:10px 14px;border-radius:15px;text-align:center;
+  font-weight:800;font-size:12.5px;line-height:1.4;color:#CBB8FF;
+  background:rgba(169,139,255,.13);box-shadow:inset 0 0 0 1px rgba(169,139,255,.3);}
+
 /* краны */
 .nntap{margin:12px 14px 0;padding:14px 16px;border-radius:20px;
   background:rgba(255,255,255,.045);box-shadow:inset 0 0 0 1px rgba(255,255,255,.08);}
@@ -212,7 +217,7 @@ function NnScene({ flowE, flowT, level, full, wrong }) {
 
     /* черта «полное ведро» */
     React.createElement('path', { d: 'M102 158 L238 158', stroke: full ? '#FFD84D' : 'rgba(255,216,77,.55)', strokeWidth: 3, strokeDasharray: '7 6' }),
-    React.createElement('text', { x: 246, y: 156, fill: full ? '#FFD84D' : '#8B7BAE', style: { font: '900 10px Nunito,sans-serif' } }, 'ПОЛНОЕ'),
+    React.createElement('text', { x: 244, y: 156, fill: full ? '#FFD84D' : '#8B7BAE', style: { font: '900 9.5px Nunito,sans-serif' } }, 'ХВАТИТ'),
 
     /* что Нейро говорит про того, кто сейчас на сцене */
     React.createElement('g', { transform: 'translate(170,214)' },
@@ -269,11 +274,11 @@ function LevelNeuron({ onWin, onHome }) {
           React.createElement('text', { x: 100, y: 200, textAnchor: 'middle', fill: '#C0B0E0',
             style: { font: '700 10px Nunito,sans-serif' } }, 'все четверо угаданы верно')),
         React.createElement('div', { className: 'nnlaw' },
-          React.createElement('b', null, 'Вот и весь нейрон'),
+          React.createElement('b', null, 'Внутри ИИ нет мышления'),
           React.createElement('span', null,
-            'Он складывает то, что видит, и говорит «да», когда наберётся полное ведро. ' +
-            'Ты решал, какой кран открыть сильнее: уши у котов и собак разные, а хвост у всех похожий. ' +
-            'В настоящем ИИ таких нейронов миллионы, и краны они подкручивают сами.'))),
+            'Нейро не думал и не догадывался. Он сложил две приметы и посмотрел, хватит ли. ' +
+            'Решил, какая примета важнее, ты — и он стал узнавать котов. ' +
+            'В настоящем ИИ таких кусочков миллионы, но каждый делает ровно то же самое.'))),
       React.createElement('div', { className: 'nnfoot' },
         React.createElement('button', {
           className: 'nk-btn nk-btn--ok', style: { width: '100%' }, onClick: onWin,
@@ -283,15 +288,15 @@ function LevelNeuron({ onWin, onHome }) {
   /* ── проверка связи ── */
   if (phase === 'quiz') {
     const opts = [
-      { t: 'Он открыл кран ушей сильнее, чем кран хвоста', ok: true },
-      { t: 'Он посчитал, сколько весит кот', ok: false },
-      { t: 'Он запомнил каждого кота по имени', ok: false },
+      { t: 'Я сделал уши важнее хвоста, а по ушам котов видно', ok: true },
+      { t: 'Нейро подумал и сам догадался', ok: false },
+      { t: 'Нейро запомнил всех котов по именам', ok: false },
     ];
     return React.createElement('div', { className: 'nn' },
       React.createElement(TopBar, { level: 1, title: 'Один нейрон', onHome, step: 1, total: 1 }),
       React.createElement('div', { className: 'nnbody' },
         React.createElement('div', { className: 'nnq' },
-          React.createElement('div', { className: 'nnq__t' }, 'Почему нейрон стал узнавать котов?'),
+          React.createElement('div', { className: 'nnq__t' }, 'Почему Нейро стал узнавать котов?'),
           opts.map((o, i) => React.createElement('button', {
             key: i, className: pick === i ? (o.ok ? 'on--ok' : 'on--bad') : '',
             onClick: () => setPick(i),
@@ -299,8 +304,8 @@ function LevelNeuron({ onWin, onHome }) {
         pick !== null && React.createElement('div', { className: 'nnsay', style: { marginTop: 12 } },
           React.createElement('i', null, NKM(opts[pick].ok ? 'win' : 'think', 30)),
           React.createElement('span', null, opts[pick].ok
-            ? 'Точно. Уши у котов и собак разные, поэтому по ним и видно. Хвост есть у всех — он мало что говорит.'
-            : 'Нет. Нейрон ничего не запоминает и никого не взвешивает. Он только льёт воду из двух кранов и смотрит, наберётся ли полное ведро.'))),
+            ? 'Точно. Уши у котов и собак разные, поэтому по ним и видно. Хвост длинный бывает у всех — он мало что говорит.'
+            : 'Не так. Нейро не думает и никого не запоминает. Он только складывает приметы и смотрит, набралось ли ведро. Важность примет выбрал ты.'))),
       React.createElement('div', { className: 'nnfoot' },
         React.createElement('button', {
           className: 'nk-btn nk-btn--pri', style: { width: '100%' },
@@ -316,8 +321,8 @@ function LevelNeuron({ onWin, onHome }) {
     phase === 'intro' && React.createElement(IntroModal, {
       emoji: NKM('hello', 88),
       title: 'Один нейрон',
-      law: 'Внутри меня нет волшебства.\nЕсть два крана и ведро.\nНабралось полное — я говорю «кот».',
-      tip: 'Открой краны так, чтобы ведро набиралось только на котах.',
+      law: 'Я не вижу зверя целиком.\nЯ вижу только две приметы: уши и хвост.',
+      tip: 'Реши, какая примета важнее, — и я научусь узнавать котов.',
       onStart: () => setPhase('play'),
     }),
 
@@ -325,8 +330,8 @@ function LevelNeuron({ onWin, onHome }) {
       React.createElement('div', { className: 'nnsay' },
         React.createElement('i', null, NKM(solved ? 'win' : 'hello', 30)),
         React.createElement('span', null, solved
-          ? 'Получилось! На котах ведро полное, на собаках нет.'
-          : 'Смотри: у кого уши острые, из крана «уши» льётся много. У кого висячие — почти ничего. Ты решаешь, насколько открыть каждый кран.')),
+          ? 'Получилось! Я узнаю всех четверых: котов по острым ушам, а хвост почти не слушаю.'
+          : 'Уши у котов острые, у собак висячие. А длинный хвост бывает и у кота, и у таксы. Открой посильнее ту примету, по которой кота правда видно.')),
 
       React.createElement('div', { className: 'nnwho' },
         React.createElement(NnFace, { kind: cur.b.kind, size: 46 }),
@@ -339,6 +344,9 @@ function LevelNeuron({ onWin, onHome }) {
             title: r.b.who,
           }, React.createElement(NnFace, { kind: r.b.kind, size: 26 }))))),
 
+      React.createElement('div', { className: 'nnhow' },
+        'Приметы капают в ведро. Набралось до черты — я говорю «кот»'),
+
       React.createElement('div', { className: 'nnscene' },
         React.createElement(NnScene, {
           flowE: cur.b.ears * kE, flowT: cur.b.tail * kT,
@@ -347,7 +355,7 @@ function LevelNeuron({ onWin, onHome }) {
 
       React.createElement('div', { className: 'nntap' },
         React.createElement('div', { className: 'nntap__h' },
-          React.createElement('b', null, 'Кран «уши»'),
+          React.createElement('b', null, 'Насколько важны уши'),
           React.createElement('em', null, NN_TAPS[tapE].t)),
         React.createElement('div', { className: 'nnsteps' },
           NN_TAPS.map((t, i) => React.createElement('button', {
@@ -356,7 +364,7 @@ function LevelNeuron({ onWin, onHome }) {
 
       React.createElement('div', { className: 'nntap' },
         React.createElement('div', { className: 'nntap__h' },
-          React.createElement('b', null, 'Кран «хвост»'),
+          React.createElement('b', null, 'Насколько важен хвост'),
           React.createElement('em', null, NN_TAPS[tapT].t)),
         React.createElement('div', { className: 'nnsteps' },
           NN_TAPS.map((t, i) => React.createElement('button', {
