@@ -200,11 +200,17 @@ const CO_EXTRA = {
   }
 };
 
+/* после «с» нужен творительный падеж: было «тост с яйцо» */
+const CO_WITH = {
+  egg: 'яйцом', fish: 'рыбой', meat: 'курицей', beans: 'фасолью',
+  tomato: 'томатами', greens: 'салатом', mush: 'грибами', pepper: 'перцем',
+};
+
 /* имя блюда собирается из того, что выбрал ребёнок */
 function coName(v) {
   const b = CO_BASE[v.base].label;
-  const p = v.prot !== 'none' ? CO_PROT[v.prot].label.toLowerCase() : null;
-  const g = v.veg !== 'none' ? CO_VEG[v.veg].label.toLowerCase() : null;
+  const p = v.prot !== 'none' ? (CO_WITH[v.prot] || CO_PROT[v.prot].label.toLowerCase()) : null;
+  const g = v.veg !== 'none' ? (CO_WITH[v.veg] || CO_VEG[v.veg].label.toLowerCase()) : null;
   const e = v.extra === 'cheese' ? 'под сыром' : v.extra === 'herbs' ? 'с зеленью' : v.extra === 'spicy' ? 'по-острому' : null;
   let n = b;
   if (p && g) n += ' с ' + p + ' и ' + g;else if (p) n += ' с ' + p;else if (g) n += ' с ' + g;
