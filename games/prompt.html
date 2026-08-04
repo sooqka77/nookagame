@@ -2596,7 +2596,7 @@ const P3_FIXES = [{
   name: 'Ещё 5 клоунов',
   e: '🤡',
   good: false,
-  oops: 'Клиент боится клоунов!!'
+  oops: 'Клиент боится клоунов'
 }, {
   id: 'gray',
   name: 'Сделай серым',
@@ -2608,30 +2608,110 @@ function P3Poster({
   applied
 }) {
   const has = id => applied.includes(id);
-  return /*#__PURE__*/React.createElement("div", {
+  const gray = has('gray'), bright = has('bright');
+  const E = React.createElement;
+  /* Постер был строкой эмодзи. Механика та же, рисунок настоящий:
+     иначе результат работы ребёнка выглядел как набор смайликов. */
+  const ink = gray ? '#6E6A78' : '#2D1B45';
+  const star = (x, y, r, c) => E('path', { key: 'st' + x + y,
+    d: 'M' + x + ',' + (y - r) + 'L' + (x + r * .28) + ',' + (y - r * .28) +
+       'L' + (x + r) + ',' + y + 'L' + (x + r * .28) + ',' + (y + r * .28) +
+       'L' + x + ',' + (y + r) + 'L' + (x - r * .28) + ',' + (y + r * .28) +
+       'L' + (x - r) + ',' + y + 'L' + (x - r * .28) + ',' + (y - r * .28) + 'Z',
+    fill: c });
+
+  const clown = (x, y, k) => E('g', { key: 'cl' + k, transform: 'translate(' + x + ',' + y + ')' },
+    E('path', { d: 'M-17,-4 a17,15 0 0 1 -4,-14 a9,9 0 0 1 9,4 z', fill: gray ? '#8A8592' : '#E4553F' }),
+    E('path', { d: 'M17,-4 a17,15 0 0 0 4,-14 a9,9 0 0 0 -9,4 z', fill: gray ? '#8A8592' : '#E4553F' }),
+    E('circle', { cy: 0, r: 15, fill: gray ? '#C9C5D0' : '#FFF1E4' }),
+    E('circle', { cx: -5, cy: -3, r: 2, fill: '#3A2E4E' }),
+    E('circle', { cx: 5, cy: -3, r: 2, fill: '#3A2E4E' }),
+    E('circle', { cx: 0, cy: 3, r: 4, fill: gray ? '#8A8592' : '#E4553F' }),
+    E('path', { d: 'M-7,8 a7,5 0 0 0 14,0', fill: 'none', stroke: '#3A2E4E', strokeWidth: 1.6, strokeLinecap: 'round' }));
+
+  const clowns = [];
+  if (!has('noclown')) clowns.push(clown(44, 118, 0));
+  if (has('moreclown')) [80, 116, 152, 188, 224].forEach((x, i) => clowns.push(clown(x, 118, i + 1)));
+
+  return E('div', {
     style: {
-      width: '100%',
-      borderRadius: 18,
-      padding: '18px 10px',
-      textAlign: 'center',
-      background: has('gray') ? 'linear-gradient(160deg,#D6D3DC,#B8B4C2)' : has('bright') ? 'linear-gradient(160deg,#FFE49E,#FF9AC2)' : 'linear-gradient(160deg,#C9C2E8,#A79ED1)',
+      width: '100%', borderRadius: 18, overflow: 'hidden',
+      background: gray ? 'linear-gradient(160deg,#D6D3DC,#B8B4C2)'
+        : bright ? 'linear-gradient(160deg,#FFE49E,#FF9AC2)'
+        : 'linear-gradient(160deg,#C9C2E8,#A79ED1)',
       transition: 'background .5s',
       boxShadow: 'inset 0 2px 8px rgba(45,27,69,.15)'
     }
-  }, /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 15,
-      fontWeight: 800,
-      fontFamily: 'var(--ak-display)',
-      color: '#2D1B45',
-      marginBottom: 6
-    }
-  }, "ДЕНЬ РОЖДЕНИЯ! 🎂"), /*#__PURE__*/React.createElement("div", {
-    style: {
-      fontSize: 34,
-      lineHeight: 1.35
-    }
-  }, "🪐🎈", has('rocket') ? '🚀' : '', "🎂", has('rain') ? '🌧️' : '', "✨", /*#__PURE__*/React.createElement("br", null), !has('noclown') ? '🤡' : '', has('moreclown') ? '🤡🤡🤡🤡🤡' : '', "🧑‍🚀👽🎁"));
+  }, E('svg', { viewBox: '0 0 300 164', style: { width: '100%', display: 'block' } },
+    E('text', { x: 150, y: 22, textAnchor: 'middle', fill: ink,
+      style: { font: "800 15px 'Unbounded', Nunito, sans-serif" } }, 'ДЕНЬ РОЖДЕНИЯ'),
+
+    /* планета с кольцом */
+    E('g', null,
+      E('circle', { cx: 40, cy: 62, r: 15, fill: gray ? '#9B96A6' : '#C98BE0' }),
+      E('ellipse', { cx: 40, cy: 62, rx: 24, ry: 7, fill: 'none',
+        stroke: gray ? '#8A8592' : '#F0C46B', strokeWidth: 3, transform: 'rotate(-18 40 62)' })),
+
+    /* воздушный шарик */
+    E('g', null,
+      E('ellipse', { cx: 88, cy: 56, rx: 13, ry: 16, fill: gray ? '#A5A0AE' : '#E8563F' }),
+      E('path', { d: 'M88,72 q5,12 -3,20', fill: 'none', stroke: ink, strokeWidth: 1.4, opacity: .6 })),
+
+    /* торт со свечами */
+    E('g', { transform: 'translate(150,66)' },
+      [-10, 0, 10].map((x, i) => E('g', { key: 'c' + i },
+        E('rect', { x: x - 2, y: -20, width: 4, height: 14, rx: 1.5, fill: gray ? '#B8B4C2' : '#FFF1E4' }),
+        E('ellipse', { cx: x, cy: -24, rx: 3, ry: 5, fill: gray ? '#C9C5D0' : '#FFC24D' }))),
+      E('rect', { x: -26, y: -6, width: 52, height: 12, rx: 3, fill: gray ? '#A5A0AE' : '#F5A9C4' }),
+      E('rect', { x: -30, y: 6, width: 60, height: 16, rx: 4, fill: gray ? '#9B96A6' : '#E8749E' }),
+      E('path', { d: 'M-26,-6 q8,6 13,0 q8,6 13,0', fill: 'none',
+        stroke: gray ? '#C9C5D0' : '#FFF1E4', strokeWidth: 2.4, strokeLinecap: 'round' })),
+
+    /* ракета — появляется по правке */
+    has('rocket') && E('g', { transform: 'translate(238,62)' },
+      E('path', { d: 'M0,-26 q11,13 11,26 h-22 q0,-13 11,-26 z', fill: gray ? '#B8B4C2' : '#F2F4FA' }),
+      E('circle', { cy: -6, r: 4.5, fill: gray ? '#8A8592' : '#5FB6E8' }),
+      E('path', { d: 'M-11,0 l-8,14 h8 z M11,0 l8,14 h-8 z', fill: gray ? '#9B96A6' : '#E8563F' }),
+      E('path', { d: 'M-5,14 q5,14 5,14 q0,0 5,-14 z', fill: gray ? '#C9C5D0' : '#FFC24D' })),
+
+    /* звёзды */
+    star(114, 38, 5, gray ? '#C9C5D0' : '#FFF1B4'),
+    star(276, 34, 4, gray ? '#C9C5D0' : '#FFF1B4'),
+    star(18, 104, 4, gray ? '#C9C5D0' : '#FFF1B4'),
+
+    clowns,
+
+    /* космонавт */
+    E('g', { transform: 'translate(' + (has('moreclown') ? 262 : 116) + ',118)' },
+      E('circle', { r: 16, fill: gray ? '#B8B4C2' : '#DCE6F5' }),
+      E('circle', { r: 11.5, fill: gray ? '#C9C5D0' : '#FFE3C4' }),
+      E('circle', { cx: -4, cy: -2, r: 1.8, fill: '#3A2E4E' }),
+      E('circle', { cx: 4, cy: -2, r: 1.8, fill: '#3A2E4E' }),
+      E('path', { d: 'M-4,4 a4,3 0 0 0 8,0', fill: 'none', stroke: '#3A2E4E', strokeWidth: 1.4, strokeLinecap: 'round' }),
+      E('path', { d: 'M-11,-8 a12,12 0 0 1 9,-6', fill: 'none', stroke: '#FFFFFF', strokeWidth: 2, strokeLinecap: 'round', opacity: .8 })),
+
+    /* пришелец */
+    !has('moreclown') && E('g', { transform: 'translate(186,118)' },
+      E('ellipse', { rx: 13, ry: 16, fill: gray ? '#A5A0AE' : '#7FD9A6' }),
+      E('ellipse', { cx: -5, cy: -2, rx: 3.4, ry: 5, fill: '#2D1B45', transform: 'rotate(-16 -5 -2)' }),
+      E('ellipse', { cx: 5, cy: -2, rx: 3.4, ry: 5, fill: '#2D1B45', transform: 'rotate(16 5 -2)' })),
+
+    /* подарок */
+    !has('moreclown') && E('g', { transform: 'translate(252,120)' },
+      E('rect', { x: -16, y: -10, width: 32, height: 24, rx: 3, fill: gray ? '#9B96A6' : '#E8563F' }),
+      E('rect', { x: -3, y: -10, width: 6, height: 24, fill: gray ? '#C9C5D0' : '#FFC24D' }),
+      E('path', { d: 'M0,-10 q-12,-10 -6,-12 q6,-2 6,12 q0,-14 6,-12 q6,2 -6,12 z',
+        fill: gray ? '#C9C5D0' : '#FFC24D' })),
+
+    /* дождь — неудачная правка */
+    has('rain') && E('g', { opacity: .8 },
+      [30, 66, 102, 138, 174, 210, 246, 282].map((x, i) =>
+        E('path', { key: 'r' + i, d: 'M' + x + ',30 l-5,16', stroke: '#8FD4FF',
+          strokeWidth: 2.2, strokeLinecap: 'round' }))),
+    has('rain') && E('g', { opacity: .8 },
+      [48, 84, 120, 156, 192, 228, 264].map((x, i) =>
+        E('path', { key: 'r2' + i, d: 'M' + x + ',66 l-5,16', stroke: '#8FD4FF',
+          strokeWidth: 2.2, strokeLinecap: 'round' })))));
 }
 function Level3Iterate({
   onWin,
@@ -2727,7 +2807,7 @@ function Level3Iterate({
       fontSize: 12.5,
       padding: '12px 8px'
     }
-  }, f.e, " ", f.name, " ↩") : /*#__PURE__*/React.createElement("button", {
+  }, f.name, " ↩") : /*#__PURE__*/React.createElement("button", {
     key: f.id,
     className: "nk-choice",
     onClick: () => apply(f),
@@ -2735,7 +2815,7 @@ function Level3Iterate({
       fontSize: 12.5,
       padding: '12px 8px'
     }
-  }, f.e, " ", f.name))), done && /*#__PURE__*/React.createElement("button", {
+  }, f.name))), done && /*#__PURE__*/React.createElement("button", {
     className: "nk-btn nk-btn--ok",
     style: {
       width: '100%',
