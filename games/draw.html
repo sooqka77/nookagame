@@ -946,7 +946,7 @@ const DW_LEVELS = {
 };
 
 /* ── артефакт: карточка питомца с рисунками ребёнка ── */
-function DwPet({ shots, conf, u }) {
+function DwPet({ shots, conf, u, total }) {
   const id = s => s + (u || '');
   return React.createElement('svg', { viewBox: '0 0 200 250', className: 'dwpet' },
     React.createElement('defs', null,
@@ -964,8 +964,12 @@ function DwPet({ shots, conf, u }) {
       React.createElement('rect', { x: 22 + i * 53, y: 70, width: 48, height: 48, rx: 11,
         fill: '#0C0918', stroke: 'rgba(127,231,255,.35)', strokeWidth: 1.2 }),
       React.createElement('image', { href: src, x: 22 + i * 53, y: 70, width: 48, height: 48 }))),
+    /* число берём из модели, а не из числа влезших миниатюр:
+       подпись говорила «на трёх» при любом наборе примеров */
     React.createElement('text', { x: 100, y: 136, textAnchor: 'middle', fill: '#A896C9',
-      style: { font: '700 9.5px Nunito, sans-serif' } }, 'обучен на трёх твоих рисунках'),
+      style: { font: '700 9.5px Nunito, sans-serif' } },
+      total === 1 ? 'обучен на одном твоём рисунке'
+                  : 'обучен на ' + (total || 4) + ' твоих рисунках'),
     /* уверенность */
     React.createElement('rect', { x: 34, y: 152, width: 132, height: 8, rx: 4, fill: 'rgba(255,255,255,.1)' }),
     React.createElement('rect', { x: 34, y: 152, width: Math.round(132 * (conf || 70) / 100), height: 8, rx: 4, fill: '#7FE7FF' }),
@@ -1390,7 +1394,7 @@ function LevelDraw({ n, onWin, onHome }) {
               React.createElement('div', { className: 'dwwords__n', style: { textAlign: 'center', margin: '10px 20px 0' } },
                 'Ты нарисовал кота — а он не усомнился ни на секунду.'))
           : hasArt
-          ? React.createElement(DwPet, { shots: shots, conf: guess ? guess.conf : 70, u: 'p' })
+          ? React.createElement(DwPet, { shots: shots, conf: guess ? guess.conf : 70, u: 'p', total: model.length })
           : L.win.show === 'tag'
           ? React.createElement('div', { className: 'dwwords' },
               React.createElement('div', { className: 'dwwords__t' }, 'Твоя разметка против чужой'),
