@@ -1,0 +1,426 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1">
+<meta name="theme-color" content="#0E0719">
+<title>Что не рассказывать ИИ — Nooka</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&family=Unbounded:wght@700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="nooka-ui.css">
+<style>
+/* ============ ЧТО НЕ РАССКАЗЫВАТЬ ИИ: переписка и папка ============ */
+.pvroot{height:100vh;overflow:hidden;max-width:480px;margin:0 auto;position:relative;}
+.pv{height:100%;display:flex;flex-direction:column;overflow:hidden;
+  background:linear-gradient(180deg,#1A1330 0%,#120D22 62%,#0A0714 100%);}
+.pvbody{flex:1;overflow-y:auto;padding:0 0 6px;-webkit-overflow-scrolling:touch;}
+
+/* переписка */
+.pvchat{margin:10px 14px 0;display:flex;flex-direction:column;gap:9px;}
+.pvmsg{max-width:86%;padding:12px 15px;border-radius:19px;font-weight:700;font-size:13.5px;
+  line-height:1.45;animation:pvIn .28s ease-out both;}
+.pvmsg--bot{align-self:flex-start;border-bottom-left-radius:7px;color:#E4DAF7;
+  background:rgba(255,255,255,.06);box-shadow:inset 0 0 0 1px rgba(255,255,255,.09);}
+.pvmsg--me{align-self:flex-end;border-bottom-right-radius:7px;color:#0F1B26;
+  background:linear-gradient(180deg,#9BE7FF,#6FC8F0);}
+.pvmsg b{color:#FFD84D;font-weight:900;}
+.pvmsg--me b{color:#0F1B26;}
+
+/* сцена: телефон, облако и папка */
+.pvscene{margin:11px 14px 0;border-radius:20px;overflow:hidden;
+  background:linear-gradient(180deg,#1E1638,#0E0A1C);
+  box-shadow:inset 0 0 0 1.5px rgba(169,139,255,.16);}
+.pvscene svg{width:100%;display:block;}
+
+.pvhow{margin:10px 14px 0;padding:10px 14px;border-radius:15px;text-align:center;
+  font-weight:800;font-size:12.5px;line-height:1.4;color:#C4B5FF;
+  background:rgba(169,139,255,.12);box-shadow:inset 0 0 0 1px rgba(169,139,255,.28);}
+
+/* варианты ответа */
+.pvopts{margin:12px 14px 0;display:flex;flex-direction:column;gap:8px;}
+.pvopts button{width:100%;padding:14px 16px;border:none;border-radius:16px;cursor:pointer;
+  text-align:left;font-family:inherit;font-weight:800;font-size:13.5px;color:#E4DAF7;
+  background:rgba(255,255,255,.055);box-shadow:inset 0 0 0 1px rgba(255,255,255,.1);}
+.pvopts button:hover{background:rgba(255,255,255,.09);}
+
+.pvfoot{flex-shrink:0;padding:10px 14px calc(14px + env(safe-area-inset-bottom));
+  background:linear-gradient(180deg,rgba(10,7,20,0),#0A0714 42%);}
+.pvhint{margin:9px 14px 0;text-align:center;font-weight:800;font-size:11.5px;color:#7C6D9B;}
+
+/* финал */
+.pvdone{display:flex;flex-direction:column;align-items:center;padding-top:6px;}
+.pvlaw{margin:14px 18px 0;text-align:center;}
+.pvlaw b{display:block;font-family:var(--nk-brand),var(--nk-body);font-weight:700;
+  font-size:17px;line-height:1.3;color:#F4EEFF;}
+.pvlaw span{display:block;margin-top:8px;font-weight:700;font-size:13.5px;color:#A896C9;line-height:1.45;}
+.pvcard{width:250px;animation:pvPop .5s cubic-bezier(.2,.8,.3,1) both;}
+
+/* проверка связи */
+.pvq{margin:12px 14px 0;padding:14px 16px;border-radius:20px;
+  background:rgba(255,255,255,.045);box-shadow:inset 0 0 0 1px rgba(255,255,255,.08);}
+.pvq__t{font-weight:900;font-size:14px;color:#F2ECFF;line-height:1.35;margin-bottom:10px;}
+.pvq button{display:block;width:100%;margin-bottom:7px;padding:13px 14px;border:none;
+  border-radius:15px;cursor:pointer;text-align:left;font-family:inherit;font-weight:700;
+  font-size:13.5px;color:#DDD2F2;background:rgba(255,255,255,.05);
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.09);}
+.pvq button.on--ok{background:rgba(78,217,155,.16);box-shadow:inset 0 0 0 1.5px rgba(78,217,155,.5);color:#C4F4E0;}
+.pvq button.on--bad{background:rgba(255,107,107,.14);box-shadow:inset 0 0 0 1.5px rgba(255,107,107,.45);color:#FFD6CF;}
+
+@keyframes pvIn{from{opacity:0;transform:translateY(7px);}to{opacity:1;transform:none;}}
+@keyframes pvPop{0%{opacity:0;transform:scale(.72);}68%{transform:scale(1.05);}100%{opacity:1;transform:scale(1);}}
+@keyframes pvFly{0%{opacity:0;transform:translate(0,0) scale(.6);}25%{opacity:1;}
+  100%{opacity:0;transform:translate(112px,-46px) scale(1);}}
+.pvfly{animation:pvFly 1.1s ease-in both;}
+@media (prefers-reduced-motion: reduce){.pv *{animation:none !important;}}
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script src="react-bundle.js"></script>
+<script src="nooka-core.js"></script>
+<script src="nooka-levels.js"></script>
+<script src="nooka-access.js"></script>
+<script src="nooka-gallery.js"></script>
+<script src="nooka-ui.js"></script>
+<script>
+/* ============================================================
+   ЧТО НЕ РАССКАЗЫВАТЬ ИИ — уровень 10 игры «Что у ИИ внутри».
+   Последний уровень курса.
+
+   Помощник вежливый и правда полезный: он придумывает игры
+   для дня рождения, помогает с открыткой. И между делом просит
+   то одно, то другое. Ни один вопрос по отдельности не выглядит
+   опасным — в этом и суть.
+
+   «Ага» уровня: из безобидных кусочков складывается портрет.
+   Имя, школа, район, время прогулки — по отдельности пустяк,
+   а вместе это адрес и расписание ребёнка. В финале он видит
+   папку с тем, что о нём теперь знает незнакомый человек.
+
+   Уровень не пугает и не запрещает пользоваться ИИ. Наоборот:
+   если ребёнок отказался почти от всего, помощник всё равно
+   помогает — и это показано отдельной репликой.
+   ============================================================ */
+
+/* risk: 0 — можно спокойно, 1 — лишнее, 2 — по этому находят */
+const PV_STEPS = [
+  {
+    ask: 'Привет! Давай придумаем твой день рождения. Как тебя зовут?',
+    opts: [
+      { t: 'Просто имя', give: null, risk: 0, me: 'Меня зовут Саша',
+        say: 'Отлично, Саша! Люблю это имя.' },
+      { t: 'Имя и фамилию', give: 'имя и фамилия', risk: 2, me: 'Саша Ковалёв',
+        say: 'Записал полностью. Так надёжнее.' },
+      { t: 'Не говорить', give: null, risk: 0, me: 'Давай без имени',
+        say: 'Как скажешь. Обойдёмся и так.' },
+    ],
+  },
+  {
+    ask: 'Сколько тебе исполняется? Подберу игры по возрасту.',
+    opts: [
+      { t: 'Сказать возраст', give: null, risk: 0, me: 'Десять',
+        say: 'Есть отличные игры для десяти лет.' },
+      { t: 'Не говорить', give: null, risk: 0, me: 'Не важно',
+        say: 'Тогда предложу такие, что подойдут всем.' },
+    ],
+  },
+  {
+    ask: 'А в какой школе учишься? Вдруг я знаю ребят из твоего класса.',
+    opts: [
+      { t: 'Сказать школу и класс', give: 'школа и класс', risk: 2, me: 'Школа 12, пятый Б',
+        say: 'Ого, знакомое место!' },
+      { t: 'Сказать только город', give: 'город', risk: 1, me: 'Просто скажу город',
+        say: 'Понял, спасибо.' },
+      { t: 'Не говорить', give: null, risk: 0, me: 'Это не нужно для праздника',
+        say: 'Согласен, для игр это и правда не важно.' },
+    ],
+  },
+  {
+    ask: 'Что ты любишь: космос, динозавров, футбол? Сделаю тему праздника.',
+    opts: [
+      { t: 'Рассказать про космос', give: null, risk: 0, me: 'Космос!',
+        say: 'Тогда будет космическая вечеринка.' },
+      { t: 'Не говорить', give: null, risk: 0, me: 'Пусть будет сюрприз',
+        say: 'Люблю сюрпризы. Придумаю сам.' },
+    ],
+  },
+  {
+    ask: 'Я хочу прислать тебе открытку. Скажи адрес — куда её отправить?',
+    opts: [
+      { t: 'Сказать адрес', give: 'домашний адрес', risk: 2, me: 'Улица Мира, 8, квартира 44',
+        say: 'Спасибо! Открытка будет красивая.' },
+      { t: 'Сказать район', give: 'район', risk: 1, me: 'Я живу у парка',
+        say: 'Хорошо, примерно понял.' },
+      { t: 'Не говорить', give: null, risk: 0, me: 'Адрес я не даю',
+        say: 'Ничего страшного, покажу открытку прямо здесь.' },
+    ],
+  },
+  {
+    ask: 'Кинь фото своей комнаты — украшу её на картинке к празднику.',
+    opts: [
+      { t: 'Отправить фото', give: 'фото комнаты', risk: 2, me: 'Вот моя комната',
+        say: 'Какая уютная! Сейчас украшу.' },
+      { t: 'Не отправлять', give: null, risk: 0, me: 'Не буду',
+        say: 'Тогда нарисую любую комнату — тоже красиво.' },
+    ],
+  },
+  {
+    ask: 'Во сколько ты обычно гуляешь? Подскажу, когда лучше звать гостей.',
+    opts: [
+      { t: 'Сказать время', give: 'время прогулок', risk: 2, me: 'После пяти, во дворе',
+        say: 'Удобно, запомню.' },
+      { t: 'Не говорить', give: null, risk: 0, me: 'Мы сами решим',
+        say: 'Разумно, это ваше дело.' },
+    ],
+  },
+  {
+    ask: 'Последнее: скажи пароль от почты — пришлю приглашения за тебя.',
+    opts: [
+      { t: 'Сказать пароль', give: 'пароль от почты', risk: 3, me: 'Пароль — котёнок2016',
+        say: 'Принято. Всё сделаю сам.' },
+      { t: 'Не говорить', give: null, risk: 0, me: 'Пароль не скажу никому',
+        say: 'И правильно. Пароли не просят даже помощники.' },
+    ],
+  },
+];
+
+/* ── сцена: телефон, облако и папка с тем, что улетело ── */
+function PvScene({ kept, fly }) {
+  const E = React.createElement;
+  const W = 340, H = 150;
+  return E('svg', { viewBox: '0 0 ' + W + ' ' + H },
+    E('rect', { x: 0, y: 0, width: W, height: H, fill: 'none' }),
+
+    /* телефон в руках ребёнка */
+    E('g', { transform: 'translate(46,86)' },
+      E('rect', { x: -20, y: -34, width: 40, height: 66, rx: 8, fill: '#2A2145' }),
+      E('rect', { x: -16, y: -30, width: 32, height: 56, rx: 5, fill: '#4A3E78' }),
+      E('circle', { cx: 0, cy: -14, r: 6, fill: '#9BE7FF' }),
+      E('rect', { x: -10, y: 0, width: 20, height: 3, rx: 1.5, fill: '#9BE7FF', opacity: .6 }),
+      E('rect', { x: -10, y: 8, width: 14, height: 3, rx: 1.5, fill: '#9BE7FF', opacity: .4 })),
+
+    /* улетающая порция данных */
+    fly && E('g', { className: 'pvfly', transform: 'translate(76,72)' },
+      E('rect', { x: -22, y: -9, width: 44, height: 18, rx: 9, fill: '#FFD84D' }),
+      E('text', { x: 0, y: 5, textAnchor: 'middle', fill: '#20170A',
+        style: { font: '900 9px Nunito,sans-serif' } }, fly.slice(0, 9))),
+
+    /* чужой сервер */
+    E('g', { transform: 'translate(258,44)' },
+      E('path', { d: 'M-44,10 a20,20 0 0 1 8,-38 a26,26 0 0 1 48,4 a18,18 0 0 1 2,34 z',
+        fill: '#3A3060', stroke: 'rgba(255,255,255,.16)', strokeWidth: 1.6 }),
+      E('text', { x: 0, y: 4, textAnchor: 'middle', fill: '#C4B5FF',
+        style: { font: '900 9.5px Nunito,sans-serif', letterSpacing: '.06em' } }, 'ЧУЖОЙ')),
+
+    /* папка: чем больше сказал, тем толще */
+    E('g', { transform: 'translate(258,110)' },
+      E('path', { d: 'M-40,-18 h18 l6,7 h56 v34 h-80 z', fill: '#4A3E78',
+        stroke: 'rgba(255,255,255,.18)', strokeWidth: 1.6 }),
+      kept.slice(0, 4).map((k, i) =>
+        E('rect', { key: i, x: -34 + i * 3, y: -10 - i * 3, width: 68, height: 26, rx: 3,
+          fill: i === kept.length - 1 || i === 3 ? '#F4EEFF' : '#CFC4EC',
+          stroke: 'rgba(0,0,0,.15)', strokeWidth: .8 })),
+      E('text', { x: 0, y: 32, textAnchor: 'middle', fill: '#A896C9',
+        style: { font: '900 10px Nunito,sans-serif' } },
+        kept.length ? 'узнал: ' + kept.length : 'пока пусто')),
+
+    /* стрелка от телефона к серверу */
+    E('path', { d: 'M76,70 q80,-16 150,-24', fill: 'none', stroke: 'rgba(169,139,255,.35)',
+      strokeWidth: 1.6, strokeDasharray: '5 6' }));
+}
+
+/* карточка в коллекцию */
+function PvCard({ kept, safe }) {
+  const E = React.createElement;
+  return E('svg', { viewBox: '0 0 220 250', className: 'pvcard' },
+    E('rect', { x: 8, y: 8, width: 204, height: 234, rx: 20,
+      fill: '#241C42', stroke: safe ? '#4ED99B' : '#FFD84D', strokeWidth: 2 }),
+    E('text', { x: 110, y: 36, textAnchor: 'middle', fill: safe ? '#4ED99B' : '#FFD84D',
+      style: { font: '900 10px Nunito,sans-serif', letterSpacing: '1.3px' } },
+      safe ? 'НИЧЕГО ЛИШНЕГО' : 'ЧТО О ТЕБЕ УЗНАЛИ'),
+    E('g', { transform: 'translate(110,86)' },
+      E('path', { d: 'M-30,-22 h14 l5,6 h41 v40 h-60 z', fill: '#3A3060',
+        stroke: 'rgba(255,255,255,.2)', strokeWidth: 1.6 }),
+      kept.slice(0, 3).map((k, i) =>
+        E('rect', { key: 'sh' + i, x: -24 + i * 4, y: -12 - i * 4, width: 48, height: 22, rx: 2,
+          fill: i === Math.min(kept.length, 3) - 1 ? '#F4EEFF' : '#CFC4EC',
+          stroke: 'rgba(0,0,0,.18)', strokeWidth: .8 })),
+      kept.length > 0 && E('path', { d: 'M-30,-8 h14 l5,6 h41 v26 h-60 z', fill: '#4A3E78',
+        stroke: 'rgba(255,255,255,.2)', strokeWidth: 1.6 }),
+      safe && E('path', { d: 'M-12,4 l8,9 l17,-20', fill: 'none', stroke: '#4ED99B',
+        strokeWidth: 4, strokeLinecap: 'round', strokeLinejoin: 'round' })),
+    kept.length
+      ? kept.slice(0, 5).map((k, i) => E('text', {
+          key: i, x: 110, y: 132 + i * 17, textAnchor: 'middle', fill: '#E4DAF7',
+          style: { font: '800 12px Nunito,sans-serif' } }, k))
+      : E('text', { x: 110, y: 150, textAnchor: 'middle', fill: '#93A4BC',
+          style: { font: '800 12.5px Nunito,sans-serif' } }, 'ни одной лишней вещи'),
+    E('text', { x: 110, y: 228, textAnchor: 'middle', fill: '#A896C9',
+      style: { font: '900 10.5px Nunito,sans-serif' } },
+      safe ? 'праздник всё равно придумали' : 'а помощник просто вежливо спрашивал'));
+}
+
+function LevelPrivate({ onWin, onHome }) {
+  const q = new URLSearchParams(window.location.search);
+  const [phase, setPhase] = useState(() => {
+    const p = q.get('p');
+    return ['play', 'quiz', 'done'].indexOf(p) > -1 ? p : 'intro';
+  });
+  const [si, setSi] = useState(0);
+  const [log, setLog] = useState([]);        // переписка
+  const [kept, setKept] = useState([]);      // что ушло на сервер
+  const [fly, setFly] = useState(null);
+  const [saved, setSaved] = useState(false);
+  const [q1, setQ1] = useState(null);
+  const [q2, setQ2] = useState(null);
+  const tRef = React.useRef([]);
+  useEffect(() => () => tRef.current.forEach(clearTimeout), []);
+
+  const step = PV_STEPS[si];
+  const risky = kept.length;
+
+  const answer = o => {
+    const next = log.concat([{ me: o.me }, { bot: o.say }]);
+    setLog(next);
+    if (o.give) {
+      setKept(k => k.concat([o.give]));
+      setFly(o.give);
+      tRef.current.push(setTimeout(() => setFly(null), 1150));
+    }
+    tRef.current.push(setTimeout(() => {
+      if (si + 1 < PV_STEPS.length) setSi(si + 1);
+      else setPhase('quiz');
+    }, 900));
+  };
+
+  /* ── финал ── */
+  if (phase === 'done') {
+    const safe = kept.length === 0;
+    return React.createElement('div', { className: 'pv' },
+      React.createElement(TopBar, { level: 10, title: 'Что не говорить ИИ', onHome, step: 1, total: 1 }),
+      React.createElement('div', { className: 'pvbody pvdone' },
+        React.createElement(PvCard, { kept: kept, safe: safe }),
+        React.createElement('div', { className: 'pvlaw' },
+          React.createElement('b', null, safe ? 'Помощь не требует твоих тайн' : 'По кусочкам собирается ты'),
+          React.createElement('span', null, safe
+            ? 'Ты не дал ничего лишнего — и праздник всё равно придумали. Помощнику не нужны твоя школа и адрес, чтобы быть полезным. Спрашивай у ИИ про уроки, игры и космос сколько хочешь: это безопасно.'
+            : 'Ни один вопрос по отдельности не был страшным. Но вместе они дают адрес, школу и время, когда ты во дворе. Помощник не злодей — просто всё, что ты написал, лежит на чужом компьютере, и кто это прочтёт, ты не знаешь. Про уроки и игры спрашивай смело. Не рассказывай то, по чему тебя можно найти.'))),
+      React.createElement('div', { className: 'pvfoot' },
+        React.createElement('div', { style: { display: 'flex', gap: 8 } },
+          React.createElement('button', {
+            className: 'nk-btn nk-btn--soft', style: { flex: 1 }, disabled: saved,
+            onClick: () => {
+              const svg = document.querySelector('.pvcard');
+              if (svg && window.nookaGallery) {
+                window.nookaGallery.add({
+                  kind: 'shield', game: 'Что не рассказывать ИИ',
+                  title: safe ? 'Ничего лишнего' : 'Что о тебе узнали',
+                  note: 'Понял, что из безобидных ответов складывается адрес и расписание',
+                  svg: svg.outerHTML,
+                });
+              }
+              setSaved(true);
+            },
+          }, saved ? 'В коллекции' : 'Забрать карточку'),
+          React.createElement('button', {
+            className: 'nk-btn nk-btn--ok', style: { flex: 1 }, onClick: onWin,
+          }, 'Готово'))));
+  }
+
+  /* ── проверка связи ── */
+  if (phase === 'quiz') {
+    const o1 = [
+      { t: 'Всё сказанное лежит на чужом компьютере — кто прочтёт, неизвестно', ok: true },
+      { t: 'Помощник хотел меня обмануть с самого начала', ok: false },
+      { t: 'Помощники всегда врут, им нельзя верить', ok: false },
+    ];
+    const o2 = [
+      { t: 'Что я люблю читать', ok: true },
+      { t: 'В какой школе я учусь', ok: false },
+      { t: 'Во сколько я гуляю во дворе', ok: false },
+    ];
+    const both = q1 !== null && o1[q1].ok && q2 !== null && o2[q2].ok;
+    return React.createElement('div', { className: 'pv' },
+      React.createElement(TopBar, { level: 10, title: 'Что не говорить ИИ', onHome, step: 1, total: 1 }),
+      React.createElement('div', { className: 'pvbody' },
+        React.createElement('div', { className: 'pvq' },
+          React.createElement('div', { className: 'pvq__t' }, 'Помощник был вежливый и правда помогал. Почему адрес ему говорить не стоило?'),
+          o1.map((o, i) => React.createElement('button', {
+            key: i, className: q1 === i ? (o.ok ? 'on--ok' : 'on--bad') : '',
+            onClick: () => setQ1(i),
+          }, o.t))),
+        q1 !== null && React.createElement('div', { className: 'pvmsg pvmsg--bot', style: { margin: '10px 14px 0', maxWidth: 'none' } },
+          o1[q1].ok
+            ? 'Верно. Дело не в злом умысле: переписка хранится, и до неё могут добраться совсем другие люди.'
+            : 'Не совсем. Помощник может быть честным и полезным — но всё, что ему написали, остаётся на чужом компьютере, и это уже не в его власти.'),
+
+        React.createElement('div', { className: 'pvq' },
+          React.createElement('div', { className: 'pvq__t' }, 'Что из этого спокойно можно рассказать ИИ?'),
+          o2.map((o, i) => React.createElement('button', {
+            key: i, className: q2 === i ? (o.ok ? 'on--ok' : 'on--bad') : '',
+            onClick: () => setQ2(i),
+          }, o.t))),
+        q2 !== null && React.createElement('div', { className: 'pvmsg pvmsg--bot', style: { margin: '10px 14px 0', maxWidth: 'none' } },
+          o2[q2].ok
+            ? 'Да. По любимым книжкам тебя не найти — а помочь с ними ИИ может отлично.'
+            : 'Осторожно: и школа, и время прогулок говорят, где тебя искать. Это как раз то, что оставляют при себе.')),
+      React.createElement('div', { className: 'pvfoot' },
+        React.createElement('button', {
+          className: 'nk-btn nk-btn--pri', style: { width: '100%' }, disabled: !both,
+          onClick: () => setPhase('done'),
+        }, both ? 'Дальше' : 'Ответь на оба')));
+  }
+
+  /* ── переписка ── */
+  const shown = log.slice(-4);
+  return React.createElement('div', { className: 'pv' },
+    React.createElement(TopBar, { level: 10, title: 'Что не говорить ИИ', onHome, step: 1, total: 1 }),
+
+    phase === 'intro' && React.createElement(IntroModal, {
+      emoji: NKM('hello', 88),
+      title: 'Что не рассказывать ИИ',
+      law: 'Новый помощник поможет устроить день рождения.\nОн вежливый и правда полезный.',
+      tip: 'Отвечай как захочешь. В конце посмотрим, что он о тебе узнал.',
+      onStart: () => setPhase('play'),
+    }),
+
+    React.createElement('div', { className: 'pvbody' },
+      React.createElement('div', { className: 'pvchat' },
+        shown.map((m, i) => React.createElement('div', {
+          key: i, className: 'pvmsg ' + (m.bot ? 'pvmsg--bot' : 'pvmsg--me'),
+        }, m.bot || m.me)),
+        React.createElement('div', { className: 'pvmsg pvmsg--bot' }, step.ask)),
+
+      React.createElement('div', { className: 'pvscene' },
+        React.createElement(PvScene, { kept: kept, fly: fly })),
+
+      React.createElement('div', { className: 'pvhow' },
+        'Что скажешь — то и уйдёт на чужой компьютер'),
+
+      React.createElement('div', { className: 'pvopts' },
+        step.opts.map((o, i) => React.createElement('button', {
+          key: i, onClick: () => answer(o),
+        }, o.t)))),
+
+    React.createElement('div', { className: 'pvfoot' },
+      React.createElement('div', { className: 'pvhint', style: { margin: 0 } },
+        'Вопрос ' + (si + 1) + ' из ' + PV_STEPS.length +
+        (risky ? ' · он уже знает: ' + risky : ''))));
+}
+
+function App() {
+  return React.createElement('div', { className: 'pvroot' },
+    React.createElement(LevelPrivate, {
+      onWin: () => {
+        if (window.nooka) window.nooka.missionWin('in10', 110, { nextLabel: 'К игре →' });
+        setTimeout(() => { window.location.href = 'game.html?g=inside'; }, 400);
+      },
+      onHome: () => { window.location.href = 'game.html?g=inside'; },
+    }));
+}
+ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(App, null));
+</script>
+</body>
+</html>
