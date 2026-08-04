@@ -644,6 +644,48 @@ function dwSketch(kind, jit, variant) {
       line([[120, 196], [120, 238]]);
       line([[196, 196], [196, 238]]);
     }
+  } else if (kind === 'car') {              // машина: широкая и низкая
+    if (v % 4 === 0) {                      // легковая
+      line([[42, 208], [42, 176], [86, 176], [110, 138], [196, 138], [220, 176], [262, 176], [262, 208], [42, 208]]);
+      ring(94, 212, 20, 20, 20);
+      ring(210, 212, 20, 20, 20);
+      line([[116, 172], [128, 146], [186, 146], [198, 172]]);
+    } else if (v % 4 === 1) {               // фургон
+      line([[46, 216], [46, 128], [200, 128], [230, 168], [258, 168], [258, 216], [46, 216]]);
+      ring(96, 220, 19, 19, 20);
+      ring(216, 220, 19, 19, 20);
+      line([[204, 138], [204, 166], [232, 166]]);
+    } else if (v % 4 === 2) {               // низкая, вытянутая
+      line([[34, 200], [34, 178], [96, 178], [124, 150], [190, 150], [216, 178], [268, 178], [268, 200], [34, 200]]);
+      ring(88, 204, 17, 17, 20);
+      ring(216, 204, 17, 17, 20);
+    } else {                                // с прицепом
+      line([[36, 206], [36, 170], [80, 170], [104, 140], [166, 140], [186, 170], [186, 206], [36, 206]]);
+      line([[196, 206], [196, 160], [268, 160], [268, 206], [196, 206]]);
+      ring(80, 210, 18, 18, 20);
+      ring(228, 210, 18, 18, 20);
+    }
+  } else if (kind === 'tree') {             // дерево: узкое и высокое, крона сверху
+    if (v % 4 === 0) {                      // круглая крона
+      ring(150, 122, 62, 58);
+      line([[150, 180], [150, 262]]);
+      line([[112, 262], [188, 262]]);
+    } else if (v % 4 === 1) {               // ёлка
+      line([[150, 46], [104, 128], [196, 128], [150, 46]]);
+      line([[150, 96], [86, 190], [214, 190], [150, 96]]);
+      line([[150, 190], [150, 258]]);
+      line([[118, 258], [182, 258]]);
+    } else if (v % 4 === 2) {               // с ветками
+      line([[150, 266], [150, 116]]);
+      line([[150, 168], [104, 124]]);
+      line([[150, 190], [198, 146]]);
+      ring(150, 104, 48, 42);
+    } else {                                // две кроны
+      ring(126, 120, 40, 38);
+      ring(176, 146, 34, 32);
+      line([[150, 178], [150, 264]]);
+      line([[116, 264], [184, 264]]);
+    }
   } else {                                  // дома тоже разные
     if (v % 4 === 0) {
       line([[74, 270], [74, 150], [226, 150], [226, 270], [74, 270]]);
@@ -711,10 +753,12 @@ const dwMemory = {
    сколько примеров дать Нейро, и смотрит, как тот сдаёт экзамен на
    рисунках, которых в обучении не было. Экзамен всегда один и тот же —
    иначе попытки не сравнить. */
-function dwLibrary(n) {
-  const lib = { cat: [], house: [] };
+function dwLibrary(n, kinds) {
+  const ks = kinds || ['cat', 'house'];
+  const lib = {};
+  ks.forEach(k => { lib[k] = []; });
   for (let i = 0; i < n; i++) {
-    ['cat', 'house'].forEach(k => {
+    ks.forEach(k => {
       const cv = dwSketch(k, 8 + (i % 4) * 4, i);
       lib[k].push({ label: k, f: dwFeatures(cv).f, thumb: dwThumb(cv, 64) });
     });
@@ -722,10 +766,11 @@ function dwLibrary(n) {
   return lib;
 }
 
-function dwExam(n) {
+function dwExam(n, kinds) {
+  const ks = kinds || ['cat', 'house'];
   const out = [];
   for (let i = 0; i < n; i++) {
-    const k = i % 2 ? 'house' : 'cat';
+    const k = i % 2 ? ks[1] : ks[0];
     const cv = dwSketch(k, 11 + (i % 3) * 5, i + 1);   // варианты вразнобой с началом библиотеки
     out.push({ label: k, f: dwFeatures(cv).f, thumb: dwThumb(cv, 64) });
   }
@@ -797,10 +842,10 @@ const DW_LEVELS = {
     steps: [
       { kind: 'draw', label: 'cat', word: 'кота', wordN: 'кот', many: 'коты', more: 'ещё одного кота', need: 1,
         say: 'Нарисуй <b>одного кота</b> — с него начнём набор.' },
-      { kind: 'draw', label: 'house', word: 'дом', wordN: 'дом', many: 'дома', more: 'ещё один дом', need: 1,
-        say: 'И <b>один дом</b>. Пока в наборе только твои рисунки, оба подписаны верно.' },
+      { kind: 'draw', label: 'tree', word: 'дерево', wordN: 'дерево', many: 'деревья', more: 'ещё одно дерево', need: 1,
+        say: 'И <b>одно дерево</b>. Пока в наборе только твои рисунки, оба подписаны верно.' },
       { kind: 'clean',
-        copy: ['cat', 'house', 'house', 'cat'],   // две копии каждого рисунка, две подписи врут
+        copy: ['cat', 'tree', 'tree', 'cat'],   // две копии каждого рисунка, две подписи врут
         say: 'Я скопировал твои рисунки себе в набор — вот они, с пунктиром. Только <b>две подписи при переносе слетели</b>. Найди их: я уже путаюсь.' },
       { kind: 'test', word: 'кота', wordN: 'кот', many: 'коты', more: 'ещё одного кота', expect: 'cat',
         say: 'Набор почищен. Теперь по-настоящему: нарисуй кота.' },
@@ -928,12 +973,12 @@ const DW_LEVELS = {
     mid: 'data7', xp: 90,
     law: 'Примеры не бесплатные.\nЗадача не «дать побольше», а понять, сколько хватит.',
     tip: 'Выбери, сколько рисунков отдать Нейро, и отправь его на экзамен. Найди наименьшее число.',
-    lab: { max: 12, exam: 6 },
+    lab: { max: 12, exam: 6, kinds: ['dog', 'house'] },
     steps: [{ kind: 'lab' }],
     quiz: {
       q: 'Почему после шести примеров Нейро почти не становился лучше?',
       opts: [
-        { t: 'Он уже понял, чем кот отличается от дома', ok: true },
+        { t: 'Он уже понял, чем собака отличается от дома', ok: true },
         { t: 'Он устал и перестал стараться', ok: false },
         { t: 'Новые рисунки были хуже прежних', ok: false },
       ],
@@ -1066,7 +1111,7 @@ function LevelDraw({ n, onWin, onHome }) {
   const [exam, setExam] = useState(null);          // ход экзамена: {i, res:[]}
   const [tryLog, setTryLog] = useState([]);        // попытки: {take, ok, total}
   const lab = useRef(null);
-  if (!lab.current && L.lab) lab.current = { lib: dwLibrary(L.lab.max), exam: dwExam(L.lab.exam) };
+  if (!lab.current && L.lab) lab.current = { lib: dwLibrary(L.lab.max, L.lab.kinds), exam: dwExam(L.lab.exam, L.lab.kinds) };
   const [judge, setJudge] = useState(null);        // круг судейства: {cards, marked, checked}
   const [hacks, setHacks] = useState([]);          // попытки взлома: {conf, ok}
   const [tags, setTags] = useState([]);            // мои подписи спорных рисунков
@@ -1152,12 +1197,17 @@ function LevelDraw({ n, onWin, onHome }) {
      единственная причина путаницы, и после починки Нейро перестаёт ошибаться. */
   useEffect(() => {
     if (!step || !step.copy || model.some(m => m.ext)) return;
-    const cats = model.filter(m => m.label === 'cat');
-    const houses = model.filter(m => m.label === 'house');
-    if (!cats.length || !houses.length) return;
+    /* виды берём из самой модели, а не по именам: уровень может
+       учить кота с деревом, а не только кота с домом */
+    const kinds = [];
+    model.forEach(m => { if (kinds.indexOf(m.label) < 0) kinds.push(m.label); });
+    if (kinds.length < 2) return;
+    const pool = {};
+    kinds.forEach(k => { pool[k] = model.filter(m => m.label === k); });
     /* копий больше, чем рисунков, — берём по кругу: у каждого своя подпись */
     const add = step.copy.map((label, i) => {
-      const src = i % 2 === 0 ? cats[Math.floor(i / 2) % cats.length] : houses[Math.floor(i / 2) % houses.length];
+      const from = pool[kinds[i % 2]];
+      const src = from[Math.floor(i / 2) % from.length];
       return { label: label, f: src.f, thumb: src.thumb, ext: true };
     });
     setModel(m => m.concat(add));
@@ -1200,8 +1250,17 @@ function LevelDraw({ n, onWin, onHome }) {
     if (!step.unknown && (p.unsure || p.label !== step.expect)) setTries(tries + 1);
   };
 
-  const WORD = { cat: 'кот', house: 'дом', fish: 'рыба', dog: 'собака' };
-  const FLIP = { cat: 'house', house: 'cat' };
+  const WORD = { cat: 'кот', house: 'дом', fish: 'рыба', dog: 'собака', tree: 'дерево', car: 'машина' };
+  /* какая подпись меняется на какую — считаем по видам самой модели.
+     Была жёсткая пара кот↔дом: на уровне с деревом клик по коту
+     ставил третий ярлык «дом», и починить набор было нельзя. */
+  const flipMap = ms => {
+    const ks = [];
+    ms.forEach(m => { if (ks.indexOf(m.label) < 0) ks.push(m.label); });
+    const f = {};
+    if (ks.length >= 2) { f[ks[0]] = ks[1]; f[ks[1]] = ks[0]; }
+    return f;
+  };
 
   /* Стартовый набор: сначала то, чему ребёнок учил Нейро раньше, потом добор.
      Так третий уровень не заставляет заново рисовать котов, а девятый ломает
@@ -1316,7 +1375,8 @@ function LevelDraw({ n, onWin, onHome }) {
 
   /* экзамен: Нейро отвечает на рисунки, которых в обучении не было */
   const runExam = () => {
-    const M = lab.current.lib.cat.slice(0, take).concat(lab.current.lib.house.slice(0, take));
+    const ks = L.lab.kinds || ['cat', 'house'];
+    const M = lab.current.lib[ks[0]].slice(0, take).concat(lab.current.lib[ks[1]].slice(0, take));
     const res = lab.current.exam.map(e => {
       const p = dwPredict(M, e.f);
       return { thumb: e.thumb, truth: e.label, said: p.label, conf: p.conf, ok: p.label === e.label };
@@ -1347,6 +1407,7 @@ function LevelDraw({ n, onWin, onHome }) {
   };
 
   const relabel = i => {
+    const FLIP = flipMap(model);
     setModel(model.map((m, k) => k === i ? Object.assign({}, m, { label: FLIP[m.label] || m.label }) : m));
     setGuess(null);
   };
@@ -1683,7 +1744,7 @@ function LevelDraw({ n, onWin, onHome }) {
           onChange: e => { setTake(parseInt(e.target.value, 10)); setExam(null); },
         }),
         React.createElement('div', { className: 'dwlab__lib' },
-          ['cat', 'house'].map(k =>
+          (L.lab.kinds || ['cat', 'house']).map(k =>
             React.createElement('div', { key: k, className: 'dwlib' },
               lab.current.lib[k].map((m, i) => React.createElement('div', {
                 key: i, className: 'dwlib__i' + (i < take ? ' on' : ''),
