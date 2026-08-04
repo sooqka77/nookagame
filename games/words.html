@@ -1,0 +1,413 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1">
+<meta name="theme-color" content="#0E0719">
+<title>Угадай следующее слово — Nooka</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&family=Unbounded:wght@700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="nooka-ui.css">
+<style>
+/* ============ УГАДАЙ СЛЕДУЮЩЕЕ СЛОВО ============ */
+.wdroot{height:100vh;overflow:hidden;max-width:480px;margin:0 auto;position:relative;}
+.wd{height:100%;display:flex;flex-direction:column;overflow:hidden;
+  background:linear-gradient(180deg,#141E33 0%,#0D1524 62%,#080C16 100%);}
+.wdbody{flex:1;overflow-y:auto;padding:0 0 6px;-webkit-overflow-scrolling:touch;}
+
+.wdsay{display:flex;gap:10px;align-items:flex-start;margin:2px 14px 0;padding:13px 15px;
+  border-radius:20px;background:rgba(255,255,255,.055);
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.09);animation:wdIn .3s ease-out both;}
+.wdsay i{flex-shrink:0;line-height:0;}
+.wdsay span{font-weight:700;font-size:13.5px;line-height:1.45;color:#D9E5F5;}
+.wdsay b{color:#7FE7A8;font-weight:900;}
+
+/* фраза, которая открывается по словам */
+.wdline{margin:12px 14px 0;padding:16px 15px;border-radius:20px;text-align:center;
+  background:rgba(255,255,255,.045);box-shadow:inset 0 0 0 1px rgba(255,255,255,.08);
+  font-family:var(--nk-brand),var(--nk-body);font-weight:700;font-size:19px;line-height:1.7;color:#EAF1FA;}
+.wdw{display:inline-block;margin:0 4px;}
+.wdw--new{color:#7FE7A8;animation:wdPop .35s cubic-bezier(.2,.8,.3,1) both;}
+.wdw--gap{color:#5A6E8C;border-bottom:2.5px dashed #4A5F7E;padding:0 12px;}
+
+/* варианты */
+.wdopts{margin:12px 14px 0;display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.wdopts button{padding:14px 6px;border:none;border-radius:15px;cursor:pointer;
+  font-family:inherit;font-weight:900;font-size:14px;color:#EAF1FA;
+  background:rgba(255,255,255,.06);box-shadow:inset 0 0 0 1px rgba(255,255,255,.1);}
+.wdopts button:hover{background:rgba(255,255,255,.1);}
+
+/* итог хода */
+.wdrow{margin:11px 14px 0;display:flex;gap:8px;}
+.wdcell{flex:1;padding:11px 8px;border-radius:15px;text-align:center;
+  background:rgba(255,255,255,.045);box-shadow:inset 0 0 0 1px rgba(255,255,255,.08);}
+.wdcell b{display:block;font-weight:900;font-size:10px;letter-spacing:.05em;text-transform:uppercase;
+  color:#7E93AE;margin-bottom:5px;}
+.wdcell span{display:block;font-weight:900;font-size:14px;color:#EAF1FA;}
+.wdcell--hit{background:rgba(78,217,155,.15);box-shadow:inset 0 0 0 1.5px rgba(78,217,155,.45);}
+.wdcell--hit span{color:#7FE7A8;}
+.wdcell--miss span{color:#8FA5C0;}
+
+/* счёт */
+.wdscore{margin:12px 14px 0;padding:12px 15px;border-radius:18px;display:flex;align-items:center;gap:12px;
+  background:rgba(255,255,255,.045);box-shadow:inset 0 0 0 1px rgba(255,255,255,.08);}
+.wdscore div{flex:1;text-align:center;}
+.wdscore b{display:block;font-weight:900;font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;color:#7E93AE;}
+.wdscore em{display:block;font-style:normal;font-family:var(--nk-brand),var(--nk-body);
+  font-weight:700;font-size:24px;color:#EAF1FA;margin-top:3px;}
+
+/* память Нейро */
+.wdmem{margin:12px 14px 0;padding:13px 15px;border-radius:18px;
+  background:rgba(127,231,168,.1);box-shadow:inset 0 0 0 1px rgba(127,231,168,.3);}
+.wdmem__t{font-weight:900;font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;
+  color:#7FE7A8;margin-bottom:9px;}
+.wdmem__r{display:flex;gap:7px;}
+.wdmem__r button{flex:1;padding:11px 4px;border:none;border-radius:13px;cursor:default;
+  font-family:inherit;font-weight:900;font-size:12px;color:#8FA5C0;
+  background:rgba(255,255,255,.05);box-shadow:inset 0 0 0 1px rgba(255,255,255,.09);}
+.wdmem__r button.on{color:#0E1A14;background:#7FE7A8;box-shadow:0 6px 16px -8px #7FE7A8;}
+
+.wdhow{margin:10px 14px 0;padding:10px 14px;border-radius:15px;text-align:center;
+  font-weight:800;font-size:12.5px;line-height:1.4;color:#9FD4FF;
+  background:rgba(126,190,255,.11);box-shadow:inset 0 0 0 1px rgba(126,190,255,.26);}
+
+.wdfoot{flex-shrink:0;padding:10px 14px calc(14px + env(safe-area-inset-bottom));
+  background:linear-gradient(180deg,rgba(8,12,22,0),#080C16 42%);}
+.wdhint{margin:9px 14px 0;text-align:center;font-weight:800;font-size:11.5px;color:#6B7F97;}
+
+/* финал */
+.wddone{display:flex;flex-direction:column;align-items:center;padding-top:6px;}
+.wdlaw{margin:14px 18px 0;text-align:center;}
+.wdlaw b{display:block;font-family:var(--nk-brand),var(--nk-body);font-weight:700;
+  font-size:17px;line-height:1.3;color:#EAF1FA;}
+.wdlaw span{display:block;margin-top:8px;font-weight:700;font-size:13.5px;color:#93A8C2;line-height:1.45;}
+
+/* проверка связи */
+.wdq{margin:12px 14px 0;padding:14px 16px;border-radius:20px;
+  background:rgba(255,255,255,.045);box-shadow:inset 0 0 0 1px rgba(255,255,255,.08);}
+.wdq__t{font-weight:900;font-size:14px;color:#EAF1FA;line-height:1.35;margin-bottom:10px;}
+.wdq button{display:block;width:100%;margin-bottom:7px;padding:13px 14px;border:none;
+  border-radius:15px;cursor:pointer;text-align:left;font-family:inherit;font-weight:700;
+  font-size:13.5px;color:#D9E5F5;background:rgba(255,255,255,.05);
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.09);}
+.wdq button.on--ok{background:rgba(78,217,155,.16);box-shadow:inset 0 0 0 1.5px rgba(78,217,155,.5);color:#C4F4E0;}
+.wdq button.on--bad{background:rgba(255,107,107,.14);box-shadow:inset 0 0 0 1.5px rgba(255,107,107,.45);color:#FFD6CF;}
+
+@keyframes wdIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
+@keyframes wdPop{0%{opacity:0;transform:scale(.6);}70%{transform:scale(1.12);}100%{opacity:1;transform:scale(1);}}
+@media (prefers-reduced-motion: reduce){.wd *{animation:none !important;}}
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script src="react-bundle.js"></script>
+<script src="nooka-core.js"></script>
+<script src="nooka-levels.js"></script>
+<script src="nooka-access.js"></script>
+<script src="nooka-gallery.js"></script>
+<script src="nooka-ui.js"></script>
+<script>
+/* ============================================================
+   УГАДАЙ СЛЕДУЮЩЕЕ СЛОВО — уровень 5 игры «Что у ИИ внутри».
+   Пара к Диджею: там ребёнок услышал предсказание ушами,
+   здесь видит его на словах.
+
+   Нейро «прочитал» тридцать простых фраз (WD_CORPUS) и посчитал,
+   какое слово за каким шло. Никакой имитации: и его выбор,
+   и проценты берутся из этой таблицы.
+
+   Уровень в два акта. Сначала Нейро помнит только одно слово —
+   и на развилках беспомощен: после «на» у него десять вариантов.
+   Потом ему включают память в два слова, и он резко умнеет.
+
+   Замер до написания (_words-model-check.js):
+     память в одно слово — угадывает 71%, на развилках 37%
+     память в два слова  — угадывает 89%, на развилках 77%
+
+   Отсюда и «ага»: он не понимает смысла, он смотрит назад.
+   Чем больше слов видит, тем точнее угадывает.
+   ============================================================ */
+
+const WD_CORPUS = [
+  'кот сидит на окне', 'кот спит на диване', 'кот прыгнул на стол', 'кот пьёт молоко',
+  'собака спит на коврике', 'собака бежит по двору', 'собака громко лает',
+  'мама купила хлеб и молоко', 'мама читает книгу', 'папа чинит велосипед',
+  'зимой на улице очень холодно', 'летом на улице очень жарко',
+  'осенью на улице идёт дождь', 'весной на улице тает снег',
+  'мы идём в школу', 'мы идём в парк', 'после школы я иду домой',
+  'на завтрак я ем кашу', 'на обед я ем суп',
+  'я люблю рисовать красками', 'я люблю играть в футбол',
+  'бабушка печёт пирог', 'дедушка читает газету', 'дети играют во дворе',
+  'птицы поют на ветке', 'солнце светит очень ярко', 'ветер качает деревья',
+  'снег падает на землю', 'книга лежит на полке', 'мяч закатился под диван',
+];
+
+/* что за чем шло: по одному слову и по двум */
+const WD_M1 = {}, WD_M2 = {};
+WD_CORPUS.forEach(s => {
+  const w = s.split(' ');
+  for (let i = 0; i < w.length - 1; i++) {
+    (WD_M1[w[i]] = WD_M1[w[i]] || {});
+    WD_M1[w[i]][w[i + 1]] = (WD_M1[w[i]][w[i + 1]] || 0) + 1;
+    if (i > 0) {
+      const k = w[i - 1] + ' ' + w[i];
+      (WD_M2[k] = WD_M2[k] || {});
+      WD_M2[k][w[i + 1]] = (WD_M2[k][w[i + 1]] || 0) + 1;
+    }
+  }
+});
+
+const WD_VOCAB = Array.from(new Set(WD_CORPUS.join(' ').split(' ')));
+
+/* выбор Нейро: самое частое продолжение и насколько он в нём уверен */
+function wdGuess(words, i, longMem) {
+  const prev = words[i - 1];
+  let table = WD_M1[prev];
+  if (longMem && i >= 2) {
+    const t2 = WD_M2[words[i - 2] + ' ' + prev];
+    if (t2) table = t2;
+  }
+  if (!table) return null;
+  let best = null, bn = -1, sum = 0;
+  Object.keys(table).forEach(k => { sum += table[k]; if (table[k] > bn) { bn = table[k]; best = k; } });
+  return { word: best, conf: Math.round(bn / sum * 100), forks: Object.keys(table).length };
+}
+
+/* четыре кнопки: верное слово и три правдоподобных */
+function wdOptions(words, i) {
+  const right = words[i];
+  const prev = words[i - 1];
+  const near = Object.keys(WD_M1[prev] || {}).filter(w => w !== right);
+  const pool = near.slice();
+  while (pool.length < 3) {
+    const w = WD_VOCAB[Math.floor(Math.random() * WD_VOCAB.length)];
+    if (w !== right && pool.indexOf(w) < 0) pool.push(w);
+  }
+  const out = [right].concat(pool.slice(0, 3));
+  for (let k = out.length - 1; k > 0; k--) {         // перемешать
+    const j = Math.floor(Math.random() * (k + 1));
+    const t = out[k]; out[k] = out[j]; out[j] = t;
+  }
+  return out;
+}
+
+/* Фразы подобраны замером: на каждой длинная память выигрывает
+   ровно одно слово, вместе получается 5 из 12 против 9 из 12 —
+   разницу видно, а не приходится верить на слово. */
+const WD_ROUND = [
+  'кот спит на диване',
+  'дедушка читает газету',
+  'я люблю играть в футбол',
+  'птицы поют на ветке',
+];
+
+function LevelWords({ onWin, onHome }) {
+  const q = new URLSearchParams(window.location.search);
+  const [phase, setPhase] = useState(() => {
+    const p = q.get('p');
+    return ['play', 'quiz', 'done'].indexOf(p) > -1 ? p : 'intro';
+  });
+  const [act, setAct] = useState(1);          // 1 — память в слово, 2 — в два
+  const [ri, setRi] = useState(0);            // какая фраза
+  const [wi, setWi] = useState(1);            // какое слово угадываем
+  const [turn, setTurn] = useState(null);     // итог хода
+  const [me, setMe] = useState(0);
+  const [ai, setAi] = useState(0);
+  const [act1, setAct1] = useState(null);     // счёт первого круга
+  const [opts, setOpts] = useState(null);
+  const [q1, setQ1] = useState(null);
+  const [q2, setQ2] = useState(null);
+
+  const words = WD_ROUND[ri].split(' ');
+  const longMem = act === 2;
+
+  /* варианты держим в состоянии, чтобы не тасовались на каждый рендер */
+  if (!turn && !opts) setOpts(wdOptions(words, wi));
+
+  const pick = w => {
+    const right = words[wi];
+    const g = wdGuess(words, wi, longMem);
+    const okMe = w === right, okAi = g && g.word === right;
+    if (okMe) setMe(me + 1);
+    if (okAi) setAi(ai + 1);
+    setTurn({ me: w, ai: g, right: right, okMe: okMe, okAi: okAi });
+  };
+
+  const next = () => {
+    setTurn(null); setOpts(null);
+    if (wi + 1 < words.length) { setWi(wi + 1); return; }
+    if (ri + 1 < WD_ROUND.length) { setRi(ri + 1); setWi(1); return; }
+    if (act === 1) {                       // круг пройден — включаем длинную память
+      setAct1({ me: me, ai: ai });
+      setAct(2); setRi(0); setWi(1); setMe(0); setAi(0);
+      return;
+    }
+    setPhase('quiz');
+  };
+
+  /* ── финал ── */
+  if (phase === 'done') {
+    return React.createElement('div', { className: 'wd' },
+      React.createElement(TopBar, { level: 5, title: 'Следующее слово', onHome, step: 1, total: 1 }),
+      React.createElement('div', { className: 'wdbody wddone' },
+        React.createElement('div', { className: 'wdscore', style: { width: 'calc(100% - 28px)' } },
+          React.createElement('div', null,
+            React.createElement('b', null, 'Память в слово'),
+            React.createElement('em', null, act1 ? act1.ai : 0)),
+          React.createElement('div', null,
+            React.createElement('b', null, 'Память в два'),
+            React.createElement('em', null, ai))),
+        React.createElement('div', { className: 'wdlaw' },
+          React.createElement('b', null, 'Он не понимает — он смотрит назад'),
+          React.createElement('span', null,
+            'Нейро не знает, кто такой кот и что такое футбол. Он прочитал чужие фразы и запомнил, ' +
+            'какое слово за каким шло. Дальше он просто выбирает следующее — снова и снова. ' +
+            'Чем больше слов он видит перед собой, тем точнее угадывает: с одним словом он путался, ' +
+            'с двумя стал заметно лучше. У настоящих моделей память в тысячи слов — поэтому кажется, ' +
+            'что они понимают.'))),
+      React.createElement('div', { className: 'wdfoot' },
+        React.createElement('button', {
+          className: 'nk-btn nk-btn--ok', style: { width: '100%' }, onClick: onWin,
+        }, 'Готово')));
+  }
+
+  /* ── проверка связи ── */
+  if (phase === 'quiz') {
+    const o1 = [
+      { t: 'Он прочитал чужие фразы и запомнил, что за чем идёт', ok: true },
+      { t: 'Он понимает, о чём фраза, и думает', ok: false },
+      { t: 'Он подсматривает мои ответы', ok: false },
+    ];
+    const o2 = [
+      { t: 'Стал видеть больше слов перед собой — и выбор сузился', ok: true },
+      { t: 'Стал умнее и начал понимать смысл', ok: false },
+      { t: 'Ему просто повезло во второй раз', ok: false },
+    ];
+    const both = q1 !== null && o1[q1].ok && q2 !== null && o2[q2].ok;
+    return React.createElement('div', { className: 'wd' },
+      React.createElement(TopBar, { level: 5, title: 'Следующее слово', onHome, step: 1, total: 1 }),
+      React.createElement('div', { className: 'wdbody' },
+        React.createElement('div', { className: 'wdq' },
+          React.createElement('div', { className: 'wdq__t' }, 'Откуда Нейро знает, какое слово идёт следующим?'),
+          o1.map((o, i) => React.createElement('button', {
+            key: i, className: q1 === i ? (o.ok ? 'on--ok' : 'on--bad') : '',
+            onClick: () => setQ1(i),
+          }, o.t))),
+        q1 !== null && React.createElement('div', { className: 'wdsay', style: { marginTop: 10 } },
+          React.createElement('i', null, NKM(o1[q1].ok ? 'win' : 'think', 30)),
+          React.createElement('span', null, o1[q1].ok
+            ? 'Так и есть. Тридцать фраз — вот и всё моё знание о языке. Что такое зима, я не представляю.'
+            : 'Нет. Я не понимаю, о чём речь, и подсматривать мне незачем. Я просто помню, какое слово за каким шло в прочитанных фразах.')),
+
+        React.createElement('div', { className: 'wdq' },
+          React.createElement('div', { className: 'wdq__t' }, 'Почему со второй попытки Нейро стал угадывать лучше?'),
+          o2.map((o, i) => React.createElement('button', {
+            key: i, className: q2 === i ? (o.ok ? 'on--ok' : 'on--bad') : '',
+            onClick: () => setQ2(i),
+          }, o.t))),
+        q2 !== null && React.createElement('div', { className: 'wdsay', style: { marginTop: 10 } },
+          React.createElement('i', null, NKM(o2[q2].ok ? 'win' : 'think', 30)),
+          React.createElement('span', null, o2[q2].ok
+            ? 'Да. После одного слова «на» у меня десять продолжений и выбирать не из чего. А после «зимой на» — уже почти одно.'
+            : 'Не совсем. Понимать я не начал и везение тут ни при чём: я стал смотреть на два слова вместо одного, и вариантов стало меньше.'))),
+      React.createElement('div', { className: 'wdfoot' },
+        React.createElement('button', {
+          className: 'nk-btn nk-btn--pri', style: { width: '100%' }, disabled: !both,
+          onClick: () => setPhase('done'),
+        }, both ? 'Дальше' : 'Ответь на оба')));
+  }
+
+  /* ── игра ── */
+  const shown = words.slice(0, wi);
+  const g = turn ? turn.ai : wdGuess(words, wi, longMem);
+
+  return React.createElement('div', { className: 'wd' },
+    React.createElement(TopBar, { level: 5, title: 'Следующее слово', onHome, step: 1, total: 1 }),
+
+    phase === 'intro' && React.createElement(IntroModal, {
+      emoji: NKM('hello', 88),
+      title: 'Следующее слово',
+      law: 'Я прочитал тридцать фраз.\nБольше про язык я ничего не знаю.',
+      tip: 'Угадываем по очереди, какое слово будет дальше. Посмотрим, кто чаще прав.',
+      onStart: () => setPhase('play'),
+    }),
+
+    React.createElement('div', { className: 'wdbody' },
+      React.createElement('div', { className: 'wdsay' },
+        React.createElement('i', null, NKM(turn ? (turn.okMe ? 'win' : 'think') : 'hello', 30)),
+        React.createElement('span', null,
+          turn
+            ? (turn.okMe && !turn.okAi ? 'Ты угадал, а я нет. Ты знаешь, о чём речь, — а я только помню, что за чем шло.'
+              : turn.okAi && !turn.okMe ? 'Тут я угадал. Это слово шло следом чаще всего.'
+              : turn.okMe && turn.okAi ? 'Оба верно. Тут и гадать было нечего.'
+              : 'Мимо у обоих. Бывает.')
+            : act === 2
+              ? 'Те же фразы, но теперь я смотрю на два слова назад.'
+              : 'Какое слово будет дальше? Я загадаю своё, потом сравним.')),
+
+      React.createElement('div', { className: 'wdline' },
+        shown.map((w, i) => React.createElement('span', {
+          key: i, className: 'wdw' + (i === wi - 1 && wi > 1 ? ' wdw--new' : ''),
+        }, w)),
+        React.createElement('span', { className: 'wdw wdw--gap' }, turn ? turn.right : '?')),
+
+      /* что выбрали оба */
+      turn && React.createElement('div', { className: 'wdrow' },
+        React.createElement('div', { className: 'wdcell ' + (turn.okMe ? 'wdcell--hit' : 'wdcell--miss') },
+          React.createElement('b', null, 'ты сказал'),
+          React.createElement('span', null, turn.me)),
+        React.createElement('div', { className: 'wdcell ' + (turn.okAi ? 'wdcell--hit' : 'wdcell--miss') },
+          React.createElement('b', null, 'нейро сказал'),
+          React.createElement('span', null, turn.ai ? turn.ai.word : '—'))),
+
+      /* из чего он выбирал */
+      turn && turn.ai && React.createElement('div', { className: 'wdhow' },
+        turn.ai.forks > 1
+          ? 'После этих слов у меня было ' + turn.ai.forks + ' продолжений. Взял самое частое: ' + turn.ai.conf + '%'
+          : 'После этих слов у меня только одно продолжение — тут я не мог ошибиться'),
+
+      !turn && opts && React.createElement('div', { className: 'wdopts' },
+        opts.map((w, i) => React.createElement('button', { key: i, onClick: () => pick(w) }, w))),
+
+      React.createElement('div', { className: 'wdscore' },
+        React.createElement('div', null,
+          React.createElement('b', null, 'ты'),
+          React.createElement('em', null, me)),
+        React.createElement('div', null,
+          React.createElement('b', null, 'нейро'),
+          React.createElement('em', null, ai))),
+
+      React.createElement('div', { className: 'wdmem' },
+        React.createElement('div', { className: 'wdmem__t' }, 'Сколько слов помнит Нейро'),
+        React.createElement('div', { className: 'wdmem__r' },
+          React.createElement('button', { className: act === 1 ? 'on' : '', disabled: true }, 'одно слово'),
+          React.createElement('button', { className: act === 2 ? 'on' : '', disabled: true }, 'два слова'))),
+
+      act === 2 && act1 && React.createElement('div', { className: 'wdhint' },
+        'В прошлый раз, с памятью в одно слово, он угадал ' + act1.ai)),
+
+    React.createElement('div', { className: 'wdfoot' },
+      turn
+        ? React.createElement('button', {
+            className: 'nk-btn nk-btn--ok', style: { width: '100%' }, onClick: next,
+          }, 'Дальше')
+        : React.createElement('div', { className: 'wdhint', style: { margin: 0 } },
+            'Фраза ' + (ri + 1) + ' из ' + WD_ROUND.length + (act === 2 ? ' · второй круг' : ''))));
+}
+
+function App() {
+  return React.createElement('div', { className: 'wdroot' },
+    React.createElement(LevelWords, {
+      onWin: () => {
+        if (window.nooka) window.nooka.missionWin('in5', 100, { nextLabel: 'К игре →' });
+        setTimeout(() => { window.location.href = 'game.html?g=inside'; }, 400);
+      },
+      onHome: () => { window.location.href = 'game.html?g=inside'; },
+    }));
+}
+ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(App, null));
+</script>
+</body>
+</html>
