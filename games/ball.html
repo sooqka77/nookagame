@@ -1,0 +1,472 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1">
+<meta name="theme-color" content="#0E0719">
+<title>Шарик ищет дно — Nooka</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&family=Unbounded:wght@700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="nooka-ui.css">
+<style>
+/* ============ ШАРИК ИЩЕТ ДНО ============ */
+.blroot{height:100vh;overflow:hidden;max-width:480px;margin:0 auto;position:relative;}
+.bl{height:100%;display:flex;flex-direction:column;overflow:hidden;
+  background:linear-gradient(180deg,#111C2E 0%,#0C1422 60%,#080D18 100%);}
+.blbody{flex:1;overflow-y:auto;padding:0 0 6px;-webkit-overflow-scrolling:touch;}
+
+.blsay{display:flex;gap:10px;align-items:flex-start;margin:2px 14px 0;padding:13px 15px;
+  border-radius:20px;background:rgba(255,255,255,.055);
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.09);animation:blIn .3s ease-out both;}
+.blsay i{flex-shrink:0;line-height:0;}
+.blsay span{font-weight:700;font-size:13.5px;line-height:1.45;color:#DCE6F5;}
+
+/* долина */
+.blvalwrap{margin:11px 14px 0;position:relative;touch-action:none;}
+.blval{width:100%;display:block;border-radius:20px;
+  background:linear-gradient(180deg,rgba(126,200,255,.07),rgba(255,255,255,.02));
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.09);}
+.blval text{font-family:var(--nk-body);font-weight:800;fill:#7E92AE;}
+
+/* выбор шага */
+.blsteps{margin:11px 14px 0;display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.blsteps button{padding:12px 6px;border:none;border-radius:15px;cursor:pointer;
+  font-family:inherit;font-weight:900;font-size:13.5px;color:#DCE6F5;
+  background:rgba(255,255,255,.06);box-shadow:inset 0 0 0 1px rgba(255,255,255,.1);}
+.blsteps button i{display:block;margin-top:3px;font-style:normal;font-weight:800;font-size:10.5px;color:#7E92AE;}
+.blsteps button.on{color:#08131F;background:#7EC8FF;box-shadow:0 6px 16px -8px #7EC8FF;}
+.blsteps button.on i{color:#0C2B45;}
+.blsteps button.done{box-shadow:inset 0 0 0 1.5px rgba(126,200,255,.4);}
+.blsteps button:disabled{cursor:default;}
+
+/* итог прогона */
+.blres{margin:11px 14px 0;padding:12px 15px;border-radius:16px;display:flex;gap:10px;}
+.blres div{flex:1;text-align:center;}
+.blres b{display:block;font-weight:900;font-size:10px;letter-spacing:.05em;text-transform:uppercase;
+  color:#7E92AE;margin-bottom:5px;}
+.blres em{display:block;font-style:normal;font-family:var(--nk-brand),var(--nk-body);
+  font-weight:700;font-size:20px;color:#EAF1FA;}
+.blres--ok{background:rgba(78,217,155,.14);box-shadow:inset 0 0 0 1px rgba(78,217,155,.35);}
+.blres--bad{background:rgba(255,140,120,.12);box-shadow:inset 0 0 0 1px rgba(255,140,120,.32);}
+
+.blnote{margin:10px 14px 0;padding:10px 14px;border-radius:15px;text-align:center;
+  font-weight:800;font-size:12.5px;line-height:1.4;color:#9FD4FF;
+  background:rgba(126,200,255,.11);box-shadow:inset 0 0 0 1px rgba(126,200,255,.26);}
+.blhint{margin:9px 14px 0;text-align:center;font-weight:800;font-size:11.5px;color:#6E819B;}
+
+.blfoot{flex-shrink:0;padding:10px 14px calc(14px + env(safe-area-inset-bottom));
+  background:linear-gradient(180deg,rgba(8,13,24,0),#080D18 42%);}
+
+/* финал */
+.bldone{display:flex;flex-direction:column;align-items:center;padding-top:6px;}
+.bllaw{margin:14px 18px 0;text-align:center;}
+.bllaw b{display:block;font-family:var(--nk-brand),var(--nk-body);font-weight:700;
+  font-size:17px;line-height:1.3;color:#EAF1FA;}
+.bllaw span{display:block;margin-top:8px;font-weight:700;font-size:13.5px;color:#93A5BF;line-height:1.45;}
+
+/* проверка связи */
+.blq{margin:12px 14px 0;padding:14px 16px;border-radius:20px;
+  background:rgba(255,255,255,.045);box-shadow:inset 0 0 0 1px rgba(255,255,255,.08);}
+.blq__t{font-weight:900;font-size:14px;color:#EAF1FA;line-height:1.35;margin-bottom:10px;}
+.blq button{display:block;width:100%;margin-bottom:7px;padding:13px 14px;border:none;
+  border-radius:15px;cursor:pointer;text-align:left;font-family:inherit;font-weight:700;
+  font-size:13.5px;color:#DCE6F5;background:rgba(255,255,255,.05);
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.09);}
+.blq button.on--ok{background:rgba(78,217,155,.16);box-shadow:inset 0 0 0 1.5px rgba(78,217,155,.5);color:#C4F4E0;}
+.blq button.on--bad{background:rgba(255,107,107,.14);box-shadow:inset 0 0 0 1.5px rgba(255,107,107,.45);color:#FFD6CF;}
+
+@keyframes blIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
+@media (prefers-reduced-motion: reduce){.bl *{animation:none !important;}}
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script src="react-bundle.js"></script>
+<script src="nooka-core.js"></script>
+<script src="nooka-levels.js"></script>
+<script src="nooka-access.js"></script>
+<script src="nooka-gallery.js"></script>
+<script src="nooka-ui.js"></script>
+<script>
+/* ============================================================
+   ШАРИК ИЩЕТ ДНО — уровень 3 игры «Что у ИИ внутри».
+
+   Так учится любая модель, и здесь это показано без единого термина.
+   Шарик не видит долину. Он знает только наклон под собой и делает
+   x = x - шаг · наклон. Больше ничего.
+
+   Первый акт — про величину шага. Ребёнок пробует четыре и видит,
+   что решает не старание, а размер шага.
+   Второй акт — про место старта: долина с двумя ямами, шаг один и
+   тот же, а приходит шарик туда, откуда начал.
+
+   Замер до написания (_ball-model-check.js), склон первого акта:
+     шаг 0.02 — за 40 шагов не доходит, целиком дошёл бы за 141
+     шаг 0.15 — доходит за 31 шаг
+     шаг 0.55 — доходит за 8 шагов
+     шаг 2.20 — раскачивается и улетает со склона на 10-м шаге
+   Каждый исход держится на десятках значений шага, а не на одном:
+   «доходит» — 174 значения подряд, «улетает» — 81.
+   Во втором акте правило «где начал — туда и придёшь» проверено
+   на 19 точках старта и сработало во всех 19.
+
+   Замысел «средний шаг перепрыгивает бугор и находит дно поглубже»
+   я проверил и отбросил: у всех подходящих склонов такой исход
+   держался на двух-трёх значениях шага из полутора сотен —
+   для ребёнка это была бы лотерея, а не правило.
+   ============================================================ */
+
+/* склон первого акта: одна яма */
+const BL_A = {
+  lo: -5.6, hi: 5.6, start: -3.0, bottom: 0,
+  f: x => 0.5 * x * x + 0.015 * x * x * x,
+  d: x => x + 0.045 * x * x,
+};
+/* склон второго акта: ямка слева, настоящее дно справа */
+const BL_B = {
+  lo: -5.2, hi: 5.2, start: -3.0, bottom: 2.57, pit: -2.44, ridge: -0.07,
+  f: x => 0.10 * x * x + 3.0 * Math.cos(1.2 * x) - 0.3 * x,
+  d: x => 0.20 * x - 3.6 * Math.sin(1.2 * x) - 0.3,
+};
+const BL_STEP_B = 0.3;
+const BL_LIMIT = 40;
+
+const BL_STEPS = [
+  { t: 'крошечный', s: 0.02, hint: 'едва заметный' },
+  { t: 'маленький', s: 0.15, hint: 'осторожный' },
+  { t: 'средний',   s: 0.55, hint: 'уверенный' },
+  { t: 'огромный',  s: 2.20, hint: 'во весь мах' },
+];
+
+/* один спуск целиком: путь, число шагов, чем кончилось */
+function blRoll(m, start, step, max) {
+  let x = start;
+  const path = [x];
+  for (let i = 0; i < max; i++) {
+    x = x - step * m.d(x);
+    if (!isFinite(x) || x < m.lo || x > m.hi) return { path: path, out: true, steps: i + 1 };
+    path.push(x);
+    if (Math.abs(step * m.d(x)) < 0.004) return { path: path, steps: i + 1, stop: x };
+  }
+  return { path: path, steps: max, stop: x, slow: true };
+}
+
+/* ── картинка долины ─────────────────────────────────────────
+   Координаты вида: x по всей ширине, глубина — вниз.           */
+function blView(m) {
+  let lo = Infinity, hi = -Infinity;
+  for (let x = m.lo; x <= m.hi; x += 0.02) { const y = m.f(x); if (y < lo) lo = y; if (y > hi) hi = y; }
+  const X = x => 4 + (x - m.lo) / (m.hi - m.lo) * 92;
+  /* глубже — ниже на экране: у svg ось вниз, поэтому вычитаем */
+  const Y = y => 58 - (y - lo) / (hi - lo) * 50;
+  let path = '';
+  for (let i = 0; i <= 120; i++) {
+    const x = m.lo + (m.hi - m.lo) * i / 120;
+    path += (i ? 'L' : 'M') + X(x).toFixed(2) + ',' + Y(m.f(x)).toFixed(2);
+  }
+  return { X: X, Y: Y, path: path, floor: 64 };
+}
+
+function BlValley({ m, ball, trail, onPick, ghost }) {
+  const v = blView(m);
+  return React.createElement('svg', {
+    className: 'blval', viewBox: '0 0 100 66',
+    onPointerDown: onPick ? e => {
+      const r = e.currentTarget.getBoundingClientRect();
+      const fx = (e.clientX - r.left) / r.width;
+      onPick(m.lo + (m.hi - m.lo) * (fx * 100 - 4) / 92);
+    } : null,
+    style: { cursor: onPick ? 'crosshair' : 'default' },
+  },
+    /* сама долина */
+    React.createElement('path', {
+      d: v.path + 'L' + v.X(m.hi) + ',' + v.floor + 'L' + v.X(m.lo) + ',' + v.floor + 'Z',
+      fill: 'rgba(126,200,255,.13)',
+    }),
+    React.createElement('path', { d: v.path, fill: 'none', stroke: '#3E5A7C', strokeWidth: 1.1 }),
+
+    /* след шарика */
+    trail && trail.map((x, i) => React.createElement('circle', {
+      key: i, cx: v.X(x), cy: v.Y(m.f(x)) - 1.6, r: 0.9,
+      fill: '#7EC8FF', opacity: 0.15 + 0.5 * (i / Math.max(1, trail.length - 1)),
+    })),
+
+    /* куда ребёнок собирается поставить шарик */
+    ghost !== null && ghost !== undefined && React.createElement('circle', {
+      cx: v.X(ghost), cy: v.Y(m.f(ghost)) - 2.4, r: 2.2,
+      fill: 'none', stroke: '#7EC8FF', strokeWidth: .7, strokeDasharray: '1.6 1.4',
+    }),
+
+    /* шарик */
+    ball !== null && ball !== undefined && React.createElement('circle', {
+      cx: v.X(ball), cy: v.Y(m.f(ball)) - 2.4, r: 2.4, fill: '#7EC8FF',
+    }),
+
+    /* подпись самого глубокого места */
+    React.createElement('text', {
+      x: v.X(m.bottom), y: v.Y(m.f(m.bottom)) + 4.6, textAnchor: 'middle', style: { fontSize: 3.2 },
+    }, 'дно'),
+    m.pit !== undefined && React.createElement('text', {
+      x: v.X(m.pit), y: v.Y(m.f(m.pit)) + 4.6, textAnchor: 'middle', style: { fontSize: 3.2 },
+    }, 'ямка'));
+}
+
+function LevelBall({ onWin, onHome }) {
+  const q = new URLSearchParams(window.location.search);
+  const [phase, setPhase] = useState(() => {
+    const p = q.get('p');
+    return ['step', 'where', 'quiz', 'done'].indexOf(p) > -1 ? p : 'intro';
+  });
+
+  /* акт 1 */
+  const [pick, setPick] = useState(null);        /* какой шаг выбран */
+  const [tried, setTried] = useState([]);        /* какие уже пробовал */
+  const [run, setRun] = useState(null);          /* идущий спуск */
+  const [at, setAt] = useState(0);               /* на каком шаге показ */
+
+  /* акт 2 */
+  const [spot, setSpot] = useState(null);        /* куда ставит шарик */
+  const [runs, setRuns] = useState([]);          /* что вышло с двух мест */
+
+  const [q1, setQ1] = useState(null);
+  const [q2, setQ2] = useState(null);
+
+  /* шаги показываем по одному — таймером, а не кадрами:
+     в фоновой вкладке кадры не идут, а таймер дотикает */
+  useEffect(() => {
+    if (!run || at >= run.path.length - 1) return;
+    /* весь спуск укладываем примерно в полторы секунды, каким бы
+       длинным он ни был: сорок шагов по отдельности никто смотреть не станет */
+    const пауза = Math.max(45, Math.min(220, Math.round(1500 / run.path.length)));
+    const t = setTimeout(() => setAt(at + 1), at === 0 ? 260 : пауза);
+    return () => clearTimeout(t);
+  }, [run, at]);
+
+  const done = run && at >= run.path.length - 1;
+
+  /* ── акт 1: величина шага ── */
+  if (phase === 'step') {
+    const m = BL_A;
+    const ball = run ? run.path[at] : m.start;
+    const trail = run ? run.path.slice(0, at + 1) : null;
+    const cur = pick !== null ? BL_STEPS[pick] : null;
+    /* пока не попробовал средний, дальше не пускаем: на нём и видно, как надо */
+    const ready = tried.indexOf(2) > -1 && tried.length >= 2;
+
+    const итог = !done ? null
+      : run.out ? { b: 'вышло', t: 'улетел', ok: false }
+      : run.slow ? { b: 'за ' + BL_LIMIT + ' шагов', t: 'не дошёл', ok: false }
+      : { b: 'шагов до дна', t: String(run.steps), ok: true };
+
+    return React.createElement('div', { className: 'bl' },
+      React.createElement(TopBar, { level: 3, title: 'Шарик ищет дно', onHome, step: 0, total: 2 }),
+      React.createElement('div', { className: 'blbody' },
+        React.createElement('div', { className: 'blsay' },
+          React.createElement('i', null, NKM(done ? (итог.ok ? 'win' : 'think') : 'hello', 30)),
+          React.createElement('span', null,
+            !run
+              ? 'Шарик не видит долину. Он щупает наклон под собой и делает шаг вниз. Выбери, какой шаг ему разрешить.'
+              : !done
+                ? 'Шаг… ещё шаг…'
+                : run.out
+                  ? 'Шаг такой большой, что шарик перелетал дно раз за разом — и вылетел из долины.'
+                  : run.slow
+                    ? 'Шагает верно, но крошечно. За ' + BL_LIMIT + ' шагов не добрался: ему нужен 141.'
+                    : run.steps <= 12
+                      ? 'Вот так. Дно найдено за ' + run.steps + ' шагов.'
+                      : 'Дошёл, но долго — ' + run.steps + ' шагов. Шаг можно и посмелее.')),
+
+        React.createElement('div', { className: 'blvalwrap' },
+          React.createElement(BlValley, { m: m, ball: ball, trail: trail })),
+
+        React.createElement('div', { className: 'blsteps' },
+          BL_STEPS.map((s, i) => React.createElement('button', {
+            key: i,
+            className: (pick === i ? 'on' : '') + (tried.indexOf(i) > -1 ? ' done' : ''),
+            disabled: !!run && !done,
+            onClick: () => { setPick(i); setRun(null); setAt(0); },
+          }, s.t, React.createElement('i', null, s.hint)))),
+
+        done && React.createElement('div', { className: 'blres ' + (итог.ok ? 'blres--ok' : 'blres--bad') },
+          React.createElement('div', null,
+            React.createElement('b', null, 'шаг'),
+            React.createElement('em', null, cur.t)),
+          React.createElement('div', null,
+            React.createElement('b', null, итог.b),
+            React.createElement('em', null, итог.t))),
+
+        ready && React.createElement('div', { className: 'blnote' },
+          'Шарик один и тот же. Меняется только размер шага')),
+
+      React.createElement('div', { className: 'blfoot' },
+        ready && done
+          ? React.createElement('button', {
+              className: 'nk-btn nk-btn--ok', style: { width: '100%' },
+              onClick: () => { setRun(null); setAt(0); setPhase('where'); },
+            }, 'Дальше')
+          : React.createElement('button', {
+              className: 'nk-btn nk-btn--pri', style: { width: '100%' },
+              disabled: pick === null || (!!run && !done),
+              onClick: () => {
+                if (done) { setRun(null); setAt(0); setPick(null); return; }
+                setRun(blRoll(m, m.start, BL_STEPS[pick].s, BL_LIMIT));
+                setAt(0);
+                if (tried.indexOf(pick) < 0) setTried(tried.concat([pick]));
+              },
+            }, done ? (tried.indexOf(2) < 0 ? 'Попробуй средний' : 'Ещё раз')
+                : pick === null ? 'Выбери шаг' : 'Пустить шарик')));
+  }
+
+  /* ── акт 2: место старта ── */
+  if (phase === 'where') {
+    const m = BL_B;
+    const ball = run ? run.path[at] : spot;
+    const trail = run ? run.path.slice(0, at + 1) : null;
+    const пришёл = done ? (Math.abs(run.stop - m.bottom) < 0.4 ? 'дно' : 'ямка') : null;
+    const обе = runs.length >= 2 && runs.some(r => r === 'дно') && runs.some(r => r === 'ямка');
+
+    return React.createElement('div', { className: 'bl' },
+      React.createElement(TopBar, { level: 3, title: 'Шарик ищет дно', onHome, step: 1, total: 2 }),
+      React.createElement('div', { className: 'blbody' },
+        React.createElement('div', { className: 'blsay' },
+          React.createElement('i', null, NKM(done ? (пришёл === 'дно' ? 'win' : 'think') : 'hello', 30)),
+          React.createElement('span', null,
+            обе
+              ? 'Шаг был один и тот же. Всё решило то, откуда шарик начал.'
+              : !run
+                ? (runs.length
+                    ? 'Теперь поставь его с другой стороны бугра.'
+                    : 'Тут две ямы: мелкая и настоящее дно. Поставь шарик, куда хочешь, — шаг я возьму средний.')
+                : !done
+                  ? 'Шаг… ещё шаг…'
+                  : пришёл === 'дно'
+                    ? 'Пришёл на самое дно. Оно было под горку от старта.'
+                    : 'Сел в ямку. Дальше наклона нет — вокруг всё вверх, и шарик считает, что пришёл.')),
+
+        React.createElement('div', { className: 'blvalwrap' },
+          React.createElement(BlValley, {
+            m: m, ball: ball, trail: trail, ghost: !run && spot === null ? null : undefined,
+            onPick: run ? null : x => setSpot(Math.max(m.lo + 0.3, Math.min(m.hi - 0.3, x))),
+          })),
+
+        done && React.createElement('div', { className: 'blres ' + (пришёл === 'дно' ? 'blres--ok' : 'blres--bad') },
+          React.createElement('div', null,
+            React.createElement('b', null, 'пустили с'),
+            React.createElement('em', null, run.path[0] < m.ridge ? 'слева' : 'справа')),
+          React.createElement('div', null,
+            React.createElement('b', null, 'пришёл'),
+            React.createElement('em', null, пришёл === 'дно' ? 'на дно' : 'в ямку'))),
+
+        обе && React.createElement('div', { className: 'blnote' },
+          'Шарик всегда идёт вниз — но вниз от того места, где стоит')),
+
+      React.createElement('div', { className: 'blfoot' },
+        обе && done
+          ? React.createElement('button', {
+              className: 'nk-btn nk-btn--ok', style: { width: '100%' }, onClick: () => setPhase('quiz'),
+            }, 'Дальше')
+          : React.createElement('button', {
+              className: 'nk-btn nk-btn--pri', style: { width: '100%' },
+              disabled: spot === null || (!!run && !done),
+              onClick: () => {
+                if (done) { setRun(null); setAt(0); setSpot(null); return; }
+                const r = blRoll(m, spot, BL_STEP_B, 60);
+                setRun(r); setAt(0);
+                setRuns(runs.concat([Math.abs((r.stop === undefined ? spot : r.stop) - m.bottom) < 0.4 ? 'дно' : 'ямка']));
+              },
+            }, done ? 'Поставить заново' : spot === null ? 'Нажми на склон' : 'Пустить шарик')));
+  }
+
+  /* ── проверка связи ── */
+  if (phase === 'quiz') {
+    const o1 = [
+      { t: 'Он перескакивал дно и раскачивался всё сильнее', ok: true },
+      { t: 'Он устал и покатился назад', ok: false },
+      { t: 'Долина оказалась слишком короткой', ok: false },
+    ];
+    const o2 = [
+      { t: 'Он видит только наклон под собой, а не всю долину', ok: true },
+      { t: 'Он специально выбирает место похуже', ok: false },
+      { t: 'Он запомнил ямку с прошлого раза', ok: false },
+    ];
+    const both = q1 !== null && o1[q1].ok && q2 !== null && o2[q2].ok;
+    return React.createElement('div', { className: 'bl' },
+      React.createElement(TopBar, { level: 3, title: 'Шарик ищет дно', onHome, step: 1, total: 2 }),
+      React.createElement('div', { className: 'blbody' },
+        React.createElement('div', { className: 'blq' },
+          React.createElement('div', { className: 'blq__t' }, 'Почему при огромном шаге шарик улетел со склона?'),
+          o1.map((o, i) => React.createElement('button', {
+            key: i, className: q1 === i ? (o.ok ? 'on--ok' : 'on--bad') : '', onClick: () => setQ1(i),
+          }, o.t))),
+        q1 !== null && React.createElement('div', { className: 'blsay', style: { marginTop: 10 } },
+          React.createElement('i', null, NKM(o1[q1].ok ? 'win' : 'think', 30)),
+          React.createElement('span', null, o1[q1].ok
+            ? 'Да. Наклон он считал верно — просто шагал через всю долину и с каждым разом залетал дальше.'
+            : 'Нет. Шарик не устаёт, и долина тут ни при чём. Дело в шаге: он перелетал дно и уходил всё дальше.')),
+
+        React.createElement('div', { className: 'blq' },
+          React.createElement('div', { className: 'blq__t' }, 'Почему шарик застрял в мелкой ямке, хотя рядом было место глубже?'),
+          o2.map((o, i) => React.createElement('button', {
+            key: i, className: q2 === i ? (o.ok ? 'on--ok' : 'on--bad') : '', onClick: () => setQ2(i),
+          }, o.t))),
+        q2 !== null && React.createElement('div', { className: 'blsay', style: { marginTop: 10 } },
+          React.createElement('i', null, NKM(o2[q2].ok ? 'win' : 'think', 30)),
+          React.createElement('span', null, o2[q2].ok
+            ? 'Именно. В ямке со всех сторон вверх — значит, для шарика это и есть дно. Что там за бугром, он не знает.'
+            : 'Не угадал. Шарик ничего не помнит и не выбирает: он просто идёт туда, где ниже прямо сейчас.'))),
+      React.createElement('div', { className: 'blfoot' },
+        React.createElement('button', {
+          className: 'nk-btn nk-btn--pri', style: { width: '100%' }, disabled: !both,
+          onClick: () => setPhase('done'),
+        }, both ? 'Дальше' : 'Ответь на оба')));
+  }
+
+  /* ── финал ── */
+  if (phase === 'done') {
+    return React.createElement('div', { className: 'bl' },
+      React.createElement(TopBar, { level: 3, title: 'Шарик ищет дно', onHome, step: 2, total: 2 }),
+      React.createElement('div', { className: 'blbody bldone' },
+        React.createElement('div', { className: 'bllaw' },
+          React.createElement('b', null, 'Учиться — значит идти туда, где ошибок меньше'),
+          React.createElement('span', null,
+            'Так учится любая модель. Никто не показывает ей правильный ответ — она смотрит, ' +
+            'в какую сторону ошибка уменьшается, и делает шаг. Потом ещё. И так миллионы раз. ' +
+            'Слишком мелкий шаг — учится вечность. Слишком большой — перелетает и всё разваливается. ' +
+            'А место, откуда начали, решает, к какому дну она придёт.')),
+        React.createElement('div', { className: 'blnote', style: { marginTop: 16 } },
+          'Величину шага у настоящих моделей подбирают руками — и это одна из главных забот тех, кто их учит')),
+      React.createElement('div', { className: 'blfoot' },
+        React.createElement('button', {
+          className: 'nk-btn nk-btn--ok', style: { width: '100%' }, onClick: onWin,
+        }, 'Готово')));
+  }
+
+  /* ── заставка ── */
+  return React.createElement('div', { className: 'bl' },
+    React.createElement(TopBar, { level: 3, title: 'Шарик ищет дно', onHome, step: 0, total: 2 }),
+    React.createElement(IntroModal, {
+      emoji: NKM('hello', 88),
+      title: 'Шарик ищет дно',
+      law: 'Шарик не видит долину.\nОн щупает наклон под собой.',
+      tip: 'Твоё дело — решить, какой длины шаг ему разрешить.',
+      onStart: () => setPhase('step'),
+    }),
+    React.createElement('div', { className: 'blbody' }));
+}
+
+function App() {
+  return React.createElement('div', { className: 'blroot' },
+    React.createElement(LevelBall, {
+      onWin: () => {
+        if (window.nooka) window.nooka.missionWin('in3', 100, { nextLabel: 'К игре →' });
+        setTimeout(() => { window.location.href = 'game.html?g=inside'; }, 400);
+      },
+      onHome: () => { window.location.href = 'game.html?g=inside'; },
+    }));
+}
+ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(App, null));
+</script>
+</body>
+</html>
