@@ -1,0 +1,878 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1">
+<meta name="theme-color" content="#0E0719">
+<title>Библиотекарь — Nooka</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&family=Unbounded:wght@700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="nooka-ui.css">
+<style>
+/* ============ БИБЛИОТЕКАРЬ ============ */
+.lbroot{height:100vh;overflow:hidden;max-width:480px;margin:0 auto;position:relative;}
+.lb{height:100%;display:flex;flex-direction:column;overflow:hidden;
+  background:linear-gradient(180deg,#1B1A2E 0%,#111022 60%,#0A0916 100%);}
+.lbbody{flex:1;overflow-y:auto;padding:0 0 6px;-webkit-overflow-scrolling:touch;}
+
+.lbsay{display:flex;gap:10px;align-items:flex-start;margin:2px 14px 0;padding:13px 15px;
+  border-radius:20px;background:rgba(255,255,255,.055);
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.09);animation:lbIn .3s ease-out both;}
+.lbsay i{flex-shrink:0;line-height:0;}
+.lbsay span{font-weight:700;font-size:13.5px;line-height:1.45;color:#E4DFF0;}
+.lbsay b{color:#FFD08A;font-weight:900;}
+
+/* читатель */
+.lbask{margin:12px 14px 0;padding:15px 16px;border-radius:20px;
+  background:rgba(255,208,138,.1);box-shadow:inset 0 0 0 1px rgba(255,208,138,.3);}
+.lbask__w{font-weight:900;font-size:10px;letter-spacing:.06em;text-transform:uppercase;
+  color:#FFD08A;margin-bottom:7px;}
+.lbask__t{font-family:var(--nk-brand),var(--nk-body);font-weight:700;font-size:16.5px;
+  line-height:1.35;color:#F3EEFF;}
+
+/* каталог по буквам */
+.lbwords{margin:11px 14px 0;display:flex;flex-wrap:wrap;gap:7px;}
+.lbwords button{padding:11px 15px;border:none;border-radius:14px;cursor:pointer;
+  font-family:inherit;font-weight:900;font-size:13.5px;color:#E4DFF0;
+  background:rgba(255,255,255,.06);box-shadow:inset 0 0 0 1px rgba(255,255,255,.11);}
+.lbwords button.used{color:#7E7898;background:rgba(255,255,255,.03);
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.06);}
+.lbwords button:disabled{cursor:default;}
+
+.lbfound{margin:11px 14px 0;padding:12px 15px;border-radius:16px;text-align:center;
+  background:rgba(255,255,255,.045);box-shadow:inset 0 0 0 1px rgba(255,255,255,.08);}
+.lbfound b{display:block;font-weight:900;font-size:10px;letter-spacing:.05em;text-transform:uppercase;
+  color:#7E7898;margin-bottom:6px;}
+.lbfound span{font-family:var(--nk-brand),var(--nk-body);font-weight:700;font-size:20px;color:#FF9E9E;}
+.lbfound em{display:block;margin-top:5px;font-style:normal;font-weight:700;font-size:12px;color:#8D86A8;}
+
+/* полка с названиями */
+.lbshelf{margin:11px 14px 0;padding:12px 14px;border-radius:16px;
+  background:rgba(255,255,255,.035);box-shadow:inset 0 0 0 1px rgba(255,255,255,.07);}
+.lbshelf__t{font-weight:900;font-size:10px;letter-spacing:.05em;text-transform:uppercase;
+  color:#7E7898;margin-bottom:8px;}
+.lbshelf__l{display:flex;flex-wrap:wrap;gap:5px;}
+.lbshelf__l i{font-style:normal;padding:6px 9px;border-radius:9px;font-weight:700;font-size:11px;
+  color:#A79FC2;background:rgba(255,255,255,.05);}
+
+/* карта зала */
+.lbmapwrap{margin:11px 14px 0;position:relative;touch-action:none;}
+.lbmap{width:100%;display:block;border-radius:20px;
+  background:radial-gradient(120% 100% at 50% 0%,rgba(255,208,138,.07),rgba(255,255,255,.03) 60%);
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.09);}
+.lbmap text{font-family:var(--nk-body);font-weight:800;fill:#8D86A8;}
+.lbmap text.near{fill:#FFD08A;}
+.lbmap text.pick{fill:#F3EEFF;}
+/* зал разъезжается средствами браузера: в фоновой вкладке кадры не идут,
+   а переход всё равно доводит книги до места */
+.lbbook{transition:transform .9s cubic-bezier(.3,.7,.3,1);}
+.lbbook text{transition:opacity .5s ease .3s;}
+
+/* книга в руке */
+.lbhand{margin:10px 14px 0;padding:13px 15px;border-radius:18px;cursor:grab;
+  background:rgba(255,208,138,.12);box-shadow:inset 0 0 0 1.5px rgba(255,208,138,.4);
+  touch-action:none;user-select:none;-webkit-user-select:none;}
+.lbhand.off{opacity:.4;cursor:default;}
+.lbhand__t{font-family:var(--nk-brand),var(--nk-body);font-weight:700;font-size:15px;color:#F3EEFF;}
+.lbhand__a{margin-top:5px;font-weight:700;font-size:12.5px;color:#C9B79A;}
+.lbghost{position:fixed;z-index:50;pointer-events:none;transform:translate(-50%,-50%);
+  padding:9px 13px;border-radius:14px;background:#FFD08A;color:#2A1F10;
+  font-weight:900;font-size:12.5px;box-shadow:0 10px 24px -10px rgba(0,0,0,.8);}
+
+/* выбор книги для читателя */
+.lbpick{margin:11px 14px 0;display:flex;flex-direction:column;gap:7px;}
+.lbpick button{padding:13px 15px;border:none;border-radius:15px;cursor:pointer;text-align:left;
+  font-family:inherit;font-weight:900;font-size:13.5px;color:#E4DFF0;
+  background:rgba(255,255,255,.055);box-shadow:inset 0 0 0 1px rgba(255,255,255,.1);}
+.lbpick button i{display:block;margin-top:4px;font-style:normal;font-weight:700;font-size:11.5px;color:#8D86A8;}
+.lbpick button.on--ok{background:rgba(78,217,155,.16);box-shadow:inset 0 0 0 1.5px rgba(78,217,155,.5);color:#C4F4E0;}
+.lbpick button.on--bad{background:rgba(255,107,107,.14);box-shadow:inset 0 0 0 1.5px rgba(255,107,107,.45);color:#FFD6CF;}
+
+.lbhint{margin:9px 14px 0;text-align:center;font-weight:800;font-size:11.5px;color:#7E7898;}
+.lbnote{margin:10px 14px 0;padding:10px 14px;border-radius:15px;text-align:center;
+  font-weight:800;font-size:12.5px;line-height:1.4;color:#FFD08A;
+  background:rgba(255,208,138,.11);box-shadow:inset 0 0 0 1px rgba(255,208,138,.26);}
+
+.lbfoot{flex-shrink:0;padding:10px 14px calc(14px + env(safe-area-inset-bottom));
+  background:linear-gradient(180deg,rgba(10,9,22,0),#0A0916 42%);}
+
+/* финал */
+.lbdone{display:flex;flex-direction:column;align-items:center;padding-top:6px;}
+.lblaw{margin:14px 18px 0;text-align:center;}
+.lblaw b{display:block;font-family:var(--nk-brand),var(--nk-body);font-weight:700;
+  font-size:17px;line-height:1.3;color:#F3EEFF;}
+.lblaw span{display:block;margin-top:8px;font-weight:700;font-size:13.5px;color:#9A92B5;line-height:1.45;}
+
+/* проверка связи */
+.lbq{margin:12px 14px 0;padding:14px 16px;border-radius:20px;
+  background:rgba(255,255,255,.045);box-shadow:inset 0 0 0 1px rgba(255,255,255,.08);}
+.lbq__t{font-weight:900;font-size:14px;color:#F3EEFF;line-height:1.35;margin-bottom:10px;}
+.lbq button{display:block;width:100%;margin-bottom:7px;padding:13px 14px;border:none;
+  border-radius:15px;cursor:pointer;text-align:left;font-family:inherit;font-weight:700;
+  font-size:13.5px;color:#E4DFF0;background:rgba(255,255,255,.05);
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.09);}
+.lbq button.on--ok{background:rgba(78,217,155,.16);box-shadow:inset 0 0 0 1.5px rgba(78,217,155,.5);color:#C4F4E0;}
+.lbq button.on--bad{background:rgba(255,107,107,.14);box-shadow:inset 0 0 0 1.5px rgba(255,107,107,.45);color:#FFD6CF;}
+
+@keyframes lbIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
+@keyframes lbPulse{0%,100%{opacity:.35;r:3;}50%{opacity:.9;r:5.5;}}
+@media (prefers-reduced-motion: reduce){.lb *{animation:none !important;}}
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script src="react-bundle.js"></script>
+<script src="nooka-core.js"></script>
+<script src="nooka-levels.js"></script>
+<script src="nooka-access.js"></script>
+<script src="nooka-gallery.js"></script>
+<script src="nooka-ui.js"></script>
+<script>
+/* ============================================================
+   БИБЛИОТЕКАРЬ — уровень 4 игры «Что у ИИ внутри».
+
+   Читатель не помнит названия: «мне про зверя, который спит зимой».
+   Каталог ищет буквы и не находит ничего — слова «зверь» нет ни
+   в одном названии. Нейро находит, потому что ищет не буквы.
+
+   Как он это делает — считается здесь, а не изображается.
+   Нейро «читал» короткие фразы про мир (LB_CORPUS). Для каждого
+   слова видно, с какими словами оно попадалось в одной фразе, —
+   получается его вектор соседства. Слова из похожего окружения
+   оказываются близко: «медведь» рядом со «зверь», хотя буквы разные.
+   Книга — среднее её слов, просьба — среднее своих, близость — косинус.
+   Зал раскладывается силами: похожие книги притягиваются, остальные
+   расталкиваются. Ни одна координата не поставлена руками.
+
+   Замер до написания (_lib-model-check.js):
+     поиск по буквам   — 0 находок на 8 просьбах
+     поиск по смыслу   — нужная книга первой в 8 из 8
+     зал               — у 16 книг из 16 ближайшая на карте
+                         входит в тройку ближайших по модели
+     раскладка         — 115 мс на восемь попыток
+
+   Отсюда и «ага»: похожее лежит рядом, поэтому находится
+   без единого совпавшего слова.
+   ============================================================ */
+
+/* ── приведение слова к основе ────────────────────────────────
+   Режем окончание, пока режется, но основу короче трёх букв
+   не оставляем. Проверено замером: разные слова не слиплись.   */
+const LB_ENDS = ['ться','тся','ами','ями','ого','его','ому','ему','ыми','ими','ешь','ишь',
+  'ая','яя','ое','ее','ые','ие','ый','ий','ой','ей','ых','их','ов','ев','ам','ям',
+  'ах','ях','ом','ем','ую','юю','ла','ло','ли','ть','ти','ет','ит','ут','ют','ат','ят',
+  'а','я','о','е','ы','и','у','ю','ь','й'];
+
+function lbStem(w) {
+  let cut = true;
+  while (cut) {
+    cut = false;
+    for (let i = 0; i < LB_ENDS.length; i++) {
+      const e = LB_ENDS[i];
+      if (w.length - e.length >= 3 && w.slice(-e.length) === e) { w = w.slice(0, -e.length); cut = true; break; }
+    }
+  }
+  return w;
+}
+
+/* ── что Нейро прочитал ──────────────────────────────────────── */
+const LB_CORPUS = [
+  'медведь большой зверь живёт в лесу',
+  'медведь всю зиму спит в берлоге',
+  'зимой медведь не выходит из берлоги',
+  'барсук тоже зверь и тоже спит зиму',
+  'ёжик маленький зверь он спит всю зиму',
+  'лиса рыжий зверь живёт в норе в лесу',
+  'заяц лесной зверь зимой он белый',
+  'волк серый зверь живёт в лесу',
+  'белка живёт на дереве в лесу',
+  'зверь в лесу ищет еду и прячется от холода',
+  'зимой в лесу холодно и лежит снег',
+  'снег падает зимой и всё вокруг белое',
+  'зима это самое холодное время года',
+  'лес это много деревьев где живут звери',
+  'нора это дом зверя под землёй',
+  'берлога это яма где медведь спит зиму',
+  'шубка греет зверя в холода',
+  'спать значит закрыть глаза и лежать',
+
+  'кит огромный он живёт в море',
+  'кит самый большой зверь в море',
+  'кит плавает в море и поёт',
+  'море это очень много воды',
+  'на дне моря темно и холодно',
+  'дно это то что под водой в самом низу',
+  'рыба плавает в воде',
+  'дельфин живёт в море и плавает быстро',
+  'осьминог живёт на дне моря и прячется',
+  'корабль плывёт по морю',
+  'волна бежит по морю к берегу',
+  'вода в море солёная',
+
+  'звезда это огромный горячий шар далеко в небе',
+  'звёзды светятся ночью на небе',
+  'ночью на небе видно звёзды и луну',
+  'солнце это тоже звезда только близко',
+  'планета летит вокруг звезды',
+  'марс красная планета',
+  'земля наша планета мы живём на ней',
+  'ракета летит в космос',
+  'космос это то что за небом там пусто и темно',
+  'луна летает вокруг земли',
+  'космонавт летит на ракете в космос',
+  'небо днём голубое а ночью тёмное',
+  'светится значит даёт свет в темноте',
+  'звёзды и планеты это всё космос',
+  'ракета летит далеко к другим планетам и звёздам',
+
+  'мотор гудит и крутит колёса',
+  'машина катится потому что крутится мотор',
+  'велосипед катится когда крутишь педали',
+  'колесо круглое и крутится',
+  'ключ это инструмент им крутят гайку',
+  'гайка держит колесо крепко',
+  'сломанный велосипед можно чинить ключом',
+  'чинить значит сделать сломанное снова рабочим',
+  'механик чинит машину в гараже',
+  'инструмент это то чем работают руками',
+  'винт закручивают отвёрткой',
+
+  'школа это дом где дети учатся',
+  'в школе идёт урок и учитель объясняет',
+  'ученик пишет в тетради ручкой',
+  'на уроке дети решают задачи',
+  'звонок звенит и урок кончается',
+  'учитель проверяет тетради учеников',
+  'класс это комната где идёт урок',
+  'перемена это время между уроками',
+  'на перемене дети бегают и смеются',
+  'дети смеются когда весело',
+  'смешное это то над чем смеются',
+  'мел белый им пишут на доске',
+
+  'пирог пекут в духовке из теста',
+  'тесто делают из муки и воды',
+  'повар готовит еду на кухне',
+  'суп варят в кастрюле',
+  'хлеб пекут из муки',
+  'на кухне готовят и едят',
+  'сахар сладкий его кладут в тесто',
+  'еда это то что едят когда голодны',
+  'кашу варят на кухне из крупы и молока',
+
+  'динозавр это огромный древний зверь',
+  'динозавры жили очень давно и вымерли',
+  'кость динозавра находят в земле',
+  'учёный копает землю и находит древние кости',
+  'давно значит очень задолго до нас',
+  'древний значит очень старый',
+  'раскопки это когда копают землю и ищут древнее',
+
+  'друг это тот с кем весело',
+  'друзья помогают друг другу',
+  'ссора это когда друзья спорят',
+  'мирятся значит перестают ссориться',
+  'грустно когда друга нет рядом',
+  'вместе играть веселее чем одному',
+];
+
+/* ── зал: шестнадцать книг ───────────────────────────────────── */
+const LB_BOOKS = [
+  { id: 'bear',  tag: 'медведь',   pro: 'медведя',     t: 'Топтыгин под снегом',      about: 'медведь берлога зима лес' },
+  { id: 'hare',  tag: 'заяц',      pro: 'зайца',       t: 'Белая шубка',              about: 'заяц зима снег лес' },
+  { id: 'whale', tag: 'кит',       pro: 'кита',        t: 'Синий великан',            about: 'кит море вода' },
+  { id: 'deep',  tag: 'дно',       pro: 'морское дно', t: 'Что там, внизу',           about: 'дно море осьминог' },
+  { id: 'mars',  tag: 'марс',      pro: 'Марс',        t: 'Красная соседка',          about: 'марс планета ракета' },
+  { id: 'star',  tag: 'звёзды',    pro: 'звёзды',      t: 'Почему они не падают',     about: 'звезда небо ночь' },
+  { id: 'bike',  tag: 'велосипед', pro: 'велосипед',   t: 'Две гайки и ключ',         about: 'велосипед ключ гайка чинить' },
+  { id: 'motor', tag: 'мотор',     pro: 'мотор',       t: 'Как он гудит',             about: 'мотор машина колесо' },
+  { id: 'chalk', tag: 'класс',     pro: 'перемены',    t: 'Мел на потолке',           about: 'класс перемена смеются дети' },
+  { id: 'note',  tag: 'тетрадь',   pro: 'тетрадь',     t: 'Тетрадь с секретом',       about: 'тетрадь ученик урок' },
+  { id: 'pie',   tag: 'пирог',     pro: 'пирог',       t: 'Пирог из ничего',          about: 'пирог тесто мука духовка' },
+  { id: 'soup',  tag: 'суп',       pro: 'суп',         t: 'Кастрюля на двоих',        about: 'суп кухня повар' },
+  { id: 'dino',  tag: 'динозавры', pro: 'динозавров',  t: 'Тот, кто был до нас',      about: 'динозавр древний огромный' },
+  { id: 'digs',  tag: 'раскопки',  pro: 'раскопки',    t: 'Копали и нашли',           about: 'учёный кость раскопки давно' },
+  { id: 'frnd',  tag: 'ссора',     pro: 'ссору',       t: 'Кто первый скажет прости', about: 'ссора друзья мирятся' },
+  { id: 'tgth',  tag: 'друзья',    pro: 'друзей',      t: 'Кто пойдёт со мной',       about: 'друзья вместе весело' },
+];
+
+/* книги, которые ребёнок расставляет сам */
+const LB_NEW = [
+  { id: 'octo',  t: 'Сколько ног у осьминога', about: 'осьминог море дно',      say: 'про осьминога и морское дно' },
+  { id: 'screw', t: 'Отвёртка и винт',         about: 'винт инструмент чинить', say: 'про инструменты и починку' },
+  { id: 'cosmo', t: 'Кто ходил по луне',       about: 'космонавт луна ракета',  say: 'про луну и космонавтов' },
+];
+
+/* просьбы читателей: ни одно слово не совпадает с названием */
+const LB_ASK = [
+  { q: 'как чинить сломанный велосипед', want: 'bike' },
+  { q: 'что светится ночью в небе',      want: 'star' },
+  { q: 'про зверя, который спит зимой',  want: 'bear' },
+];
+const LB_FIRST = LB_ASK[2];              /* с неё начинается смена — и ею же кончается */
+
+/* служебные слова выкидываем: они есть везде и смысла не несут */
+const LB_STOP = {};
+('и в на с со по у от до за из о об это то что как не а но же ли бы он она оно они мы я ты вы ' +
+ 'там тут его её их для чтобы когда где кто чем чём который которая которые которых тоже только очень ' +
+ 'всё все ещё уже нибудь про самого самый самое себя над ним ней нас вам мне кем тот та те ' +
+ 'есть был была было были быть значит потому если делать сделать может можно нет да ' +
+ 'много мало этот эта эти один одному другу другого рядом вокруг снова так такой').split(' ')
+  .forEach(w => { LB_STOP[lbStem(w)] = 1; });
+
+const lbTok = s => s.toLowerCase().replace(/[.,!?—«»]/g, '').split(/\s+/)
+  .filter(w => w).map(lbStem).filter(w => !LB_STOP[w]);
+
+/* ── векторы слов: с кем слово стоит в одной фразе ───────────── */
+const LB_VEC = (function () {
+  const co = {}, freq = {};
+  let pairs = 0;
+  LB_CORPUS.forEach(s => {
+    const seen = {}, w = [];
+    lbTok(s).forEach(x => { if (!seen[x]) { seen[x] = 1; w.push(x); } });
+    w.forEach(a => {
+      freq[a] = (freq[a] || 0) + 1;
+      co[a] = co[a] || {};
+      w.forEach(b => { if (a !== b) { co[a][b] = (co[a][b] || 0) + 1; pairs++; } });
+    });
+  });
+  let total = 0;
+  Object.keys(freq).forEach(k => { total += freq[k]; });
+  const V = {};
+  Object.keys(co).forEach(a => {
+    const v = {};
+    Object.keys(co[a]).forEach(b => {
+      const pmi = Math.log((co[a][b] / pairs) / ((freq[a] / total) * (freq[b] / total)));
+      if (pmi > 0) v[b] = pmi;
+    });
+    v[a] = 1.2;                       /* само слово тоже часть своего смысла */
+    V[a] = v;
+  });
+  return V;
+})();
+
+function lbMean(words) {
+  const out = {};
+  let n = 0;
+  words.forEach(w => {
+    if (!LB_VEC[w]) return;
+    n++;
+    Object.keys(LB_VEC[w]).forEach(k => { out[k] = (out[k] || 0) + LB_VEC[w][k]; });
+  });
+  if (!n) return null;
+  Object.keys(out).forEach(k => { out[k] /= n; });
+  return out;
+}
+function lbCos(a, b) {
+  if (!a || !b) return 0;
+  let d = 0, na = 0, nb = 0;
+  Object.keys(a).forEach(k => { na += a[k] * a[k]; if (b[k]) d += a[k] * b[k]; });
+  Object.keys(b).forEach(k => { nb += b[k] * b[k]; });
+  return (na && nb) ? d / Math.sqrt(na * nb) : 0;
+}
+
+const LB_BV = {};
+LB_BOOKS.forEach(b => { LB_BV[b.id] = lbMean(lbTok(b.about)); });
+
+/* Ближайшие книги — не больше трёх и без тех, у кого общего с текстом нет
+   вовсе: предлагать читателю книгу с нулевой близостью незачем. */
+function lbSearch(text) {
+  const v = lbMean(lbTok(text));
+  const all = LB_BOOKS.map(b => ({ id: b.id, s: lbCos(v, LB_BV[b.id]) })).sort((a, b) => b.s - a.s);
+  const real = all.filter(x => x.s > 0.02);
+  return (real.length >= 2 ? real : all).slice(0, 3);
+}
+
+/* поиск по буквам: слово из просьбы стоит в названии */
+function lbLetters(word) {
+  return LB_BOOKS.filter(b => b.t.toLowerCase().replace(/[,.]/g, '').split(' ')
+    .some(t => lbStem(t) === word));
+}
+
+/* ── раскладка зала ───────────────────────────────────────────
+   Каждая книга притягивается к трём самым похожим, все прочие
+   слабо расталкиваются. Из восьми попыток берём ту, где соседство
+   на карте вернее всего повторяет соседство в модели.            */
+function lbLayout() {
+  const N = LB_BOOKS.length;
+  const SIM = [], KIN = [];
+  for (let i = 0; i < N; i++) {
+    SIM[i] = [];
+    for (let j = 0; j < N; j++) SIM[i][j] = i === j ? 1 : lbCos(LB_BV[LB_BOOKS[i].id], LB_BV[LB_BOOKS[j].id]);
+  }
+  for (let i = 0; i < N; i++) {
+    const o = [];
+    for (let j = 0; j < N; j++) if (j !== i) o.push(j);
+    o.sort((a, b) => SIM[i][b] - SIM[i][a]);
+    KIN[i] = o.slice(0, 3);
+  }
+  let seed = 20260804;
+  const rnd = () => { seed = (seed * 1103515245 + 12345) % 2147483648; return seed / 2147483648; };
+
+  let best = null, bestFid = -1;
+  for (let att = 0; att < 8; att++) {
+    const C = [];
+    for (let i = 0; i < N; i++) C.push([rnd() * 2 - 1, rnd() * 2 - 1]);
+    for (let it = 0; it < 900; it++) {
+      const step = 0.06 * (1 - it / 900) + 0.004;
+      const F = [];
+      for (let i = 0; i < N; i++) F.push([0, 0]);
+      for (let i = 0; i < N; i++) {
+        for (let j = 0; j < N; j++) {
+          if (i === j) continue;
+          let dx = C[i][0] - C[j][0], dy = C[i][1] - C[j][1];
+          let d = Math.hypot(dx, dy);
+          if (d < 1e-4) { dx = rnd() - .5; dy = rnd() - .5; d = Math.hypot(dx, dy) || 1e-4; }
+          const ux = dx / d, uy = dy / d;
+          if (KIN[i].indexOf(j) > -1 || KIN[j].indexOf(i) > -1) {
+            const pull = SIM[i][j] * (d - 0.22) * 1.6;
+            F[i][0] -= ux * pull; F[i][1] -= uy * pull;
+          }
+          const push = 0.05 / (d * d + 0.02) + (d < 0.3 ? (0.3 - d) * 2.2 : 0);
+          F[i][0] += ux * push; F[i][1] += uy * push;
+        }
+        F[i][0] -= C[i][0] * 0.05; F[i][1] -= C[i][1] * 0.05;
+      }
+      for (let i = 0; i < N; i++) { C[i][0] += F[i][0] * step; C[i][1] += F[i][1] * step; }
+    }
+    let hit = 0;
+    for (let i = 0; i < N; i++) {
+      let bj = -1, bd = Infinity;
+      for (let j = 0; j < N; j++) {
+        if (i === j) continue;
+        const d = Math.hypot(C[i][0] - C[j][0], C[i][1] - C[j][1]);
+        if (d < bd) { bd = d; bj = j; }
+      }
+      if (KIN[i].indexOf(bj) > -1) hit++;
+    }
+    if (hit > bestFid) { bestFid = hit; best = C; }
+  }
+  /* в 0..1 с полем под подписи */
+  const xs = best.map(p => p[0]), ys = best.map(p => p[1]);
+  const x0 = Math.min.apply(null, xs), x1 = Math.max.apply(null, xs);
+  const y0 = Math.min.apply(null, ys), y1 = Math.max.apply(null, ys);
+  const out = {};
+  best.forEach((p, i) => {
+    out[LB_BOOKS[i].id] = [(p[0] - x0) / (x1 - x0 || 1), (p[1] - y0) / (y1 - y0 || 1)];
+  });
+  return out;
+}
+
+/* место новой книги: там, где стоят самые похожие на неё */
+function lbSpot(pos, text) {
+  const top = lbSearch(text);
+  let sx = 0, sy = 0, sw = 0;
+  top.forEach(x => { const p = pos[x.id]; sx += p[0] * x.s; sy += p[1] * x.s; sw += x.s; });
+  return sw ? [sx / sw, sy / sw] : [.5, .5];
+}
+
+const LB_OK = 0.18;         /* попал, если ближе этого — примерно десятая часть зала */
+const LB_PAD = 9;           /* поле карты в единицах вида, под подписи */
+const lbX = x => LB_PAD + x * (100 - 2 * LB_PAD);
+const lbY = y => LB_PAD + (1 - y) * (100 - 2 * LB_PAD);
+
+/* ── карта зала ──────────────────────────────────────────────── */
+function LbMap({ pos, spread, near, mark, ghost, onPoint, mapRef }) {
+  const N = LB_BOOKS.length;
+  return React.createElement('svg', {
+    className: 'lbmap', viewBox: '0 0 100 100', ref: mapRef,
+    onPointerDown: onPoint ? e => {
+      const r = e.currentTarget.getBoundingClientRect();
+      onPoint((e.clientX - r.left) / r.width, 1 - (e.clientY - r.top) / r.height);
+    } : null,
+    style: { cursor: onPoint ? 'crosshair' : 'default' },
+  },
+    /* куда бы поставил Нейро */
+    mark && React.createElement('circle', {
+      cx: lbX(mark[0]), cy: lbY(mark[1]), r: LB_OK * (100 - 2 * LB_PAD),
+      fill: 'rgba(255,208,138,.1)', stroke: '#FFD08A', strokeWidth: .5, strokeDasharray: '2 2',
+    }),
+    /* куда поставил ребёнок */
+    ghost && React.createElement('circle', {
+      cx: lbX(ghost[0]), cy: lbY(ghost[1]), r: 2.2, fill: '#F3EEFF',
+    }),
+
+    LB_BOOKS.map((b, i) => {
+      const p = pos[b.id];
+      /* до раскладки книги стоят рядком, как по алфавиту */
+      const gx = (i % 4) * 0.3 + 0.05, gy = 0.88 - Math.floor(i / 4) * 0.25;
+      const x = lbX(spread ? p[0] : gx), y = lbY(spread ? p[1] : gy);
+      const isNear = near && near.indexOf(b.id) > -1;
+      const isPick = mark && near && near[0] === b.id;
+      return React.createElement('g', {
+        key: b.id, className: 'lbbook', transform: 'translate(' + x + ' ' + y + ')',
+      },
+        React.createElement('circle', {
+          cx: 0, cy: 0, r: isNear ? 2.4 : 1.5,
+          fill: isNear ? '#FFD08A' : 'rgba(255,255,255,.4)',
+        }),
+        React.createElement('text', {
+          x: 0, y: -3.4, textAnchor: 'middle',
+          className: isPick ? 'pick' : isNear ? 'near' : '',
+          style: { fontSize: isNear ? 4 : 3.1, opacity: spread ? 1 : 0 },
+        }, b.tag));
+    }));
+}
+
+function LevelLibrary({ onWin, onHome }) {
+  const q = new URLSearchParams(window.location.search);
+  const [phase, setPhase] = useState(() => {
+    const p = q.get('p');
+    return ['letters', 'map', 'shift', 'quiz', 'done'].indexOf(p) > -1 ? p : 'intro';
+  });
+
+  /* акт 1 */
+  const [tried, setTried] = useState([]);
+
+  /* зал */
+  const [pos, setPos] = useState(null);
+  const [spread, setSpread] = useState(0);
+
+  /* акт 2 */
+  const [ni, setNi] = useState(0);
+  const [drop, setDrop] = useState(null);        /* куда поставил ребёнок */
+  const [drag, setDrag] = useState(null);        /* палец во время переноса */
+  const [put, setPut] = useState(0);             /* сколько поставил верно */
+
+  /* акт 3 */
+  const [ai, setAi] = useState(0);
+  const [found, setFound] = useState(null);      /* три ближайшие книги */
+  const [gave, setGave] = useState(null);        /* что отдал читателю */
+
+  const [q1, setQ1] = useState(null);
+  const [q2, setQ2] = useState(null);
+
+  const mapRef = useRef(null);
+
+  /* Зал считаем один раз — как только он понадобится. Разъезд книг делает CSS.
+     В смену можно попасть и сразу по ссылке, минуя расстановку: тогда зал
+     уже стоит разложенным, разъезжаться нечему. */
+  useEffect(() => {
+    if (pos || (phase !== 'map' && phase !== 'shift')) return;
+    setPos(lbLayout());
+    if (phase !== 'map') { setSpread(1); return; }
+    const t = setTimeout(() => setSpread(1), 80);
+    return () => clearTimeout(t);
+  }, [phase]);
+
+  /* ── акт 1: каталог по буквам ── */
+  if (phase === 'letters') {
+    const words = LB_FIRST.q.replace(/[,.]/g, '').split(' ')
+      .map(w => ({ w: w, s: lbStem(w.toLowerCase()) }))
+      .filter(x => !LB_STOP[x.s]);
+    const last = tried.length ? tried[tried.length - 1] : null;
+    const hits = last ? lbLetters(last.s) : null;
+    const ready = tried.length >= 2;
+
+    return React.createElement('div', { className: 'lb' },
+      React.createElement(TopBar, { level: 4, title: 'Библиотекарь', onHome, step: 0, total: 3 }),
+      React.createElement('div', { className: 'lbbody' },
+        React.createElement('div', { className: 'lbask' },
+          React.createElement('div', { className: 'lbask__w' }, 'читатель'),
+          React.createElement('div', { className: 'lbask__t' }, '— Мне бы книжку… ' + LB_FIRST.q + '. Названия не помню.')),
+
+        React.createElement('div', { className: 'lbsay' },
+          React.createElement('i', null, NKM(hits && hits.length === 0 ? 'think' : 'hello', 30)),
+          React.createElement('span', null, tried.length === 0
+            ? 'Сперва обычный каталог. Он ищет слово в названиях. Выбери, по какому искать.'
+            : hits && hits.length
+              ? 'Нашлось, но не то. Каталог смотрит на буквы, а не на смысл.'
+              : 'Ни одной. Такого слова нет ни в одном названии.')),
+
+        React.createElement('div', { className: 'lbwords' },
+          words.map((x, i) => React.createElement('button', {
+            key: i, className: tried.some(t => t.s === x.s) ? 'used' : '',
+            disabled: tried.some(t => t.s === x.s),
+            onClick: () => setTried(tried.concat([x])),
+          }, x.w))),
+
+        last && React.createElement('div', { className: 'lbfound' },
+          React.createElement('b', null, 'книг со словом «' + last.w + '» в названии'),
+          React.createElement('span', null, hits.length),
+          hits.length > 0 && React.createElement('em', null, hits.map(b => b.t).join(', '))),
+
+        React.createElement('div', { className: 'lbshelf' },
+          React.createElement('div', { className: 'lbshelf__t' }, 'а книги в зале есть — вот они'),
+          React.createElement('div', { className: 'lbshelf__l' },
+            LB_BOOKS.map(b => React.createElement('i', { key: b.id }, b.t)))),
+
+        ready && React.createElement('div', { className: 'lbnote' },
+          'Книга в зале стоит. Просто ни одно слово читателя в её название не попало.')),
+
+      React.createElement('div', { className: 'lbfoot' },
+        React.createElement('button', {
+          className: 'nk-btn ' + (ready ? 'nk-btn--ok' : 'nk-btn--pri'), style: { width: '100%' },
+          disabled: !ready, onClick: () => setPhase('map'),
+        }, ready ? 'Спросить Нейро' : 'Попробуй ещё слово')));
+  }
+
+  /* ── акт 2: ребёнок расставляет книги ── */
+  if (phase === 'map') {
+    const book = LB_NEW[ni];
+    const done = ni >= LB_NEW.length;
+    const spot = pos && book ? lbSpot(pos, book.about) : null;
+    const ok = drop && spot && Math.hypot(drop[0] - spot[0], drop[1] - spot[1]) < LB_OK;
+    const kinBooks = book ? lbSearch(book.about).slice(0, 2).map(x => LB_BOOKS.find(b => b.id === x.id)) : null;
+    /* Подсвечиваем ровно то, о чём говорит Нейро.
+       Пока книга в руке — что оказалось рядом с пальцем.
+       Попал — две самые похожие; промахнулся — ту одну, что рядом. */
+    const nearest = n => {
+      const at = drop || drag;
+      return LB_BOOKS.map(b => ({ id: b.id, d: Math.hypot(pos[b.id][0] - at[0], pos[b.id][1] - at[1]) }))
+        .sort((a, b) => a.d - b.d).slice(0, n).map(x => x.id);
+    };
+    const near = !pos || !book || (!drop && !drag) ? null
+      : !drop ? nearest(2)
+      : ok ? kinBooks.map(b => b.id)
+      : nearest(1);
+    const nearBook = near ? LB_BOOKS.find(b => b.id === near[0]) : null;
+
+    const place = (x, y) => {
+      if (drop || done || !spread) return;
+      const cx = Math.max(0, Math.min(1, x)), cy = Math.max(0, Math.min(1, y));
+      setDrop([cx, cy]);
+      setDrag(null);
+      const s = lbSpot(pos, book.about);
+      if (Math.hypot(cx - s[0], cy - s[1]) < LB_OK) setPut(put + 1);
+    };
+
+    const move = e => {
+      if (!mapRef.current || drop) return;
+      const r = mapRef.current.getBoundingClientRect();
+      setDrag([(e.clientX - r.left) / r.width, 1 - (e.clientY - r.top) / r.height]);
+    };
+
+    return React.createElement('div', { className: 'lb' },
+      React.createElement(TopBar, { level: 4, title: 'Библиотекарь', onHome, step: 1, total: 3 }),
+      React.createElement('div', { className: 'lbbody' },
+        React.createElement('div', { className: 'lbsay' },
+          React.createElement('i', null, NKM(drop ? (ok ? 'win' : 'think') : 'hello', 30)),
+          React.createElement('span', null,
+            !spread
+              ? 'Названия я не читаю. Я знаю, про что книга, — и ставлю похожие рядом.'
+              : done
+                ? 'Вот так зал и устроен. Похожее лежит рядом, и неважно, как книга называется.'
+                : drop
+                  ? (ok
+                      ? 'Точно сюда. Рядом — «' + kinBooks[0].t + '» и «' + kinBooks[1].t + '».'
+                      : 'Тут рядом «' + nearBook.t + '» — это про ' + nearBook.pro +
+                        '. Я бы поставил в кружок: там стоит «' + kinBooks[0].t + '».')
+                  : 'Поставь книгу в зал. Перетащи её или нажми на место.')),
+
+        pos && React.createElement('div', { className: 'lbmapwrap' },
+          React.createElement(LbMap, {
+            pos: pos, spread: spread, near: near,
+            mark: drop && !ok ? spot : null,
+            ghost: drop,
+            mapRef: mapRef,
+            onPoint: !drop && !done && spread ? place : null,
+          })),
+
+        !done && React.createElement('div', {
+          className: 'lbhand' + (drop || !spread ? ' off' : ''),
+          onPointerDown: drop || !spread ? null : e => {
+            e.currentTarget.setPointerCapture(e.pointerId);
+            move(e);
+          },
+          onPointerMove: drop || !spread ? null : e => { if (drag) move(e); },
+          onPointerUp: drop || !spread ? null : e => {
+            if (!drag) { setDrag(null); return; }
+            const inside = drag[0] >= 0 && drag[0] <= 1 && drag[1] >= 0 && drag[1] <= 1;
+            if (inside) place(drag[0], drag[1]); else setDrag(null);
+          },
+        },
+          React.createElement('div', { className: 'lbhand__t' }, book.t),
+          React.createElement('div', { className: 'lbhand__a' }, book.say)),
+
+        drag && !drop && React.createElement('div', {
+          className: 'lbghost',
+          style: (function () {
+            const r = mapRef.current ? mapRef.current.getBoundingClientRect() : null;
+            if (!r) return { display: 'none' };
+            return { left: r.left + drag[0] * r.width, top: r.top + (1 - drag[1]) * r.height };
+          })(),
+        }, book.t),
+
+        !done && React.createElement('div', { className: 'lbhint' },
+          'Книга ' + (ni + 1) + ' из ' + LB_NEW.length),
+        done && React.createElement('div', { className: 'lbnote' },
+          'Верно поставлено: ' + put + ' из ' + LB_NEW.length)),
+
+      React.createElement('div', { className: 'lbfoot' },
+        done
+          ? React.createElement('button', {
+              className: 'nk-btn nk-btn--ok', style: { width: '100%' }, onClick: () => setPhase('shift'),
+            }, 'Открыть библиотеку')
+          : drop
+            ? React.createElement('button', {
+                className: 'nk-btn nk-btn--ok', style: { width: '100%' },
+                onClick: () => { setDrop(null); setDrag(null); setNi(ni + 1); },
+              }, ni + 1 < LB_NEW.length ? 'Следующая книга' : 'Готово')
+            : React.createElement('div', { className: 'lbhint', style: { margin: 0 } },
+                !spread ? 'Нейро расставляет зал…' : 'Тащи книгу на карту')));
+  }
+
+  /* ── акт 3: смена ── */
+  if (phase === 'shift') {
+    const ask = LB_ASK[ai];
+    const last = ai === LB_ASK.length - 1;
+    const right = found ? found[0].id : null;
+    const gaveOk = gave && gave === ask.want;
+    const wantBook = LB_BOOKS.find(b => b.id === ask.want);
+
+    return React.createElement('div', { className: 'lb' },
+      React.createElement(TopBar, { level: 4, title: 'Библиотекарь', onHome, step: 2, total: 3 }),
+      React.createElement('div', { className: 'lbbody' },
+        React.createElement('div', { className: 'lbask' },
+          React.createElement('div', { className: 'lbask__w' }, 'читатель ' + (ai + 1) + ' из ' + LB_ASK.length),
+          React.createElement('div', { className: 'lbask__t' }, '— Мне бы книжку… ' + ask.q + '.')),
+
+        React.createElement('div', { className: 'lbsay' },
+          React.createElement('i', null, NKM(gave ? (gaveOk ? 'win' : 'think') : 'hello', 30)),
+          React.createElement('span', null,
+            !found
+              ? 'Кладу просьбу в зал и смотрю, что рядом.'
+              : !gave
+                ? 'Вот три ближайшие. Какую отдашь?'
+                : gaveOk
+                  ? (last
+                      ? 'Это та самая книга. Каталог её не нашёл, а зал нашёл сразу.'
+                      : 'Читатель ушёл довольный. А ведь ни одного слова из просьбы в названии нет.')
+                  : 'Читатель вернул: «Это про другое». Ближе всех была «' + wantBook.t + '».')),
+
+        pos && React.createElement('div', { className: 'lbmapwrap' },
+          React.createElement(LbMap, {
+            pos: pos, spread: 1,
+            near: found ? found.map(x => x.id) : null,
+            ghost: found ? lbSpot(pos, ask.q) : null,
+            mark: null, mapRef: null, onPoint: null,
+          })),
+
+        found && React.createElement('div', { className: 'lbpick' },
+          found.map(x => {
+            const b = LB_BOOKS.find(y => y.id === x.id);
+            return React.createElement('button', {
+              key: b.id,
+              className: gave ? (b.id === ask.want ? 'on--ok' : b.id === gave ? 'on--bad' : '') : '',
+              disabled: !!gave,
+              onClick: () => setGave(b.id),
+            }, b.t, gave && React.createElement('i', null, 'про ' + b.pro));
+          })),
+
+        gave && React.createElement('div', { className: 'lbnote' },
+          'Ни одного общего слова с просьбой — а книга нашлась')),
+
+      React.createElement('div', { className: 'lbfoot' },
+        !found
+          ? React.createElement('button', {
+              className: 'nk-btn nk-btn--pri', style: { width: '100%' },
+              onClick: () => setFound(lbSearch(ask.q)),
+            }, 'Спросить Нейро')
+          : gave
+            ? React.createElement('button', {
+                className: 'nk-btn nk-btn--ok', style: { width: '100%' },
+                onClick: () => {
+                  if (last) { setPhase('quiz'); return; }
+                  setFound(null); setGave(null); setAi(ai + 1);
+                },
+              }, last ? 'Конец смены' : 'Следующий читатель')
+            : React.createElement('div', { className: 'lbhint', style: { margin: 0 } },
+                'Выбери книгу для читателя')));
+  }
+
+  /* ── проверка связи ── */
+  if (phase === 'quiz') {
+    const o1 = [
+      { t: 'В названии не было ни одного слова из просьбы', ok: true },
+      { t: 'Такой книги в библиотеке нет', ok: false },
+      { t: 'Читатель говорил слишком тихо', ok: false },
+    ];
+    const o2 = [
+      { t: 'Он расставил книги по смыслу и смотрит, что оказалось рядом с просьбой', ok: true },
+      { t: 'Он читает все книги подряд каждый раз', ok: false },
+      { t: 'Он угадывает наугад', ok: false },
+    ];
+    const both = q1 !== null && o1[q1].ok && q2 !== null && o2[q2].ok;
+    return React.createElement('div', { className: 'lb' },
+      React.createElement(TopBar, { level: 4, title: 'Библиотекарь', onHome, step: 2, total: 3 }),
+      React.createElement('div', { className: 'lbbody' },
+        React.createElement('div', { className: 'lbq' },
+          React.createElement('div', { className: 'lbq__t' }, 'Почему каталог не нашёл книгу про зверя, который спит зимой?'),
+          o1.map((o, i) => React.createElement('button', {
+            key: i, className: q1 === i ? (o.ok ? 'on--ok' : 'on--bad') : '',
+            onClick: () => setQ1(i),
+          }, o.t))),
+        q1 !== null && React.createElement('div', { className: 'lbsay', style: { marginTop: 10 } },
+          React.createElement('i', null, NKM(o1[q1].ok ? 'win' : 'think', 30)),
+          React.createElement('span', null, o1[q1].ok
+            ? 'Да. Книга стояла на месте — «Топтыгин под снегом». Просто буквы не совпали.'
+            : 'Нет. Книга в зале была, и читателя слышно хорошо. Каталог ищет буквы: нет совпадения — нет находки.')),
+
+        React.createElement('div', { className: 'lbq' },
+          React.createElement('div', { className: 'lbq__t' }, 'А как тогда находит Нейро?'),
+          o2.map((o, i) => React.createElement('button', {
+            key: i, className: q2 === i ? (o.ok ? 'on--ok' : 'on--bad') : '',
+            onClick: () => setQ2(i),
+          }, o.t))),
+        q2 !== null && React.createElement('div', { className: 'lbsay', style: { marginTop: 10 } },
+          React.createElement('i', null, NKM(o2[q2].ok ? 'win' : 'think', 30)),
+          React.createElement('span', null, o2[q2].ok
+            ? 'Так и есть. Зал расставлен один раз, а дальше я только смотрю, во что попала просьба.'
+            : 'Не совсем. Перечитывать всё каждый раз слишком долго, а наугад я бы не попал три раза подряд.'))),
+      React.createElement('div', { className: 'lbfoot' },
+        React.createElement('button', {
+          className: 'nk-btn nk-btn--pri', style: { width: '100%' }, disabled: !both,
+          onClick: () => setPhase('done'),
+        }, both ? 'Дальше' : 'Ответь на оба')));
+  }
+
+  /* ── финал ── */
+  if (phase === 'done') {
+    return React.createElement('div', { className: 'lb' },
+      React.createElement(TopBar, { level: 4, title: 'Библиотекарь', onHome, step: 3, total: 3 }),
+      React.createElement('div', { className: 'lbbody lbdone' },
+        React.createElement('div', { className: 'lblaw' },
+          React.createElement('b', null, 'Похожее лежит рядом'),
+          React.createElement('span', null,
+            'Нейро не искал слова. Он прочитал кучу текстов и заметил, какие слова живут в одном ' +
+            'окружении: «медведь» встречается там же, где «зверь», «берлога» и «зима». Из этого он ' +
+            'собрал зал — книги про похожее оказались рядом. Просьба читателя падает в своё место, ' +
+            'и нужная книга просто оказывается ближайшей. Поэтому поиск работает, даже когда ' +
+            'ни одно слово не совпало.')),
+        React.createElement('div', { className: 'lbnote', style: { marginTop: 16 } },
+          'Так же ИИ ищет ответы, картинки и песни: не по буквам, а по месту в этом зале')),
+      React.createElement('div', { className: 'lbfoot' },
+        React.createElement('button', {
+          className: 'nk-btn nk-btn--ok', style: { width: '100%' }, onClick: onWin,
+        }, 'Готово')));
+  }
+
+  /* ── заставка ── */
+  return React.createElement('div', { className: 'lb' },
+    React.createElement(TopBar, { level: 4, title: 'Библиотекарь', onHome, step: 0, total: 3 }),
+    React.createElement(IntroModal, {
+      emoji: NKM('hello', 88),
+      title: 'Библиотекарь',
+      law: 'Названия книг я не читаю.\nЯ знаю, про что они.',
+      tip: 'Сегодня ты за стойкой. Читатели названий не помнят — придётся искать по смыслу.',
+      onStart: () => setPhase('letters'),
+    }),
+    React.createElement('div', { className: 'lbbody' }));
+}
+
+function App() {
+  return React.createElement('div', { className: 'lbroot' },
+    React.createElement(LevelLibrary, {
+      onWin: () => {
+        if (window.nooka) window.nooka.missionWin('in4', 90, { nextLabel: 'К игре →' });
+        setTimeout(() => { window.location.href = 'game.html?g=inside'; }, 400);
+      },
+      onHome: () => { window.location.href = 'game.html?g=inside'; },
+    }));
+}
+ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(App, null));
+</script>
+</body>
+</html>
