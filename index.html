@@ -3,10 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Nooka — игровая образовательная платформа про ИИ и науки</title>
-<meta name="description" content="Игровая образовательная платформа для детей 6–12 лет: ИИ, физика, химия, программирование. Миссии по 15 минут, с телефона, без установки. Бесплатно.">
-<meta property="og:title" content="Nooka — игры, в которых ребёнок осваивает ИИ и науки">
-<meta property="og:description" content="Игры про ИИ, химию и физику для детей 6–12 лет. С телефона, без установки. Начните бесплатно.">
+<title>Nooka — игры про ИИ-грамотность для детей 8–12</title>
+<meta name="description" content="Курс из трёх игр для детей 8–12: ребёнок сам обучает нейросеть, ловит её на ошибках и учится не отдавать личные данные. 30 уровней по 15 минут, с телефона, без установки.">
+<meta property="og:title" content="Nooka — игры, в которых ребёнок разбирается в ИИ">
+<meta property="og:description" content="Ребёнок сам обучает нейросеть и ловит её на ошибках. Три игры, 30 уровней, 8–12 лет. Первые пять бесплатно.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://nookagame.ru/">
 <meta property="og:image" content="https://nookagame.ru/screenshots/og.png">
@@ -196,14 +196,17 @@ h1 .p{color:var(--nk-pri-3)} h1 .s{color:var(--nk-sun-3)}
 .pf .pt{flex:1;min-width:0}
 .pf .ok{color:var(--nk-ok-3);font-weight:900}
 .pf .no{color:var(--nk-ink-3)}
-.price-box.pro{border-radius:var(--nk-r-xl);color:#fff;position:relative;
+.price-box.pro{margin-top:11px;border-radius:var(--nk-r-xl);color:#fff;position:relative;
   background:linear-gradient(165deg,#3a2860,var(--nk-ink));
   box-shadow:0 18px 40px -18px rgba(45,27,69,.7),inset 0 2px 0 rgba(255,255,255,.12)}
 .price-box.pro .price-tier{color:rgba(255,255,255,.55)}
 .price-box.pro .price-amt-sub{color:rgba(255,255,255,.5)}
 .price-box.pro .pf{color:rgba(255,255,255,.72)}
 .price-box.pro .pf .ok{color:var(--nk-sun-2)}
-.price-badge{position:absolute;top:22px;right:22px;font-weight:900;font-size:11px;padding:5px 13px;border-radius:999px;background:var(--nk-warn-2);color:#fff}
+/* плашка стоит над карточкой, а не поверх подписи тарифа */
+.price-badge{position:absolute;top:-11px;left:50%;transform:translateX(-50%);font-weight:900;font-size:11px;
+  padding:5px 14px;border-radius:999px;background:var(--nk-warn-2);color:#fff;white-space:nowrap;
+  box-shadow:0 6px 14px -6px rgba(217,74,52,.6)}
 
 .final{padding-top:72px;padding-bottom:80px}
 .final-block{border-radius:var(--nk-r-xl);padding:clamp(48px,7vw,88px) 32px;text-align:center;color:#fff;position:relative;overflow:hidden;
@@ -320,11 +323,11 @@ footer{border-top:2px solid rgba(123,79,242,.12);background:#FFF6E9}
   <section class="wrap hero">
     <div class="hero-copy">
       <div class="nk-chip hero-badge"><span class="dot"></span>Курс ИИ-грамотности · 3 игры · 30 уровней</div>
-      <h1 class="nk-t-brand">Экранное время,<br><span class="p">за которое</span><br><span class="s">не стыдно</span></h1>
-      <p class="nk-t-body hero-sub"><strong>Игровая образовательная платформа</strong> для детей 6–12 лет: ребёнок строит нейросеть, ставит опыты и программирует робота. <strong>Через 15 минут он объяснит это сам.</strong></p>
+      <h1 class="nk-t-brand">ИИ уже в его телефоне.<br><span class="p">Пусть знает,</span><br><span class="s">как он работает</span></h1>
+      <p class="nk-t-body hero-sub"><strong>Курс из трёх игр для детей 8–12.</strong> Ребёнок сам обучает нейросеть, ловит её на уверенном вранье и понимает, чего ей нельзя о себе рассказывать. <strong>Тридцать уровней по 15 минут.</strong></p>
       <div class="hero-ctas">
         <button class="nk-btn nk-btn--cta nk-btn--lg" data-play>Играть бесплатно</button>
-        <a class="nk-btn nk-btn--soft nk-btn--lg" href="#how">Как это работает</a>
+        <a class="nk-btn nk-btn--soft nk-btn--lg" href="#skills">Что он будет уметь</a>
       </div>
       <div class="hero-safe"><span class="nk-coin nk-coin--ok" style="width:38px;height:38px"><svg class="ic" aria-hidden="true"><use href="icons.svg#nk-check"></use></svg></span>Без рекламы, регистрации и чужих ссылок · открывается с телефона</div>
     </div>
@@ -409,8 +412,8 @@ footer{border-top:2px solid rgba(123,79,242,.12);background:#FFF6E9}
 
   <section class="wrap section pricing" id="plans">
     <div class="nk-chip sec-head-chip">Доступ</div>
-    <h2 class="nk-t-h1 sec-h">Пять уровней бесплатно, <span>дальше по коду</span></h2>
-    <p class="nk-t-body sec-sub" style="margin-left:auto;margin-right:auto">Никакой подписки с автосписанием. Доступ заканчивается сам, продлевать или нет — решаете вы.</p>
+    <h2 class="nk-t-h1 sec-h">Пять уровней бесплатно, <span>курс целиком — один раз</span></h2>
+    <p class="nk-t-body sec-sub" style="margin-left:auto;margin-right:auto">Не подписка: курс покупается один раз и остаётся у вас. Ничего не спишется ни в следующем месяце, ни через год.</p>
     <div class="price-grid">
       <div class="nk-clay price-box">
         <div class="nk-t-caption price-tier">Бесплатно</div>
@@ -425,31 +428,31 @@ footer{border-top:2px solid rgba(123,79,242,.12);background:#FFF6E9}
         <button class="nk-btn nk-btn--soft" style="width:100%" data-play>Начать →</button>
       </div>
       <div class="nk-clay price-box">
-        <div class="nk-t-caption price-tier">Месяц</div>
+        <div class="nk-t-caption price-tier">Курс целиком</div>
         <div class="price-amt">490 ₽</div>
-        <div class="nk-t-caption" style="margin-bottom:8px">31 день, без автопродления</div>
-        <div class="price-why">16 ₽ в день. Меньше, чем поездка на автобусе</div>
+        <div class="nk-t-caption" style="margin-bottom:8px">один раз, доступ навсегда</div>
+        <div class="price-why">Дешевле одного занятия с репетитором — и не заканчивается</div>
         <div class="pf">
-          <div><span class="ok">✓</span> <span class="pt"><b>30 уровней</b> по 15 минут, хватит на месяц</span></div>
+          <div><span class="ok">✓</span> <span class="pt"><b>Все 30 уровней</b> трёх игр, без срока</span></div>
           <div><span class="ok">✓</span> <span class="pt">Один код на <b>всю семью</b>, а не на одного ребёнка</span></div>
-          <div><span class="ok">✓</span> <span class="pt">Работы ребёнка остаются у вас: питомец, значок, диплом</span></div>
+          <div><span class="ok">✓</span> <span class="pt">Отчёт родителю: что ребёнок освоил и о чём его спросить</span></div>
           <div><span class="ok">✓</span> <span class="pt">Карта не привязывается, <b>списывать нечего</b></span></div>
         </div>
-        <button class="nk-btn nk-btn--soft" style="width:100%" data-buy>Оформить доступ</button>
+        <button class="nk-btn nk-btn--soft" style="width:100%" data-buy>Взять курс</button>
       </div>
       <div class="price-box pro">
         <span class="price-badge">ВЫГОДНЕЕ</span>
-        <div class="nk-t-caption price-tier">Год вперёд</div>
+        <div class="nk-t-caption price-tier">Курс + год</div>
         <div class="price-amt">1450 ₽</div>
-        <div class="nk-t-caption price-amt-sub" style="margin-bottom:8px">это 121 ₽ в месяц вместо 490</div>
-        <div class="price-why price-why--pro">Год стоит как три месяца по отдельности. Дешевле одного занятия с репетитором</div>
+        <div class="nk-t-caption price-amt-sub" style="margin-bottom:8px">курс плюс всё, что выйдет за год</div>
+        <div class="price-why price-why--pro">Каждая новая игра этого года — без доплаты. Дальше они станут отдельными покупками</div>
         <div class="pf">
-          <div><span class="ok">✓</span> <span class="pt">Всё из месячного тарифа <b>на весь год</b></span></div>
-          <div><span class="ok">✓</span> <span class="pt">Плюс каждая игра, которая выйдет за этот год</span></div>
+          <div><span class="ok">✓</span> <span class="pt">Весь курс <b>навсегда</b>, как в тарифе слева</span></div>
+          <div><span class="ok">✓</span> <span class="pt">Плюс каждая игра, которая выйдет в течение года</span></div>
           <div><span class="ok">✓</span> <span class="pt">В планах науки и технологии, <b>доплачивать не нужно</b></span></div>
           <div><span class="ok">✓</span> <span class="pt">Не подошло, <b>вернём деньги</b> за 14 дней</span></div>
         </div>
-        <button class="nk-btn nk-btn--cta" style="width:100%" data-buy>Взять год</button>
+        <button class="nk-btn nk-btn--cta" style="width:100%" data-buy>Взять с играми года</button>
       </div>
     </div>
     <div class="price-hint">Оплата и код доступа — через наш Telegram. Код вводится прямо в игре: аккаунт создавать не нужно.</div>
