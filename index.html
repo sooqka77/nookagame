@@ -158,6 +158,19 @@ h1 .p{color:var(--nk-pri-3)} h1 .s{color:var(--nk-sun-3)}
 .p-name{margin:3px 0 8px}
 .p-desc{font-size:14px;color:var(--nk-ink-2);line-height:1.55}
 
+/* ── что ребёнок умеет после курса: результат, за который платят ── */
+.skills{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;margin-top:6px}
+.skill{padding:22px 24px;display:flex;gap:16px;align-items:flex-start}
+.skill .ic{width:22px;height:22px}
+.skill-txt b{display:block;font-family:var(--nk-display);font-weight:900;font-size:16.5px;
+  line-height:1.25;margin-bottom:6px}
+.skill-txt span{display:block;font-size:14px;line-height:1.55;color:var(--nk-ink-2)}
+.skill-txt em{display:block;margin-top:8px;font-style:normal;font-size:12px;font-weight:800;
+  color:var(--nk-ink-3)}
+.skills-note{margin:22px auto 0;max-width:640px;text-align:center;font-size:15px;
+  font-weight:700;line-height:1.55;color:var(--nk-ink)}
+.skills-note b{color:var(--nk-pri-3)}
+
 .steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px}
 .step{padding:32px 28px}
 .step-num{font-family:var(--nk-brand);font-weight:900;font-size:52px;line-height:1;margin-bottom:12px}
@@ -348,6 +361,22 @@ footer{border-top:2px solid rgba(123,79,242,.12);background:#FFF6E9}
     <div class="course-grid" id="courseGrid"></div>
     <div class="course-note">Первая игра: пять уровней бесплатно, без регистрации и без карты.</div>
     <p class="course-frame">Программа собрана по рамке <b>AI4K12</b>: «Пять больших идей об ИИ» от AAAI и CSTA, по ней учат в школах США. Каждый уровень закрывает свою идею.</p>
+  </section>
+
+
+  <section class="wrap section" id="skills">
+    <div class="nk-chip sec-head-chip">Результат</div>
+    <h2 class="nk-t-h1 sec-h">Что ребёнок будет уметь <span>через тридцать уровней</span></h2>
+    <p class="nk-t-body sec-sub">Не «познакомится с темой». Каждый пункт он проходит руками — и может показать вам, как это работает.</p>
+    <div class="skills">
+      <div class="nk-clay skill"><span class="nk-coin"><svg class="ic" aria-hidden="true"><use href="icons.svg#nk-ai"></use></svg></span><div class="skill-txt"><b>Знает, откуда ИИ берёт ответы</b><span>Сам обучил модель своими рисунками и увидел: она знает ровно то, что он показал, и ничего сверх этого.</span><em>Игра 1 · уровни 2, 5, 7</em></div></div>
+      <div class="nk-clay skill"><span class="nk-coin nk-coin--warn"><svg class="ic" aria-hidden="true"><use href="icons.svg#nk-check"></use></svg></span><div class="skill-txt"><b>Не верит уверенному тону</b><span>Добился, чтобы Нейро назвал кота собакой — и был уверен на 90%. Теперь проценты его не убеждают.</span><em>Игра 1 · уровень 9</em></div></div>
+      <div class="nk-clay skill"><span class="nk-coin nk-coin--sun"><svg class="ic" aria-hidden="true"><use href="icons.svg#nk-prompt"></use></svg></span><div class="skill-txt"><b>Умеет поставить задачу</b><span>Джинн исполняет ровно сказанное. Ребёнок понял на своей шкуре: «побольше» — не задача, число — задача.</span><em>Игра 2 · уровни 1–3</em></div></div>
+      <div class="nk-clay skill"><span class="nk-coin nk-coin--ok"><svg class="ic" aria-hidden="true"><use href="icons.svg#nk-progress"></use></svg></span><div class="skill-txt"><b>Читает проценты правильно</b><span>Отдежурил неделю метеорологом и сверил прогнозы с архивом: 80% — это не обещание.</span><em>Игра 3 · уровень 8</em></div></div>
+      <div class="nk-clay skill"><span class="nk-coin nk-coin--warn"><svg class="ic" aria-hidden="true"><use href="icons.svg#nk-shield"></use></svg></span><div class="skill-txt"><b>Не отдаёт лишнее о себе</b><span>Вежливый помощник расспрашивал его между делом — и в конце показал собранное досье: адрес, школа, время прогулок.</span><em>Игра 3 · уровень 10</em></div></div>
+      <div class="nk-clay skill"><span class="nk-coin"><svg class="ic" aria-hidden="true"><use href="icons.svg#nk-method"></use></svg></span><div class="skill-txt"><b>Знает, что решает человек</b><span>Разложил дела за пультом: что можно отдать роботу, а что нельзя — потому что отвечать всё равно человеку.</span><em>Игра 2 · уровень 10</em></div></div>
+    </div>
+    <p class="skills-note">Проверить просто: через месяц спросите за ужином, <b>почему нейросеть уверенно ошибается</b>. Он ответит своими словами.</p>
   </section>
 
   <section class="wrap section" id="subjects">
