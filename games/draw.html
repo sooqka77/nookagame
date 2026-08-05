@@ -1118,6 +1118,7 @@ function LevelDraw({ n, onWin, onHome }) {
   const [duel, setDuel] = useState(null);          // спор двух моделей
   const [kit, setKit] = useState([]);              // карточки, взятые в набор на выпускном
   const [fin, setFin] = useState(null);            // результат выпускного экзамена
+  const [finTries, setFinTries] = useState(0);     // сколько раз ходили на выпускной
   const fset = useRef(null);
   if (!fset.current && L.final) {
     const F = L.final, lib = [], exam = [];
@@ -1284,6 +1285,7 @@ function LevelDraw({ n, onWin, onHome }) {
       return { thumb: e.thumb, truth: e.truth, said: p.label, conf: p.conf, ok: p.label === e.truth };
     });
     setFin({ res: res, ok: res.filter(r => r.ok).length });
+    setFinTries(t => t + 1);
   };
 
   const flipLabel = i => {
@@ -1751,7 +1753,7 @@ function LevelDraw({ n, onWin, onHome }) {
               }, React.createElement('img', { src: m.thumb, alt: '' })))))),
         best !== null && React.createElement('div', { className: 'dwlab__best' },
           'Лучший результат: экзамен сдан с ' + best * 2 + ' ' +
-          plural(best * 2, 'рисунка', 'рисунков', 'рисунков'))),
+          plural(best * 2, 'рисунком', 'рисунками', 'рисунками'))),
 
       exam && React.createElement('div', { className: 'dwexam' },
         React.createElement('div', { className: 'dwexam__t' },
@@ -1766,7 +1768,9 @@ function LevelDraw({ n, onWin, onHome }) {
             React.createElement('span', null, i < exam.i ? (WORD[r.said] || r.said) : '?')))),
         examDone && React.createElement('div', { className: 'dwexam__n' },
           exam.res.filter(r => r.ok).length === exam.res.length
-            ? 'Ни одной ошибки. Попробуй теперь с меньшим числом рисунков — где предел?'
+            ? (tryLog.length > 1
+                ? 'Снова без ошибок. Ты нашёл, сколько хватает, — можно идти дальше.'
+                : 'Ни одной ошибки. Попробуй теперь с меньшим числом рисунков — где предел?')
             : 'Эти рисунки Нейро раньше не видел. Ошибки — там, где ему не хватило примеров.')),
 
       tryLog.length > 0 && React.createElement('div', { className: 'dwrounds' },
@@ -1887,13 +1891,17 @@ function LevelDraw({ n, onWin, onHome }) {
             React.createElement('div', { className: 'dwslot', key: 's' + i }))))),
 
     React.createElement('div', { className: 'dwfoot' },
-      isFinal && React.createElement('button', {
-        className: 'nk-btn ' + (passed ? 'nk-btn--ok' : 'nk-btn--pri'), style: { width: '100%' },
-        disabled: !kit.length,
-        onClick: passed ? () => setPhase('quiz') : runFinal,
-      }, passed ? 'Забрать диплом'
-        : !kit.length ? 'Выбери карточки'
-        : fin ? 'Попробовать снова' : 'На экзамен'),
+      isFinal && React.createElement('div', { className: 'dwlabbtns' },
+        !passed && finTries >= 3 && React.createElement('button', {
+          className: 'nk-btn nk-btn--soft', onClick: () => setPhase('quiz'),
+        }, 'Дальше \u2192'),
+        React.createElement('button', {
+          className: 'nk-btn ' + (passed ? 'nk-btn--ok' : 'nk-btn--pri'), style: { flex: 1 },
+          disabled: !kit.length,
+          onClick: passed ? () => setPhase('quiz') : runFinal,
+        }, passed ? 'Забрать диплом'
+          : !kit.length ? 'Выбери карточки'
+          : fin ? 'Попробовать снова' : 'На экзамен')),
 
       isTag && React.createElement('button', {
         className: 'nk-btn ' + (duel ? 'nk-btn--ok' : 'nk-btn--pri'), style: { width: '100%' },
@@ -1903,10 +1911,13 @@ function LevelDraw({ n, onWin, onHome }) {
         : tagged < L.tag.count ? 'Подпиши все ' + L.tag.count
         : 'Сравнить с другим разметчиком'),
 
+      /* Выход не должен зависеть от того, получилось ли сломать: после
+         нескольких попыток «Дальше» появляется в любом случае, иначе
+         уровень становится непроходимым. */
       isHack && React.createElement('div', { className: 'dwlabbtns' },
-        bestHack > 0 && React.createElement('button', {
+        (bestHack > 0 || hacks.length >= 4) && React.createElement('button', {
           className: 'nk-btn nk-btn--ok', style: { flex: 1 }, onClick: () => setPhase('quiz'),
-        }, 'Хватит, я его сломал'),
+        }, bestHack > 0 ? 'Хватит, я его сломал' : 'Дальше \u2192'),
         React.createElement('button', {
           className: 'nk-btn ' + (bestHack ? 'nk-btn--soft' : 'nk-btn--pri'),
           style: bestHack ? {} : { width: '100%' },
@@ -1921,15 +1932,28 @@ function LevelDraw({ n, onWin, onHome }) {
         ? (rounds.length >= (L.rounds || 3) ? 'Дальше' : 'Следующий круг')
         : judge.marked.length ? 'Проверить разбор' : 'Здесь всё верно'),
 
+      /* Выход из уровня не должен прятаться в серой кнопке: после первой
+         попытки главной остаётся «попробовать меньше» — в этом смысл уровня,
+         но со второй вперёд выходит «Дальше», иначе ребёнок ходит по кругу. */
       isLab && React.createElement('div', { className: 'dwlabbtns' },
         tryLog.length > 0 && React.createElement('button', {
-          className: 'nk-btn nk-btn--soft', onClick: () => setPhase('quiz'),
-        }, 'Хватит'),
-        React.createElement('button', {
-          className: 'nk-btn nk-btn--pri', style: { flex: 1 },
+          className: 'nk-btn ' + (tryLog.length > 1 ? 'nk-btn--soft' : 'nk-btn--ok'),
+          style: tryLog.length > 1 ? null : { flex: 1 },
           disabled: !!exam && !examDone,
           onClick: runExam,
-        }, exam && !examDone ? 'Нейро отвечает…' : tryLog.length ? 'Ещё попытка' : 'Обучить и на экзамен')),
+        }, exam && !examDone ? 'Нейро отвечает…' : 'Ещё попытка'),
+        tryLog.length === 0
+          ? React.createElement('button', {
+              className: 'nk-btn nk-btn--pri', style: { flex: 1 },
+              disabled: !!exam && !examDone,
+              onClick: runExam,
+            }, exam && !examDone ? 'Нейро отвечает…' : 'Обучить и на экзамен')
+          : React.createElement('button', {
+              className: 'nk-btn ' + (tryLog.length > 1 ? 'nk-btn--ok' : 'nk-btn--soft'),
+              style: tryLog.length > 1 ? { flex: 1 } : null,
+              disabled: !!exam && !examDone,
+              onClick: () => setPhase('quiz'),
+            }, 'Дальше →')),
 
       isClean && React.createElement('button', {
         className: 'nk-btn ' + (audit && !audit.wrong.length ? 'nk-btn--ok' : 'nk-btn--soft'),
