@@ -108,16 +108,22 @@
         '#nooka-win .nk-base{display:block;color:#7B2FFF;font-weight:700;font-size:14px;text-decoration:none;padding:8px}' +
         '#nooka-win canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}';
 
-      /* куда вести после победы: хаб той игры курса, где живёт этот уровень */
+      /* Куда вести после победы. Ребёнку восьми лет некуда ткнуть, если
+         экран победы никуда не ведёт, — поэтому кнопка сама открывает
+         следующий уровень этой же игры, а ссылка ниже возвращает к списку.
+         Сам уровень никуда не уводит: любой переход тут только по клику. */
       var hub = { href: '../base/', label: '\u041c\u043e\u044f \u0431\u0430\u0437\u0430' };
+      var next = null, hasArt = false;
       try {
         if (window.nookaLevels && opts.mid) {
           window.nookaLevels.games.forEach(function (g) {
-            g.levels.forEach(function (lv) {
-              if (lv.mid === opts.mid) {
-                hub.href = 'game.html?g=' + g.key;
-                hub.label = '\u041a \u0443\u0440\u043e\u0432\u043d\u044f\u043c: ' + g.name;
-              }
+            g.levels.forEach(function (lv, i) {
+              if (lv.mid !== opts.mid && lv.aim !== opts.mid) return;
+              hub.href = 'game.html?g=' + g.key;
+              hub.label = '\u041a \u0443\u0440\u043e\u0432\u043d\u044f\u043c: ' + g.name;
+              hasArt = !!lv.art;
+              var nx = g.levels[i + 1];
+              if (nx && nx.href) next = { href: nx.href, title: nx.t };
             });
           });
         }
@@ -133,16 +139,19 @@
         (rank.next ? ' · до звания «' + rank.next.name + '» — ' + (rank.next.at - total) + ' XP' : ' · высшее звание!') + '</div>' +
         '<div class="nk-bar"><i></i></div>' +
         '<div class="nk-show">Покажи родителям, что у тебя получилось! 👀</div>' +
-        '<button class="nk-next">' + (opts.nextLabel || 'Дальше →') + '</button>' +
-        '<a class="nk-base" href="' + hub.href + '">' + hub.label + '</a></div>';
+        '<button class="nk-next">' + (opts.nextLabel ||
+            (next ? 'Дальше: ' + next.title + ' \u2192' : '\u041a \u0443\u0440\u043e\u0432\u043d\u044f\u043c \u2192')) + '</button>' +
+        '<a class="nk-base" href="' + hub.href + '">' + hub.label + '</a>' +
+        (hasArt ? '<a class="nk-base" href="../base/index.html#gallery">\u0412 \u043a\u043e\u043b\u043b\u0435\u043a\u0446\u0438\u044e</a>' : '') +
+        '</div>';
       document.body.appendChild(wrap);
 
       var pct = rank.next ? Math.min(100, Math.round((total - rank.at) / (rank.next.at - rank.at) * 100)) : 100;
       requestAnimationFrame(function () { wrap.querySelector('.nk-bar i').style.width = pct + '%'; });
 
       wrap.querySelector('.nk-next').onclick = function () {
-        wrap.remove();
-        if (opts.onNext) opts.onNext();
+        if (opts.onNext) { wrap.remove(); opts.onNext(); return; }
+        window.location.href = next ? next.href : hub.href;
       };
 
       // конфетти

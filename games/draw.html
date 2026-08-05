@@ -1959,12 +1959,13 @@ function App() {
   const q = new URLSearchParams(window.location.search);
   const n = parseInt(q.get('n'), 10) || 2;
   const L = DW_LEVELS[n] || DW_LEVELS[2];
+  /* в файле живут восемь уровней — вкладка должна называться тем, что открыто */
+  if (L.title) document.title = L.title + ' — Nooka';
   return React.createElement('div', { className: 'dwroot' },
     React.createElement(LevelDraw, {
       n: n,
       onWin: () => {
-        if (window.nooka) window.nooka.missionWin(L.mid, L.xp, { nextLabel: 'В коллекцию →' });
-        setTimeout(() => { window.location.href = '../base/index.html#gallery'; }, 400);
+        if (window.nooka) window.nooka.missionWin(L.mid, L.xp);
       },
       onHome: () => { window.location.href = 'game.html?g=data'; },
     }));

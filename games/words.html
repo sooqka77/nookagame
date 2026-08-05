@@ -401,8 +401,7 @@ function App() {
   return React.createElement('div', { className: 'wdroot' },
     React.createElement(LevelWords, {
       onWin: () => {
-        if (window.nooka) window.nooka.missionWin('in5', 100, { nextLabel: 'К игре →' });
-        setTimeout(() => { window.location.href = 'game.html?g=inside'; }, 400);
+        if (window.nooka) window.nooka.missionWin('in5', 100);
       },
       onHome: () => { window.location.href = 'game.html?g=inside'; },
     }));

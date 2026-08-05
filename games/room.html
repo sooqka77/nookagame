@@ -505,8 +505,7 @@ function App() {
   return React.createElement('div', { className: 'rmroot' },
     React.createElement(LevelRoom, {
       onWin: () => {
-        if (window.nooka) window.nooka.missionWin('data1', 60, { nextLabel: 'К игре →' });
-        setTimeout(() => { window.location.href = 'game.html?g=data'; }, 400);
+        if (window.nooka) window.nooka.missionWin('data1', 60);
       },
       onHome: () => { window.location.href = 'game.html?g=data'; },
     }));

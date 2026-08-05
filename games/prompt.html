@@ -5670,41 +5670,31 @@ function App() {
   }), s === 'l1' && /*#__PURE__*/React.createElement(Level1Genie, {
     onWin: () => {
       setS('l2');
-      if (window.nooka) window.nooka.missionWin('prompt1', 60, {
-        nextLabel: 'Дальше →'
-      });
+      if (window.nooka) window.nooka.missionWin('prompt1', 60);
     },
     onHome: () => { window.location.href = 'game.html?g=control'; }
   }), s === 'l2' && /*#__PURE__*/React.createElement(Level2Roles, {
     onWin: () => {
       setS('l3');
-      if (window.nooka) window.nooka.missionWin('prompt2', 60, {
-        nextLabel: 'Дальше →'
-      });
+      if (window.nooka) window.nooka.missionWin('prompt2', 60);
     },
     onHome: () => { window.location.href = 'game.html?g=control'; }
   }), s === 'l3' && /*#__PURE__*/React.createElement(Level3Numbers, {
     onWin: () => {
       setS('l4');
-      if (window.nooka) window.nooka.missionWin('prompt3', 80, {
-        nextLabel: 'Дальше →'
-      });
+      if (window.nooka) window.nooka.missionWin('prompt3', 80);
     },
     onHome: () => { window.location.href = 'game.html?g=control'; }
   }), s === 'l4' && /*#__PURE__*/React.createElement(Level3Iterate, {
     onWin: () => {
       setS('l5');
-      if (window.nooka) window.nooka.missionWin('prompt4', 60, {
-        nextLabel: 'Дальше →'
-      });
+      if (window.nooka) window.nooka.missionWin('prompt4', 60);
     },
     onHome: () => { window.location.href = 'game.html?g=control'; }
   }), s === 'l5' && /*#__PURE__*/React.createElement(Level5Night, {
     onWin: () => {
       setS('home');
-      if (window.nooka) window.nooka.missionWin('prompt5', 100, {
-        nextLabel: 'На главную →'
-      });
+      if (window.nooka) window.nooka.missionWin('prompt5', 100);
     },
     onHome: () => { window.location.href = 'game.html?g=control'; }
   }));

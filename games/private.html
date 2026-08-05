@@ -414,8 +414,7 @@ function App() {
   return React.createElement('div', { className: 'pvroot' },
     React.createElement(LevelPrivate, {
       onWin: () => {
-        if (window.nooka) window.nooka.missionWin('in10', 110, { nextLabel: 'К игре →' });
-        setTimeout(() => { window.location.href = 'game.html?g=inside'; }, 400);
+        if (window.nooka) window.nooka.missionWin('in10', 110);
       },
       onHome: () => { window.location.href = 'game.html?g=inside'; },
     }));

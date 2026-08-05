@@ -20,6 +20,10 @@ h1,h2,.rank-name,.pl-name{font-family:'Unbounded',sans-serif;font-weight:900}
 .logo b em{font-style:normal;color:var(--purple)}
 .back{font-size:14px;color:var(--muted);text-decoration:none}
 .back:hover{color:var(--purple)}
+.topnav{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+/* ребёнок восьми лет не должен искать, как вернуться в игру */
+.back--go{font-weight:800;color:var(--purple);background:#F3EEFF;border-radius:999px;padding:8px 16px}
+.back--go:hover{background:#E4D9FF}
 
 .profile{background:var(--black);color:#fff;border-radius:28px;padding:32px 36px;display:flex;align-items:center;gap:28px;flex-wrap:wrap;margin-bottom:16px}
 .rank-emo{font-size:64px;line-height:1}
@@ -131,7 +135,10 @@ h2{font-size:22px;margin:34px 0 16px}
 <div class="wrap">
   <div class="top">
     <a class="logo" href="../"><img src="../logo.svg" alt=""><b>Noo<em>ka</em></b></a>
-    <a class="back" href="../">← на главную</a>
+    <div class="topnav">
+      <a class="back back--go" id="goGame" hidden></a>
+      <a class="back" href="../">← на главную</a>
+    </div>
   </div>
 
   <div class="profile">
@@ -214,6 +221,23 @@ document.getElementById('xpText').textContent=xp+' XP';
         '<div class="cg-note">Все уровни открыты</div>')+
       '<div class="cg-cta">'+(s.done?'Продолжить →':'Начать →')+'</div></a>';
   }).join('');
+
+  /* Куда вернуться: игра, которую ребёнок уже начал и не закончил.
+     Если начатых нет — первая незакрытая. Если всё пройдено — ссылку прячем. */
+  var идёт = null, первая = null;
+  nookaLevels.games.forEach(function (g) {
+    var s = nookaLevels.stats(g.key);
+    if (s.done >= s.total) return;
+    if (!первая) первая = g;
+    if (s.done > 0 && !идёт) идёт = g;
+  });
+  var цель = идёт || первая;
+  if (цель) {
+    var кн = document.getElementById('goGame');
+    кн.href = '../games/game.html?g=' + цель.key;
+    кн.textContent = (nookaLevels.stats(цель.key).done ? 'Продолжить: ' : 'Играть: ') + цель.name + ' →';
+    кн.hidden = false;
+  }
 })();
 
 document.getElementById('planets').innerHTML=GAMES.map(function(g){

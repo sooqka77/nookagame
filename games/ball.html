@@ -460,8 +460,7 @@ function App() {
   return React.createElement('div', { className: 'blroot' },
     React.createElement(LevelBall, {
       onWin: () => {
-        if (window.nooka) window.nooka.missionWin('in3', 100, { nextLabel: 'К игре →' });
-        setTimeout(() => { window.location.href = 'game.html?g=inside'; }, 400);
+        if (window.nooka) window.nooka.missionWin('in3', 100);
       },
       onHome: () => { window.location.href = 'game.html?g=inside'; },
     }));

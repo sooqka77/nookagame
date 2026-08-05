@@ -613,8 +613,7 @@ function App() {
   return React.createElement('div', { className: 'xrroot' },
     React.createElement(LevelXray, {
       onWin: () => {
-        if (window.nooka) window.nooka.missionWin('in6', 110, { nextLabel: 'К игре →' });
-        setTimeout(() => { window.location.href = 'game.html?g=inside'; }, 400);
+        if (window.nooka) window.nooka.missionWin('in6', 110);
       },
       onHome: () => { window.location.href = 'game.html?g=inside'; },
     }));

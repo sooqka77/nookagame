@@ -897,12 +897,7 @@ function App() {
     className: 'ckroot'
   }, React.createElement(LevelCheck, {
     onWin: () => {
-      if (window.nooka) window.nooka.missionWin('check1', 90, {
-        nextLabel: 'В коллекцию →'
-      });
-      setTimeout(() => {
-        window.location.href = '../base/index.html#gallery';
-      }, 400);
+      if (window.nooka) window.nooka.missionWin('check1', 90);
     },
     onHome: () => {
       window.location.href = 'game.html?g=control';

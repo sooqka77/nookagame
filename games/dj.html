@@ -509,8 +509,7 @@ function App() {
   return React.createElement('div', { className: 'djroot' },
     React.createElement(LevelDj, {
       onWin: () => {
-        if (window.nooka) window.nooka.missionWin('in7', 110, { nextLabel: 'К игре →' });
-        setTimeout(() => { window.location.href = 'game.html?g=inside'; }, 400);
+        if (window.nooka) window.nooka.missionWin('in7', 110);
       },
       onHome: () => { window.location.href = 'game.html?g=inside'; },
     }));

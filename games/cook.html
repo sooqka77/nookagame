@@ -813,12 +813,7 @@ function App() {
     className: 'coroot'
   }, React.createElement(LevelCook, {
     onWin: () => {
-      if (window.nooka) window.nooka.missionWin('cook1', 90, {
-        nextLabel: 'В коллекцию →'
-      });
-      setTimeout(() => {
-        window.location.href = '../base/index.html#gallery';
-      }, 400);
+      if (window.nooka) window.nooka.missionWin('cook1', 90);
     },
     onHome: () => {
       window.location.href = 'game.html?g=control';

@@ -499,8 +499,7 @@ function App() {
   return React.createElement('div', { className: 'huroot' },
     React.createElement(LevelHuman, {
       onWin: () => {
-        if (window.nooka) window.nooka.missionWin('ctrl10', 110, { nextLabel: 'В коллекцию →' });
-        setTimeout(() => { window.location.href = '../base/index.html#gallery'; }, 400);
+        if (window.nooka) window.nooka.missionWin('ctrl10', 110);
       },
       onHome: () => { window.location.href = 'game.html?g=control'; },
     }));
