@@ -29,8 +29,8 @@
   var DAY = 86400000;
 
   var PLANS = {
-    month: { code: 0, days: 31,  price: '490 ₽',  title: 'Месяц', note: 'Три игры, 30 уровней. Продление не нужно — месяц закончился, доступ закрылся.' },
-    year:  { code: 1, days: 366, price: '1450 ₽', title: 'Год',   note: 'Те же три игры на 12 месяцев плюс все новые игры платформы, которые выйдут за год.' }
+    quarter: { code: 0, days: 92,  price: '490 ₽',  title: 'Три месяца', note: 'Три игры, 30 уровней. Продлевать не нужно: срок вышел — доступ закрылся сам.' },
+    year:    { code: 1, days: 366, price: '1450 ₽', title: 'Год',        note: 'Те же три игры на 12 месяцев плюс все новые игры платформы, которые выйдут за год.' }
   };
 
   /* ── кодирование ──────────────────────────────────────── */
@@ -56,7 +56,7 @@
 
   /* payload: 20 бит = план (1) + дней от эпохи (15) + серия (4) */
   function make(plan, serial) {
-    var p = PLANS[plan] || PLANS.month;
+    var p = PLANS[plan] || PLANS.quarter;
     var days = Math.floor((Date.now() + p.days * DAY - EPOCH) / DAY);
     var num = (p.code << 19) | ((days & 0x7FFF) << 4) | ((serial || 0) & 15);
     var body = enc(num, 4);
@@ -71,7 +71,7 @@
     if (dec(body) < 0 || dec(sum) < 0) return null;
     if (enc(hash(body + SALT) & 0xFFFFF, 4) !== sum) return null;
     var num = dec(body);
-    var plan = (num >> 19) & 1 ? 'year' : 'month';
+    var plan = (num >> 19) & 1 ? 'year' : 'quarter';
     var until = EPOCH + ((num >> 4) & 0x7FFF) * DAY;
     return { code: 'NOOKA-' + body + '-' + sum, plan: plan, until: until };
   }
@@ -159,7 +159,7 @@
         '<h2 class="nkpw__h">' + (opts.title || 'Тут заканчивается бесплатная часть') + '</h2>' +
         '<p class="nkpw__s">' + (opts.sub || 'Пять уровней первой игры открыты всем. Остальные 25 — по доступу для одной семьи.') + '</p>' +
         '<div class="nkpw__plans">' +
-          plan('month') + plan('year') +
+          plan('quarter') + plan('year') +
         '</div>' +
         '<div class="nkpw__code">' +
           '<label>Код доступа уже есть</label>' +
