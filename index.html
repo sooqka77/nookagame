@@ -341,9 +341,9 @@ footer{border-top:2px solid rgba(123,79,242,.12);background:#FFF6E9}
   </section>
 
   <section class="wrap section" id="course">
-    <div class="nk-chip sec-head-chip">Главное на платформе</div>
-    <h2 class="nk-t-h1 sec-h">Ребёнок обучает нейросеть <span>и ломает её</span></h2>
-    <p class="nk-t-body sec-sub">Три игры, тридцать уровней. Ребёнок рисует пальцем котов и домов, Нейро учится на этих рисунках и начинает их узнавать. Дальше сложнее: найти, где Нейро врёт, и подобрать рисунок, на котором он ошибётся с уверенностью 90%.</p>
+    <div class="nk-chip sec-head-chip">Курс из трёх игр</div>
+    <h2 class="nk-t-h1 sec-h">Игры про ИИ-грамотность <span>для детей 8–12</span></h2>
+    <p class="nk-t-body sec-sub">ИИ уже рядом с ребёнком — в поиске, в переводчике, в чатах. Здесь он разбирается, откуда ИИ берёт ответы, почему тот уверенно врёт и чего ему нельзя о себе рассказывать. Тридцать уровней по 15 минут: не теория, а руками.</p>
 
     <div class="course-grid" id="courseGrid"></div>
     <div class="course-note">Первая игра: пять уровней бесплатно, без регистрации и без карты.</div>
@@ -531,11 +531,13 @@ document.querySelectorAll('[data-buy]').forEach(function(b){ b.addEventListener(
     card.className = 'cc';
     card.style.setProperty('--t', g.tint);
     var SHOT = { data: 'cover-data', control: 'cover-control', inside: 'cover-inside' };
+    /* Бирка говорит то, чего не видно из названия игры: чем она берёт. */
+    var MARK = { data: 'Рисует пальцем', control: 'Слово в слово', inside: 'Три профессии' };
     var full = st.ready === st.total;
     card.innerHTML =
       '<div class="cc-shot">' +
         '<span class="cc-tag' + (full ? '' : ' cc-tag--soon') + '">' +
-          (full ? 'Готова целиком' : 'Готово ' + st.ready + ' из ' + st.total) + '</span>' +
+          (full ? MARK[g.key] : 'Готово ' + st.ready + ' из ' + st.total) + '</span>' +
         '<img src="shots/' + SHOT[g.key] + '.svg" alt="Обложка игры «' + g.name + '»" loading="lazy">' +
       '</div>' +
       '<div class="cc-body">' +
