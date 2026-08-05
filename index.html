@@ -121,6 +121,12 @@ h1 .p{color:var(--nk-pri-3)} h1 .s{color:var(--nk-sun-3)}
 .hero-visual{flex:1 1 380px;min-width:300px;position:relative}
 .hero-deco{position:absolute;inset:-24px;pointer-events:none;z-index:2}
 .hero-deco .nk-coin{position:absolute}
+/* пятая плашка в хороводе вокруг маскота — со словами, а не с иконкой */
+.hero-tag{position:absolute;padding:9px 15px;border-radius:18px;text-align:center;white-space:nowrap;
+  font-family:var(--nk-brand);font-weight:900;font-size:12.5px;line-height:1.3;color:var(--nk-ink);
+  background:linear-gradient(180deg,#fff,#FFF6E9);
+  box-shadow:0 5px 0 rgba(45,27,69,.10),0 10px 20px -8px rgba(45,27,69,.16),inset 0 2px 0 #fff}
+.hero-tag em{font-style:normal;color:var(--nk-pri-3)}
 .hero-frame{padding:16px;border-radius:var(--nk-r-xl);position:relative;z-index:1}
 .hero-frame-inner{border-radius:var(--nk-r-l);overflow:hidden;aspect-ratio:4/3;display:flex;align-items:center;justify-content:center;
   background:radial-gradient(circle at 50% 38%,#fff,var(--nk-pri-0) 78%)}
@@ -260,9 +266,11 @@ footer{border-top:2px solid rgba(123,79,242,.12);background:#FFF6E9}
   /* декор не должен обрезаться краем экрана */
   .hero-deco{inset:-6px}
   .hero-deco .nk-coin{width:42px;height:42px;font-size:21px}
+  /* на узком экране плашка уезжала за левый край — прижимаем внутрь */
+  .hero-tag{font-size:11px;padding:7px 12px;border-radius:15px;left:4%!important;bottom:28%!important}
   .hero-safe{gap:10px}
 }
-@media(prefers-reduced-motion:reduce){.nk-bob,.hero-deco .nk-coin,.hero-badge .dot{animation:none}}
+@media(prefers-reduced-motion:reduce){.nk-bob,.hero-deco .nk-coin,.hero-tag,.hero-badge .dot{animation:none}}
 
 /* ── первый ряд: курс ИИ-грамотности ── */
 .course-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(276px,1fr));gap:18px;margin-top:8px}
@@ -350,6 +358,7 @@ footer{border-top:2px solid rgba(123,79,242,.12);background:#FFF6E9}
         <div class="nk-coin nk-coin--sun" style="top:-4%;right:12%;animation:kb-float 7s ease-in-out infinite .8s"><svg class="ic" aria-hidden="true"><use href="icons.svg#nk-phys"></use></svg></div>
         <div class="nk-coin nk-coin--ok" style="bottom:6%;left:-4%;animation:kb-float 6.5s ease-in-out infinite 1.4s"><svg class="ic" aria-hidden="true"><use href="icons.svg#nk-chem"></use></svg></div>
         <div class="nk-coin nk-coin--warn" style="bottom:-2%;right:4%;animation:kb-float 7.5s ease-in-out infinite .4s"><svg class="ic" aria-hidden="true"><use href="icons.svg#nk-code"></use></svg></div>
+        <div class="hero-tag" style="bottom:33%;left:-9%;animation:kb-float 6.8s ease-in-out infinite 1s"><em>НуКа</em> Наука!<br><em>НуКа</em> ИИ!</div>
       </div>
       <div class="nk-clay hero-frame">
         <div class="hero-frame-inner"><img src="mascot/hello.webp" alt="Маскот Nooka"></div>
