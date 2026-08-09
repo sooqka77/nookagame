@@ -57,7 +57,9 @@
   /* payload: 20 бит = план (1) + дней от эпохи (15) + серия (4) */
   function make(plan, serial) {
     var p = PLANS[plan] || PLANS.quarter;
-    var days = Math.floor((Date.now() + p.days * DAY - EPOCH) / DAY);
+    /* округляем вверх: иначе код на «92 дня» давал 91 — обещание в оффере
+       должно выполняться буквально */
+    var days = Math.ceil((Date.now() + p.days * DAY - EPOCH) / DAY);
     var num = (p.code << 19) | ((days & 0x7FFF) << 4) | ((serial || 0) & 15);
     var body = enc(num, 4);
     return 'NOOKA-' + body + '-' + enc(hash(body + SALT) & 0xFFFFF, 4);
@@ -207,8 +209,8 @@
     if (!window.nookaLevels) return null;
     var file = (location.pathname.split('/').pop() || '').toLowerCase();
     var hash = location.hash.replace('#', '').replace('!', '');
-    var mod = null;
-    try { mod = new URLSearchParams(location.search).get('m'); } catch (e) {}
+    var here = null;
+    try { here = new URLSearchParams(location.search); } catch (e) {}
     var hit = null;
     window.nookaLevels.games.forEach(function (g) {
       g.levels.forEach(function (lv) {
@@ -216,11 +218,20 @@
         var base = lv.href.split(/[?#]/)[0].toLowerCase();
         if (base !== file) return;
         var wantHash = (lv.href.split('#')[1] || '').replace('!', '');
-        var wantMod = null;
-        var qs = lv.href.split('?')[1];
-        if (qs) { var mm = qs.split('#')[0].match(/(?:^|&)m=([^&]+)/); if (mm) wantMod = mm[1]; }
         if (wantHash && wantHash !== hash) return;
-        if (wantMod && wantMod !== mod) return;
+        /* Сверяем все параметры адреса, а не только модуль: в одном файле
+           живут несколько уровней (draw.html?n=2 … ?n=10), и без этой
+           проверки платный десятый уровень считался бы вторым, бесплатным. */
+        var qs = (lv.href.split('?')[1] || '').split('#')[0];
+        var same = true;
+        if (qs) {
+          qs.split('&').forEach(function (kv) {
+            if (!kv) return;
+            var i = kv.indexOf('='), k = i < 0 ? kv : kv.slice(0, i), v = i < 0 ? '' : kv.slice(i + 1);
+            if (!here || here.get(k) !== v) same = false;
+          });
+        }
+        if (!same) return;
         hit = { game: g, level: lv };
       });
     });
