@@ -12,14 +12,18 @@
 body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--black);min-height:100vh}
 h1,h2,.rank-name,.pl-name{font-family:'Unbounded',sans-serif;font-weight:900}
 .wrap{max-width:960px;margin:0 auto;padding:24px 20px 60px}
-.top{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:28px}
 .logo{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--black)}
 .logo img{width:40px;height:40px}
 .logo b{font-family:'Unbounded',sans-serif;font-weight:900;font-size:20px}
 .logo b em{font-style:normal;color:var(--purple)}
 .back{font-size:14px;color:var(--muted);text-decoration:none}
 .back:hover{color:var(--purple)}
-.topnav{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.topnav{display:flex;align-items:center;gap:14px;flex-wrap:wrap;justify-content:flex-end}
+@media(max-width:520px){
+  .top{flex-direction:column;align-items:flex-start;gap:10px}
+  .topnav{width:100%;justify-content:flex-start;gap:10px 16px}
+}
 /* ребёнок восьми лет не должен искать, как вернуться в игру */
 .back--go{font-weight:800;color:var(--purple);background:#F3EEFF;border-radius:999px;padding:8px 16px}
 .back--go:hover{background:#E4D9FF}
