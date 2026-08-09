@@ -5,8 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Моя база — Nooka</title>
 <link rel="icon" href="../logo.svg">
-<link rel="preconnect" href="https://fonts.bunny.net">
-<link href="https://fonts.bunny.net/css?family=unbounded:700,900|space-grotesk:400,500,700" rel="stylesheet" media="print" onload="this.media='all'">
+<link href="/fonts/nooka-fonts.css" rel="stylesheet">
 <style>
 :root{--purple:#7B2FFF;--yellow:#FFE141;--black:#111118;--muted:#6B7280;--bg:#F4F1FA}
 *{margin:0;padding:0;box-sizing:border-box}
@@ -26,7 +25,7 @@ h1,h2,.rank-name,.pl-name{font-family:'Unbounded',sans-serif;font-weight:900}
 .back--go:hover{background:#E4D9FF}
 
 .profile{background:var(--black);color:#fff;border-radius:28px;padding:32px 36px;display:flex;align-items:center;gap:28px;flex-wrap:wrap;margin-bottom:16px}
-.rank-emo{font-size:64px;line-height:1}
+.rank-emo{line-height:0;color:#FFE141;flex-shrink:0}
 .rank-name{font-size:30px}
 .rank-sub{color:#A5A0B8;font-size:14px;margin-top:4px}
 .xpbar{flex:1;min-width:220px}
@@ -37,6 +36,7 @@ h1,h2,.rank-name,.pl-name{font-family:'Unbounded',sans-serif;font-weight:900}
 .streak{background:var(--yellow);color:var(--black);border-radius:20px;padding:14px 22px;text-align:center}
 .streak .n{font-family:'Unbounded',sans-serif;font-weight:900;font-size:26px}
 .streak .t{font-size:12px;font-weight:700}
+.streak .t .nk-ico{vertical-align:-3px}
 
 h2{font-size:22px;margin:34px 0 16px}
 .planets{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
@@ -70,7 +70,7 @@ h2{font-size:22px;margin:34px 0 16px}
 .extra-h{margin:30px 0 14px;font-size:16px;color:var(--muted);font-weight:700}
 .pl{background:#fff;border-radius:24px;padding:24px;box-shadow:0 8px 24px -12px rgba(45,27,69,.15);display:flex;flex-direction:column;gap:12px}
 .pl-head{display:flex;align-items:center;gap:14px}
-.pl-emo{width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0}
+.pl-emo{width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:#2D1B45}
 .pl-name{font-size:18px}
 .pl-sub{font-size:13px;color:var(--muted)}
 .pl .bar{background:#EDE9FE}
@@ -87,7 +87,7 @@ h2{font-size:22px;margin:34px 0 16px}
 .ranks .row.cur{font-weight:700}
 .ranks .row .xp{margin-left:auto;color:var(--muted);font-size:13px}
 .ranks .row.got .name{color:var(--purple)}
-@media(max-width:600px){.profile{padding:24px;gap:18px}.rank-emo{font-size:48px}.rank-name{font-size:22px}}
+@media(max-width:600px){.profile{padding:24px;gap:18px}.rank-name{font-size:22px}}
 
 /* ── Моя коллекция: то, что ребёнок сделал сам ── */
 .gal-wrap{margin-bottom:26px;}
@@ -104,7 +104,7 @@ h2{font-size:22px;margin:34px 0 16px}
 .gal-empty{background:#fff;border-radius:20px;padding:22px 20px;text-align:center;
   box-shadow:inset 0 0 0 1px rgba(45,27,69,.06);}
 .gal-empty b{display:block;font-size:15px;color:#2D1B45;margin-bottom:5px;}
-.gal-empty span{font-size:13px;color:#6B5680;font-weight:600;}
+.gal-empty span{display:block;font-size:13px;color:#6B5680;font-weight:600;line-height:1.5;}
 .gal-empty a{display:inline-block;margin-top:12px;padding:11px 22px;border-radius:999px;
   background:linear-gradient(180deg,#9B78FF,#7B4FF2);color:#fff;font-weight:900;
   font-size:14px;text-decoration:none;}
@@ -143,7 +143,7 @@ h2{font-size:22px;margin:34px 0 16px}
   </div>
 
   <div class="profile">
-    <div class="rank-emo" id="rEmo">🎒</div>
+    <div class="rank-emo" id="rEmo"></div>
     <div>
       <div class="rank-name" id="rName">Кадет</div>
       <div class="rank-sub" id="rSub">Твоё звание на базе</div>
@@ -152,7 +152,7 @@ h2{font-size:22px;margin:34px 0 16px}
       <div class="lbl"><span>Опыт</span><b id="xpText">0 XP</b></div>
       <div class="bar"><i id="xpFill" style="width:0%"></i></div>
     </div>
-    <div class="streak"><div class="n" id="stN">0</div><div class="t">дней подряд 🔥</div></div>
+    <div class="streak"><div class="n" id="stN">0</div><div class="t">дней подряд</div></div>
   </div>
 
   <div class="course-h">
@@ -180,22 +180,22 @@ h2{font-size:22px;margin:34px 0 16px}
 /* Игры курса берутся из реестра nooka-levels.js — числа нигде не дублируются.
    Здесь только бонусные игры, которые в курс не входят. */
 var GAMES=[
-  {key:'chem',name:'Хемо Лаб',       sub:'Химия',                  emoji:'🧪', bg:'#DBFCE7', total:6, src:'../games/chemistry.html?v=202607141232'},
-  {key:'phys',name:'КвантУм',        sub:'Физика',                 emoji:'⚡', bg:'#FEF3C7', total:6, src:'../games/physics.html?v=202607141232'},
-  {key:'code',name:'КодБот',         sub:'Программирование',       emoji:'🕹️', bg:'#EDE9FE', total:3, src:'../games/code.html?v=202607141232'}
+  {key:'chem',name:'Хемо Лаб',       sub:'Химия',                  ico:'колба', bg:'#DBFCE7', total:6, src:'../games/chemistry.html?v=202607141232'},
+  {key:'phys',name:'КвантУм',        sub:'Физика',                 ico:'молния', bg:'#FEF3C7', total:6, src:'../games/physics.html?v=202607141232'},
+  {key:'code',name:'КодБот',         sub:'Программирование',       ico:'джойстик', bg:'#EDE9FE', total:3, src:'../games/code.html?v=202607141232'}
 ];
-var RANKS=[[0,'Кадет','🎒'],[150,'Пилот','🚀'],[400,'Инженер','🔧'],[900,'Командир','🎖️'],[1800,'Капитан базы','👑']];
+var RANKS=[[0,'Кадет'],[150,'Пилот'],[400,'Инженер'],[900,'Командир'],[1800,'Капитан базы']];
 
 function doneCount(key){
   return nooka.getCompleted(key).length;
 }
 
 var xp=nooka.totalXP(), r=nooka.getRank(xp), st=nooka.streak();
-document.getElementById('rEmo').textContent=r.emoji;
+document.getElementById('rEmo').innerHTML=nooka.icon(r.name,34);
 document.getElementById('rName').textContent=r.name;
 document.getElementById('stN').textContent=st;
 (function(){var n=st%100,w=(n>10&&n<20)?'дней':(n%10===1?'день':(n%10>=2&&n%10<=4?'дня':'дней'));
-document.querySelector('.streak .t').textContent=w+' подряд 🔥';})();
+document.querySelector('.streak .t').innerHTML=w+' подряд '+nooka.icon('огонь',15);})();
 if(r.next){
   document.getElementById('rSub').textContent='До звания «'+r.next.name+'» — '+(r.next.at-xp)+' XP';
   document.getElementById('xpFill').style.width=Math.min(100,Math.round((xp-r.at)/(r.next.at-r.at)*100))+'%';
@@ -244,7 +244,7 @@ document.getElementById('xpText').textContent=xp+' XP';
 document.getElementById('planets').innerHTML=GAMES.map(function(g){
   var d=doneCount(g.key), full=d>=g.total, pct=Math.min(100,Math.round(d/g.total*100));
   return '<div class="pl'+(full?' done':'')+'">'+
-    '<div class="pl-head"><div class="pl-emo" style="background:'+g.bg+'">'+g.emoji+'</div>'+
+    '<div class="pl-head"><div class="pl-emo" style="background:'+g.bg+'">'+nooka.icon(g.ico,24)+'</div>'+
     '<div><div class="pl-name">'+g.name+(full?' <span class="badge-done">пройдено ✓</span>':'')+'</div>'+
     '<div class="pl-sub">'+g.sub+'</div></div></div>'+
     '<div class="lbl"><span>Миссии</span><b>'+d+' из '+g.total+'</b></div>'+
@@ -296,7 +296,7 @@ drawGallery();
 document.getElementById('ranksList').innerHTML=RANKS.map(function(k){
   var got=xp>=k[0], cur=r.at===k[0];
   return '<div class="row'+(got?' got':'')+(cur?' cur':'')+'">'+
-    '<span>'+k[2]+'</span><span class="name">'+k[1]+'</span>'+(cur?'<span class="badge-done">ты здесь</span>':'')+
+    '<span class="r-ico">'+nooka.icon(k[1],20)+'</span><span class="name">'+k[1]+'</span>'+(cur?'<span class="badge-done">ты здесь</span>':'')+
     '<span class="xp">'+k[0]+' XP</span></div>';
 }).join('');
 </script>

@@ -24,7 +24,30 @@
     [1800, 'Капитан базы', '👑']
   ];
 
+  /* Значки вместо эмодзи: одинаково выглядят на любом телефоне и держат стиль базы.
+     Рисуются линией, цвет наследуют от текста. */
+  function svg(body, size) {
+    return '<svg class="nk-ico" viewBox="0 0 24 24" width="' + (size || 24) + '" height="' + (size || 24) +
+      '" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">' +
+      body + '</svg>';
+  }
+  var ICONS = {
+    'Кадет':        '<rect x="4" y="8" width="16" height="13" rx="4"/><path d="M8.5 8V6.5A3.5 3.5 0 0 1 12 3a3.5 3.5 0 0 1 3.5 3.5V8"/><rect x="9" y="14" width="6" height="7" rx="1.6"/>',
+    'Пилот':        '<path d="M12 3c3 2.5 4.5 5.8 4.5 9L12 17l-4.5-5c0-3.2 1.5-6.5 4.5-9Z"/><circle cx="12" cy="10" r="1.6"/><path d="M8 18l-2 3 3.5-1M16 18l2 3-3.5-1"/>',
+    'Инженер':      '<path d="M15.5 4.5a4.5 4.5 0 0 0-5.6 5.7L4 16.1V20h3.9l5.9-5.9a4.5 4.5 0 0 0 5.7-5.6l-2.7 2.7-2.3-.5-.5-2.3 2.5-2.9Z"/>',
+    'Командир':     '<circle cx="12" cy="14.5" r="5"/><path d="M12 12.6l.9 1.8 2 .3-1.45 1.4.35 2-1.8-.95-1.8.95.35-2L9.1 14.7l2-.3.9-1.8Z"/><path d="M8.5 9.5 7 3h10l-1.5 6.5"/>',
+    'Капитан базы': '<path d="M4 8l3.5 3L12 5l4.5 6L20 8l-1.6 10H5.6L4 8Z"/><path d="M5.6 20h12.8"/>',
+    'огонь':        '<path d="M12 3c.4 3-1.2 4.2-2.6 5.6C7.9 10.1 7 11.6 7 13.6 7 17 9.3 20 12 20s5-3 5-6.4c0-1.6-.7-2.9-1.7-4.1-.6 1-1.4 1.6-2.1 1.7.6-2.3.4-5-1.2-8.2Z"/>',
+    'колба':        '<path d="M9 3h6M10 3v6.2L4.8 18A2 2 0 0 0 6.5 21h11a2 2 0 0 0 1.7-3L14 9.2V3"/><path d="M7.5 15h9"/>',
+    'молния':       '<path d="M13 2 5 13h6l-1 9 8-11h-6l1-9Z"/>',
+    'джойстик':     '<rect x="2.5" y="7.5" width="19" height="11" rx="4"/><path d="M7 11v4M5 13h4"/><circle cx="16" cy="12" r="1.1"/><circle cx="18.5" cy="14.5" r="1.1"/>',
+    'победа':       '<path d="M8 4h8v4a4 4 0 0 1-8 0V4Z"/><path d="M8 5H5v2a3 3 0 0 0 3 3M16 5h3v2a3 3 0 0 1-3 3"/><path d="M12 12v4M9 20h6M10 17h4"/>',
+    'тренировка':   '<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r="1"/>'
+  };
+  function icon(name, size) { return ICONS[name] ? svg(ICONS[name], size) : ''; }
+
   window.nooka = {
+    icon: icon,
     profile: load,
 
     addXP: function (n) { var p = load(); p.xp += n; save(p); return p.xp; },
@@ -96,7 +119,8 @@
         '@keyframes nkBounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}' +
         '#nooka-win .nk-card{position:relative;background:#fff;border-radius:28px;padding:34px 30px 26px;max-width:340px;width:calc(100% - 40px);' +
         'text-align:center;animation:nkPop .45s cubic-bezier(.34,1.56,.64,1);font-family:\'Space Grotesk\',system-ui,sans-serif;color:#111118}' +
-        '#nooka-win .nk-emo{font-size:64px;line-height:1;animation:nkBounce 1.6s ease-in-out infinite}' +
+        '#nooka-win .nk-emo{line-height:0;color:#7B2FFF;animation:nkBounce 1.6s ease-in-out infinite}' +
+        '#nooka-win .nk-rank .nk-ico{vertical-align:-3px;margin-right:2px}' +
         '#nooka-win .nk-title{font-weight:700;font-size:24px;margin:10px 0 4px}' +
         '#nooka-win .nk-xp{display:inline-block;background:#FFE141;border-radius:30px;padding:7px 20px;font-weight:700;font-size:20px;margin:10px 0 4px}' +
         '#nooka-win .nk-rank{font-size:14px;color:#6B7280;margin:8px 0 2px}' +
@@ -132,13 +156,13 @@
       var wrap = document.createElement('div');
       wrap.id = 'nooka-win';
       wrap.innerHTML = '<style>' + css + '</style><canvas></canvas><div class="nk-card">' +
-        '<div class="nk-emo">' + (gained ? '🏆' : '💪') + '</div>' +
+        '<div class="nk-emo">' + icon(gained ? 'победа' : 'тренировка', 54) + '</div>' +
         '<div class="nk-title">' + (opts.title || (gained ? 'Миссия пройдена!' : 'Отличная тренировка!')) + '</div>' +
         (gained ? '<div class="nk-xp">+' + gained + ' XP</div>' : '') +
-        '<div class="nk-rank">' + rank.emoji + ' ' + rank.name +
+        '<div class="nk-rank">' + icon(rank.name, 18) + ' ' + rank.name +
         (rank.next ? ' · до звания «' + rank.next.name + '» — ' + (rank.next.at - total) + ' XP' : ' · высшее звание!') + '</div>' +
         '<div class="nk-bar"><i></i></div>' +
-        '<div class="nk-show">Покажи родителям, что у тебя получилось! 👀</div>' +
+        '<div class="nk-show">Покажи родителям, что у тебя получилось</div>' +
         '<button class="nk-next">' + (opts.nextLabel ||
             (next ? 'Дальше: ' + next.title + ' \u2192' : '\u041a \u0443\u0440\u043e\u0432\u043d\u044f\u043c \u2192')) + '</button>' +
         '<a class="nk-base" href="' + hub.href + '">' + hub.label + '</a>' +
