@@ -217,9 +217,20 @@ function FailModal({
     onClick: onRetry
   }, "Ещё раз 🔄")));
 }
+/* goal — чему ребёнок здесь учится. Короткая фраза крупным шрифтом, до задания:
+   иначе уровень заходит как развлечение, а знание из него не достаётся.
+   Берётся из реестра nooka-levels.js — все формулировки правятся в одном месте.
+   Явно переданный goal перебивает реестр. */
+function nkGoal() {
+  try {
+    var cur = window.nookaAccess && window.nookaAccess.currentLevel();
+    return (cur && cur.level && cur.level.goal) || '';
+  } catch (e) { return ''; }
+}
 function IntroModal({
   emoji,
   title,
+  goal,
   law,
   diagram,
   tip,
@@ -252,7 +263,35 @@ function IntroModal({
       marginBottom: 16,
       textAlign: 'center'
     }
-  }, title), diagram && /*#__PURE__*/React.createElement("div", {
+  }, title), (goal = goal || nkGoal()) && /*#__PURE__*/React.createElement("div", {
+    style: {
+      width: '100%',
+      maxWidth: 320,
+      marginBottom: 16,
+      padding: '13px 18px 15px',
+      borderRadius: 20,
+      background: 'rgba(255,216,77,.12)',
+      boxShadow: 'inset 0 0 0 1.5px rgba(255,216,77,.45)',
+      textAlign: 'center'
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontFamily: 'var(--ak-display)',
+      fontWeight: 700,
+      fontSize: 11,
+      letterSpacing: '.09em',
+      color: '#FFD84D',
+      marginBottom: 7
+    }
+  }, "ЧЕМУ УЧИМСЯ"), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontFamily: 'var(--ak-display)',
+      fontWeight: 700,
+      fontSize: 21,
+      lineHeight: 1.25,
+      color: '#FFF6DC'
+    }
+  }, goal)), diagram && /*#__PURE__*/React.createElement("div", {
     style: {
       width: '100%',
       maxWidth: 320,
