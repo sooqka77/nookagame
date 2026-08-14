@@ -1199,7 +1199,7 @@ const L1_MISSIONS = [{
   targetMax: 130,
   result: 'gas',
   reward: '♨️ Кипит!',
-  fact: 'При 100°C молекулы приобретают достаточно энергии чтобы вырваться в воздух — это пар!'
+  fact: 'При 100°C молекулы приобретают достаточно энергии, чтобы вырваться в воздух — это пар!'
 }, {
   goal: 'Охлади кипяток до комфортной температуры (35–40°C)',
   substance: 'Горячая вода ♨️',
@@ -1207,7 +1207,7 @@ const L1_MISSIONS = [{
   targetMax: 40,
   result: 'liquid',
   reward: '☕ Идеально!',
-  fact: 'Температура тела человека ~36.6°C. Вода при такой температуре — тёплая жидкость.'
+  fact: 'Температура тела человека около 36,6 °C. Вода при такой температуре — тёплая жидкость.'
 }, {
   goal: 'Растопи шоколад!',
   substance: 'Шоколад 🍫',
@@ -1215,7 +1215,7 @@ const L1_MISSIONS = [{
   targetMax: 60,
   result: 'liquid',
   reward: '🍫 Растаял!',
-  fact: 'Шоколад плавится при 32-34°C — почти температура рук! Поэтому тает в ладонях.'
+  fact: 'Шоколад плавится при 32–34 °C — почти температура рук! Поэтому тает в ладонях.'
 }];
 function getPhase(temp) {
   if (temp < 0) return 'solid';
@@ -1690,7 +1690,7 @@ function Level1TempMachine({
   }, /*#__PURE__*/React.createElement(AKSuccessCard, {
     stars: 3,
     title: "Лаборант года! 🔬",
-    fact: "Ты узнал как температура управляет состоянием вещества. Молекулы реагируют на тепло — это основа химии!",
+    fact: "Теперь ты знаешь, как температура управляет состоянием вещества. Молекулы реагируют на тепло — это основа химии!",
     onNext: onDone,
     ctaLabel: "Следующий уровень →"
   })));
@@ -1704,25 +1704,25 @@ const AK_LIQUIDS = {
     color: '#E8A23C',
     label: 'МЁД',
     density: 1.4,
-    densityLabel: '1.4 г/мл'
+    densityLabel: '1,4 г/мл'
   },
   water: {
     color: '#5A9EE3',
     label: 'ВОДА',
     density: 1.0,
-    densityLabel: '1.0 г/мл'
+    densityLabel: '1,0 г/мл'
   },
   oil: {
     color: '#F2D147',
     label: 'МАСЛО',
     density: 0.9,
-    densityLabel: '0.9 г/мл'
+    densityLabel: '0,9 г/мл'
   },
   alcohol: {
     color: '#A981E6',
     label: 'СПИРТ',
     density: 0.8,
-    densityLabel: '0.8 г/мл'
+    densityLabel: '0,8 г/мл'
   }
 };
 const AK_ORDER = ['honey', 'water', 'oil', 'alcohol'];
@@ -2215,7 +2215,7 @@ const L3_EXPERIMENTS = [{
   resultEmoji: '💧',
   resultLabel: 'Соль растворилась',
   answer: 'physical',
-  explanation: 'Соль растворилась но не изменилась химически. Если выпарить воду — получишь соль обратно. Физическое изменение!'
+  explanation: 'Соль растворилась, но не изменилась химически. Если выпарить воду — получишь соль обратно. Физическое изменение!'
 }, {
   a: {
     emoji: '🔩',
@@ -2652,7 +2652,7 @@ function Level3Lab({
       color: 'var(--ak-ink-3)',
       fontWeight: 600
     }
-  }, !effectPlaying ? 'Нажми СМЕШАТЬ и наблюдай что произойдёт' : !answered ? 'Это физическое или химическое изменение?' : '')), answered && !done && /*#__PURE__*/React.createElement("div", {
+  }, !effectPlaying ? 'Нажми СМЕШАТЬ и наблюдай, что произойдёт' : !answered ? 'Это физическое или химическое изменение?' : '')), answered && !done && /*#__PURE__*/React.createElement("div", {
     style: {
       position: 'fixed',
       inset: 0,
@@ -3842,7 +3842,7 @@ const LEVEL_DATA = [{
     tone: "chem",
     fillLevel: 0.5
   }),
-  desc: 'Управляй слайдером и наблюдай как молекулы меняют поведение'
+  desc: 'Управляй слайдером и наблюдай, как молекулы меняют поведение'
 }, {
   n: 2,
   title: 'Башня плотностей',

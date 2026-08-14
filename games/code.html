@@ -1016,7 +1016,7 @@ function CBLevel({
       alignItems: 'center',
       overflowY: 'auto'
     }
-  }, /*#__PURE__*/React.createElement(TaskBadge, null, lvl.stars.length > 1 ? `Собери ${lvl.stars.length} звезды одной программой` : 'Доведи робота до звезды'), /*#__PURE__*/React.createElement(CBGrid, {
+  }, /*#__PURE__*/React.createElement(TaskBadge, null, lvl.stars.length > 1 ? `Собери ${lvl.stars.length} ${window.nooka.plural(lvl.stars.length, 'звезду', 'звезды', 'звёзд')} одной программой` : 'Доведи робота до звезды'), /*#__PURE__*/React.createElement(CBGrid, {
     lvl: lvl,
     bot: bot,
     got: got,

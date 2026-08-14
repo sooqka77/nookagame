@@ -50,6 +50,16 @@
     icon: icon,
     profile: load,
 
+    /* Склонение существительного при числе: 1 выстрел, 2 выстрела, 5 выстрелов.
+       Без неё в играх появлялись «раз(а)» и «1 выстрелов». */
+    plural: function (n, one, few, many) {
+      var a = Math.abs(n) % 100, b = a % 10;
+      if (a > 10 && a < 20) return many;
+      if (b > 1 && b < 5) return few;
+      if (b === 1) return one;
+      return many;
+    },
+
     addXP: function (n) { var p = load(); p.xp += n; save(p); return p.xp; },
 
     // Отметить миссию пройденной. XP начисляется один раз, день идёт в стрик всегда.

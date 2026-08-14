@@ -1023,7 +1023,7 @@ function Level1({
       ctx.fillStyle = '#6B5680';
       ctx.font = 'bold 13px Nunito,sans-serif';
       ctx.textAlign = 'right';
-      ctx.fillText(`⭐ ${3 - alive}/3  ·  💥 ${g.maxShots - g.shots} выстрелов`, W - 12, 26);
+      ctx.fillText(`⭐ ${3 - alive}/3  ·  💥 выстрелов: ${g.maxShots - g.shots}`, W - 12, 26);
       ctx.textAlign = 'left';
       if (!g.done) {
         if (alive === 0) {
@@ -1538,7 +1538,7 @@ function Level2({
     title: "Как работает рычаг?",
     law: 'Сила × Расстояние = Сила × Расстояние\n\nЛёгкий предмет ДАЛЕКО от опоры\nравен тяжёлому БЛИЗКО к опоре!\n\nЭто открыл Архимед 2200 лет назад!',
     diagram: null,
-    tip: "Двигай ползунок чтобы передвинуть гирю. Смотри как меняется уравнение!",
+    tip: "Двигай ползунок, чтобы передвинуть гирю. Смотри, как меняется уравнение!",
     onStart: () => {
       setPhase('play');
       setRDist(50);
@@ -1548,7 +1548,7 @@ function Level2({
   }), phase === 'win' && /*#__PURE__*/React.createElement(WinModal, {
     emoji: "⚖️",
     title: "Архимед гордится!",
-    law: "Закон рычага — Архимед, 250 до н.э.",
+    law: "Закон рычага — Архимед, III век до н. э.",
     fact: "F₁×d₁ = F₂×d₂. Маленькая сила далеко = большая сила близко. Краны, весы, качели, ножницы — всё это рычаги!",
     cta: "Уровень 3 →",
     onNext: onWin,
@@ -2026,7 +2026,7 @@ function Level3({
     style: {
       color: 'var(--ak-phys-3)'
     }
-  }, mAng, "°"), " — вращай пока луч не попадёт в ⭐"), /*#__PURE__*/React.createElement("input", {
+  }, mAng, "°"), " — вращай, пока луч не попадёт в ⭐"), /*#__PURE__*/React.createElement("input", {
     type: "range",
     min: "15",
     max: "165",
@@ -2044,7 +2044,7 @@ function Level3({
     title: "Как работает зеркало?",
     law: 'Угол падения = Угол отражения\n\nЛуч ударяет в зеркало под 30° —\nи улетает тоже под 30°!\n\nЭто работает для любого зеркала,\nлюбого угла, всегда!',
     diagram: null,
-    tip: "Двигай ползунок чтобы повернуть зеркало. Направь луч прямо в звезду!",
+    tip: "Двигай ползунок, чтобы повернуть зеркало. Направь луч прямо в звезду!",
     onStart: () => {
       setPhase('play');
       wonRef.current = false;
@@ -2052,7 +2052,7 @@ function Level3({
   }), phase === 'win' && /*#__PURE__*/React.createElement(WinModal, {
     emoji: "🔦",
     title: "Мастер отражений!",
-    law: "Закон отражения — Евклид, 300 до н.э.",
+    law: "Закон отражения — Евклид, III век до н. э.",
     fact: "Угол падения = угол отражения. Это работает для света, звука и мяча об стену! Так устроены зеркала, перископы, телескопы и лазеры.",
     cta: "Отлично! 🎉",
     onNext: onWin,
@@ -2244,7 +2244,7 @@ function Level4Magnet({
     }
   }, cur ? 'Подносим магнит…' : testedCount === 0 ? '' : Object.entries(tested).slice(-1).map(([id, m]) => {
     const it = L4_ITEMS.find(x => x.id === id);
-    return m ? `${it.name} — прыг к магниту! Внутри железо.` : it.id === 'spoon' ? 'Ложка металлическая, но НЕ железная — магниту неинтересно!' : `${it.name} — даже не шевельнулся.`;
+    return m ? `${it.name} — прыг к магниту! Внутри железо.` : it.id === 'spoon' ? 'Ложка металлическая, но НЕ железная — магниту неинтересно!' : `${it.name} — магнит не берёт.`;
   })[0]), /*#__PURE__*/React.createElement("button", {
     className: "ak-btn ak-btn--ok",
     disabled: testedCount < 4,
@@ -2800,7 +2800,7 @@ function Level6Sound({
       opacity: plays >= 3 ? 1 : .45
     },
     onClick: () => plays >= 3 && setPhase('challenge')
-  }, plays >= 3 ? 'Вызов: озвучь насекомых →' : `Сыграй ещё ${3 - plays} раз(а)`), phase === 'challenge' && /*#__PURE__*/React.createElement("div", {
+  }, plays >= 3 ? 'Вызов: озвучь насекомых →' : `Сыграй ещё ${3 - plays} ${window.nooka.plural(3 - plays, 'раз', 'раза', 'раз')}`), phase === 'challenge' && /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 12.5,
       color: 'var(--ak-ink-2)',
