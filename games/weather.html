@@ -317,6 +317,9 @@ function LevelWeather({ onWin, onHome }) {
     const good = umbrella ? cur.rain : !cur.rain;
     setPick(umbrella);
     setLog(log.concat([{ d: cur.d, p: p, pick: umbrella, rain: cur.rain, good: good, k: opened.length }]));
+    /* Первое утро уже прожито руками — теперь фраза про проценты читается
+       как про свой случай, а не как правило из учебника. */
+    if (!log.length) window.nooka.beat('80% — это не обещание. Это восемь дождей из десяти таких дней');
   };
 
   const nextDay = () => {

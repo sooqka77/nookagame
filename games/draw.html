@@ -1255,6 +1255,11 @@ function LevelDraw({ n, onWin, onHome }) {
     setGuess(p);
     setNote(null);
     if (!step.unknown && (p.unsure || p.label !== step.expect)) setTries(tries + 1);
+    /* Первый уровень курса, где Нейро угадал по своим же примерам: пока
+       ребёнок смотрит на удачный ответ, говорим, откуда этот ответ взялся. */
+    if (L.mid === 'data2' && !p.unsure && p.label === step.expect) {
+      window.nooka.beat('Чтобы ИИ что-то узнал — это нужно ему показать');
+    }
   };
 
   const WORD = { cat: 'кот', house: 'дом', fish: 'рыба', dog: 'собака', tree: 'дерево', car: 'машина' };

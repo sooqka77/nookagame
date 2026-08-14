@@ -2,6 +2,7 @@
    Живёт в localStorage домена nookagame.ru — общий для всех игр. */
 (function () {
   var KEY = 'nooka_profile';
+  var beatShown = {};   // напоминания, уже показанные за этот заход в уровень
 
   function load() {
     var p = {};
@@ -106,6 +107,44 @@
     },
 
     // Миссия пройдена + красочный экран победы (конфетти, XP, звание)
+    /* Напоминание в середине уровня. Вызывается из уровня в тот момент, когда
+       ребёнок только что сделал ключевое действие руками: тогда фраза попадает
+       в живой опыт, а не читается как текст на экране. Показывается один раз
+       за заход, уходит по тапу или сама через восемь секунд.
+       Текст короткий — длинный превращает уровень в лекцию. */
+    beat: function (text) {
+      if (!text || document.getElementById('nooka-beat')) return;
+      if (beatShown[text]) return;
+      beatShown[text] = 1;
+
+      var el = document.createElement('div');
+      el.id = 'nooka-beat';
+      el.innerHTML =
+        '<style>' +
+        '#nooka-beat{position:fixed;left:12px;right:12px;bottom:14px;z-index:9998;display:flex;justify-content:center;' +
+        'pointer-events:none;animation:nkBeatIn .38s cubic-bezier(.34,1.4,.64,1)}' +
+        '#nooka-beat.out{animation:nkBeatOut .3s ease forwards}' +
+        '#nooka-beat .nkb{pointer-events:auto;cursor:pointer;max-width:460px;width:100%;display:flex;gap:12px;align-items:flex-start;' +
+        'background:#150F2E;border:1.5px solid rgba(255,216,77,.55);border-radius:18px;padding:13px 15px;' +
+        'box-shadow:0 14px 34px rgba(0,0,0,.45);font-family:\'Space Grotesk\',system-ui,sans-serif}' +
+        '#nooka-beat i{flex:none;width:5px;align-self:stretch;background:#FFD84D;border-radius:4px}' +
+        '#nooka-beat span{display:block;font-size:17px;line-height:1.3;font-weight:700;color:#FFF6DC}' +
+        '@keyframes nkBeatIn{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:none}}' +
+        '@keyframes nkBeatOut{to{opacity:0;transform:translateY(14px)}}' +
+        '</style><div class="nkb"><i></i><span>' + text + '</span></div>';
+      document.body.appendChild(el);
+
+      var gone = false;
+      function hide() {
+        if (gone) return;
+        gone = true;
+        el.className = 'out';
+        setTimeout(function () { el.remove(); }, 300);
+      }
+      el.querySelector('.nkb').onclick = hide;
+      setTimeout(hide, 8000);
+    },
+
     missionWin: function (id, xp, opts) {
       var isNew = this.completeMission(id, xp);
       opts = opts || {};
@@ -136,6 +175,9 @@
         '#nooka-win .nk-rank{font-size:14px;color:#6B7280;margin:8px 0 2px}' +
         '#nooka-win .nk-bar{height:10px;background:#EDE9FE;border-radius:8px;overflow:hidden;margin:8px 0 16px}' +
         '#nooka-win .nk-bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#7B2FFF,#A855F7);border-radius:8px;transition:width 1s .3s}' +
+        '#nooka-win .nk-now{background:#FFF6DC;border:1.5px solid #FFD84D;border-radius:16px;padding:12px 14px;margin:2px 0 14px}' +
+        '#nooka-win .nk-now b{display:block;font-size:10.5px;letter-spacing:1.2px;color:#A9791B;margin-bottom:5px}' +
+        '#nooka-win .nk-now span{display:block;font-size:18px;line-height:1.25;font-weight:700;color:#111118}' +
         '#nooka-win .nk-show{font-size:13.5px;color:#6B7280;margin-bottom:16px}' +
         '#nooka-win .nk-next{display:block;width:100%;background:#7B2FFF;color:#fff;border:none;border-radius:16px;padding:14px;' +
         'font-size:16px;font-weight:700;cursor:pointer;font-family:inherit;margin-bottom:8px}' +
@@ -147,7 +189,7 @@
          следующий уровень этой же игры, а ссылка ниже возвращает к списку.
          Сам уровень никуда не уводит: любой переход тут только по клику. */
       var hub = { href: '../base/', label: '\u041c\u043e\u044f \u0431\u0430\u0437\u0430' };
-      var next = null, hasArt = false;
+      var next = null, hasArt = false, now = '';
       try {
         if (window.nookaLevels && opts.mid) {
           window.nookaLevels.games.forEach(function (g) {
@@ -156,6 +198,7 @@
               hub.href = 'game.html?g=' + g.key;
               hub.label = '\u041a \u0443\u0440\u043e\u0432\u043d\u044f\u043c: ' + g.name;
               hasArt = !!lv.art;
+              now = lv.now || '';
               var nx = g.levels[i + 1];
               if (nx && nx.href) next = { href: nx.href, title: nx.t };
             });
@@ -172,6 +215,11 @@
         '<div class="nk-rank">' + icon(rank.name, 18) + ' ' + rank.name +
         (rank.next ? ' · до звания «' + rank.next.name + '» — ' + (rank.next.at - total) + ' XP' : ' · высшее звание!') + '</div>' +
         '<div class="nk-bar"><i></i></div>' +
+        /* Сверка с целью уровня: в начале было «чему учимся», здесь — «вот это ты
+           теперь умеешь». Без неё уровень запоминается как игра, а знание из него
+           не достаётся. Фраза в инфинитиве — она одинаково читается и мальчику,
+           и девочке. Берётся из реестра, поля нет — блок не показывается. */
+        (now ? '<div class="nk-now"><b>ТЕПЕРЬ ТЫ ЭТО УМЕЕШЬ</b><span>' + now + '</span></div>' : '') +
         '<div class="nk-show">Покажи родителям, что у тебя получилось</div>' +
         '<button class="nk-next">' + (opts.nextLabel ||
             (next ? 'Дальше: ' + next.title + ' \u2192' : '\u041a \u0443\u0440\u043e\u0432\u043d\u044f\u043c \u2192')) + '</button>' +

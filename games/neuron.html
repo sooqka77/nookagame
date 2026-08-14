@@ -258,6 +258,12 @@ function LevelNeuron({ onWin, onHome }) {
   const solved = good === rows.length;
   const cur = rows[who];
 
+  /* Напоминание ровно в тот момент, когда краны наконец настроены: ребёнок
+     только что увидел, как это работает, — тут фраза и цепляется за опыт. */
+  React.useEffect(() => {
+    if (solved) window.nooka.beat('Чтобы Нейро сказал «кот» — примет должно набраться до черты');
+  }, [solved]);
+
   /* ── финал ── */
   if (phase === 'done') {
     return React.createElement('div', { className: 'nn' },
