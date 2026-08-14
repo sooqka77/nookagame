@@ -490,7 +490,7 @@ const CO_GUESTS = [{
   },
   // грибы нельзя
   banSay: 'Тут грибы! Я же сказала, что не ем их.',
-  banSayBlind: 'Тут грибы, а я их не ем. Ты и не спросил…',
+  banSayBlind: 'Тут грибы, а я их не ем. А ты и не спрашиваешь…',
   needSay: 'Я просила быстро. Это долго готовить.',
   ok: 'Вот это завтрак! Спасибо.'
 }, {
@@ -654,7 +654,7 @@ function LevelCook({
           kind: 'recipe',
           game: 'Шеф-повар',
           title: coName(v),
-          note: 'Рецепт, который ты придумал сам',
+          note: 'Рецепт, придуманный тобой',
           svg: svg.outerHTML
         });
       }
@@ -673,7 +673,7 @@ function LevelCook({
       className: 'conote'
     }, React.createElement('div', {
       className: 'conote__t'
-    }, 'Что ты выяснил'), n.length ? React.createElement('ul', null, n.map((t, i) => React.createElement('li', {
+    }, 'Что удалось выяснить'), n.length ? React.createElement('ul', null, n.map((t, i) => React.createElement('li', {
       key: i
     }, t))) : React.createElement('div', {
       className: 'conote__e'
@@ -703,7 +703,7 @@ function LevelCook({
   }), phase === 'intro' && React.createElement(IntroModal, {
     emoji: NKM('hello', 88),
     title: 'Шеф-повар',
-    law: 'Гость расскажет не всё — он и не подумает.\nСпроси сам, пока не начал готовить.',
+    law: 'Гость расскажет не всё — он и не подумает.\nСпроси сам, до того как встать к плите.',
     tip: 'Вопросов немного. Выбирай те, что про еду.',
     onStart: () => setPhase('play')
   }), React.createElement('div', {

@@ -336,7 +336,7 @@ function LevelWeather({ onWin, onHome }) {
           React.createElement('span', null,
             'Восемьдесят процентов значит: из десяти таких дней в восьми был дождь, а в двух не было. ' +
             'Если прогноз не сбылся, он не был неправильным — просто выпал тот самый редкий день. ' +
-            'И зонт в такое утро ты взял верно: решение оценивают по тому, что было известно, ' +
+            'И зонт в такое утро — верное решение: его оценивают по тому, что было известно, ' +
             'а не по тому, чем всё кончилось.'))),
       React.createElement('div', { className: 'wtfoot' },
         React.createElement('div', { style: { display: 'flex', gap: 8 } },
@@ -347,7 +347,7 @@ function LevelWeather({ onWin, onHome }) {
               if (svg && window.nookaGallery) {
                 window.nookaGallery.add({
                   kind: 'forecast', game: 'Метеоролог', title: 'Моя неделя прогнозов',
-                  note: 'Понял, что 80% — это не обещание, и что решение судят по тому, что было известно',
+                  note: '80% — не обещание: решение судят по тому, что было известно',
                   svg: svg.outerHTML,
                 });
               }
@@ -388,7 +388,7 @@ function LevelWeather({ onWin, onHome }) {
             : 'Нет. Сто процентов я сказать не могу почти никогда. Восемьдесят — это честно: в двух днях из десяти дождя не будет, и это не ошибка.')),
 
         React.createElement('div', { className: 'wtq' },
-          React.createElement('div', { className: 'wtq__t' }, 'Ты спросил одну станцию — вышло 65%. Спросил ещё три — стало 92%. Почему?'),
+          React.createElement('div', { className: 'wtq__t' }, 'Одна станция дала 65%. Ещё три — и стало 92%. Почему?'),
           o2.map((o, i) => React.createElement('button', {
             key: i, className: q2 === i ? (o.ok ? 'on--ok' : 'on--bad') : '',
             onClick: () => setQ2(i),
@@ -447,7 +447,7 @@ function LevelWeather({ onWin, onHome }) {
   const result = !done ? '' :
     pick && cur.rain ? 'Сухой. Зонт пригодился.' :
     pick && !cur.rain ? 'Дождя не было — зонт проездил зря.' :
-    !pick && !cur.rain ? 'Ясно весь день. Хорошо, что не таскал.' :
+    !pick && !cur.rain ? 'Ясно весь день. Хорошо, что зонт остался дома.' :
     'Промок. Дождь всё-таки пошёл.';
 
   return React.createElement('div', { className: 'wt' },

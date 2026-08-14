@@ -874,7 +874,7 @@ function LevelForge({
 
   /* первая ковка по скупому описанию */
   const forgeRough = () => strike(() => {
-    setSay('Ты сказал только «меч». Каким он должен быть, я не знал — и сделал как получилось.');
+    setSay('В заказе было только «меч». Каким он должен быть, я не знал — и сделал как получилось.');
     setBad(true);
   });
   const order = FG_ORDERS[oIdx];
@@ -912,7 +912,7 @@ function LevelForge({
         kind: 'item',
         game: 'Мастерская предметов',
         title: fgName(v),
-        note: fgNote(v) + ' · описал сам',
+        note: fgNote(v) + ' · твоё описание',
         svg: svg.outerHTML
       });
     }
@@ -977,7 +977,7 @@ function LevelForge({
   }), phase === 'intro' && React.createElement(IntroModal, {
     emoji: NKM('hello', 88),
     title: 'Мастерская предметов',
-    law: 'Нейро кузнец: он выкует что угодно.\nНо ровно то, что ты описал словами.',
+    law: 'Нейро кузнец: он выкует что угодно.\nНо ровно то, что опишешь словами.',
     tip: 'Чем точнее описание — тем круче предмет.',
     onStart: () => {
       setPhase('rough');

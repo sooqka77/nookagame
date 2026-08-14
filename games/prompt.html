@@ -2760,7 +2760,7 @@ function Level3Iterate({
   }), phase === 'intro' && /*#__PURE__*/React.createElement(IntroModal, {
     emoji: NKM("think", 88),
     title: "Докрути до идеала",
-    law: 'С первого раза не выходит ни у кого.\n\nПосмотрел, что получилось, сказал, что поправить,\nполучил лучше. И так по кругу.\n\nШаг назад ничего не стоит.',
+    law: 'С первого раза не выходит ни у кого.\n\nСмотришь, что получилось, говоришь, что поправить,\nполучаешь лучше. И так по кругу.\n\nШаг назад ничего не стоит.',
     diagram: null,
     tip: "Бриф клиента: «Хочу ЯРКО, с РАКЕТОЙ и БЕЗ КЛОУНОВ». Выбирай правки!",
     onStart: () => setPhase('play')
@@ -3909,7 +3909,7 @@ function PLHome({
     // коротко: чипы навыков выше уже показывают, что Нейро умеет — не дублируем
     say = /*#__PURE__*/React.createElement("span", null, "Но ", m.lack, " ", /*#__PURE__*/React.createElement("b", null, "Научи меня!"));
   } else {
-    say = /*#__PURE__*/React.createElement("span", null, "Я умею всё, чему ты меня научил. ", /*#__PURE__*/React.createElement("b", null, "Теперь я понимаю людей!"));
+    say = /*#__PURE__*/React.createElement("span", null, "Всё, что я умею, — от тебя. ", /*#__PURE__*/React.createElement("b", null, "Теперь я понимаю людей!"));
   }
   return /*#__PURE__*/React.createElement("div", {
     className: "plh ak"
@@ -4090,7 +4090,7 @@ const P5_CMDS = {
         w.wet = true;
         return {
           act: 'soak',
-          fail: 'Ты не сказал, во что набирать. Я набрал в себя.'
+          fail: 'Во что набирать, в плане не сказано. Я набрал в себя.'
         };
       }
       w.water = 1;
@@ -4114,7 +4114,7 @@ const P5_CMDS = {
       }
       if (!w.water) return {
         act: 'shake',
-        fail: 'Лейка пустая. Налить в неё ты не говорил.'
+        fail: 'Лейка пустая. Налить в неё в плане не сказано.'
       };
       w.water = 0;
       w.watered = true;
@@ -4203,7 +4203,7 @@ const P5_CMDS = {
       }
       if (!w.planted) return {
         act: 'pourEmpty',
-        fail: 'Полил землю. Сажать ты пока не просил.'
+        fail: 'Полил землю. Сажать в плане пока не было.'
       };
       w.watered2 = true;
       w.plants = 'ok';
@@ -4372,7 +4372,7 @@ const P5_ROUNDS = [{
   },
   goal: w => w.planted && w.watered2,
   winSay: 'Росток в земле и полит. Ничего не пропущено.',
-  miss: w => !w.pot ? 'Горшка я так и не взял.' : !w.planted ? 'Всё по плану. Только росток так и не в земле.' : 'Росток посажен, но полить его ты не сказал.'
+  miss: w => !w.pot ? 'Горшка я так и не взял.' : !w.planted ? 'Всё по плану. Только росток так и не в земле.' : 'Росток посажен, но про полив в плане ни слова.'
 }, {
   task: 'Прорвало трубу — спаси оранжерею',
   hint: 'Четыре шага. Думай, что должно быть первым.',
@@ -5516,7 +5516,7 @@ function Level5Night({
   }), phase === 'intro' && React.createElement(IntroModal, {
     emoji: NKM('think', 88),
     title: 'Ночная смена',
-    law: 'Нейро никогда не переспрашивает.\nЧего ты не написал — он додумает сам.',
+    law: 'Нейро никогда не переспрашивает.\nЧего нет в плане — он додумает сам.',
     tip: 'Собери план по шагам и запусти. Оранжерея гибнет.',
     onStart: () => setPhase('play')
   }), React.createElement('div', {
@@ -5636,7 +5636,7 @@ function Level5Night({
     }
   }, React.createElement('span', {
     className: 'p5say__ava'
-  }, NKM(checkOk ? 'win' : 'think', 30)), React.createElement('span', null, checkOk ? P5_CHECK.why + (clean === P5_ROUNDS.length ? ' Все три задания ты взял с первого раза.' : '') : P5_CHECK.wrong)), checkOk && React.createElement('button', {
+  }, NKM(checkOk ? 'win' : 'think', 30)), React.createElement('span', null, checkOk ? P5_CHECK.why + (clean === P5_ROUNDS.length ? ' Все три задания — с первого раза.' : '') : P5_CHECK.wrong)), checkOk && React.createElement('button', {
     className: 'nk-btn nk-btn--ok',
     style: {
       width: '100%',

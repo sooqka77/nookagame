@@ -345,7 +345,7 @@ function LevelWords({ onWin, onHome }) {
         React.createElement('i', null, NKM(turn ? (turn.okMe ? 'win' : 'think') : 'hello', 30)),
         React.createElement('span', null,
           turn
-            ? (turn.okMe && !turn.okAi ? 'Ты угадал, а я нет. Ты знаешь, о чём речь, — а я только помню, что за чем шло.'
+            ? (turn.okMe && !turn.okAi ? 'Ты угадываешь, а я нет. Ты знаешь, о чём речь, — а я только помню, что за чем шло.'
               : turn.okAi && !turn.okMe ? 'Тут я угадал. Это слово шло следом чаще всего.'
               : turn.okMe && turn.okAi ? 'Оба верно. Тут и гадать было нечего.'
               : 'Мимо у обоих. Бывает.')
@@ -362,10 +362,10 @@ function LevelWords({ onWin, onHome }) {
       /* что выбрали оба */
       turn && React.createElement('div', { className: 'wdrow' },
         React.createElement('div', { className: 'wdcell ' + (turn.okMe ? 'wdcell--hit' : 'wdcell--miss') },
-          React.createElement('b', null, 'ты сказал'),
+          React.createElement('b', null, 'твоё слово'),
           React.createElement('span', null, turn.me)),
         React.createElement('div', { className: 'wdcell ' + (turn.okAi ? 'wdcell--hit' : 'wdcell--miss') },
-          React.createElement('b', null, 'нейро сказал'),
+          React.createElement('b', null, 'слово Нейро'),
           React.createElement('span', null, turn.ai ? turn.ai.word : '—'))),
 
       /* из чего он выбирал */

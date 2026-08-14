@@ -794,7 +794,7 @@ function LevelCheck({
       u: 'b'
     })), React.createElement('div', {
       className: 'cklaw'
-    }, React.createElement('b', null, 'Выдумку ИИ говорит тем же голосом, что и правду.'), React.createElement('span', null, missed > 0 ? 'Ты поверил ' + missed + ' раз — и попался. Проверяй то, что важно.' : 'Ты не поверил ни одной выдумке на слово. Так и надо.')), React.createElement('div', {
+    }, React.createElement('b', null, 'Выдумку ИИ говорит тем же голосом, что и правду.'), React.createElement('span', null, missed > 0 ? 'На слово веришь ' + missed + ' ' + window.nooka.plural(missed, 'раз', 'раза', 'раз') + ' — и каждый раз мимо. Проверяй то, что важно.' : 'Ни одной выдумке на слово. Так и надо.')), React.createElement('div', {
       className: 'ckfact'
     }, 'Это называют галлюцинацией ИИ. Такое бывает у всех нейросетей — даже у самых больших.')), React.createElement('div', {
       className: 'ckfoot'
@@ -820,14 +820,14 @@ function LevelCheck({
       t: f.caught,
       cls: 'ok'
     } : {
-      t: 'Ты поверил на слово. А это выдумка.',
+      t: 'Это выдумка, а веры ей — на слово.',
       cls: 'bad'
     };
     return checked ? {
       t: f.caught,
       cls: 'ok'
     } : {
-      t: 'Здесь повезло: он не соврал. Но ты этого не знал.',
+      t: 'Здесь повезло: он не соврал. Но заранее это было неизвестно.',
       cls: 'warn'
     };
   };

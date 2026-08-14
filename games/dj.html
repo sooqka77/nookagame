@@ -282,7 +282,7 @@ function DjCard({ mine, tail, brave }) {
       key: i, cx: pad + dx * (i + .5), cy: y(n), r: 5,
       fill: i < mine.length ? '#7FE7FF' : '#FF6FC4' })),
     React.createElement('text', { x: 105, y: 202, textAnchor: 'middle', fill: '#F4EEFF',
-      style: { font: '900 12.5px Nunito,sans-serif' } }, 'начал я, дописал Нейро'),
+      style: { font: '900 12.5px Nunito,sans-serif' } }, 'начало моё, продолжение Нейро'),
     React.createElement('text', { x: 105, y: 222, textAnchor: 'middle', fill: '#A896C9',
       style: { font: '900 11px Nunito,sans-serif' } }, 'смелость: ' + DJ_BRAVE[brave].t.toLowerCase()));
 }
@@ -369,7 +369,7 @@ function LevelDj({ onWin, onHome }) {
               if (svg && window.nookaGallery) {
                 window.nookaGallery.add({
                   kind: 'tune', game: 'Диджей', title: 'Моя мелодия',
-                  note: 'Начал сам, продолжил ИИ. Услышал, что осторожный ИИ ходит по кругу',
+                  note: 'Начало моё, продолжение ИИ. Осторожный ИИ ходит по кругу',
                   svg: svg.outerHTML,
                 });
               }

@@ -808,14 +808,14 @@ const DW_LEVELS = {
       okSay: 'Верно. Других котов он не видел — только твои.',
       badSay: 'Не совсем. До твоих рисунков он про котов не знал ничего: он сравнил новый рисунок с примерами.',
     },
-    win: { art: true, title: 'Питомец обучен', law: 'Нейро знает ровно то, что ты ему показал',
-      sub: 'Ты дал четыре примера — и он начал различать. Больше примеров, больше разных — точнее узнавание.' },
+    win: { art: true, title: 'Питомец обучен', law: 'Нейро знает ровно то, что ты ему показываешь',
+      sub: 'Четыре примера — и он начал различать. Больше примеров, больше разных — точнее узнавание.' },
   },
 
   3: {
     title: 'Чего я не видел',
     mid: 'data3', xp: 80,
-    law: 'Нейро знает только те слова, которым ты его научил.\nВсё остальное он назовёт знакомым словом.',
+    law: 'Нейро знает только те слова, которым ты его учишь.\nВсё остальное он назовёт знакомым словом.',
     tip: 'Нейро уже знает кота и дом. Нарисуй то, чему его никто не учил.',
     preset: { kinds: ['cat', 'house'], each: 2 },
     steps: [
@@ -837,7 +837,7 @@ const DW_LEVELS = {
       badSay: 'Не в этом дело. У Нейро было всего два слова: кот и дом. Он не умеет сказать «я такого не знаю» — он берёт самое похожее из того, что видел.',
     },
     win: { law: 'ИИ не знает, чего он не знает',
-      sub: 'Пока ты не показал рыбу, для Нейро её не существовало — а ответ он всё равно давал. Так же ошибаются и большие модели.' },
+      sub: 'Пока рыбы не было в его наборе, для Нейро она не существовала — а ответ он всё равно давал. Так же ошибаются и большие модели.' },
   },
 
   4: {
@@ -892,10 +892,10 @@ const DW_LEVELS = {
         { t: 'Ошибки исчезали со временем', ok: false },
       ],
       okSay: 'Да. Модель не знает, где ошиблась: для неё все ответы одинаково правильные. Ошибку показывает человек — так и работают те, кто учит ИИ.',
-      badSay: 'Сам он ошибку не видит: для него любой его ответ — правильный. Пока ты не отметил промах, Нейро о нём не знал.',
+      badSay: 'Сам он ошибку не видит: для него любой его ответ — правильный. Пока промах не отмечен, Нейро о нём не знает.',
     },
     win: { show: 'judge', law: 'Ошибку показывает человек',
-      sub: 'Каждый круг ты находил его промахи и отдавал ему как примеры. Настоящие модели дообучают так же — руками людей.' },
+      sub: 'Каждый круг ты находишь его промахи и отдаёшь как примеры. Настоящие модели дообучают так же — руками людей.' },
   },
 
   10: {
@@ -916,8 +916,8 @@ const DW_LEVELS = {
       okSay: 'Именно. Восемь верных и разных примеров бьют дюжину похожих или подписанных наспех.',
       badSay: 'Количество тут ни при чём — больше восьми и не дали бы. Работают верные подписи и разные примеры.',
     },
-    win: { show: 'diploma', art: true, law: 'Ты обучил ИИ от начала до конца',
-      sub: 'Выбрал данные, проверил подписи, отправил на экзамен и дообучил, где он спотыкался. Так это и делают взрослые.' },
+    win: { show: 'diploma', art: true, law: 'Твой ИИ обучен от начала до конца',
+      sub: 'Данные выбраны, подписи проверены, экзамен сдан, слабые места дообучены. Так это и делают взрослые.' },
   },
 
   8: {
@@ -940,7 +940,7 @@ const DW_LEVELS = {
         { t: 'Одна умнее другой', ok: false },
       ],
       okSay: 'Верно. Картинки те же, подписи разные — и модели выросли разными. Всё, что решил разметчик, оказывается внутри ИИ.',
-      badSay: 'Обе исправны и одинаково устроены. Разница только в подписях: ты решил так, Даня иначе — и модели разошлись.',
+      badSay: 'Обе исправны и одинаково устроены. Разница только в подписях: у тебя вышло так, у Дани иначе — и модели разошлись.',
     },
     win: { show: 'tag', law: 'За каждым ИИ стоят люди',
       sub: 'Спорные случаи кто-то размечает руками. Его решение становится частью модели — и её ошибкой тоже.' },
@@ -967,10 +967,10 @@ const DW_LEVELS = {
         { t: 'Что он специально поддался', ok: false },
       ],
       okSay: 'Верно. Проценты говорят лишь о похожести на то, что он видел. К правде они отношения не имеют.',
-      badSay: 'Нет. Ты же сам нарисовал кота — и он ошибся, оставаясь уверенным. Проценты показывают похожесть на его примеры, а не правоту.',
+      badSay: 'Нет. Это же твой кот — и он ошибся, оставаясь уверенным. Проценты показывают похожесть на его примеры, а не правоту.',
     },
     win: { show: 'hack', art: true, law: 'Уверенность — не доказательство',
-      sub: 'Ты обманул Нейро, и он не заметил подвоха. Так же обманывают и большие модели: чуть изменил картинку — и уверенный ответ стал неверным.' },
+      sub: 'Нейро обманут и подвоха не заметил. Так же обманывают и большие модели: чуть изменил картинку — и уверенный ответ стал неверным.' },
   },
 
   7: {
@@ -1050,7 +1050,7 @@ function DwBadge({ shot, tries, u }) {
     React.createElement('text', { x: 100, y: 36, textAnchor: 'middle', fill: '#FFC48F',
       style: { font: '900 10.5px Nunito, sans-serif', letterSpacing: '1.3px' } }, 'ЗНАЧОК ВЗЛОМЩИКА'),
     React.createElement('text', { x: 100, y: 57, textAnchor: 'middle', fill: '#F4EEFF',
-      style: { font: "700 14px 'Unbounded', Nunito, sans-serif" } }, 'Сбил Нейро'),
+      style: { font: "700 14px 'Unbounded', Nunito, sans-serif" } }, 'Нейро сбит'),
     shot && React.createElement('g', null,
       React.createElement('rect', { x: 58, y: 70, width: 84, height: 84, rx: 16,
         fill: '#0C0918', stroke: 'rgba(255,150,90,.5)', strokeWidth: 1.4 }),
@@ -1084,7 +1084,7 @@ function DwDiploma({ res, kit, u }) {
       width: 34, height: 34,
     })),
     React.createElement('text', { x: 100, y: 162, textAnchor: 'middle', fill: '#A896C9',
-      style: { font: '700 9px Nunito, sans-serif' } }, 'набор, который ты собрал сам'),
+      style: { font: '700 9px Nunito, sans-serif' } }, 'набор, собранный тобой'),
     React.createElement('text', { x: 100, y: 194, textAnchor: 'middle', fill: '#7CE9B7',
       style: { font: "700 26px 'Unbounded', Nunito, sans-serif" } },
       (res ? res.ok : 0) + ' из ' + (res ? res.res.length : 8)),
@@ -1433,9 +1433,9 @@ function LevelDraw({ n, onWin, onHome }) {
     const kind = L.win.show === 'hack' ? 'badge' : L.win.show === 'diploma' ? 'diploma' : 'pet';
     const sel = { badge: '.dwbadge', diploma: '.dwdiploma', pet: '.dwpet' }[kind];
     const meta = {
-      badge: { title: 'Значок взломщика', note: 'Рисунок, которым ты сбил Нейро — он был уверен и всё равно ошибся' },
+      badge: { title: 'Значок взломщика', note: 'Рисунок, которым Нейро сбит с толку: он был уверен и всё равно ошибся' },
       diploma: { title: 'Диплом питомца', note: 'Набор собран, подписи проверены, экзамен сдан на невиданных рисунках' },
-      pet: { title: 'Питомец Нейро', note: 'Узнаёт котов по рисункам, которые ты сделал сам' },
+      pet: { title: 'Питомец Нейро', note: 'Узнаёт котов по твоим собственным рисункам' },
     }[kind];
     const svg = document.querySelector(sel);
     if (svg && window.nookaGallery) {
@@ -1461,7 +1461,7 @@ function LevelDraw({ n, onWin, onHome }) {
           ? React.createElement('div', null,
               React.createElement(DwBadge, { shot: shot, tries: hacks.length, u: 'h' }),
               React.createElement('div', { className: 'dwwords__n', style: { textAlign: 'center', margin: '10px 20px 0' } },
-                'Ты нарисовал кота — а он не усомнился ни на секунду.'))
+                'Это был кот — а он не усомнился ни на секунду.'))
           : hasArt
           ? React.createElement(DwPet, { shots: shots, conf: guess ? guess.conf : 70, u: 'p', total: model.length })
           : L.win.show === 'tag'
@@ -1494,7 +1494,7 @@ function LevelDraw({ n, onWin, onHome }) {
                   ? 'В первом круге он ошибся ' + rounds[0].errs + ' ' +
                     plural(rounds[0].errs, 'раз', 'раза', 'раз') + ', в последнем — ' +
                     rounds[rounds.length - 1].errs + '. Между ними только твой разбор.'
-                  : 'Ты показал ему промахи, и он их выучил.'))
+                  : 'Промахи ему показываешь ты — и он их учит.'))
           : L.win.show === 'lab'
           ? React.createElement('div', { className: 'dwwords' },
               React.createElement('div', { className: 'dwwords__t' }, 'Твои попытки'),
@@ -1714,7 +1714,7 @@ function LevelDraw({ n, onWin, onHome }) {
         React.createElement('div', { className: 'dwjudge__h' },
           React.createElement('b', null, 'Круг ' + (rounds.length + (judge.checked ? 0 : 1)) + ' из ' + (L.rounds || 3)),
           React.createElement('span', null, judge.checked
-            ? 'нашёл ' + judge.marked.filter(i => judge.cards[i].said !== judge.cards[i].truth).length +
+            ? 'найдено ' + judge.marked.filter(i => judge.cards[i].said !== judge.cards[i].truth).length +
               ' из ' + judge.cards.filter(c => c.said !== c.truth).length
             : 'отмечено: ' + judge.marked.length)),
         React.createElement('div', { className: 'dwjudge__r' },
@@ -1775,7 +1775,7 @@ function LevelDraw({ n, onWin, onHome }) {
         examDone && React.createElement('div', { className: 'dwexam__n' },
           exam.res.filter(r => r.ok).length === exam.res.length
             ? (tryLog.length > 1
-                ? 'Снова без ошибок. Ты нашёл, сколько хватает, — можно идти дальше.'
+                ? 'Снова без ошибок. Вот сколько и хватает — можно идти дальше.'
                 : 'Ни одной ошибки. Попробуй теперь с меньшим числом рисунков — где предел?')
             : 'Эти рисунки Нейро раньше не видел. Ошибки — там, где ему не хватило примеров.')),
 
@@ -1828,7 +1828,7 @@ function LevelDraw({ n, onWin, onHome }) {
             background: broke ? 'linear-gradient(90deg,#FF7A64,#FFC83C)' : 'linear-gradient(90deg,#A98BFF,#7FE7FF)' } })),
         React.createElement('div', { className: 'dwguess__n' },
           broke
-            ? 'Уверен на ' + guess.conf + '% — и всё равно неправ: ты рисовал кота. Вот пример, на который это, по-моему, похоже:'
+            ? 'Уверен на ' + guess.conf + '% — и всё равно неправ: это был кот. Вот пример, на который это, по-моему, похоже:'
             : 'Уверен на ' + guess.conf + '%. Пока не обманул — я всё ещё вижу кота.'),
         guess.near && React.createElement('div', { className: 'dwnear' },
           React.createElement('img', { src: model[guess.near.i].thumb, alt: '' }),
@@ -1876,7 +1876,7 @@ function LevelDraw({ n, onWin, onHome }) {
           isClean ? 'Набор Нейро · пунктиром — копии твоих рисунков'
             : isHack ? 'На этом Нейро учился — по ним он и узнаёт'
             : model.some(m => m.mem) ? 'Набор Нейро · часть помнит с прошлых уровней'
-            : 'Чему ты его научил'),
+            : 'Чему он у тебя научился'),
         React.createElement('div', { className: 'dwrow' },
           model.map((m, i) => React.createElement('div', {
             key: i,
