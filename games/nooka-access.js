@@ -38,6 +38,21 @@
   var DEMO_SERIAL = 15;
   var DEMO_OFF = false;   // ← рубильник: true и выложить — демо закрыто
 
+  /* ── предпросмотр стены до старта продаж ──────────────────
+     ?wall=1 включает стену только в этой вкладке, ?wall=0 выключает.
+     Нужно, чтобы посмотреть глазами родителя, ничего не открывая
+     и не закрывая всем остальным. На проде поведение не меняется. */
+  var WALL_PREVIEW = false;
+  try {
+    var wq = new URLSearchParams(location.search).get('wall');
+    if (wq === '1') sessionStorage.setItem('nooka_wall', '1');
+    if (wq === '0') sessionStorage.removeItem('nooka_wall');
+    WALL_PREVIEW = sessionStorage.getItem('nooka_wall') === '1';
+  } catch (e) {}
+
+  /* Открыто ли всё: боевой переключатель минус предпросмотр в этой вкладке */
+  function allOpen() { return OPEN_ALL && !WALL_PREVIEW; }
+
   var KEY = 'nooka_access';
   var ALPHA = '23456789ABCDEFGHJKLMNPQRSTUVWXYZ';   // без 0/O/1/I — чтобы диктовать по телефону
   var SALT = 'nooka-2026-ai-literacy';
@@ -45,8 +60,8 @@
   var DAY = 86400000;
 
   var PLANS = {
-    quarter: { code: 0, days: 92,  price: '490 ₽',  title: 'Три месяца', note: 'Три игры, 30 уровней. Продлевать не нужно: срок вышел — доступ закрылся сам.' },
-    year:    { code: 1, days: 366, price: '1450 ₽', title: 'Год',        note: 'Те же три игры на 12 месяцев плюс все новые игры платформы, которые выйдут за год.' },
+    quarter: { code: 0, days: 92,  price: '490 ₽',  title: 'Три месяца', note: 'Вторая и третья игры — ещё 20 уровней. Продлевать не нужно: срок вышел — доступ закрылся сам.' },
+    year:    { code: 1, days: 366, price: '1450 ₽', title: 'Год',        note: 'Те же 20 уровней на 12 месяцев плюс все новые игры платформы, которые выйдут за год.' },
     /* Демо не продаётся: под него печатается ссылка для показов (серия 15).
        Срок длинный, чтобы не перевыпускать перед каждой встречей, — на случай
        утечки есть рубильник DEMO_OFF. */
@@ -124,7 +139,7 @@
 
   /* ── можно ли играть ─────────────────────────────────── */
   function canPlay(gameKey, n) {
-    if (OPEN_ALL) return true;
+    if (allOpen()) return true;
     if (state().paid) return true;
     var g = window.nookaLevels && window.nookaLevels.game(gameKey);
     return !!(g && n <= (g.free || 0));
@@ -282,7 +297,7 @@
 
   /* Закрыть платный уровень, если его открыли прямой ссылкой мимо витрины */
   function guard() {
-    if (OPEN_ALL || state().paid) return;
+    if (allOpen() || state().paid) return;
     var cur = currentLevel(), whole = false;
     if (!cur) {
       var all = fileLevels();
@@ -345,7 +360,8 @@
   else setTimeout(boot, 0);
 
   window.nookaAccess = {
-    openAll: OPEN_ALL,
+    openAll: allOpen(),
+    wallPreview: WALL_PREVIEW,
     payUrl: PAY_URL,
     tgUrl: TG_URL,
     buyUrl: PAY_URL || TG_URL,   // куда вести кнопку «купить» прямо сейчас
