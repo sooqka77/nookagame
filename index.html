@@ -290,6 +290,16 @@ footer{border-top:2px solid rgba(123,79,242,.12);background:#FFF6E9}
 .cc-tag{position:absolute;left:16px;top:16px;z-index:2;padding:6px 12px;border-radius:999px;
   font-size:11px;font-weight:900;color:#150E2A;background:var(--t);box-shadow:0 6px 16px -6px rgba(0,0,0,.7)}
 .cc-tag--soon{color:#EBE2FF;background:rgba(20,13,38,.86);box-shadow:inset 0 0 0 1px rgba(255,255,255,.22)}
+/* Статус доступа прямо на обложке: родитель должен видеть, за что платит,
+   не открывая игру. Платная обложка приглушена, но узнаваема. */
+.cc-st{position:absolute;right:14px;top:16px;z-index:2;display:flex;align-items:center;gap:6px;
+  padding:6px 12px;border-radius:999px;font-size:11px;font-weight:900;letter-spacing:.01em}
+.cc-st svg{width:13px;height:13px;flex:none}
+.cc-st--free{color:#0C2A1E;background:#5FE3A6;box-shadow:0 6px 16px -6px rgba(0,0,0,.55)}
+.cc-st--lock{color:#FFE7AE;background:rgba(18,12,34,.9);box-shadow:inset 0 0 0 1px rgba(255,216,77,.5)}
+.cc-shot--lock img{filter:saturate(.5) brightness(.62)}
+.cc-shot--lock::before{content:'';position:absolute;inset:0;z-index:1;
+  background:linear-gradient(180deg,rgba(12,8,24,.34),rgba(12,8,24,.06))}
 .cc-no{color:var(--t)}
 .cc-age{color:#9C8CBE}
 .cc-name{font-family:var(--nk-brand);font-weight:900;font-size:21px;line-height:1.15;letter-spacing:-.01em}
@@ -593,10 +603,24 @@ document.querySelectorAll('[data-buy]').forEach(function(b){ b.addEventListener(
     /* Бирка говорит то, чего не видно из названия игры: чем она берёт. */
     var MARK = { data: 'Рисует пальцем', control: 'Слово в слово', inside: 'Три профессии' };
     var full = st.ready === st.total;
+    /* Что с доступом к этой игре: бесплатна целиком, уже открыта кодом
+       или закрыта. Замок вешаем только на реально закрытые — если родитель
+       оплатил или включён показ, обложка остаётся обычной. */
+    var A = window.nookaAccess;
+    var freeGame = (g.free || 0) >= g.levels.length;
+    var opened = !!(A && (A.openAll || A.state().paid));
+    var locked = !freeGame && !opened;
+    var LOCK_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" ' +
+      'stroke-linecap="round" stroke-linejoin="round"><rect x="4.5" y="10.5" width="15" height="10" rx="2.5"/>' +
+      '<path d="M8 10.5V7a4 4 0 018 0v3.5"/></svg>';
+    var status = freeGame ? '<span class="cc-st cc-st--free">Бесплатно</span>'
+      : locked ? '<span class="cc-st cc-st--lock">' + LOCK_SVG + 'По коду</span>'
+      : '<span class="cc-st cc-st--free">Открыто</span>';
     card.innerHTML =
-      '<div class="cc-shot">' +
+      '<div class="cc-shot' + (locked ? ' cc-shot--lock' : '') + '">' +
         '<span class="cc-tag' + (full ? '' : ' cc-tag--soon') + '">' +
           (full ? MARK[g.key] : 'Готово ' + st.ready + ' из ' + st.total) + '</span>' +
+        status +
         '<img src="shots/' + SHOT[g.key] + '.svg" alt="Обложка игры «' + g.name + '»" loading="lazy">' +
       '</div>' +
       '<div class="cc-body">' +
