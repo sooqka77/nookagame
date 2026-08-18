@@ -83,6 +83,23 @@
   .fgscene *,.fgitem *{animation:none !important;}
 }
 
+
+/* ── мастерская загадок ── */
+.rdask{margin:10px 14px 0;padding:12px 14px 6px;border-radius:20px;display:flex;align-items:center;gap:14px;
+  background:rgba(255,216,77,.09);box-shadow:inset 0 0 0 1.5px rgba(255,216,77,.32);}
+.rdask__t{font-weight:800;font-size:12.5px;color:#C9B27E;}
+.rdask__t b{display:block;margin-top:2px;font-family:var(--nk-brand),var(--nk-body);
+  font-weight:700;font-size:15px;color:#FFE9AE;}
+.rdask__i{margin-left:auto;flex:none;width:74px;}
+.rdask__i svg{width:100%;display:block;}
+.rdlink{margin-top:12px;padding-top:12px;border-top:1px solid rgba(255,255,255,.09);}
+.rdlink__t{font-weight:900;font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;
+  color:#8B7BAE;margin-bottom:8px;}
+.rdlink__i{width:100%;padding:12px 13px;border:none;border-radius:14px;font-family:inherit;
+  font-weight:700;font-size:12.5px;color:#F2ECFF;background:rgba(255,255,255,.06);
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.12);}
+.rdlink__b{width:100%;margin-top:9px;}
+.rdlink__n{margin-top:9px;font-weight:700;font-size:11.5px;line-height:1.45;color:#8B7BAE;}
 </style>
 </head>
 <body>
@@ -817,15 +834,103 @@ const FG_FIELD = {
   deco: 'отделку',
   size: 'размер'
 };
+
+/* ============================================================
+   МАСТЕРСКАЯ ЗАГАДОК — бонус второй игры.
+
+   Ребёнок кует вещь и загадывает её другу. Друг видит картинку,
+   но не слова, и должен повторить вещь описанием. Промах в одной
+   детали — другая вещь: то же, чему учит вся игра, только теперь
+   проверяет не Нейро, а живой человек.
+
+   Загадка целиком едет в адресе: пять параметров и ник — это
+   четыре символа. Ни сервера, ни аккаунтов, ни личных данных.
+   Свободного ввода нет нигде, даже в нике: он собирается из двух
+   готовых списков, поэтому и модерировать нечего.
+   ============================================================ */
+const RD_ALPHA = '23456789ABCDEFGHJKLMNPQRSTUVWXYZ';   // без 0/O/1/I — код диктуют голосом
+const RD_ADJ  = ['Быстрый', 'Лунный', 'Тихий', 'Звёздный', 'Дерзкий', 'Ясный', 'Северный', 'Огненный'];
+const RD_NOUN = ['Кот', 'Инженер', 'Ворон', 'Механик', 'Пилот', 'Лис', 'Мастер', 'Барс'];
+
+const RD_FORM = Object.keys(FG_FORMS);
+const RD_MAT  = Object.keys(FG_MATS);
+const RD_ELEM = Object.keys(FG_ELEMS);
+const RD_DECO = Object.keys(FG_DECOS);
+
+/* пять параметров + два индекса ника → одно число → четыре символа */
+function rdPack(v, adj, noun) {
+  let n = RD_FORM.indexOf(v.form);
+  n = n * RD_MAT.length + RD_MAT.indexOf(v.mat);
+  n = n * RD_ELEM.length + RD_ELEM.indexOf(v.elem);
+  n = n * RD_DECO.length + RD_DECO.indexOf(v.deco);
+  n = n * 5 + (v.size - 1);
+  n = n * RD_ADJ.length + adj;
+  n = n * RD_NOUN.length + noun;
+  let out = '';
+  for (let i = 0; i < 4; i++) { out = RD_ALPHA[n % 32] + out; n = Math.floor(n / 32); }
+  return out;
+}
+
+function rdUnpack(code) {
+  const s = String(code || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+  if (s.length !== 4) return null;
+  let n = 0;
+  for (const ch of s) {
+    const i = RD_ALPHA.indexOf(ch);
+    if (i < 0) return null;
+    n = n * 32 + i;
+  }
+  const noun = n % RD_NOUN.length; n = Math.floor(n / RD_NOUN.length);
+  const adj  = n % RD_ADJ.length;  n = Math.floor(n / RD_ADJ.length);
+  const size = (n % 5) + 1;        n = Math.floor(n / 5);
+  const deco = RD_DECO[n % RD_DECO.length]; n = Math.floor(n / RD_DECO.length);
+  const elem = RD_ELEM[n % RD_ELEM.length]; n = Math.floor(n / RD_ELEM.length);
+  const mat  = RD_MAT[n % RD_MAT.length];   n = Math.floor(n / RD_MAT.length);
+  const form = RD_FORM[n];
+  if (!form || !deco || !elem || !mat) return null;
+  return { v: { form: form, mat: mat, elem: elem, deco: deco, size: size },
+           nick: RD_ADJ[adj] + ' ' + RD_NOUN[noun] };
+}
+
+/* чипсы для выбора ника делаем из тех же списков */
+function rdOpts(list) {
+  const o = {};
+  list.forEach((w, i) => { o[String(i)] = { label: w }; });
+  return o;
+}
+
+/* какие поля разошлись у загаданной вещи и у собранной */
+function rdDiff(a, b) {
+  return ['form', 'mat', 'elem', 'deco', 'size'].filter(k => a[k] !== b[k]);
+}
+
 function LevelForge({
   onWin,
-  onHome
+  onHome,
+  bonus
 }) {
+  /* Загадка из адреса: ?q=КОД — пришли по чужой ссылке, отгадываем.
+     ?riddle=1 — своя мастерская: куём что хочем и загадываем другу. */
+  const riddle = useRef(rdUnpack(new URLSearchParams(window.location.search).get('q'))).current;
+  /* ссылка была, а загадка из неё не собралась: скажем об этом прямо */
+  const badLink = !riddle && new URLSearchParams(window.location.search).has('q');
+
   /* ?p=rough|orders|free — вход сразу в нужную фазу, для показов и съёмки */
   const [phase, setPhase] = useState(() => {
-    const p = new URLSearchParams(window.location.search).get('p');
+    const q = new URLSearchParams(window.location.search);
+    if (riddle) return 'solve';        // пришли отгадывать: задача и так на экране
+    if (q.has('riddle')) return 'intro';
+    const p = q.get('p');
     return ['rough', 'orders', 'free'].indexOf(p) > -1 ? p : 'intro';
-  }); // intro | rough | orders | free
+  }); // intro | rough | orders | free | sandbox | share | solve | solved
+
+  /* автор загадки: ник из двух списков и готовая ссылка */
+  const [adj, setAdj] = useState(() => Math.floor(Math.random() * RD_ADJ.length));
+  const [noun, setNoun] = useState(() => Math.floor(Math.random() * RD_NOUN.length));
+  const [copied, setCopied] = useState(false);
+  /* отгадчик: сколько раз ковал и что не совпало в последний раз */
+  const [tries, setTries] = useState(0);
+  const [diff, setDiff] = useState(null);
   /* ?item=форма,материал,сила,отделка,размер — показать готовый предмет */
   const [v, setV] = useState(() => {
     const q = (new URLSearchParams(window.location.search).get('item') || '').split(',');
@@ -924,6 +1029,49 @@ function LevelForge({
     clear();
     onWin();
   };
+
+  /* ── мастерская загадок ── */
+  const riddleLink = () => location.origin + location.pathname + '?q=' + rdPack(v, adj, noun);
+
+  const copyLink = () => {
+    const link = riddleLink();
+    try {
+      navigator.clipboard.writeText(link);
+      setCopied(true);
+      tRef.current.push(setTimeout(() => setCopied(false), 2000));
+    } catch (e) {}
+  };
+
+  /* Отгадчик кует свою версию и сравнивает с загаданной. Какое именно
+     значение верное — не говорим: иначе отгадывать нечего. Говорим только,
+     в каком поле промах, и то начиная со второй попытки. */
+  const solve = () => strike(() => {
+    const miss = rdDiff(riddle.v, v);
+    setTries(tries + 1);
+    setDiff(miss);
+    if (!miss.length) {
+      setPhase('solved');
+      setSay('Точно так. Та же вещь — собрана по одной картинке.');
+      setBad(false);
+      if (window.nooka) window.nooka.missionWin('riddle1', 90, { title: 'Загадка разгадана!' });
+    } else {
+      setSay(miss.length === 1
+        ? 'Почти. Одна деталь другая: посмотри на ' + FG_FIELD[miss[0]] + '.'
+        : 'Пока не она. Разошлось деталей: ' + miss.length + ' из 5.' +
+          (tries >= 1 ? ' Начни с ' + FG_FIELD[miss[0]] + '.' : ''));
+      setBad(true);
+    }
+  });
+
+  /* «Загадать свою» — из отгадки уходим в свою мастерскую */
+  const toSandbox = () => {
+    clear();
+    setPhase('sandbox');
+    setSay(null);
+    setDiff(null);
+    setTries(0);
+    setV({ form: 'sword', mat: 'none', elem: 'none', deco: 'none', size: 3 });
+  };
   const btns = React.createElement('div', {
     className: 'fgbtns'
   }, phase === 'rough' && !say && React.createElement('button', {
@@ -965,30 +1113,68 @@ function LevelForge({
       width: '100%'
     },
     onClick: finish
-  }, 'Готово'));
+  }, 'Готово'),
+  /* ── мастерская загадок ── */
+  phase === 'sandbox' && React.createElement('button', {
+    className: 'nk-btn nk-btn--cta',
+    style: { width: '100%' },
+    onClick: () => { setPhase('share'); setSay(null); }
+  }, 'Загадать другу'), phase === 'sandbox' && !saved && React.createElement('button', {
+    className: 'nk-btn nk-btn--soft',
+    style: { width: '100%', marginTop: 8 },
+    onClick: save
+  }, 'Забрать себе в коллекцию'), phase === 'share' && React.createElement('button', {
+    className: 'nk-btn nk-btn--soft',
+    style: { width: '100%' },
+    onClick: () => { setPhase('sandbox'); setCopied(false); }
+  }, 'Переделать вещь'), phase === 'solve' && React.createElement('button', {
+    className: 'nk-btn nk-btn--pri',
+    style: { width: '100%' },
+    onClick: solve
+  }, 'Ковать'), phase === 'solved' && React.createElement('button', {
+    className: 'nk-btn nk-btn--cta',
+    style: { width: '100%' },
+    onClick: toSandbox
+  }, 'Загадать свою'));
   return React.createElement('div', {
     className: 'fg'
   }, React.createElement(TopBar, {
-    level: 4,
-    title: 'Мастерская',
+    level: bonus ? '★' : 4,
+    title: bonus ? 'Мастерская загадок' : 'Мастерская',
     onHome,
-    step: phase === 'rough' ? 0 : phase === 'orders' ? 1 + oIdx : 4,
-    total: 5
+    step: bonus ? null : (phase === 'rough' ? 0 : phase === 'orders' ? 1 + oIdx : 4),
+    total: bonus ? null : 5
   }), phase === 'intro' && React.createElement(IntroModal, {
     emoji: NKM('hello', 88),
-    title: 'Мастерская предметов',
-    law: 'Нейро кузнец: он выкует что угодно.\nНо ровно то, что опишешь словами.',
-    tip: 'Чем точнее описание — тем круче предмет.',
+    title: bonus ? 'Мастерская загадок' : 'Мастерская предметов',
+    /* у бонуса своя цель: в реестре по этому файлу лежит четвёртый уровень */
+    goal: bonus ? 'Убедиться, что важна каждая деталь' : undefined,
+    law: bonus
+      ? 'Куй что хочешь, а потом загадай другу.\nОн увидит вещь — но не слова.'
+      : 'Нейро кузнец: он выкует что угодно.\nНо ровно то, что опишешь словами.',
+    tip: bonus
+      ? (badLink
+          ? 'Ссылка с загадкой не прочиталась. Собери свою вещь и загадай её сам.'
+          : 'Повторить вещь получится только по деталям — всем пяти.')
+      : 'Чем точнее описание — тем круче предмет.',
     onStart: () => {
-      setPhase('rough');
+      setPhase(bonus ? 'sandbox' : 'rough');
     }
   }), React.createElement('div', {
     className: 'fgbody'
-  }, phase === 'rough' && React.createElement(TaskBadge, null, 'Скажи Нейро, что ковать'), phase === 'orders' && React.createElement(TaskBadge, null, order.who + ': «' + order.ask + '»'), phase === 'free' && React.createElement(TaskBadge, null, 'Куй что хочешь — предмет твой'), React.createElement(FgScene, {
+  }, phase === 'rough' && React.createElement(TaskBadge, null, 'Скажи Нейро, что ковать'), phase === 'orders' && React.createElement(TaskBadge, null, order.who + ': «' + order.ask + '»'), phase === 'free' && React.createElement(TaskBadge, null, 'Куй что хочешь — предмет твой'),
+  phase === 'sandbox' && React.createElement(TaskBadge, null, 'Куй что хочешь — потом загадаешь другу'),
+  phase === 'share' && React.createElement(TaskBadge, null, 'Отправь ссылку — друг увидит вещь, но не слова'),
+  (phase === 'solve' || phase === 'solved') && React.createElement(TaskBadge, null, 'Повтори эту вещь словами'),
+  /* Загаданная вещь: картинка есть, слов нет — их и надо угадать */
+  riddle && React.createElement('div', { className: 'rdask' },
+    React.createElement('div', { className: 'rdask__t' }, 'Кто загадал: ', React.createElement('b', null, riddle.nick)),
+    React.createElement('div', { className: 'rdask__i' }, React.createElement(FgItem, { v: riddle.v, u: 'q' }))
+  ), React.createElement(FgScene, {
     v,
     sparks,
     u: 'f'
-  }), React.createElement('div', {
+  }), phase !== 'solve' && React.createElement('div', {
     className: 'fgname'
   }, React.createElement('b', null, fgName(v)), React.createElement('span', null, fgNote(v))), React.createElement('div', {
     className: 'fgsay-wrap'
@@ -998,7 +1184,7 @@ function LevelForge({
   }, React.createElement('span', {
     className: 'fgsay__a'
   }, NKM(bad ? 'think' : 'win', 32)), React.createElement('span', null, say))), /* конструктор описания */
-  (phase === 'orders' || phase === 'free') && React.createElement('div', {
+  (phase === 'orders' || phase === 'free' || phase === 'sandbox' || phase === 'solve') && React.createElement('div', {
     className: 'fgpanel'
   }, React.createElement(FgRow, {
     title: 'Что куём',
@@ -1033,7 +1219,34 @@ function LevelForge({
     onChange: e => set('size', +e.target.value)
   }))), phase === 'free' && !saved && React.createElement('div', {
     className: 'fghint'
-  }, 'Он попадёт в твою коллекцию')), React.createElement('div', {
+  }, 'Он попадёт в твою коллекцию'),
+  phase === 'sandbox' && React.createElement('div', {
+    className: 'fghint'
+  }, 'Друг увидит только картинку — и должен собрать такую же'),
+  /* Ник — из двух готовых списков: ребёнок выбирает, а не пишет,
+     поэтому ни ерунды, ни личных данных тут появиться не может. */
+  phase === 'share' && React.createElement('div', { className: 'fgpanel' },
+    React.createElement(FgRow, {
+      title: 'Кто загадал', opts: rdOpts(RD_ADJ), value: String(adj),
+      onPick: k => { setAdj(+k); setCopied(false); }
+    }),
+    React.createElement(FgRow, {
+      title: 'И кто он', opts: rdOpts(RD_NOUN), value: String(noun),
+      onPick: k => { setNoun(+k); setCopied(false); }
+    }),
+    React.createElement('div', { className: 'rdlink' },
+      React.createElement('div', { className: 'rdlink__t' }, 'Ссылка на загадку'),
+      React.createElement('input', { className: 'rdlink__i', readOnly: true, value: riddleLink(),
+        onFocus: e => e.target.select() }),
+      React.createElement('button', { className: 'nk-btn nk-btn--pri rdlink__b', onClick: copyLink },
+        copied ? 'Скопировано' : 'Скопировать ссылку'),
+      React.createElement('div', { className: 'rdlink__n' },
+        'Кинь её другу в сообщении. Открывать можно с любого телефона — вход и оплата не нужны.')
+    )
+  ),
+  phase === 'solved' && React.createElement('div', {
+    className: 'fghint'
+  }, tries === 1 ? 'С первой попытки' : 'Попыток ушло: ' + tries)), React.createElement('div', {
     className: 'fgfoot'
   }, btns));
 }
@@ -1044,6 +1257,9 @@ function App() {
     onWin: () => {
       if (window.nooka) window.nooka.missionWin('forge1', 90);
     },
+    /* заголовок в шапке: у бонуса он свой */
+    bonus: new URLSearchParams(window.location.search).has('riddle') ||
+           new URLSearchParams(window.location.search).has('q'),
     onHome: () => {
       window.location.href = 'game.html?g=control';
     }

@@ -296,8 +296,17 @@
   }
 
   /* Закрыть платный уровень, если его открыли прямой ссылкой мимо витрины */
+  /* Бонусные страницы, открытые всем: мастерская загадок. По ссылке-загадке
+     приходит друг, у которого доступа нет, — закрыть её значит убить обмен. */
+  function isBonus() {
+    try {
+      var q = new URLSearchParams(location.search);
+      return q.has('riddle') || q.has('q');
+    } catch (e) { return false; }
+  }
+
   function guard() {
-    if (allOpen() || state().paid) return;
+    if (allOpen() || state().paid || isBonus()) return;
     var cur = currentLevel(), whole = false;
     if (!cur) {
       var all = fileLevels();
@@ -374,6 +383,7 @@
     plans: PLANS,
     state: state,
     canPlay: canPlay,
+    isBonus: isBonus,
     unlock: unlock,
     paywall: paywall,
     make: make,        // для tools/codes.html
