@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0E0719">
+<title>Nooka — полный доступ</title>
+<meta name="robots" content="noindex">
+<meta property="og:title" content="Nooka — курс ИИ-грамотности для детей">
+<meta property="og:description" content="Три игры, тридцать уровней по 15 минут. Полный доступ по ссылке — с телефона, без установки.">
+<meta property="og:image" content="https://nookagame.ru/screenshots/og.jpg">
+<link href="/fonts/nooka-fonts.css" rel="stylesheet">
+<style>
+*{box-sizing:border-box}
+body{margin:0;padding:28px 18px 44px;background:linear-gradient(180deg,#140E28,#0A0715 60%,#080511);
+  font-family:'Nunito',system-ui,sans-serif;color:#F3EEFF;-webkit-font-smoothing:antialiased}
+.wrap{max-width:560px;margin:0 auto}
+.logo{display:block;height:34px;margin-bottom:22px}
+h1{font-family:'Unbounded','Nunito',system-ui,sans-serif;font-weight:700;font-size:27px;line-height:1.2;margin:0 0 10px}
+.sub{font-weight:600;font-size:15px;line-height:1.5;color:#A896C9;margin:0 0 22px}
+.state{padding:14px 16px;border-radius:18px;margin-bottom:22px;font-weight:700;font-size:14px;line-height:1.45}
+.state--on{background:rgba(78,217,155,.14);box-shadow:inset 0 0 0 1.5px rgba(78,217,155,.42);color:#C4F4E0}
+.state--off{background:rgba(255,216,77,.12);box-shadow:inset 0 0 0 1.5px rgba(255,216,77,.4);color:#FFE7B8}
+.games{display:flex;flex-direction:column;gap:12px;margin-bottom:26px}
+.g{display:flex;align-items:center;gap:14px;padding:16px 17px;border-radius:22px;text-decoration:none;
+  background:rgba(255,255,255,.05);box-shadow:inset 0 0 0 1px rgba(255,255,255,.09)}
+.g b{display:block;font-family:'Unbounded','Nunito',system-ui,sans-serif;font-weight:700;font-size:16px;color:#F3EEFF}
+.g span{display:block;margin-top:4px;font-weight:600;font-size:12.5px;line-height:1.4;color:#A896C9}
+.g em{margin-left:auto;flex:none;font-style:normal;font-weight:900;font-size:20px;color:#FFD84D}
+.g .n{flex:none;width:38px;height:38px;border-radius:13px;display:flex;align-items:center;justify-content:center;
+  font-family:'Unbounded','Nunito',system-ui,sans-serif;font-weight:700;font-size:16px;
+  background:rgba(255,216,77,.15);color:#FFD84D}
+.about{padding:18px;border-radius:22px;background:rgba(255,255,255,.035);
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.07)}
+.about h2{font-family:'Unbounded','Nunito',system-ui,sans-serif;font-weight:700;font-size:15px;margin:0 0 12px}
+.about li{font-weight:600;font-size:13.5px;line-height:1.55;color:#C3B4E0;margin-bottom:7px}
+.about ul{margin:0;padding-left:18px}
+.foot{margin-top:24px;text-align:center;font-weight:600;font-size:12.5px;color:#7E6E9C}
+.foot a{color:#A896C9}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <img class="logo" src="../logo.svg" alt="Nooka">
+  <h1>Полный доступ к курсу</h1>
+  <p class="sub">Три игры про искусственный интеллект, тридцать уровней по пятнадцать минут.
+     Для детей 8–12 лет. Открывается в браузере телефона — ставить ничего не нужно.</p>
+
+  <div class="state" id="state">Проверяем ссылку…</div>
+  <div class="games" id="games"></div>
+
+  <div class="about">
+    <h2>Что внутри</h2>
+    <ul>
+      <li><b>Ребёнок обучает ИИ руками</b>: рисует примеры, чинит подписи, ловит ошибки модели — и видит, откуда у ИИ берутся и знания, и промахи.</li>
+      <li><b>Ничего не собираем</b>: без регистрации, без аккаунта, без личных данных. Прогресс лежит на устройстве.</li>
+      <li><b>Программа</b> опирается на международную рамку «Пять больших идей об ИИ».</li>
+    </ul>
+  </div>
+
+  <p class="foot">Вопросы — <a href="https://t.me/NookaGame">Telegram</a> · <a href="../index.html">о проекте</a></p>
+</div>
+
+<script src="../games/nooka-levels.js"></script>
+<script src="../games/nooka-access.js"></script>
+<script>
+/* Ссылку разбирает сам nooka-access (?k=NOOKA-XXXX-YYYY) — здесь только показываем,
+   что получилось, и раскладываем три игры. Порядок важен: access вешает свой
+   обработчик раньше нашего, поэтому к моменту отрисовки доступ уже записан. */
+setTimeout(function () {
+  var A = window.nookaAccess, L = window.nookaLevels;
+  var st = A.state();
+  var open = st.paid || A.openAll;
+  var box = document.getElementById('state');
+
+  if (open) {
+    box.className = 'state state--on';
+    box.innerHTML = st.paid
+      ? 'Доступ открыт: все три игры, 30 уровней. Действует ещё ' + st.days + ' ' +
+        (st.days % 10 === 1 && st.days % 100 !== 11 ? 'день' : (st.days % 10 > 1 && st.days % 10 < 5 && (st.days % 100 < 10 || st.days % 100 > 20) ? 'дня' : 'дней')) + '.'
+      : 'Доступ открыт: все три игры, 30 уровней.';
+  } else {
+    box.className = 'state state--off';
+    box.innerHTML = st.demoOff
+      ? 'Эта демо-ссылка больше не действует. Первая игра открыта всем — её можно пройти целиком.'
+      : (st.expired ? 'Срок ссылки закончился. Первая игра открыта всем — её можно пройти целиком.'
+                    : 'Ссылка без кода доступа. Первая игра открыта всем — её можно пройти целиком.');
+  }
+
+  var g = document.getElementById('games');
+  L.games.forEach(function (game, i) {
+    var a = document.createElement('a');
+    a.className = 'g';
+    a.href = '../games/game.html?g=' + game.key;
+    a.innerHTML = '<span class="n">' + (i + 1) + '</span><span><b>' + game.name + '</b>' +
+      '<span>' + game.sub + ' · ' + game.levels.length + ' уровней · ' + game.age + '</span></span><em>→</em>';
+    g.appendChild(a);
+  });
+}, 30);
+</script>
+</body>
+</html>

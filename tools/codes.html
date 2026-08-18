@@ -54,6 +54,20 @@ button.alt{background:#EFE9FF;color:var(--pri)}
   </div>
 
   <div class="card">
+    <label>Демо-ссылка для показов</label>
+    <p class="sub" style="margin:0 0 12px">Одна ссылка — открывает все три игры без ввода кода, на 90 дней.
+    Кидать партнёрам, школам, инвесторам. Если ссылка разойдётся дальше, чем нужно:
+    в <b>games/nooka-access.js</b> поставить <b>DEMO_OFF = true</b> и выложить — доступ погаснет
+    у всех, включая тех, кто уже открыл.</p>
+    <div class="row">
+      <button id="demoGo">Сделать демо-ссылку</button>
+      <button class="alt" id="demoCopy">Скопировать</button>
+    </div>
+    <div class="out" id="demoOut"></div>
+    <div class="hint" id="demoHint"></div>
+  </div>
+
+  <div class="card">
     <label>Проверить код (что внутри)</label>
     <div class="row">
       <input id="chk" placeholder="NOOKA-••••-••••" style="flex:1;min-width:200px">
@@ -110,6 +124,24 @@ document.getElementById('chkGo').onclick = function(){
   el.textContent = (left > 0 ? 'Рабочий код. ' : 'Код просрочен. ') +
     'Тариф: ' + nookaAccess.plans[r.plan].title.toLowerCase() + ' · до ' + dstr(r.until) +
     (left > 0 ? ' · осталось дней: ' + left : '');
+};
+
+var demoOut = document.getElementById('demoOut'), demoHint = document.getElementById('demoHint');
+document.getElementById('demoGo').onclick = function(){
+  var code = nookaAccess.make('demo', nookaAccess.demoSerial);
+  var link = 'https://nookagame.ru/demo/?k=' + code;
+  demoOut.innerHTML = '<b>' + link + '</b>';
+  var p = nookaAccess.parse(code);
+  demoHint.textContent = 'Открывает все три игры до ' + dstr(p.until) +
+    '. Ссылка сама записывает доступ и чистит адрес — вводить код не нужно.' +
+    (nookaAccess.demoOff ? ' ВНИМАНИЕ: сейчас DEMO_OFF = true, ссылка работать не будет.' : '');
+};
+document.getElementById('demoCopy').onclick = function(){
+  var t = demoOut.innerText.trim();
+  if (!t) return;
+  navigator.clipboard.writeText(t);
+  this.textContent = 'Скопировано';
+  var b = this; setTimeout(function(){ b.textContent = 'Скопировать'; }, 1400);
 };
 
 document.getElementById('go').click();

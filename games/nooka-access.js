@@ -18,9 +18,25 @@
 
   /* ── переключатели запуска ────────────────────────────────
      OPEN_ALL = true  — вся платформа открыта (показы, тесты, до старта продаж)
-     OPEN_ALL = false — работает платная стена: бесплатны только
-                        уровни 1–5 первой игры (поле free в реестре)     */
+     OPEN_ALL = false — работает платная стена: бесплатна вся первая игра
+                        целиком (поле free в реестре), две другие — по коду */
   var OPEN_ALL = true;   // ← в день старта продаж поменять на false
+
+  /* ── КУДА ВЕДЁТ КНОПКА ОПЛАТЫ ─────────────────────────────
+     Сюда вставить ссылку платёжки — одну на весь сайт: её берут и стена
+     внутри игр, и тарифы на лендинге. Пока пусто — кнопки ведут в Telegram,
+     где код выдаётся руками.                                            */
+  var PAY_URL = '';                          // ← вставить ссылку оплаты
+  var TG_URL  = 'https://t.me/NookaGame';    // запасной путь, пока платёжки нет
+
+  /* ── ДЕМО-ДОСТУП ПО ССЫЛКЕ ────────────────────────────────
+     Ссылка вида nookagame.ru/demo/?k=NOOKA-XXXX-YYYY открывает все три игры
+     без ввода кода: удобно показывать партнёрам и школам.
+     Демо-коды печатаются с серией 15 — по ней их видно и можно отозвать.
+     DEMO_OFF = true — все демо-ссылки перестают работать сразу после
+     выкладки, даже те, что уже открыты на чужих устройствах.            */
+  var DEMO_SERIAL = 15;
+  var DEMO_OFF = false;   // ← рубильник: true и выложить — демо закрыто
 
   var KEY = 'nooka_access';
   var ALPHA = '23456789ABCDEFGHJKLMNPQRSTUVWXYZ';   // без 0/O/1/I — чтобы диктовать по телефону
@@ -30,7 +46,11 @@
 
   var PLANS = {
     quarter: { code: 0, days: 92,  price: '490 ₽',  title: 'Три месяца', note: 'Три игры, 30 уровней. Продлевать не нужно: срок вышел — доступ закрылся сам.' },
-    year:    { code: 1, days: 366, price: '1450 ₽', title: 'Год',        note: 'Те же три игры на 12 месяцев плюс все новые игры платформы, которые выйдут за год.' }
+    year:    { code: 1, days: 366, price: '1450 ₽', title: 'Год',        note: 'Те же три игры на 12 месяцев плюс все новые игры платформы, которые выйдут за год.' },
+    /* Демо не продаётся: под него печатается ссылка для показов (серия 15).
+       Срок длинный, чтобы не перевыпускать перед каждой встречей, — на случай
+       утечки есть рубильник DEMO_OFF. */
+    demo:    { code: 0, days: 90,  price: 'демо',   title: 'Демо-доступ', note: 'Все три игры на 90 дней. Для показов партнёрам и школам.' }
   };
 
   /* ── кодирование ──────────────────────────────────────── */
@@ -75,7 +95,8 @@
     var num = dec(body);
     var plan = (num >> 19) & 1 ? 'year' : 'quarter';
     var until = EPOCH + ((num >> 4) & 0x7FFF) * DAY;
-    return { code: 'NOOKA-' + body + '-' + sum, plan: plan, until: until };
+    /* серия лежит в младших четырёх битах: по ней отличаем демо от продажи */
+    return { code: 'NOOKA-' + body + '-' + sum, plan: plan, until: until, serial: num & 0xF };
   }
 
   /* ── состояние ───────────────────────────────────────── */
@@ -85,6 +106,9 @@
   function state() {
     var a = load();
     if (!a || !a.until) return { paid: false };
+    /* Демо отозвали — доступ гаснет и на тех устройствах, где уже открыт:
+       проверка живёт в скрипте, а он грузится с сайта при каждом заходе. */
+    if (DEMO_OFF && a.serial === DEMO_SERIAL) return { paid: false, demoOff: true };
     if (a.until < Date.now()) return { paid: false, expired: true, plan: a.plan };
     return { paid: true, plan: a.plan, until: a.until, days: Math.ceil((a.until - Date.now()) / DAY) };
   }
@@ -93,6 +117,7 @@
     var p = parse(raw);
     if (!p) return { ok: false, why: 'Такого кода нет. Проверь буквы — их легко перепутать.' };
     if (p.until < Date.now()) return { ok: false, why: 'Срок этого кода закончился.' };
+    if (DEMO_OFF && p.serial === DEMO_SERIAL) return { ok: false, why: 'Эта демо-ссылка больше не действует.' };
     try { localStorage.setItem(KEY, JSON.stringify(p)); } catch (e) {}
     return { ok: true, plan: p.plan, until: p.until };
   }
@@ -159,7 +184,7 @@
         '<button class="nkpw__x" aria-label="Закрыть">✕</button>' +
         '<div class="nkpw__kick">Дальше — по доступу</div>' +
         '<h2 class="nkpw__h">' + (opts.title || 'Тут заканчивается бесплатная часть') + '</h2>' +
-        '<p class="nkpw__s">' + (opts.sub || 'Пять уровней первой игры открыты всем. Остальные 25 — по доступу для одной семьи.') + '</p>' +
+        '<p class="nkpw__s">' + (opts.sub || 'Первая игра открыта всем целиком. Две другие — по доступу для одной семьи.') + '</p>' +
         '<div class="nkpw__plans">' +
           plan('quarter') + plan('year') +
         '</div>' +
@@ -177,7 +202,7 @@
     function plan(k) {
       var p = PLANS[k];
       return '<a class="nkpw__p' + (k === 'year' ? ' nkpw__p--best' : '') + '" href="' +
-        (opts.payUrl || '../index.html#plans') + '">' +
+        (opts.payUrl || PAY_URL || TG_URL) + '" target="_blank" rel="noopener">' +
         (k === 'year' ? '<span class="nkpw__flag">Выгоднее</span>' : '') +
         '<b>' + p.price + '</b><i>' + p.title + '</i><span>' + p.note + '</span></a>';
     }
@@ -238,26 +263,97 @@
     return hit;
   }
 
+  /* Все уровни, которые живут в этом файле. Нужны, когда по адресу нельзя
+     понять, какой именно уровень открыт: prompt.html держит внутри пять
+     уровней и переключает их сам, без перезагрузки страницы. Тогда судим
+     по файлу целиком — весь платный, значит закрыт вход, а не уровень. */
+  function fileLevels() {
+    var file = (location.pathname.split('/').pop() || '').toLowerCase();
+    var out = [];
+    if (!file || !window.nookaLevels) return out;
+    window.nookaLevels.games.forEach(function (g) {
+      g.levels.forEach(function (lv) {
+        var f = String(lv.href || '').split(/[?#]/)[0].toLowerCase();
+        if (f === file) out.push({ game: g, level: lv });
+      });
+    });
+    return out;
+  }
+
   /* Закрыть платный уровень, если его открыли прямой ссылкой мимо витрины */
   function guard() {
     if (OPEN_ALL || state().paid) return;
-    var cur = currentLevel();
-    if (!cur || canPlay(cur.game.key, cur.level.n)) return;
+    var cur = currentLevel(), whole = false;
+    if (!cur) {
+      var all = fileLevels();
+      if (!all.length) return;                    // страница не про уровни
+      for (var i = 0; i < all.length; i++) {      // есть что играть бесплатно — пускаем
+        if (canPlay(all[i].game.key, all[i].level.n)) return;
+      }
+      cur = all[0];                               // весь файл платный — закрываем вход
+      whole = true;
+    }
+    if (canPlay(cur.game.key, cur.level.n)) return;
     var hub = 'game.html?g=' + cur.game.key;
     paywall({
-      title: 'Этот уровень — в платной части',
-      sub: '«' + cur.level.t + '» из игры «' + cur.game.name + '». Бесплатны первые пять уровней первой игры.',
+      title: whole ? 'Эта игра — в платной части' : 'Этот уровень — в платной части',
+      sub: whole
+        ? 'Игра «' + cur.game.name + '» открывается по доступу. Первая игра курса бесплатна целиком.'
+        : '«' + cur.level.t + '» из игры «' + cur.game.name + '». Бесплатно открыта вся первая игра.',
       onClose: function () { location.href = hub; },
       onUnlock: function () { location.reload(); }
     });
   }
 
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', guard);
-  else setTimeout(guard, 0);
+  /* ── доступ по ссылке ────────────────────────────────────
+     Код можно передать не только руками, но и адресом: ?k=NOOKA-XXXX-YYYY.
+     Сразу после разбора чистим адрес — чтобы код не уезжал дальше вместе
+     со скриншотом или скопированной строкой браузера. */
+  function fromLink() {
+    var q = null;
+    try { q = new URLSearchParams(location.search); } catch (e) { return null; }
+    var k = q.get('k') || q.get('code');
+    if (!k) return null;
+    var r = unlock(k);
+    try {
+      q.delete('k'); q.delete('code');
+      var qs = q.toString();
+      history.replaceState(null, '', location.pathname + (qs ? '?' + qs : '') + location.hash);
+    } catch (e) {}
+    if (r.ok) toast('Доступ открыт: все три игры');
+    else toast(r.why);
+    return r;
+  }
+
+  function toast(text) {
+    var el = document.createElement('div');
+    el.style.cssText = 'position:fixed;left:50%;bottom:22px;transform:translateX(-50%);z-index:10000;' +
+      'max-width:calc(100% - 32px);padding:12px 18px;border-radius:16px;background:#150F2E;color:#FFF6DC;' +
+      "font:700 15px/1.3 'Nunito',system-ui,sans-serif;box-shadow:0 14px 34px rgba(0,0,0,.45);" +
+      'border:1.5px solid rgba(255,216,77,.55);text-align:center';
+    el.textContent = text;
+    document.body.appendChild(el);
+    setTimeout(function () { el.remove(); }, 4200);
+  }
+
+  function boot() {
+    fromLink();      // ссылка работает и до включения стены: доступ ляжет впрок
+    guard();
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
+  else setTimeout(boot, 0);
 
   window.nookaAccess = {
     openAll: OPEN_ALL,
+    payUrl: PAY_URL,
+    tgUrl: TG_URL,
+    buyUrl: PAY_URL || TG_URL,   // куда вести кнопку «купить» прямо сейчас
+    demoSerial: DEMO_SERIAL,
+    demoOff: DEMO_OFF,
+    fromLink: fromLink,
     currentLevel: currentLevel,
+    fileLevels: fileLevels,
     guard: guard,
     plans: PLANS,
     state: state,
