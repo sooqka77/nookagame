@@ -181,6 +181,9 @@ h1{font-family:var(--brand);font-weight:900;font-size:30px;line-height:1.1;
 .gal--bonus b{color:#DCCBFF}
 .gal--bonus span{color:#B4A2DC}
 .gal--bonus i{color:#C0A8FF}
+.verbs{display:flex;flex-wrap:wrap;gap:7px;margin:2px 0 12px}
+.verbs span{padding:6px 12px;border-radius:999px;font-weight:900;font-size:12px;
+  color:var(--sun);background:rgba(255,216,77,.13);box-shadow:inset 0 0 0 1px rgba(255,216,77,.32)}
 .nav{margin-top:12px;display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .nav a{padding:13px;border-radius:18px;text-align:center;text-decoration:none;
   font-weight:800;font-size:13px;color:#D6CBEC;background:rgba(255,255,255,.05);
@@ -361,8 +364,14 @@ document.getElementById('foot').innerHTML =
     ' этой игры уже сделано</span></span><i>' + (artsDone ? '★' : '☆') + '</i></a>' : '') +
   '<div class="card" style="margin-top:12px">' +
     '<h3>Что осваивает ребёнок</h3>' +
-    '<p>Программа опирается на международную рамку «Пять больших идей об ИИ». ' +
-    'В этой игре разобраны:</p>' +
+    /* Сначала человеческим языком — какие из четырёх умений курса даёт эта игра,
+       и только потом методическая рамка: её читает школа, а не родитель. */
+    (G.verbs ? '<div class="verbs">' + G.verbs.split(' · ').map(function (v) {
+      return '<span>' + v + '</span>';
+    }).join('') + '</div>' : '') +
+    '<p>Курс собран вокруг четырёх умений: понимает, управляет, проверяет, создаёт. ' +
+    'Методически опирается на международную рамку «Пять больших идей об ИИ» — ' +
+    'в этой игре разобраны:</p>' +
     '<div class="ideas">' + ideaRows + '</div>' +
   '</div>' +
   '<div class="nav">' + others + '</div>';

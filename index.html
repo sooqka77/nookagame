@@ -178,6 +178,13 @@ h1 .p{color:var(--nk-pri-3)} h1 .s{color:var(--nk-sun-3)}
 .skill-txt span{display:block;font-size:14px;line-height:1.55;color:var(--nk-ink-2)}
 .skill-txt em{display:block;margin-top:8px;font-style:normal;font-size:12px;font-weight:800;
   color:var(--nk-ink-3)}
+/* Четыре умения: рамка курса, по ней же собран отчёт родителю и школьная дека */
+.skgroup{margin-top:26px}
+.skgroup__h{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:12px;padding-left:2px}
+.skgroup__n{font-family:var(--nk-display);font-weight:900;font-size:13px;color:var(--nk-pri-2);
+  letter-spacing:.04em}
+.skgroup__h b{font-family:var(--nk-display);font-weight:900;font-size:21px;line-height:1.1}
+.skgroup__h>span:last-child{font-size:14px;font-weight:700;color:var(--nk-ink-2)}
 .skills-note{margin:22px auto 0;max-width:640px;text-align:center;font-size:15px;
   font-weight:700;line-height:1.55;color:var(--nk-ink)}
 .skills-note b{color:var(--nk-pri-3)}
@@ -400,15 +407,36 @@ footer{border-top:2px solid rgba(123,79,242,.12);background:#FFF6E9}
 
   <section class="wrap section" id="skills">
     <div class="nk-chip sec-head-chip">Результат</div>
-    <h2 class="nk-t-h1 sec-h">Что ребёнок будет уметь <span>через тридцать уровней</span></h2>
-    <p class="nk-t-body sec-sub">Не «познакомится с темой». Каждый пункт он проходит руками — и может показать вам, как это работает.</p>
-    <div class="skills">
+    <h2 class="nk-t-h1 sec-h">Четыре умения, <span>которые остаются</span></h2>
+    <p class="nk-t-body sec-sub">Не «познакомится с темой». Каждое ребёнок проходит руками за тридцать уровней по 15 минут — и может показать вам, как это работает.</p>
+    <div class="skgroup">
+      <div class="skgroup__h"><span class="skgroup__n">01</span><b>Понимает</b><span>как ИИ устроен и откуда берёт ответы</span></div>
+      <div class="skills">
       <div class="nk-clay skill"><span class="nk-coin"><svg class="ic" aria-hidden="true"><use href="icons.svg#nk-ai"></use></svg></span><div class="skill-txt"><b>Знает, откуда ИИ берёт ответы</b><span>Сам обучил модель своими рисунками и увидел: она знает ровно то, что он показал, и ничего сверх этого.</span><em>Игра 1 · уровни 2, 5, 7</em></div></div>
-      <div class="nk-clay skill"><span class="nk-coin nk-coin--warn"><svg class="ic" aria-hidden="true"><use href="icons.svg#nk-check"></use></svg></span><div class="skill-txt"><b>Не верит уверенному тону</b><span>Добился, чтобы Нейро назвал кота собакой — и был уверен на 90%. Теперь проценты его не убеждают.</span><em>Игра 1 · уровень 9</em></div></div>
+      <div class="nk-clay skill"><span class="nk-coin"><svg class="ic" aria-hidden="true"><use href="icons.svg#nk-method"></use></svg></span><div class="skill-txt"><b>Объясняет, как ИИ решает</b><span>Открыл два крана — уши и хвост — и увидел: внутри не мышление, а сложение примет до черты.</span><em>Игра 3 · уровни 1–2</em></div></div>
+      </div>
+    </div>
+    <div class="skgroup">
+      <div class="skgroup__h"><span class="skgroup__n">02</span><b>Управляет</b><span>получает от ИИ то, что задумал</span></div>
+      <div class="skills">
       <div class="nk-clay skill"><span class="nk-coin nk-coin--sun"><svg class="ic" aria-hidden="true"><use href="icons.svg#nk-prompt"></use></svg></span><div class="skill-txt"><b>Умеет поставить задачу</b><span>Джинн исполняет ровно сказанное. Ребёнок понял на своей шкуре: «побольше» — не задача, число — задача.</span><em>Игра 2 · уровни 1–3</em></div></div>
+      <div class="nk-clay skill"><span class="nk-coin nk-coin--sun"><svg class="ic" aria-hidden="true"><use href="icons.svg#nk-code"></use></svg></span><div class="skill-txt"><b>Разбивает дело на шаги</b><span>Написал роботу план, тот исполнил буквально и залил водой пол. Со второго раза шаги стали точными.</span><em>Игра 2 · уровень 8</em></div></div>
+      </div>
+    </div>
+    <div class="skgroup">
+      <div class="skgroup__h"><span class="skgroup__n">03</span><b>Проверяет</b><span>не верит на слово и знает, где ИИ врёт</span></div>
+      <div class="skills">
+      <div class="nk-clay skill"><span class="nk-coin nk-coin--warn"><svg class="ic" aria-hidden="true"><use href="icons.svg#nk-check"></use></svg></span><div class="skill-txt"><b>Не верит уверенному тону</b><span>Добился, чтобы Нейро назвал кота собакой — и был уверен на 90%. Теперь проценты его не убеждают.</span><em>Игра 1 · уровень 9</em></div></div>
       <div class="nk-clay skill"><span class="nk-coin nk-coin--ok"><svg class="ic" aria-hidden="true"><use href="icons.svg#nk-progress"></use></svg></span><div class="skill-txt"><b>Читает проценты правильно</b><span>Отдежурил неделю метеорологом и сверил прогнозы с архивом: 80% — это не обещание.</span><em>Игра 3 · уровень 8</em></div></div>
       <div class="nk-clay skill"><span class="nk-coin nk-coin--warn"><svg class="ic" aria-hidden="true"><use href="icons.svg#nk-shield"></use></svg></span><div class="skill-txt"><b>Не отдаёт лишнее о себе</b><span>Вежливый помощник расспрашивал его между делом — и в конце показал собранное досье: адрес, школа, время прогулок.</span><em>Игра 3 · уровень 10</em></div></div>
-      <div class="nk-clay skill"><span class="nk-coin"><svg class="ic" aria-hidden="true"><use href="icons.svg#nk-method"></use></svg></span><div class="skill-txt"><b>Знает, что решает человек</b><span>Разложил дела за пультом: что можно отдать роботу, а что нельзя — потому что отвечать всё равно человеку.</span><em>Игра 2 · уровень 10</em></div></div>
+      </div>
+    </div>
+    <div class="skgroup">
+      <div class="skgroup__h"><span class="skgroup__n">04</span><b>Создаёт и решает сам</b><span>делает своё — и знает, чего нельзя доверять ИИ</span></div>
+      <div class="skills">
+      <div class="nk-clay skill"><span class="nk-coin nk-coin--ok"><svg class="ic" aria-hidden="true"><use href="icons.svg#nk-rocket"></use></svg></span><div class="skill-txt"><b>Обучил свою модель с нуля</b><span>Собрал набор, проверил подписи и отправил модель на экзамен по картинкам, которых она ни разу не видела.</span><em>Игра 1 · уровень 10</em></div></div>
+      <div class="nk-clay skill"><span class="nk-coin"><svg class="ic" aria-hidden="true"><use href="icons.svg#nk-shield"></use></svg></span><div class="skill-txt"><b>Знает, что решает человек</b><span>Разложил дела за пультом: что можно отдать роботу, а что нельзя — потому что отвечать всё равно человеку.</span><em>Игра 2 · уровень 10</em></div></div>
+      </div>
     </div>
     <p class="skills-note">Проверить просто: через месяц спросите за ужином, <b>почему нейросеть уверенно ошибается</b>. Он ответит своими словами.</p>
   </section>

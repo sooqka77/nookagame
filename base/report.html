@@ -136,11 +136,27 @@ h1{font-family:var(--body);font-weight:900;font-size:clamp(26px,4.4vw,36px);line
       '<div class="by-game">' + чипы + '</div>' +
     '</div>';
 
+  /* четыре умения курса — главное, что родитель должен унести с этой страницы */
+  html +=
+    '<div class="card">' +
+      '<h2>Четыре умения</h2>' +
+      '<div class="sub">Из них и состоит ИИ-грамотность. Курс собран вокруг них</div>' +
+      r.verbs.map(function (x) {
+        var p = x.total ? Math.round(x.done / x.total * 100) : 0;
+        return '<div class="idea">' +
+          '<div class="idea-h"><b>' + x.verb.t + '</b>' +
+            '<em' + (p === 100 ? ' class="full"' : '') + '>' + x.done + ' из ' + x.total + '</em></div>' +
+          '<p>' + x.verb.p + '</p>' +
+          '<div class="bar"><i style="width:' + p + '%"></i></div>' +
+        '</div>';
+      }).join('') +
+    '</div>';
+
   /* большие идеи курса */
   var сИдеями = r.ideas.filter(function (x) { return x.total > 0; });
   html +=
     '<div class="card">' +
-      '<h2>Из чего состоит ИИ-грамотность</h2>' +
+      '<h2>Методическая основа</h2>' +
       '<div class="sub">Пять больших идей — международная рамка, по которой выстроен курс</div>' +
       сИдеями.map(function (x) {
         var p = Math.round(x.done / x.total * 100);

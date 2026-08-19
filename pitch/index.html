@@ -278,6 +278,12 @@ footer-note{display:block;position:absolute;bottom:26px;left:72px;font-size:12px
   *{box-shadow:none!important;text-shadow:none!important}
   .sol-shots img{object-position:center bottom}
 }
+.vrow{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:0 0 20px}
+.vrow span{display:block;padding:12px 16px;border-radius:16px;background:#F4F1FE;
+  font-size:14px;line-height:1.4;color:#5B5470}
+.vrow b{display:block;font-family:'Unbounded',sans-serif;font-weight:700;font-size:17px;
+  color:var(--purple);margin-bottom:4px}
+@media print{.vrow span{background:#F4F1FE!important;-webkit-print-color-adjust:exact}}
 </style>
 </head>
 <body>
@@ -436,6 +442,13 @@ footer-note{display:block;position:absolute;bottom:26px;left:72px;font-size:12px
   <div class="num">07 · Игры</div>
   <div class="kicker">Курс ИИ-грамотности · 3 игры · 30 уровней · готов целиком</div>
   <h2>Ребёнок не читает про ИИ.<br>Он его <em>обучает, ломает и чинит</em></h2>
+  <!-- Рамка курса: та же, по которой мир меряет ИИ-грамотность (CodeAI, июнь 2026) -->
+  <div class="vrow">
+    <span><b>Понимает</b>как ИИ устроен</span>
+    <span><b>Управляет</b>получает задуманное</span>
+    <span><b>Проверяет</b>не верит на слово</span>
+    <span><b>Создаёт</b>делает своё и решает сам</span>
+  </div>
   <div class="gal" style="grid-template-columns:repeat(4,1fr)">
     <div class="gcard">
       <img src="g-data.jpg" alt="Откуда ИИ знает">
