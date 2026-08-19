@@ -193,6 +193,12 @@
       try {
         if (window.nookaLevels && opts.mid) {
           window.nookaLevels.games.forEach(function (g) {
+            /* бонусы игры живут отдельно от levels — их тоже надо узнавать */
+            if (g.extra && g.extra.mid === opts.mid) {
+              hub.href = 'game.html?g=' + g.key;
+              hub.label = 'К уровням: ' + g.name;
+              now = g.extra.now || '';
+            }
             g.levels.forEach(function (lv, i) {
               if (lv.mid !== opts.mid && lv.aim !== opts.mid) return;
               hub.href = 'game.html?g=' + g.key;

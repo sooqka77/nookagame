@@ -1,0 +1,370 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1">
+<meta name="theme-color" content="#0E0719">
+<title>Разложи по кучкам — Nooka</title>
+<meta property="og:title" content="Разложи по кучкам — Nooka">
+<meta property="og:description" content="Курс ИИ-грамотности для детей 8–12: три игры, тридцать уровней по 15 минут. Первая игра — бесплатно, с телефона, без установки.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://nookagame.ru/games/cluster.html">
+<meta property="og:image" content="https://nookagame.ru/screenshots/og.jpg">
+<meta property="og:site_name" content="Nooka">
+<link href="/fonts/nooka-fonts.css" rel="stylesheet">
+<link rel="stylesheet" href="nooka-ui.css">
+<style>
+/* ============ РАЗЛОЖИ ПО КУЧКАМ ============ */
+.clroot{height:100vh;overflow:hidden;max-width:480px;margin:0 auto;position:relative;}
+.cl{height:100%;display:flex;flex-direction:column;overflow:hidden;
+  background:linear-gradient(180deg,#141B30 0%,#0D1220 62%,#080B14 100%);}
+.clbody{flex:1;overflow-y:auto;padding:0 0 6px;-webkit-overflow-scrolling:touch;}
+
+.clsay{display:flex;gap:10px;align-items:flex-start;margin:2px 14px 0;padding:13px 15px;
+  border-radius:20px;background:rgba(255,255,255,.055);
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.09);animation:clIn .3s ease-out both;}
+.clsay i{flex-shrink:0;line-height:0;}
+.clsay span{font-weight:700;font-size:13.5px;line-height:1.45;color:#D6E1F5;}
+.clsay b{color:#7FE3C0;font-weight:900;}
+
+/* очередь: существо, которое сейчас раскладываем */
+.clnow{margin:12px 14px 0;padding:14px;border-radius:22px;text-align:center;
+  background:rgba(255,255,255,.05);box-shadow:inset 0 0 0 1px rgba(255,255,255,.09);}
+.clnow__t{font-weight:900;font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;
+  color:#7E8CA8;margin-bottom:10px;}
+.clnow svg{display:block;margin:0 auto;}
+.clnow__n{margin-top:8px;font-family:var(--nk-brand),var(--nk-body);font-weight:700;
+  font-size:16px;color:#EAF1FF;}
+
+/* две кучки */
+.clpiles{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 14px 0;}
+.clpile{padding:12px 10px;border-radius:20px;min-height:104px;
+  background:rgba(255,255,255,.04);box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.09);}
+.clpile__t{font-weight:900;font-size:11px;color:#7E8CA8;text-align:center;margin-bottom:8px;}
+.clpile__i{display:flex;flex-wrap:wrap;gap:5px;justify-content:center;}
+.clpile--3{grid-template-columns:repeat(3,1fr);}
+.clgrid3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:12px 14px 0;}
+
+.clacts{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin:12px 14px 0;}
+.clhint{margin:9px 14px 0;text-align:center;font-weight:800;font-size:11.5px;color:#6B7A93;}
+
+/* выбор признака */
+.clopts{margin:12px 14px 0;padding:14px 16px;border-radius:20px;
+  background:rgba(255,255,255,.045);box-shadow:inset 0 0 0 1px rgba(255,255,255,.08);}
+.clopts__t{font-weight:900;font-size:13.5px;color:#EAF1FF;line-height:1.35;margin-bottom:10px;}
+.clopts button{display:block;width:100%;margin-bottom:7px;padding:13px 14px;border:none;
+  border-radius:15px;cursor:pointer;text-align:left;font-family:inherit;font-weight:700;
+  font-size:13.5px;color:#D6E1F5;background:rgba(255,255,255,.05);
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.09);}
+.clopts button.on{background:rgba(127,227,192,.16);box-shadow:inset 0 0 0 1.5px rgba(127,227,192,.5);color:#C8F6E6;}
+.clopts button.on--bad{background:rgba(255,140,110,.14);box-shadow:inset 0 0 0 1.5px rgba(255,140,110,.45);color:#FFD9CF;}
+
+.clfoot{flex-shrink:0;padding:10px 14px calc(14px + env(safe-area-inset-bottom));
+  background:linear-gradient(180deg,rgba(8,11,20,0),#080B14 42%);}
+
+/* финал */
+.cldone{display:flex;flex-direction:column;align-items:center;padding-top:6px;}
+.cllaw{margin:14px 18px 0;text-align:center;}
+.cllaw b{display:block;font-family:var(--nk-brand),var(--nk-body);font-weight:700;
+  font-size:17px;line-height:1.3;color:#EAF1FF;}
+.cllaw span{display:block;margin-top:8px;font-weight:700;font-size:13.5px;color:#93A3BE;line-height:1.45;}
+
+@keyframes clIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
+@keyframes clPop{0%{opacity:0;transform:scale(.7);}70%{transform:scale(1.06);}100%{opacity:1;transform:scale(1);}}
+.clzoo svg{animation:clPop .32s cubic-bezier(.2,.8,.3,1) both;}
+@media (prefers-reduced-motion: reduce){.cl *{animation:none !important;}}
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script src="react-bundle.js"></script>
+<script src="nooka-core.js"></script>
+<script src="nooka-levels.js"></script>
+<script src="nooka-access.js"></script>
+<script src="nooka-gallery.js"></script>
+<script src="nooka-ui.js"></script>
+<script>
+/* ============================================================
+   РАЗЛОЖИ ПО КУЧКАМ — бонус первой игры.
+
+   Все остальные уровни курса — про обучение с учителем: человек
+   дал примеры и подписал их. Здесь наоборот: подписей нет вообще,
+   и группы ищутся сами. Это половина того, как работает настоящий
+   ИИ, и до этого уровня в курсе её не было.
+
+   Двенадцать существ — это ровно все сочетания трёх признаков:
+   цвет (3) × форма (2) × уши (2). Поэтому любой признак делит
+   зверей на честные равные группы, и ни одна раскладка не «вернее»
+   другой. В этом и урок: ИИ находит группы, а какие именно —
+   решает тот, кто выбрал признак.
+   ============================================================ */
+
+const CL_COLORS = {
+  sun:  { t: 'жёлтые',  fill: '#FFD84D', dark: '#7A5B00' },
+  sea:  { t: 'синие',   fill: '#6FC3FF', dark: '#0B4A73' },
+  rose: { t: 'розовые', fill: '#FF9ECF', dark: '#7A2A54' }
+};
+const CL_FEATURES = {
+  color: { t: 'по цвету',  q: 'Цвет',  n: 3 },
+  shape: { t: 'по форме',  q: 'Форма тела', n: 2 },
+  ears:  { t: 'по ушам',   q: 'Уши',   n: 2 }
+};
+
+/* все двенадцать сочетаний: 3 цвета × 2 формы × 2 уха */
+const CL_ZOO = (() => {
+  const out = [];
+  let i = 0;
+  ['sun', 'sea', 'rose'].forEach(color => {
+    ['round', 'square'].forEach(shape => {
+      ['sharp', 'droop'].forEach(ears => {
+        out.push({ id: i++, color, shape, ears });
+      });
+    });
+  });
+  return out;
+})();
+
+/* существо рисуется по своим признакам: цвет заливки, форма тела, уши */
+function ClBeast({ b, size }) {
+  const s = size || 54;
+  const C = CL_COLORS[b.color];
+  const body = b.shape === 'round'
+    ? React.createElement('circle', { cx: 30, cy: 34, r: 20, fill: C.fill })
+    : React.createElement('rect', { x: 11, y: 15, width: 38, height: 38, rx: 8, fill: C.fill });
+  const ear = (x, flip) => b.ears === 'sharp'
+    ? React.createElement('path', { key: x, d: 'M' + x + ' 20 l' + (flip ? -7 : 7) + ' -13 l3 15 z', fill: C.fill })
+    : React.createElement('ellipse', { key: x, cx: x + (flip ? -5 : 5), cy: 17, rx: 5, ry: 8, fill: C.fill });
+  return React.createElement('svg', { width: s, height: s, viewBox: '0 0 60 60' },
+    ear(18, true), ear(42, false), body,
+    React.createElement('circle', { cx: 23, cy: 32, r: 3.4, fill: C.dark }),
+    React.createElement('circle', { cx: 37, cy: 32, r: 3.4, fill: C.dark }),
+    React.createElement('path', { d: 'M26 42 q4 4 8 0', stroke: C.dark, strokeWidth: 2.4,
+      fill: 'none', strokeLinecap: 'round' }));
+}
+
+/* насколько раскладка ребёнка совпадает с признаком: считаем лучшее
+   соответствие, потому что «левая-правая» могли быть в любом порядке */
+function clMatch(piles, feature) {
+  const values = [...new Set(CL_ZOO.map(b => b[feature]))];
+  if (values.length !== 2) return null;          // цвет на две кучки не ложится
+  let best = 0;
+  [[0, 1], [1, 0]].forEach(order => {
+    let ok = 0;
+    CL_ZOO.forEach(b => {
+      const side = piles[b.id];
+      if (side === undefined) return;
+      if (values[order[side]] === b[feature]) ok++;
+    });
+    best = Math.max(best, ok);
+  });
+  return best;
+}
+
+/* ── сам уровень ─────────────────────────────────────────── */
+function LevelCluster({ onWin, onHome }) {
+  const [phase, setPhase] = useState('intro');   // intro | sort | why | neuro | pick | quiz | done
+  const [piles, setPiles] = useState({});        // id зверя → 0 (левая кучка) или 1 (правая)
+  const [idx, setIdx] = useState(0);             // кого раскладываем сейчас
+  const [guess, setGuess] = useState(null);      // что ребёнок назвал своим признаком
+  const [feat, setFeat] = useState('color');     // по какому признаку смотрит Нейро
+  const [say, setSay] = useState(null);
+  const [ans, setAns] = useState({});
+
+  const cur = CL_ZOO[idx];
+  const put = side => {
+    setPiles(Object.assign({}, piles, { [cur.id]: side }));
+    if (idx + 1 < CL_ZOO.length) setIdx(idx + 1);
+    else {
+      setPhase('why');
+      setSay('Готово. Двенадцать зверей — две кучки. Скажи, по чему ты их делил?');
+    }
+  };
+
+  /* проверяем, совпала ли раскладка с тем признаком, который назвал ребёнок */
+  const checkWhy = key => {
+    setGuess(key);
+    const done = Object.assign({}, piles);
+    const m = clMatch(done, key);
+    if (key === 'color') {
+      setSay('Цветов три, а кучки две — по цвету так не разделишь. Значит делил по чему-то другому.');
+      return;
+    }
+    const other = key === 'shape' ? 'ears' : 'shape';
+    const mo = clMatch(done, other);
+    if (m >= 11) {
+      setSay('Так и есть: ' + m + ' зверей из 12 легли ровно ' + CL_FEATURES[key].t +
+        '. А вот ' + CL_FEATURES[other].t + ' совпало бы только у ' + mo + '.');
+    } else if (mo >= 11) {
+      setSay('Похоже, вышло иначе: ' + CL_FEATURES[key].t + ' совпало у ' + m +
+        ' зверей, зато ' + CL_FEATURES[other].t + ' — у ' + mo + '. Руки сделали своё.');
+    } else {
+      setSay('Кучки получились смешанные: ' + CL_FEATURES[key].t + ' совпало у ' + m +
+        ' из 12. Ни один признак не выдержан до конца — так тоже бывает.');
+    }
+  };
+
+  /* Нейро раскладывает сам — по признаку feat */
+  const groups = () => {
+    const keys = [...new Set(CL_ZOO.map(b => b[feat]))];
+    return keys.map(k => ({ k: k, list: CL_ZOO.filter(b => b[feat] === k) }));
+  };
+
+  const answer = (qi, ok) => {
+    setAns(Object.assign({}, ans, { [qi]: ok }));
+  };
+  const quizDone = ans[0] !== undefined && ans[1] !== undefined;
+
+  const finish = () => { setPhase('done'); if (window.nooka) window.nooka.missionWin('cluster1', 90); };
+
+  /* ── финал ── */
+  if (phase === 'done') {
+    return React.createElement('div', { className: 'cl' },
+      React.createElement(TopBar, { level: '★', title: 'Разложи по кучкам', onHome }),
+      React.createElement('div', { className: 'clbody cldone' },
+        React.createElement('div', { className: 'clzoo clgrid3', style: { width: '100%' } },
+          CL_ZOO.slice(0, 6).map(b => React.createElement('div', { key: b.id, style: { textAlign: 'center' } },
+            React.createElement(ClBeast, { b: b, size: 48 })))),
+        React.createElement('div', { className: 'cllaw' },
+          React.createElement('b', null, 'ИИ находит группы сам — но какие, решает человек'),
+          React.createElement('span', null,
+            'Никто не говорил ему, что бывают «жёлтые» и «ушастые». Он просто складывал похожее рядом. ' +
+            'А что считать похожим — цвет, форму или уши — выбрал ты. Поменяешь признак — и группы станут другими.'),
+          React.createElement('span', null,
+            'Так работают ленты рекомендаций: они собирают похожих людей в группы, которым никто не давал названий.'))),
+      React.createElement('div', { className: 'clfoot' },
+        React.createElement('button', { className: 'nk-btn nk-btn--ok', style: { width: '100%' },
+          onClick: onWin }, 'Готово')));
+  }
+
+  /* ── экран ── */
+  const zooOf = side => CL_ZOO.filter(b => piles[b.id] === side);
+
+  return React.createElement('div', { className: 'cl' },
+    React.createElement(TopBar, { level: '★', title: 'Разложи по кучкам', onHome }),
+
+    phase === 'intro' && React.createElement(IntroModal, {
+      emoji: NKM('hello', 88),
+      title: 'Разложи по кучкам',
+      goal: 'Увидеть, что ИИ сам находит группы',
+      law: 'Тут никто не подписывал зверей.\nГруппы придётся найти самим — и тебе, и мне.',
+      tip: 'Раскидай двенадцать зверей на две кучки — как считаешь нужным.',
+      onStart: () => setPhase('sort')
+    }),
+
+    React.createElement('div', { className: 'clbody' },
+      phase === 'sort' && React.createElement(TaskBadge, null,
+        'Зверь ' + (idx + 1) + ' из 12 — в какую кучку?'),
+      phase === 'why' && React.createElement(TaskBadge, null, 'По какому признаку ты делил?'),
+      phase === 'neuro' && React.createElement(TaskBadge, null, 'Теперь раскладываю я'),
+      phase === 'pick' && React.createElement(TaskBadge, null, 'Скажи, на что мне смотреть'),
+      phase === 'quiz' && React.createElement(TaskBadge, null, 'Проверка связи'),
+
+      say && React.createElement('div', { className: 'clsay', key: say },
+        React.createElement('i', null, NKM('think', 32)),
+        React.createElement('span', { dangerouslySetInnerHTML: { __html: say } })),
+
+      /* раскладываем зверей по одному */
+      phase === 'sort' && React.createElement('div', { className: 'clnow' },
+        React.createElement('div', { className: 'clnow__t' }, 'Сейчас перед тобой'),
+        React.createElement(ClBeast, { b: cur, size: 96 })),
+
+      (phase === 'sort' || phase === 'why') && React.createElement('div', { className: 'clpiles' },
+        [0, 1].map(side => React.createElement('div', { className: 'clpile', key: side },
+          React.createElement('div', { className: 'clpile__t' },
+            (side === 0 ? 'Левая кучка' : 'Правая кучка') + ' · ' + zooOf(side).length),
+          React.createElement('div', { className: 'clpile__i' },
+            zooOf(side).map(b => React.createElement(ClBeast, { key: b.id, b: b, size: 34 })))))),
+
+      /* Нейро разложил по своему признаку */
+      (phase === 'neuro' || phase === 'pick') && React.createElement('div', { className: 'clzoo' },
+        groups().map(g => React.createElement('div', { className: 'clpile', key: g.k,
+          style: { margin: '10px 14px 0' } },
+          React.createElement('div', { className: 'clpile__t' },
+            'Кучка ' + (feat === 'color' ? CL_COLORS[g.k].t : g.k === 'round' ? 'круглые'
+              : g.k === 'square' ? 'квадратные' : g.k === 'sharp' ? 'острые уши' : 'висячие уши') +
+            ' · ' + g.list.length),
+          React.createElement('div', { className: 'clpile__i' },
+            g.list.map(b => React.createElement(ClBeast, { key: b.id, b: b, size: 34 })))))),
+
+      /* выбор признака: чем ответил ребёнок */
+      phase === 'why' && React.createElement('div', { className: 'clopts' },
+        React.createElement('div', { className: 'clopts__t' }, 'Что тебя вело, когда ты раскидывал?'),
+        Object.keys(CL_FEATURES).map(k => React.createElement('button', {
+          key: k,
+          className: guess === k ? (k === 'color' ? 'on--bad' : 'on') : '',
+          onClick: () => checkWhy(k)
+        }, CL_FEATURES[k].q))),
+
+      phase === 'pick' && React.createElement('div', { className: 'clopts' },
+        React.createElement('div', { className: 'clopts__t' }, 'На какой признак мне смотреть?'),
+        Object.keys(CL_FEATURES).map(k => React.createElement('button', {
+          key: k, className: feat === k ? 'on' : '',
+          onClick: () => { setFeat(k);
+            setSay('Смотрю ' + CL_FEATURES[k].t + ' — и вот мои кучки. Их стало <b>' +
+              CL_FEATURES[k].n + '</b>. Заметь: зверей я не менял, поменялось только то, на что я смотрю.'); }
+        }, CL_FEATURES[k].q))),
+
+      /* проверка связи */
+      phase === 'quiz' && React.createElement('div', { className: 'clopts' },
+        React.createElement('div', { className: 'clopts__t' }, 'Кто решил, что кучек будет три?'),
+        [['Тот, кто выбрал признак — то есть я', true],
+         ['Нейро посчитал и понял сам', false],
+         ['Так было с самого начала', false]].map((o, i) =>
+          React.createElement('button', { key: i,
+            className: ans[0] === undefined ? '' : (o[1] ? 'on' : ''),
+            onClick: () => answer(0, o[1]) }, o[0]))),
+
+      phase === 'quiz' && ans[0] !== undefined && React.createElement('div', { className: 'clopts' },
+        React.createElement('div', { className: 'clopts__t' }, 'А если бы у зверей был ещё и хвост — что изменилось бы?'),
+        [['Появился бы ещё один способ их разложить', true],
+         ['Ничего, кучки те же', false],
+         ['Нейро бы запутался и сломался', false]].map((o, i) =>
+          React.createElement('button', { key: i,
+            className: ans[1] === undefined ? '' : (o[1] ? 'on' : ''),
+            onClick: () => answer(1, o[1]) }, o[0]))),
+
+      phase === 'sort' && React.createElement('div', { className: 'clhint' },
+        'Правильного ответа нет — дели как хочешь')),
+
+    React.createElement('div', { className: 'clfoot' },
+      phase === 'sort' && React.createElement('div', { className: 'clacts' },
+        React.createElement('button', { className: 'nk-btn nk-btn--soft', onClick: () => put(0) }, '← В левую'),
+        React.createElement('button', { className: 'nk-btn nk-btn--soft', onClick: () => put(1) }, 'В правую →')),
+
+      phase === 'why' && guess && React.createElement('button', {
+        className: 'nk-btn nk-btn--pri', style: { width: '100%' },
+        onClick: () => { setPhase('neuro'); setFeat('color');
+          setSay('А теперь моя очередь. Мне никто не говорил, что бывают жёлтые или ушастые, — ' +
+            'я просто складываю похожих рядом. Смотрю на цвет: вот что вышло.'); }
+      }, 'Покажи, как разложишь ты'),
+
+      phase === 'neuro' && React.createElement('button', {
+        className: 'nk-btn nk-btn--pri', style: { width: '100%' },
+        onClick: () => { setPhase('pick');
+          setSay('Могу и по-другому. Выбери, на что мне смотреть, — и увидишь, что будет.'); }
+      }, 'Поменять признак'),
+
+      phase === 'pick' && React.createElement('button', {
+        className: 'nk-btn nk-btn--cta', style: { width: '100%' },
+        onClick: () => { setPhase('quiz'); setSay(null); }
+      }, 'Дальше'),
+
+      phase === 'quiz' && React.createElement('button', {
+        className: quizDone ? 'nk-btn nk-btn--ok' : 'nk-btn nk-btn--soft',
+        style: { width: '100%' }, disabled: !quizDone, onClick: finish
+      }, quizDone ? 'Готово' : 'Ответь на оба')));
+}
+
+function App() {
+  return React.createElement('div', { className: 'clroot' },
+    React.createElement(LevelCluster, {
+      onWin: () => { window.location.href = 'game.html?g=data'; },
+      onHome: () => { window.location.href = 'game.html?g=data'; }
+    }));
+}
+ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(App, null));
+
+</script>
+</body>
+</html>
