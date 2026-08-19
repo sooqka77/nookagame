@@ -52,6 +52,9 @@
 .vslens__v--on{color:#0B1A12;background:#7FE3C0;}
 .vslens__v--off{color:#8FA3BF;background:rgba(255,255,255,.06);
   box-shadow:inset 0 0 0 1px rgba(255,255,255,.1);}
+.vslens__c{margin-top:7px;text-align:center;font-weight:800;font-size:11.5px;color:#7E8CA8;white-space:nowrap;}
+.vslens__cap{margin-bottom:6px;text-align:center;font-weight:900;font-size:10px;letter-spacing:.05em;
+  text-transform:uppercase;color:#6B7A93;}
 
 .vsopts{margin:12px 14px 0;padding:14px 16px;border-radius:20px;
   background:rgba(255,255,255,.045);box-shadow:inset 0 0 0 1px rgba(255,255,255,.08);}
@@ -244,6 +247,30 @@ function VsShot({ shot }) {
   return React.createElement('canvas', { ref: ref, width: VS_SIZE, height: VS_SIZE });
 }
 
+/* Окошко на рисунке. Главное здесь — видеть, ГДЕ сейчас окошко: без рамки
+   ребёнок водит пальцем и не понимает, что происходит. Найденные места
+   остаются точками — из них постепенно проступает контур рисунка. */
+function VsLens({ shot, at, hits }) {
+  const ref = useRef(null);
+  useEffect(() => {
+    const cv = ref.current;
+    if (!cv) return;
+    const ctx = cv.getContext('2d');
+    ctx.clearRect(0, 0, VS_SIZE, VS_SIZE);
+    if (shot) { ctx.globalAlpha = .5; ctx.drawImage(shot, 0, 0); ctx.globalAlpha = 1; }
+    hits.forEach(h => {
+      ctx.fillStyle = 'rgba(255,216,77,.9)';
+      ctx.beginPath(); ctx.arc(h[0], h[1], 5, 0, 6.3); ctx.fill();
+    });
+    if (at) {
+      ctx.strokeStyle = at.v > 0.55 ? '#FFD84D' : 'rgba(255,255,255,.65)';
+      ctx.lineWidth = 3;
+      ctx.strokeRect(at.x - 13, at.y - 13, 26, 26);
+    }
+  }, [shot, at, hits]);
+  return React.createElement('canvas', { ref: ref, width: VS_SIZE, height: VS_SIZE });
+}
+
 /* ── сам уровень ── */
 function LevelVision({ onWin, onHome }) {
   const [phase, setPhase] = useState('intro');   // intro | draw | seen | lens | pick | quiz | done
@@ -252,6 +279,7 @@ function LevelVision({ onWin, onHome }) {
   const [kind, setKind] = useState('spot');
   const [lens, setLens] = useState({ x: 130, y: 130, v: 0 });
   const [shot, setShot] = useState(null);        // копия рисунка на отдельном холсте
+  const [hits, setHits] = useState([]);           // места, где окошко вспыхнуло
   const [say, setSay] = useState(null);
   const [ans, setAns] = useState({});
   const api = useRef({}).current;
@@ -283,6 +311,10 @@ function LevelVision({ onWin, onHome }) {
     const y = Math.round((e.clientY - box.top) / box.height * VS_SIZE);
     const v = vsAt(src, VS_KERNELS[kind].k, x, y);
     setLens({ x: x, y: y, v: v });
+    /* засчитываем только новые места: иначе можно натыкать три точки подряд */
+    if (v > 0.55 && !hits.some(h => Math.abs(h[0] - x) < 40 && Math.abs(h[1] - y) < 40)) {
+      setHits(hits.concat([[x, y]]));
+    }
     const cv = mini.current;
     if (cv && (shot || api.canvas)) {
       const ctx = cv.getContext('2d');
@@ -335,7 +367,7 @@ function LevelVision({ onWin, onHome }) {
     React.createElement('div', { className: 'vsbody' },
       phase === 'draw' && React.createElement(TaskBadge, null, 'Нарисуй что хочешь'),
       phase === 'seen' && React.createElement(TaskBadge, null, 'Слева — твой рисунок, справа — мой'),
-      phase === 'lens' && React.createElement(TaskBadge, null, 'Веди пальцем по рисунку'),
+      phase === 'lens' && React.createElement(TaskBadge, null, 'Найди окошком три края'),
       phase === 'pick' && React.createElement(TaskBadge, null, 'Поменяй окошко'),
       phase === 'quiz' && React.createElement(TaskBadge, null, 'Проверка связи'),
 
@@ -357,13 +389,16 @@ function LevelVision({ onWin, onHome }) {
       phase === 'lens' && React.createElement('div', { className: 'vslens' },
         React.createElement('div', { className: 'vspad', style: { margin: 0 },
           onPointerDown: moveLens, onPointerMove: e => { if (e.buttons || e.pointerType === 'touch') moveLens(e); } },
-          React.createElement(VsShot, { shot: shot })),
+          React.createElement(VsLens, { shot: shot, at: lens, hits: hits })),
         React.createElement('div', null,
+          React.createElement('div', { className: 'vslens__cap' }, 'что внутри окошка'),
           React.createElement('div', { className: 'vslens__box' },
             React.createElement('canvas', { ref: mini, width: 96, height: 96 })),
           React.createElement('div', {
             className: 'vslens__v ' + (lens.v > 0.55 ? 'vslens__v--on' : 'vslens__v--off')
-          }, lens.v > 0.55 ? 'Поймало край' : 'Тут ровно'))),
+          }, lens.v > 0.55 ? 'Вспыхнуло!' : 'Тут ровно'),
+          React.createElement('div', { className: 'vslens__c' },
+            'Найдено мест: ' + hits.length + ' из 3'))),
 
       phase === 'pick' && React.createElement('div', { className: 'vsopts' },
         React.createElement('div', { className: 'vsopts__t' }, 'Какое окошко пустить по рисунку?'),
@@ -401,13 +436,16 @@ function LevelVision({ onWin, onHome }) {
       phase === 'seen' && React.createElement('button', {
         className: 'nk-btn nk-btn--pri', style: { width: '100%' },
         onClick: () => { setPhase('lens');
-          setSay('Возьми окошко в руки. Веди пальцем по рисунку — и смотри, когда оно вспыхивает.'); }
+          setSay('Вот моё окошко — белая рамка. Оно маленькое и видит только кусочек. ' +
+            'Веди его пальцем: там, где внутри рамки светлое встречается с тёмным, окошко <b>вспыхивает</b>. ' +
+            'Найди три таких места.'); }
       }, 'Дать окошко мне'),
 
       phase === 'lens' && React.createElement('button', {
-        className: 'nk-btn nk-btn--pri', style: { width: '100%' },
+        className: hits.length >= 3 ? 'nk-btn nk-btn--cta' : 'nk-btn nk-btn--soft',
+        style: { width: '100%' }, disabled: hits.length < 3,
         onClick: () => { setPhase('pick'); setSay('У меня таких окошек много, и каждое ищет своё. Попробуй все три.'); }
-      }, 'А другие окошки есть?'),
+      }, hits.length >= 3 ? 'А другие окошки есть?' : 'Найди ещё ' + (3 - hits.length)),
 
       phase === 'pick' && React.createElement('button', {
         className: 'nk-btn nk-btn--cta', style: { width: '100%' },
