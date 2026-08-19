@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#FDF7EC">
+<title>Час с ИИ — готовый урок для класса | Nooka</title>
+<meta property="og:title" content="Час с ИИ — готовый урок про искусственный интеллект">
+<meta property="og:description" content="45 минут, ничего не нужно готовить и устанавливать. Дети обучают нейросеть с телефонов и объясняют своими словами, откуда она знает ответы.">
+<meta property="og:image" content="https://nookagame.ru/screenshots/og.jpg">
+<link href="/fonts/nooka-fonts.css" rel="stylesheet">
+<style>
+:root{--ink:#181228;--ink2:#5B5470;--ink3:#8A82A0;--purple:#7B2FFF;--sun:#FFC53D;
+  --bg:#FDF7EC;--line:#E9E1F5;--ok:#12A47A}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font-family:'Nunito',system-ui,sans-serif;-webkit-font-smoothing:antialiased;line-height:1.6}
+.wrap{max-width:860px;margin:0 auto;padding:40px 20px 70px}
+h1{font-family:'Unbounded','Nunito',sans-serif;font-weight:700;font-size:clamp(28px,5vw,44px);
+  line-height:1.14;margin:14px 0 16px;letter-spacing:-.01em}
+h1 em{font-style:normal;color:var(--purple)}
+h2{font-family:'Unbounded','Nunito',sans-serif;font-weight:700;font-size:22px;margin:0 0 6px}
+h3{font-size:17px;font-weight:900;margin:0 0 6px}
+p{margin:0 0 12px}
+.kick{display:inline-block;padding:7px 15px;border-radius:999px;background:#F1EAFE;
+  font-weight:900;font-size:12.5px;letter-spacing:.04em;text-transform:uppercase;color:var(--purple)}
+.lead{font-size:18px;color:var(--ink2);max-width:660px}
+.card{background:#fff;border:1.5px solid var(--line);border-radius:24px;padding:26px 28px;margin:18px 0}
+.card--sun{background:#FFF9E8;border-color:#F5E2B0}
+.need{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-top:14px}
+.need div{background:#fff;border:1.5px solid var(--line);border-radius:18px;padding:16px 18px;font-size:15px}
+.need b{display:block;font-size:15.5px;margin-bottom:3px}
+.plan{margin:0;padding:0;list-style:none}
+.plan li{display:flex;gap:18px;padding:16px 0;border-top:1px solid var(--line)}
+.plan li:first-child{border-top:none;padding-top:4px}
+.plan .t{flex:none;width:74px;font-family:'Unbounded','Nunito',sans-serif;font-weight:700;
+  font-size:15px;color:var(--purple)}
+.plan .b b{display:block;font-size:16.5px;margin-bottom:4px}
+.plan .b span{display:block;color:var(--ink2);font-size:15px}
+.say{margin-top:8px;padding:11px 14px;border-radius:14px;background:#F6F2FF;font-size:14.5px;
+  color:#4B3E6B}
+.say i{font-style:normal;font-weight:900;color:var(--purple);display:block;font-size:12px;
+  letter-spacing:.05em;text-transform:uppercase;margin-bottom:3px}
+.q{margin:0;padding:0;list-style:none;counter-reset:q}
+.q li{position:relative;padding:14px 0 14px 42px;border-top:1px solid var(--line)}
+.q li:first-child{border-top:none}
+.q li::before{counter-increment:q;content:counter(q);position:absolute;left:0;top:13px;
+  width:28px;height:28px;border-radius:50%;background:#F1EAFE;color:var(--purple);
+  font-weight:900;font-size:13px;display:flex;align-items:center;justify-content:center}
+.q b{display:block;font-size:16px;margin-bottom:3px}
+.q span{color:var(--ink2);font-size:14.5px}
+.faq{margin:0;padding:0;list-style:none}
+.faq li{padding:14px 0;border-top:1px solid var(--line)}
+.faq li:first-child{border-top:none;padding-top:2px}
+.faq b{display:block;font-size:16px;margin-bottom:4px}
+.faq span{color:var(--ink2);font-size:15px}
+.verbs{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-top:14px}
+.verbs div{background:#fff;border:1.5px solid var(--line);border-radius:18px;padding:15px 17px}
+.verbs b{display:block;font-family:'Unbounded','Nunito',sans-serif;font-weight:700;font-size:16px;
+  color:var(--purple);margin-bottom:3px}
+.verbs span{font-size:14px;color:var(--ink2)}
+.btns{display:flex;flex-wrap:wrap;gap:12px;margin-top:18px}
+.btn{display:inline-block;padding:15px 26px;border-radius:16px;text-decoration:none;
+  font-weight:900;font-size:16px;border:none;cursor:pointer;font-family:inherit}
+.btn--pri{background:var(--purple);color:#fff}
+.btn--soft{background:#fff;color:var(--purple);border:1.5px solid var(--line)}
+.foot{margin-top:34px;padding-top:20px;border-top:1px solid var(--line);color:var(--ink3);font-size:14px}
+.foot a{color:var(--purple)}
+@media print{
+  body{background:#fff}
+  .wrap{max-width:100%;padding:0}
+  .card{break-inside:avoid;box-shadow:none}
+  .noprint{display:none!important}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <span class="kick">Учителю · 45 минут</span>
+  <h1>Час с ИИ: <em>готовый урок</em>,<br>к которому не нужно готовиться</h1>
+  <p class="lead">Дети не слушают про искусственный интеллект — они его обучают. С телефонов,
+  без установки и регистрации. В конце урока каждый может объяснить своими словами,
+  откуда нейросеть знает ответы и почему она уверенно ошибается.</p>
+
+  <div class="btns noprint">
+    <a class="btn btn--pri" href="https://nookagame.ru/games/game.html?g=data">Открыть игру для урока</a>
+    <button class="btn btn--soft" onclick="window.print()">Распечатать план</button>
+  </div>
+
+  <div class="card">
+    <h2>Что понадобится</h2>
+    <div class="need">
+      <div><b>Телефоны детей</b>Или один компьютер с проектором — сценарий работает и так.</div>
+      <div><b>Одна ссылка</b>nookagame.ru — открывается в браузере, ставить ничего не нужно.</div>
+      <div><b>Ничего больше</b>Ни аккаунтов, ни паролей, ни оплаты: первая игра открыта целиком.</div>
+    </div>
+    <p style="margin-top:14px;color:var(--ink2)">Подготовка учителя — ноль минут. Разбираться
+    в нейросетях заранее не нужно: всё, что нужно сказать, есть ниже дословно.</p>
+  </div>
+
+  <div class="card">
+    <h2>План урока</h2>
+    <p style="color:var(--ink2)">45 минут. Если у вас 40 — сократите обсуждение до двух вопросов.</p>
+    <ul class="plan">
+      <li>
+        <div class="t">5 мин</div>
+        <div class="b"><b>Вступление</b>
+          <span>Спросите поднятием руки: кто пользовался нейросетью — ChatGPT, Алисой, поиском с ИИ?
+          Рук будет много. Скажите, что сегодня наоборот: не мы пользуемся ИИ, а мы его учим.</span>
+          <div class="say"><i>Можно сказать так</i>«Сегодня каждый из вас будет учителем для нейросети.
+          И в конце урока вы поймёте, почему она иногда говорит полную ерунду с очень умным видом».</div>
+        </div>
+      </li>
+      <li>
+        <div class="t">25 мин</div>
+        <div class="b"><b>Играют</b>
+          <span>Открывают <b>nookagame.ru</b> → игра «Откуда ИИ знает» → уровни 1 и 2.
+          Первый: ищут фонарём, в каких вещах дома живёт ИИ, а где обычная программа.
+          Второй: рисуют пальцем котов и домов и обучают на них нейросеть.</span>
+          <div class="say"><i>Если телефонов нет</i>Откройте игру на проекторе, а к экрану
+          вызывайте детей по очереди: рисует один, решает класс.</div>
+        </div>
+      </li>
+      <li>
+        <div class="t">10 мин</div>
+        <div class="b"><b>Обсуждение</b>
+          <span>Три вопроса ниже. Отвечают своими словами — правильных формулировок не требуется,
+          важно, что ребёнок ссылается на то, что сам сделал.</span>
+        </div>
+      </li>
+      <li>
+        <div class="t">5 мин</div>
+        <div class="b"><b>Вывод на доску</b>
+          <span>Запишите одну фразу и попросите объяснить её соседу по парте:</span>
+          <div class="say"><i>Вывод урока</i><b style="font-size:17px;color:var(--ink)">
+          Нейросеть знает ровно то, что ей показали. И ничего сверх этого.</b></div>
+        </div>
+      </li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2>Три вопроса для обсуждения</h2>
+    <ul class="q">
+      <li><b>Откуда нейросеть знает, как выглядит кот?</b>
+        <span>Ждём: «потому что я ей показал своих котов». Важно, что знание пришло от ребёнка,
+        а не «было внутри».</span></li>
+      <li><b>Что будет, если показать нейросети то, чего она ни разу не видела?</b>
+        <span>Ждём: «она назовёт это чем-то знакомым». Нейросеть не умеет сказать «я такого не знаю» —
+        она выбирает самое похожее из того, что видела.</span></li>
+      <li><b>Если нейросеть уверена на 90 процентов — значит, она права?</b>
+        <span>Ждём: «нет». Проценты говорят о похожести на примеры, а не о правоте. Это главное,
+        что стоит унести с урока.</span></li>
+    </ul>
+  </div>
+
+  <div class="card card--sun">
+    <h2>Что дети спрашивают — и что отвечать</h2>
+    <p style="color:#7A6428">Короткие ответы, которые можно прочитать вслух.</p>
+    <ul class="faq">
+      <li><b>А искусственный интеллект живой?</b>
+        <span>Нет. Он не хочет, не устаёт и не понимает, о чём речь. Он сравнивает новое
+        с примерами, которые видел, и выбирает самое похожее.</span></li>
+      <li><b>Он может соврать?</b>
+        <span>Специально — нет, он не умеет хотеть. Но он может уверенно выдать неправду,
+        потому что похожее не значит верное. Поэтому важное всегда проверяют.</span></li>
+      <li><b>Он умнее человека?</b>
+        <span>Быстрее в одном узком деле — да. Но он не решает, что важно, а что нет:
+        это делает человек, и отвечает за результат тоже человек.</span></li>
+      <li><b>Он заберёт работу у моих родителей?</b>
+        <span>Часть дел перейдёт к машинам, как было с калькуляторами и станками.
+        Появятся новые дела. В выигрыше те, кто понимает, как ИИ устроен, — например, вы после этого урока.</span></li>
+      <li><b>Откуда он вообще всё знает?</b>
+        <span>Ему показали очень много примеров, которые собрали и подписали люди.
+        Если люди ошиблись в подписях, ошибётся и он.</span></li>
+      <li><b>С ним можно дружить?</b>
+        <span>Разговаривать — да, дружить — нет. Он не помнит вас как человека и не переживает за вас.
+        Это инструмент, а не друг.</span></li>
+      <li><b>А он подглядывает за мной?</b>
+        <span>Он получает ровно то, что ему написали или показали. Поэтому личное — адрес, школу,
+        расписание — ему сообщать не нужно: это уходит на чужой компьютер.</span></li>
+      <li><b>Почему он ошибается, если он такой умный?</b>
+        <span>Потому что он ищет похожее, а не правильное. Рыбу, которую он не видел, он назовёт котом,
+        если кот — единственное, что он знает.</span></li>
+      <li><b>Он учится сам?</b>
+        <span>Учится на данных, которые ему дали люди. Сам он ничего не хочет узнать
+        и не пойдёт что-то изучать по своей воле.</span></li>
+      <li><b>А можно его сломать?</b>
+        <span>Можно запутать — на уровне 9 дети как раз рисуют кота так, чтобы нейросеть назвала его
+        собакой. Это не хулиганство, а способ понять, где у неё слабое место.</span></li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2>Что ребёнок унесёт с урока</h2>
+    <p style="color:var(--ink2)">Курс собран вокруг четырёх умений — это и есть функциональная
+    грамотность в части ИИ. За один урок закрывается первое и начинается третье.</p>
+    <div class="verbs">
+      <div><b>Понимает</b><span>как ИИ устроен и откуда берёт ответы</span></div>
+      <div><b>Управляет</b><span>получает от ИИ то, что задумал</span></div>
+      <div><b>Проверяет</b><span>не верит на слово, знает, где ИИ ошибается</span></div>
+      <div><b>Создаёт</b><span>делает своё и решает, чего не доверять ИИ</span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Если класс захочет дальше</h2>
+    <p>Первая игра — десять уровней, примерно три часа — открыта бесплатно и без регистрации.
+    Её хватает на серию уроков или на внеурочку.</p>
+    <p>Вторая и третья игры (ещё двадцать уровней: промпты, устройство нейросети, профессии
+    рядом с ИИ) открываются по коду доступа. <b>Школам и лагерям мы открываем всё бесплатно
+    на время пилота</b> — напишите, и пришлём ссылку на класс.</p>
+    <div class="btns noprint">
+      <a class="btn btn--pri" href="https://t.me/NookaGame">Написать нам в Telegram</a>
+      <a class="btn btn--soft" href="https://nookagame.ru">Открыть сайт</a>
+    </div>
+  </div>
+
+  <p class="foot">Nooka — курс ИИ-грамотности для детей 8–12 лет: три игры, тридцать уровней
+  по 15 минут. Программа опирается на международную рамку «Пять больших идей об ИИ».
+  Вопросы и обратная связь: <a href="https://t.me/NookaGame">Telegram</a>.</p>
+
+</div>
+</body>
+</html>
