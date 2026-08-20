@@ -164,8 +164,10 @@ function clMatch(piles, feature) {
 /* ── сам уровень ─────────────────────────────────────────── */
 function LevelCluster({ onWin, onHome }) {
   const [phase, setPhase] = useState('intro');   // intro | sort | why | neuro | pick | quiz | done
-  const [piles, setPiles] = useState({});        // id зверя → 0 (левая кучка) или 1 (правая)
-  const [idx, setIdx] = useState(0);             // кого раскладываем сейчас
+  /* Кучки и очередь держим одним состоянием: иначе два быстрых тапа подряд
+     считают номер зверя от устаревшего значения и один зверь пропадает. */
+  const [sort, setSort] = useState({ idx: 0, piles: {} });
+  const piles = sort.piles, idx = sort.idx;
   const [guess, setGuess] = useState(null);      // что ребёнок назвал своим признаком
   const [feat, setFeat] = useState('color');     // по какому признаку смотрит Нейро
   const [say, setSay] = useState(null);
@@ -173,12 +175,17 @@ function LevelCluster({ onWin, onHome }) {
 
   const cur = CL_ZOO[idx];
   const put = side => {
-    setPiles(Object.assign({}, piles, { [cur.id]: side }));
-    if (idx + 1 < CL_ZOO.length) setIdx(idx + 1);
-    else {
-      setPhase('why');
-      setSay('Готово. Двенадцать зверей — две кучки. Скажи, по чему ты их делил?');
-    }
+    setSort(prev => {
+      const beast = CL_ZOO[prev.idx];
+      const piles = Object.assign({}, prev.piles, { [beast.id]: side });
+      const next = prev.idx + 1;
+      if (next >= CL_ZOO.length) {
+        setPhase('why');
+        setSay('Готово. Двенадцать зверей — две кучки. Скажи, по какому признаку делишь?');
+        return { idx: prev.idx, piles: piles };
+      }
+      return { idx: next, piles: piles };
+    });
   };
 
   /* проверяем, совпала ли раскладка с тем признаком, который назвал ребёнок */
@@ -210,9 +217,7 @@ function LevelCluster({ onWin, onHome }) {
     return keys.map(k => ({ k: k, list: CL_ZOO.filter(b => b[feat] === k) }));
   };
 
-  const answer = (qi, ok) => {
-    setAns(Object.assign({}, ans, { [qi]: ok }));
-  };
+  const answer = (qi, ok) => setAns(prev => Object.assign({}, prev, { [qi]: ok }));
   const quizDone = ans[0] !== undefined && ans[1] !== undefined;
 
   const finish = () => { setPhase('done'); if (window.nooka) window.nooka.missionWin('cluster1', 90); };
@@ -255,7 +260,7 @@ function LevelCluster({ onWin, onHome }) {
     React.createElement('div', { className: 'clbody' },
       phase === 'sort' && React.createElement(TaskBadge, null,
         'Зверь ' + (idx + 1) + ' из 12 — в какую кучку?'),
-      phase === 'why' && React.createElement(TaskBadge, null, 'По какому признаку ты делил?'),
+      phase === 'why' && React.createElement(TaskBadge, null, 'По какому признаку делишь?'),
       phase === 'neuro' && React.createElement(TaskBadge, null, 'Теперь раскладываю я'),
       phase === 'pick' && React.createElement(TaskBadge, null, 'Скажи, на что мне смотреть'),
       phase === 'quiz' && React.createElement(TaskBadge, null, 'Проверка связи'),
@@ -289,7 +294,7 @@ function LevelCluster({ onWin, onHome }) {
 
       /* выбор признака: чем ответил ребёнок */
       phase === 'why' && React.createElement('div', { className: 'clopts' },
-        React.createElement('div', { className: 'clopts__t' }, 'Что тебя вело, когда ты раскидывал?'),
+        React.createElement('div', { className: 'clopts__t' }, 'Что тебя вело, когда раскидываешь?'),
         Object.keys(CL_FEATURES).map(k => React.createElement('button', {
           key: k,
           className: guess === k ? (k === 'color' ? 'on--bad' : 'on') : '',

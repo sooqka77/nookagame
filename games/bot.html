@@ -237,7 +237,7 @@ function LevelBot({ onWin, onHome }) {
   const [tries, setTries] = useState(0);
   const [say, setSay] = useState(null);
 
-  const set = (k, v) => setRules(Object.assign({}, rules, { [k]: v }));
+  const set = (k, v) => setRules(prev => Object.assign({}, prev, { [k]: v }));
   const results = BT_GUESTS.map(g => btJudge(g, rules));
   const happy = results.filter(r => r === null).length;
 
@@ -247,7 +247,7 @@ function LevelBot({ onWin, onHome }) {
     const res = BT_GUESTS.map(g => btJudge(g, rules));
     const n = res.filter(r => r === null).length;
     setSay(n === 3
-      ? 'Все трое довольны. Заметь: бот один, а люди разные — и подошёл он им только после того, как ты подобрал правила.'
+      ? 'Все трое довольны. Заметь: бот один, а люди разные — и подошёл он им только тогда, когда правила подобраны.'
       : n === 0 ? 'Никому не подошло. Посмотри, на что каждый жалуется, — там и подсказка.'
       : 'Доволен' + (n === 1 ? ' один' : 'ы двое') + '. Остальные жалуются — читай, на что именно.');
   };
@@ -269,7 +269,7 @@ function LevelBot({ onWin, onHome }) {
         React.createElement('div', { className: 'btlaw' },
           React.createElement('b', null, 'Характер ИИ задаёшь ты — словами'),
           React.createElement('span', null,
-            'Бот не менялся: менялись правила, которые ты ему дал. От них зависит, поймёт его ' +
+            'Бот не менялся: менялись правила, которые ты ему даёшь. От них зависит, поймёт его ' +
             'семилетняя Мира или спишет Тимур. Так настраивают помощников и взрослые.'),
           React.createElement('span', null,
             'Подбирать пришлось ' + tries + ' ' + (window.nooka ? window.nooka.plural(tries, 'раз', 'раза', 'раз') : 'раз') +
