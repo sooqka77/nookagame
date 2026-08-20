@@ -124,7 +124,8 @@
    ============================================================ */
 
 const VS_SIZE = 260;
-const VS_HOLE = 30;      // радиус дырочки
+const VS_HOLE = 26;      // радиус дырочки
+const VS_LOOKS = 5;      // сколько раз можно подглядеть: иначе откроется вся картинка
 
 /* Простые контурные картинки: рисуются линией, как детский рисунок */
 const VS_PICS = [
@@ -185,7 +186,7 @@ function vsEdges(from, to) {
 }
 
 /* ── поле с дырочкой ── */
-function VsHole({ pic, onOpen, opened }) {
+function VsHole({ pic, onOpen, left }) {
   const base = useRef(null), mask = useRef(null);
   useEffect(() => {
     if (base.current) vsPaint(base.current, pic);
@@ -198,8 +199,10 @@ function VsHole({ pic, onOpen, opened }) {
     }
   }, [pic]);
 
-  /* палец стирает верхний слой — под ним показывается кусочек картинки */
+  /* Один тап — один взгляд. Раньше дырка стиралась и на движении пальца:
+     ребёнок за пару взмахов открывал всю картинку, и угадывать было нечего. */
   const dig = e => {
+    if (left <= 0) return;
     const mk = mask.current;
     const r = mk.getBoundingClientRect();
     const x = (e.clientX - r.left) / r.width * VS_SIZE;
@@ -211,16 +214,12 @@ function VsHole({ pic, onOpen, opened }) {
     if (onOpen) onOpen();
   };
 
-  return React.createElement('div', {
-    className: 'vshole',
-    onPointerDown: dig,
-    onPointerMove: e => { if (e.buttons || e.pointerType === 'touch') dig(e); }
-  },
+  return React.createElement('div', { className: 'vshole', onPointerDown: dig },
     React.createElement('canvas', { ref: base, width: VS_SIZE, height: VS_SIZE }),
     React.createElement('canvas', { ref: mask, width: VS_SIZE, height: VS_SIZE,
       style: { position: 'absolute', inset: 0, width: '100%' } }),
-    !opened && React.createElement('div', { className: 'vshole__tip' },
-      'Веди пальцем — под ним будет видно'));
+    left === VS_LOOKS && React.createElement('div', { className: 'vshole__tip' },
+      'Нажми на поле — и подглядишь в одну дырочку'));
 }
 
 /* ── картинка целиком или её границы ── */
@@ -256,8 +255,8 @@ function LevelVision({ onWin, onHome }) {
   const choose = p => {
     setPick(p);
     if (p.id === pic.id) {
-      setSay('Угадал. Но посмотри, сколько времени на это ушло — и это ты, человек, который знает, ' +
-        'что такое дом и рыба.');
+      setSay('Угадал — по пяти кусочкам. И это ты, человек, который знает, что такое дом и рыба. ' +
+        'А теперь представь, что не знаешь.');
     } else {
       setSay('Мимо: это <b>' + pic.t.toLowerCase() + '</b>. И это нормально — через дырочку почти ничего не видно.');
     }
@@ -313,7 +312,7 @@ function LevelVision({ onWin, onHome }) {
         React.createElement('i', null, NKM('think', 32)),
         React.createElement('span', { dangerouslySetInnerHTML: { __html: say } })),
 
-      phase === 'hole' && React.createElement(VsHole, { pic: pic, opened: digs > 0,
+      phase === 'hole' && React.createElement(VsHole, { pic: pic, left: VS_LOOKS - digs,
         onOpen: () => setDigs(d => d + 1) }),
 
       phase === 'hole' && React.createElement('div', { className: 'vsguess' },
@@ -348,7 +347,9 @@ function LevelVision({ onWin, onHome }) {
           }, o[0]))),
 
       phase === 'hole' && !pick && React.createElement('div', { className: 'vsopen' },
-        digs > 0 ? 'Открывай ещё — и попробуй угадать' : 'Дырочка маленькая: это и есть всё, что видит ИИ за раз')),
+        digs === 0 ? 'Дырочка маленькая: это и есть всё, что видит ИИ за раз'
+          : digs >= VS_LOOKS ? 'Подглядывать больше нельзя — решай, что там нарисовано'
+          : 'Осталось подглядываний: ' + (VS_LOOKS - digs))),
 
     React.createElement('div', { className: 'vsfoot' },
       phase === 'hole' && pick && React.createElement('button', {
