@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1">
 <meta name="theme-color" content="#0E0719">
-<title>Через окошко — Nooka</title>
-<meta property="og:title" content="Через окошко — Nooka">
+<title>Смотри в дырочку — Nooka</title>
+<meta property="og:title" content="Смотри в дырочку — Nooka">
 <meta property="og:description" content="Курс ИИ-грамотности для детей 8–12: три игры, тридцать уровней по 15 минут. Первая игра — бесплатно, с телефона, без установки.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://nookagame.ru/games/vision.html">
@@ -43,7 +43,7 @@
   letter-spacing:.04em;text-transform:uppercase;color:#7E8CA8;}
 
 /* лупа */
-.vslens{display:grid;grid-template-columns:1fr 118px;gap:10px;margin:12px 14px 0;align-items:start;}
+.vslens{margin:12px 14px 0;}
 .vslens__box{border-radius:18px;overflow:hidden;background:#0A1220;
   box-shadow:inset 0 0 0 1.5px rgba(127,216,255,.3);}
 .vslens__box canvas{width:100%;display:block;image-rendering:pixelated;}
@@ -79,6 +79,20 @@
 
 @keyframes vsIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
 @media (prefers-reduced-motion: reduce){.vs *{animation:none !important;}}
+
+/* поле, закрытое непрозрачным слоем: открывается только под пальцем */
+.vshole{position:relative;margin:12px 14px 0;border-radius:22px;overflow:hidden;
+  background:#070C16;box-shadow:inset 0 0 0 1.5px rgba(127,216,255,.22);touch-action:none;}
+.vshole canvas{width:100%;display:block;}
+.vshole__tip{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  pointer-events:none;font-weight:800;font-size:13.5px;color:rgba(200,225,255,.55);text-align:center;padding:0 30px;}
+.vsguess{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin:12px 14px 0;}
+.vsguess button{padding:14px 10px;border:none;border-radius:16px;cursor:pointer;font-family:inherit;
+  font-weight:900;font-size:14px;color:#D3E2F7;background:rgba(255,255,255,.06);
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.1);}
+.vsguess button.on--ok{background:rgba(127,227,192,.18);box-shadow:inset 0 0 0 1.5px rgba(127,227,192,.55);color:#C8F6E6;}
+.vsguess button.on--bad{background:rgba(255,140,110,.15);box-shadow:inset 0 0 0 1.5px rgba(255,140,110,.5);color:#FFD9CF;}
+.vsopen{margin:9px 14px 0;text-align:center;font-weight:800;font-size:11.5px;color:#6B7A93;}
 </style>
 </head>
 <body>
@@ -92,370 +106,272 @@
 <script src="nooka-ui.js"></script>
 <script>
 /* ============================================================
-   ЧЕРЕЗ ОКОШКО — бонус третьей игры.
+   СМОТРИ В ДЫРОЧКУ — бонус третьей игры.
 
-   «Рентгенолог» говорит ребёнку, что ИИ находит резкие линии,
-   а не переломы. Но откуда берутся эти линии, курс не показывал.
-   Здесь показывает — на рисунке, который ребёнок сделал сам.
+   Первая версия объясняла свёртку словами: «окошко ходит по картинке
+   и ищет края». Артём показал уровень своему ребёнку — тот не понял
+   ничего: «какие окошки, что за окошки». Слово ничего не значило,
+   потому что такого опыта у ребёнка нет.
 
-   Внутри честная свёртка: по картинке ходит окно 3×3, значения
-   умножаются на маленькую таблицу чисел и складываются. Три разные
-   таблицы дают три разных результата: одна ловит вертикальные
-   линии, другая горизонтальные, третья — любые перепады.
-   Слов «свёртка», «ядро» и «фильтр» на экране нет: есть окошко,
-   которое ищет, и то, что оно поймало.
+   Переделано на переживание. Картинка закрыта наглухо, открыть её
+   можно только маленькой дырочкой под пальцем — и угадать, что там.
+   Это тяжело: видно кусок дуги, кусок прямой. Потом Нейро показывает
+   ту же картинку так, как видит её сам: все кусочки сразу, но только
+   границы. Узнаётся мгновенно.
+
+   Отсюда и урок: ИИ смотрит маленькими окошками — их просто очень
+   много, и они смотрят одновременно.
    ============================================================ */
 
-const VS_SIZE = 260;      // холст, в нём же считаем
-const VS_PEN = 8;
+const VS_SIZE = 260;
+const VS_HOLE = 30;      // радиус дырочки
 
-/* три окошка: чем отличается то, что каждое ищет */
-const VS_KERNELS = {
-  vert:  { t: 'Ищет стоячие линии', k: [-1, 0, 1, -2, 0, 2, -1, 0, 1],
-           note: 'Оно вспыхивает там, где слева темно, а справа светло — то есть на вертикальных краях.' },
-  horiz: { t: 'Ищет лежачие линии', k: [-1, -2, -1, 0, 0, 0, 1, 2, 1],
-           note: 'Теперь наоборот: вспыхивают только горизонтальные края. Те же линии, другое окошко.' },
-  spot:  { t: 'Ищет любые перепады', k: [0, -1, 0, -1, 4, -1, 0, -1, 0],
-           note: 'Это окошко не разбирает направление — ему важно, что рядом резко меняется свет.' }
-};
+/* Простые контурные картинки: рисуются линией, как детский рисунок */
+const VS_PICS = [
+  { id: 'house', t: 'Дом', draw: c => {
+      c.beginPath(); c.moveTo(45, 210); c.lineTo(45, 120); c.lineTo(130, 55);
+      c.lineTo(215, 120); c.lineTo(215, 210); c.closePath(); c.stroke();
+      c.strokeRect(105, 145, 50, 65);
+      c.beginPath(); c.moveTo(60, 100); c.lineTo(60, 60); c.lineTo(85, 60); c.lineTo(85, 82); c.stroke(); } },
+  { id: 'fish', t: 'Рыба', draw: c => {
+      c.beginPath(); c.ellipse(120, 130, 70, 42, 0, 0, 6.3); c.stroke();
+      c.beginPath(); c.moveTo(190, 130); c.lineTo(235, 95); c.lineTo(235, 165); c.closePath(); c.stroke();
+      c.beginPath(); c.arc(88, 115, 6, 0, 6.3); c.stroke();
+      c.beginPath(); c.moveTo(120, 92); c.quadraticCurveTo(140, 70, 160, 96); c.stroke(); } },
+  { id: 'tree', t: 'Ёлка', draw: c => {
+      c.beginPath(); c.moveTo(130, 40); c.lineTo(185, 120); c.lineTo(150, 120);
+      c.lineTo(200, 185); c.lineTo(60, 185); c.lineTo(110, 120); c.lineTo(75, 120); c.closePath(); c.stroke();
+      c.strokeRect(118, 185, 24, 35); } },
+  { id: 'car', t: 'Машина', draw: c => {
+      c.beginPath(); c.moveTo(35, 165); c.lineTo(45, 120); c.lineTo(95, 120); c.lineTo(115, 85);
+      c.lineTo(180, 85); c.lineTo(195, 120); c.lineTo(225, 130); c.lineTo(225, 165); c.stroke();
+      c.beginPath(); c.arc(80, 168, 22, 0, 6.3); c.stroke();
+      c.beginPath(); c.arc(185, 168, 22, 0, 6.3); c.stroke();
+      c.beginPath(); c.moveTo(147, 85); c.lineTo(147, 120); c.stroke(); } }
+];
 
-/* Прогон окна по картинке. Рисунок цветной по прозрачному фону,
-   поэтому «светлость» точки берём из непрозрачности. */
-function vsConvolve(src, kernel) {
-  const w = src.width, h = src.height;
+/* рисуем картинку на холсте */
+function vsPaint(cv, pic, color) {
+  const c = cv.getContext('2d');
+  c.clearRect(0, 0, VS_SIZE, VS_SIZE);
+  c.strokeStyle = color || '#7FE7FF';
+  c.lineWidth = 7; c.lineCap = 'round'; c.lineJoin = 'round';
+  pic.draw(c);
+}
+
+/* то, как видит картинку ИИ: только границы линий */
+function vsEdges(from, to) {
+  const w = VS_SIZE, h = VS_SIZE;
+  const src = from.getContext('2d').getImageData(0, 0, w, h);
   const a = new Float32Array(w * h);
   for (let i = 0; i < w * h; i++) a[i] = src.data[i * 4 + 3] / 255;
-  const out = new Float32Array(w * h);
-  let max = 0;
+  const ctx = to.getContext('2d');
+  const img = ctx.createImageData(w, h);
+  const K = [0, -1, 0, -1, 4, -1, 0, -1, 0];
   for (let y = 1; y < h - 1; y++) {
     for (let x = 1; x < w - 1; x++) {
       let s = 0, ki = 0;
-      for (let dy = -1; dy <= 1; dy++) {
-        for (let dx = -1; dx <= 1; dx++) s += a[(y + dy) * w + (x + dx)] * kernel[ki++];
-      }
-      const v = Math.abs(s);
-      out[y * w + x] = v;
-      if (v > max) max = v;
+      for (let dy = -1; dy <= 1; dy++)
+        for (let dx = -1; dx <= 1; dx++) s += a[(y + dy) * w + (x + dx)] * K[ki++];
+      const v = Math.min(1, Math.abs(s));
+      const i = (y * w + x) * 4;
+      img.data[i] = 30 + v * 225;
+      img.data[i + 1] = 45 + v * 190;
+      img.data[i + 2] = 70 + v * 90;
+      img.data[i + 3] = 255;
     }
   }
-  return { out: out, max: max || 1, w: w, h: h };
+  ctx.putImageData(img, 0, 0);
 }
 
-/* Отклик окошка под пальцем. Считаем не в одной точке, а лучший
-   в квадрате вокруг неё: внутри толстой линии окошко молчит (со всех
-   сторон одинаково), вспыхивает оно только на границе — попасть в неё
-   пальцем ребёнок не сможет. */
-function vsAt(src, kernel, cx, cy) {
-  const w = src.width, h = src.height, R = 9;
-  let best = 0;
-  for (let y = Math.max(1, cy - R); y <= Math.min(h - 2, cy + R); y += 2) {
-    for (let x = Math.max(1, cx - R); x <= Math.min(w - 2, cx + R); x += 2) {
-      let s = 0, ki = 0;
-      for (let dy = -1; dy <= 1; dy++) {
-        for (let dx = -1; dx <= 1; dx++) {
-          const i = ((y + dy) * w + (x + dx)) * 4 + 3;
-          s += (src.data[i] / 255) * kernel[ki++];
-        }
-      }
-      const v = Math.abs(s);
-      if (v > best) best = v;
+/* ── поле с дырочкой ── */
+function VsHole({ pic, onOpen, opened }) {
+  const base = useRef(null), mask = useRef(null);
+  useEffect(() => {
+    if (base.current) vsPaint(base.current, pic);
+    const mk = mask.current;
+    if (mk) {
+      const c = mk.getContext('2d');
+      c.globalCompositeOperation = 'source-over';
+      c.fillStyle = '#0B111D';
+      c.fillRect(0, 0, VS_SIZE, VS_SIZE);
     }
-  }
-  return best;
+  }, [pic]);
+
+  /* палец стирает верхний слой — под ним показывается кусочек картинки */
+  const dig = e => {
+    const mk = mask.current;
+    const r = mk.getBoundingClientRect();
+    const x = (e.clientX - r.left) / r.width * VS_SIZE;
+    const y = (e.clientY - r.top) / r.height * VS_SIZE;
+    const c = mk.getContext('2d');
+    c.globalCompositeOperation = 'destination-out';
+    c.beginPath(); c.arc(x, y, VS_HOLE, 0, 6.3); c.fill();
+    c.globalCompositeOperation = 'source-over';
+    if (onOpen) onOpen();
+  };
+
+  return React.createElement('div', {
+    className: 'vshole',
+    onPointerDown: dig,
+    onPointerMove: e => { if (e.buttons || e.pointerType === 'touch') dig(e); }
+  },
+    React.createElement('canvas', { ref: base, width: VS_SIZE, height: VS_SIZE }),
+    React.createElement('canvas', { ref: mask, width: VS_SIZE, height: VS_SIZE,
+      style: { position: 'absolute', inset: 0, width: '100%' } }),
+    !opened && React.createElement('div', { className: 'vshole__tip' },
+      'Веди пальцем — под ним будет видно'));
 }
 
-/* ── доска для рисования ── */
-function VsBoard({ api, hint }) {
-  const ref = useRef(null);
-  const st = useRef({ drawing: false, dirty: false });
-  useEffect(() => {
-    const cv = ref.current, ctx = cv.getContext('2d');
-    ctx.lineWidth = VS_PEN; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
-    ctx.strokeStyle = '#7FE7FF';
-    const pos = e => {
-      const r = cv.getBoundingClientRect();
-      return [(e.clientX - r.left) / r.width * VS_SIZE, (e.clientY - r.top) / r.height * VS_SIZE];
-    };
-    const down = e => {
-      try { cv.setPointerCapture(e.pointerId); } catch (_) {}
-      st.current.drawing = true; st.current.dirty = true;
-      const [x, y] = pos(e);
-      ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x + .01, y); ctx.stroke();
-      if (api.onChange) api.onChange(true);
-    };
-    const move = e => {
-      if (!st.current.drawing) return;
-      const [x, y] = pos(e);
-      ctx.lineTo(x, y); ctx.stroke(); ctx.beginPath(); ctx.moveTo(x, y);
-    };
-    const up = () => { st.current.drawing = false; };
-    cv.addEventListener('pointerdown', down);
-    cv.addEventListener('pointermove', move);
-    cv.addEventListener('pointerup', up);
-    cv.addEventListener('pointercancel', up);
-    api.canvas = cv;
-    api.clear = () => { ctx.clearRect(0, 0, VS_SIZE, VS_SIZE); st.current.dirty = false;
-      if (api.onChange) api.onChange(false); };
-    api.isEmpty = () => !st.current.dirty;
-    /* отладочный хук — проверять уровень без пальца */
-    api.stroke = pts => {
-      st.current.dirty = true;
-      ctx.beginPath();
-      pts.forEach((pt, i) => i ? ctx.lineTo(pt[0], pt[1]) : ctx.moveTo(pt[0], pt[1]));
-      ctx.stroke();
-      if (api.onChange) api.onChange(true);
-    };
-    return () => {
-      cv.removeEventListener('pointerdown', down);
-      cv.removeEventListener('pointermove', move);
-      cv.removeEventListener('pointerup', up);
-      cv.removeEventListener('pointercancel', up);
-    };
-  }, []);
-  return React.createElement('div', { className: 'vspad' },
-    React.createElement('canvas', { ref: ref, width: VS_SIZE, height: VS_SIZE }),
-    hint && React.createElement('div', { className: 'vspad__hint' }, hint));
-}
-
-/* ── картинка глазами ИИ: рисуем то, что поймало окошко ── */
-function VsSeen({ src, kernel }) {
+/* ── картинка целиком или её границы ── */
+function VsPlain({ pic, edges }) {
   const ref = useRef(null);
   useEffect(() => {
-    if (!src || !ref.current) return;
-    const r = vsConvolve(src, kernel);
-    const cv = ref.current, ctx = cv.getContext('2d');
-    const img = ctx.createImageData(r.w, r.h);
-    for (let i = 0; i < r.w * r.h; i++) {
-      const v = Math.min(1, r.out[i] / r.max);
-      img.data[i * 4] = 40 + v * 90;         // тёплое свечение там, где поймало
-      img.data[i * 4 + 1] = 60 + v * 175;
-      img.data[i * 4 + 2] = 80 + v * 175;
-      img.data[i * 4 + 3] = 255;
-    }
-    ctx.putImageData(img, 0, 0);
-  }, [src, kernel]);
-  return React.createElement('canvas', { ref: ref, width: VS_SIZE, height: VS_SIZE });
+    if (!ref.current) return;
+    if (!edges) { vsPaint(ref.current, pic); return; }
+    const tmp = document.createElement('canvas');
+    tmp.width = tmp.height = VS_SIZE;
+    vsPaint(tmp, pic, '#ffffff');
+    vsEdges(tmp, ref.current);
+  }, [pic, edges]);
+  return React.createElement('canvas', { ref: ref, width: VS_SIZE, height: VS_SIZE,
+    style: { width: '100%', display: 'block', borderRadius: 22 } });
 }
 
-/* Снимок рисунка. Держим его отдельной картинкой: холст для рисования
-   к этому моменту уже убран с экрана, и брать содержимое из него нельзя. */
-function VsShot({ shot }) {
-  const ref = useRef(null);
-  useEffect(() => {
-    if (ref.current && shot) ref.current.getContext('2d').drawImage(shot, 0, 0);
-  }, [shot]);
-  return React.createElement('canvas', { ref: ref, width: VS_SIZE, height: VS_SIZE });
-}
-
-/* Окошко на рисунке. Главное здесь — видеть, ГДЕ сейчас окошко: без рамки
-   ребёнок водит пальцем и не понимает, что происходит. Найденные места
-   остаются точками — из них постепенно проступает контур рисунка. */
-function VsLens({ shot, at, hits }) {
-  const ref = useRef(null);
-  useEffect(() => {
-    const cv = ref.current;
-    if (!cv) return;
-    const ctx = cv.getContext('2d');
-    ctx.clearRect(0, 0, VS_SIZE, VS_SIZE);
-    if (shot) { ctx.globalAlpha = .5; ctx.drawImage(shot, 0, 0); ctx.globalAlpha = 1; }
-    hits.forEach(h => {
-      ctx.fillStyle = 'rgba(255,216,77,.9)';
-      ctx.beginPath(); ctx.arc(h[0], h[1], 5, 0, 6.3); ctx.fill();
-    });
-    if (at) {
-      ctx.strokeStyle = at.v > 0.55 ? '#FFD84D' : 'rgba(255,255,255,.65)';
-      ctx.lineWidth = 3;
-      ctx.strokeRect(at.x - 13, at.y - 13, 26, 26);
-    }
-  }, [shot, at, hits]);
-  return React.createElement('canvas', { ref: ref, width: VS_SIZE, height: VS_SIZE });
-}
-
-/* ── сам уровень ── */
 function LevelVision({ onWin, onHome }) {
-  const [phase, setPhase] = useState('intro');   // intro | draw | seen | lens | pick | quiz | done
-  const [has, setHas] = useState(false);
-  const [src, setSrc] = useState(null);          // снимок рисунка
-  const [kind, setKind] = useState('spot');
-  const [lens, setLens] = useState({ x: 130, y: 130, v: 0 });
-  const [shot, setShot] = useState(null);        // копия рисунка на отдельном холсте
-  const [hits, setHits] = useState([]);           // места, где окошко вспыхнуло
+  const [phase, setPhase] = useState('intro');   // intro | hole | reveal | fast | quiz | done
+  const [pic] = useState(() => VS_PICS[Math.floor(Math.random() * VS_PICS.length)]);
+  const [pic2] = useState(() => {
+    const rest = VS_PICS.filter(p => true);
+    return rest[Math.floor(Math.random() * rest.length)];
+  });
+  const [digs, setDigs] = useState(0);
+  const [pick, setPick] = useState(null);
+  const [pick2, setPick2] = useState(null);
   const [say, setSay] = useState(null);
-  const [ans, setAns] = useState({});
-  const api = useRef({}).current;
-  const mini = useRef(null);
-  api.onChange = setHas;
+  const [ans, setAns] = useState(null);
 
-  const snap = () => {
-    const ctx = api.canvas.getContext('2d');
-    return ctx.getImageData(0, 0, VS_SIZE, VS_SIZE);
-  };
+  const second = pic2.id === pic.id ? VS_PICS[(VS_PICS.indexOf(pic) + 1) % VS_PICS.length] : pic2;
 
-  const look = () => {
-    const data = snap();
-    const off = document.createElement('canvas');
-    off.width = off.height = VS_SIZE;
-    off.getContext('2d').drawImage(api.canvas, 0, 0);
-    setShot(off);
-    setSrc(data);
-    setPhase('seen');
-    setSay('Вот что вижу я. Ни кота, ни дома тут для меня нет — есть места, где светлое встречается ' +
-      'с тёмным. Всё остальное для меня пусто.');
-  };
-
-  /* лупа: ребёнок водит пальцем по своему рисунку */
-  const moveLens = e => {
-    if (!src) return;
-    const box = e.currentTarget.getBoundingClientRect();
-    const x = Math.round((e.clientX - box.left) / box.width * VS_SIZE);
-    const y = Math.round((e.clientY - box.top) / box.height * VS_SIZE);
-    const v = vsAt(src, VS_KERNELS[kind].k, x, y);
-    setLens({ x: x, y: y, v: v });
-    /* засчитываем только новые места: иначе можно натыкать три точки подряд */
-    if (v > 0.55 && !hits.some(h => Math.abs(h[0] - x) < 40 && Math.abs(h[1] - y) < 40)) {
-      setHits(hits.concat([[x, y]]));
-    }
-    const cv = mini.current;
-    if (cv && (shot || api.canvas)) {
-      const ctx = cv.getContext('2d');
-      ctx.imageSmoothingEnabled = false;
-      ctx.clearRect(0, 0, cv.width, cv.height);
-      ctx.drawImage(shot || api.canvas, x - 11, y - 11, 22, 22, 0, 0, cv.width, cv.height);
+  const choose = p => {
+    setPick(p);
+    if (p.id === pic.id) {
+      setSay('Угадал. Но посмотри, сколько времени на это ушло — и это ты, человек, который знает, ' +
+        'что такое дом и рыба.');
+    } else {
+      setSay('Мимо: это <b>' + pic.t.toLowerCase() + '</b>. И это нормально — через дырочку почти ничего не видно.');
     }
   };
 
-  const answer = (q, ok) => setAns(Object.assign({}, ans, { [q]: ok }));
-  const quizDone = ans[0] !== undefined && ans[1] !== undefined;
+  const choose2 = p => {
+    setPick2(p);
+    setSay(p.id === second.id
+      ? 'Вот так быстро. А это ведь не сама картинка — это только её границы. Их хватило.'
+      : 'Даже так бывает непросто. Но заметь: тут видно всё сразу, а не по кусочку.');
+  };
+
   const finish = () => { setPhase('done'); if (window.nooka) window.nooka.missionWin('vision1', 100); };
 
   if (phase === 'done') {
     return React.createElement('div', { className: 'vs' },
-      React.createElement(TopBar, { level: '★', title: 'Через окошко', onHome }),
+      React.createElement(TopBar, { level: '★', title: 'Смотри в дырочку', onHome }),
       React.createElement('div', { className: 'vsbody vsdone' },
-        src && React.createElement('div', { className: 'vspair', style: { width: '100%' } },
-          React.createElement('figure', null,
-            React.createElement(VsSeen, { src: src, kernel: VS_KERNELS.vert.k }),
-            React.createElement('figcaption', null, 'стоячие линии')),
-          React.createElement('figure', null,
-            React.createElement(VsSeen, { src: src, kernel: VS_KERNELS.horiz.k }),
-            React.createElement('figcaption', null, 'лежачие линии'))),
+        React.createElement('div', { style: { width: 'calc(100% - 28px)', margin: '10px 14px 0' } },
+          React.createElement(VsPlain, { pic: second, edges: true })),
         React.createElement('div', { className: 'vslaw' },
-          React.createElement('b', null, 'ИИ не видит картинку целиком'),
+          React.createElement('b', null, 'ИИ смотрит на картинку по кусочкам'),
           React.createElement('span', null,
-            'По ней ходит маленькое окошко и отмечает места, где свет резко меняется. ' +
-            'Из таких отметок собирается всё остальное: сначала линии, потом углы, потом фигуры.'),
+            'Он никогда не видит её целиком, как ты. У него много маленьких окошек, и каждое смотрит ' +
+            'на свой кусочек — но все сразу. Каждое отмечает одно: есть тут граница или нет.'),
           React.createElement('span', null,
-            'Поэтому в больнице ИИ подчёркивает царапину на плёнке так же уверенно, как трещину в кости: ' +
-            'для окошка это одинаково резкие линии.'))),
+            'Из этих отметок он и собирает ответ. Поэтому на снимке кости он подчёркивает царапину ' +
+            'на плёнке так же уверенно, как трещину: граница есть и там, и там.'))),
       React.createElement('div', { className: 'vsfoot' },
         React.createElement('button', { className: 'nk-btn nk-btn--ok', style: { width: '100%' },
           onClick: onWin }, 'Готово')));
   }
 
   return React.createElement('div', { className: 'vs' },
-    React.createElement(TopBar, { level: '★', title: 'Через окошко', onHome }),
+    React.createElement(TopBar, { level: '★', title: 'Смотри в дырочку', onHome }),
 
     phase === 'intro' && React.createElement(IntroModal, {
       emoji: NKM('hello', 88),
-      title: 'Через окошко',
-      goal: 'Увидеть, как ИИ смотрит на картинку',
-      law: 'Я не вижу твой рисунок целиком.\nПо нему ходит маленькое окошко — и я знаю только то, что оно поймало.',
-      tip: 'Нарисуй что хочешь: кота, дом, машину. Дальше покажу, что из этого вижу я.',
-      onStart: () => setPhase('draw')
+      title: 'Смотри в дырочку',
+      goal: 'Понять, как ИИ смотрит на картинку',
+      law: 'Я никогда не вижу картинку целиком.\nЯ подглядываю в маленькую дырочку.',
+      tip: 'Сейчас попробуешь так же: угадай, что нарисовано, если видно только кусочек.',
+      onStart: () => setPhase('hole')
     }),
 
     React.createElement('div', { className: 'vsbody' },
-      phase === 'draw' && React.createElement(TaskBadge, null, 'Нарисуй что хочешь'),
-      phase === 'seen' && React.createElement(TaskBadge, null, 'Слева — твой рисунок, справа — мой'),
-      phase === 'lens' && React.createElement(TaskBadge, null, 'Найди окошком три края'),
-      phase === 'pick' && React.createElement(TaskBadge, null, 'Поменяй окошко'),
+      phase === 'hole' && React.createElement(TaskBadge, null, 'Что здесь нарисовано?'),
+      phase === 'reveal' && React.createElement(TaskBadge, null, 'Вот она целиком'),
+      phase === 'fast' && React.createElement(TaskBadge, null, 'А это другая картинка — узнаёшь?'),
       phase === 'quiz' && React.createElement(TaskBadge, null, 'Проверка связи'),
 
       say && React.createElement('div', { className: 'vssay', key: say },
         React.createElement('i', null, NKM('think', 32)),
         React.createElement('span', { dangerouslySetInnerHTML: { __html: say } })),
 
-      phase === 'draw' && React.createElement(VsBoard, { api: api,
-        hint: has ? null : 'Рисуй пальцем прямо здесь' }),
+      phase === 'hole' && React.createElement(VsHole, { pic: pic, opened: digs > 0,
+        onOpen: () => setDigs(d => d + 1) }),
 
-      (phase === 'seen' || phase === 'pick') && React.createElement('div', { className: 'vspair' },
-        React.createElement('figure', null,
-          React.createElement(VsShot, { shot: shot }),
-          React.createElement('figcaption', null, 'твой рисунок')),
-        React.createElement('figure', null,
-          React.createElement(VsSeen, { src: src, kernel: VS_KERNELS[kind].k }),
-          React.createElement('figcaption', null, 'что вижу я'))),
+      phase === 'hole' && React.createElement('div', { className: 'vsguess' },
+        VS_PICS.map(p => React.createElement('button', {
+          key: p.id,
+          className: !pick ? '' : (p.id === pic.id ? 'on--ok' : (p.id === pick.id ? 'on--bad' : '')),
+          onClick: () => { if (!pick) choose(p); }
+        }, p.t))),
 
-      phase === 'lens' && React.createElement('div', { className: 'vslens' },
-        React.createElement('div', { className: 'vspad', style: { margin: 0 },
-          onPointerDown: moveLens, onPointerMove: e => { if (e.buttons || e.pointerType === 'touch') moveLens(e); } },
-          React.createElement(VsLens, { shot: shot, at: lens, hits: hits })),
-        React.createElement('div', null,
-          React.createElement('div', { className: 'vslens__cap' }, 'что внутри окошка'),
-          React.createElement('div', { className: 'vslens__box' },
-            React.createElement('canvas', { ref: mini, width: 96, height: 96 })),
-          React.createElement('div', {
-            className: 'vslens__v ' + (lens.v > 0.55 ? 'vslens__v--on' : 'vslens__v--off')
-          }, lens.v > 0.55 ? 'Вспыхнуло!' : 'Тут ровно'),
-          React.createElement('div', { className: 'vslens__c' },
-            'Найдено мест: ' + hits.length + ' из 3'))),
+      phase === 'reveal' && React.createElement('div', { style: { margin: '12px 14px 0' } },
+        React.createElement(VsPlain, { pic: pic })),
 
-      phase === 'pick' && React.createElement('div', { className: 'vsopts' },
-        React.createElement('div', { className: 'vsopts__t' }, 'Какое окошко пустить по рисунку?'),
-        Object.keys(VS_KERNELS).map(k => React.createElement('button', {
-          key: k, className: kind === k ? 'on' : '',
-          onClick: () => { setKind(k); setSay(VS_KERNELS[k].note); }
-        }, VS_KERNELS[k].t))),
+      phase === 'fast' && React.createElement('div', { style: { margin: '12px 14px 0' } },
+        React.createElement(VsPlain, { pic: second, edges: true })),
+
+      phase === 'fast' && React.createElement('div', { className: 'vsguess' },
+        VS_PICS.map(p => React.createElement('button', {
+          key: p.id,
+          className: !pick2 ? '' : (p.id === second.id ? 'on--ok' : (p.id === pick2.id ? 'on--bad' : '')),
+          onClick: () => { if (!pick2) choose2(p); }
+        }, p.t))),
 
       phase === 'quiz' && React.createElement('div', { className: 'vsopts' },
-        React.createElement('div', { className: 'vsopts__t' }, 'Почему разные окошки нашли на одном рисунке разное?'),
-        [['Потому что окошки разные — каждое ищет своё', true],
-         ['Потому что рисунок поменялся', false],
-         ['Потому что Нейро передумал', false]].map((o, i) =>
-          React.createElement('button', { key: i, className: ans[0] === undefined ? '' : (o[1] ? 'on--ok' : ''),
-            onClick: () => answer(0, o[1]) }, o[0]))),
+        React.createElement('div', { className: 'vsopts__t' },
+          'Через дырочку было тяжело, а по границам — легко. Почему?'),
+        [['Границ видно сразу много, а в дырочку — по одному кусочку', true],
+         ['Вторая картинка была проще', false],
+         ['Нейро подсказал ответ', false]].map((o, i) =>
+          React.createElement('button', { key: i,
+            className: ans === null ? '' : (o[1] ? 'on--ok' : (i === ans ? 'on--bad' : '')),
+            onClick: () => { if (ans === null) setAns(o[1] ? i : i); }
+          }, o[0]))),
 
-      phase === 'quiz' && ans[0] !== undefined && React.createElement('div', { className: 'vsopts' },
-        React.createElement('div', { className: 'vsopts__t' }, 'На снимке кости ИИ подчеркнул царапину на плёнке. Почему?'),
-        [['Царапина — тоже резкая линия, а окошко ищет линии', true],
-         ['Он решил пошутить над врачом', false],
-         ['Царапина опаснее трещины', false]].map((o, i) =>
-          React.createElement('button', { key: i, className: ans[1] === undefined ? '' : (o[1] ? 'on--ok' : ''),
-            onClick: () => answer(1, o[1]) }, o[0]))),
-
-      phase === 'draw' && React.createElement('div', { className: 'vshint' },
-        'Чем больше линий — тем интереснее будет')),
+      phase === 'hole' && !pick && React.createElement('div', { className: 'vsopen' },
+        digs > 0 ? 'Открывай ещё — и попробуй угадать' : 'Дырочка маленькая: это и есть всё, что видит ИИ за раз')),
 
     React.createElement('div', { className: 'vsfoot' },
-      phase === 'draw' && React.createElement('div', { className: 'vsacts' },
-        React.createElement('button', { className: 'nk-btn nk-btn--soft',
-          onClick: () => api.clear() }, 'Заново'),
-        React.createElement('button', { className: 'nk-btn nk-btn--pri', disabled: !has,
-          onClick: look }, 'Что видишь ты?')),
-
-      phase === 'seen' && React.createElement('button', {
+      phase === 'hole' && pick && React.createElement('button', {
         className: 'nk-btn nk-btn--pri', style: { width: '100%' },
-        onClick: () => { setPhase('lens');
-          setSay('Вот моё окошко — белая рамка. Оно маленькое и видит только кусочек. ' +
-            'Веди его пальцем: там, где внутри рамки светлое встречается с тёмным, окошко <b>вспыхивает</b>. ' +
-            'Найди три таких места.'); }
-      }, 'Дать окошко мне'),
+        onClick: () => { setPhase('reveal'); setSay('Вот эта же картинка целиком. Тебе хватило одного взгляда — ' +
+          'а через дырочку пришлось собирать её по частям.'); }
+      }, 'Показать целиком'),
 
-      phase === 'lens' && React.createElement('button', {
-        className: hits.length >= 3 ? 'nk-btn nk-btn--cta' : 'nk-btn nk-btn--soft',
-        style: { width: '100%' }, disabled: hits.length < 3,
-        onClick: () => { setPhase('pick'); setSay('У меня таких окошек много, и каждое ищет своё. Попробуй все три.'); }
-      }, hits.length >= 3 ? 'А другие окошки есть?' : 'Найди ещё ' + (3 - hits.length)),
+      phase === 'reveal' && React.createElement('button', {
+        className: 'nk-btn nk-btn--pri', style: { width: '100%' },
+        onClick: () => { setPhase('fast'); setSay('А вот как смотрю я. Это другая картинка, и я показываю не её саму, ' +
+          'а только границы — места, где светлое встречается с тёмным. Узнаёшь?'); }
+      }, 'А ты как смотришь?'),
 
-      phase === 'pick' && React.createElement('button', {
+      phase === 'fast' && pick2 && React.createElement('button', {
         className: 'nk-btn nk-btn--cta', style: { width: '100%' },
         onClick: () => { setPhase('quiz'); setSay(null); }
       }, 'Дальше'),
 
       phase === 'quiz' && React.createElement('button', {
-        className: quizDone ? 'nk-btn nk-btn--ok' : 'nk-btn nk-btn--soft',
-        style: { width: '100%' }, disabled: !quizDone, onClick: finish
-      }, quizDone ? 'Готово' : 'Ответь на оба')));
+        className: ans !== null ? 'nk-btn nk-btn--ok' : 'nk-btn nk-btn--soft',
+        style: { width: '100%' }, disabled: ans === null, onClick: finish
+      }, ans !== null ? 'Готово' : 'Выбери ответ')));
 }
 
 function App() {
