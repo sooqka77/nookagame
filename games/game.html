@@ -357,8 +357,10 @@ var others = nookaLevels.games.filter(function (g) { return g.key !== key; })
 document.getElementById('foot').innerHTML =
   /* Бонус игры — открыт всем, даже без доступа: по ссылке-загадке приходит
      друг, у которого оплаты нет, и ему надо куда-то прийти. */
-  (G.extra ? '<a class="gal gal--bonus" href="' + G.extra.href + '"><span><b>★ ' + G.extra.t + '</b>' +
-    '<span>' + G.extra.s + '</span></span><i>→</i></a>' : '') +
+  (G.extras || []).map(function (x) {
+    return '<a class="gal gal--bonus" href="' + x.href + '"><span><b>★ ' + esc(x.t) + '</b>' +
+      '<span>' + esc(x.s) + '</span></span><i>→</i></a>';
+  }).join('') +
   (arts ? '<a class="gal" href="../base/index.html#gallery"><span><b>Коллекция ребёнка</b>' +
     '<span>' + artsDone + ' из ' + arts + ' ' + plural(arts,'вещи','вещей','вещей') +
     ' этой игры уже сделано</span></span><i>' + (artsDone ? '★' : '☆') + '</i></a>' : '') +
