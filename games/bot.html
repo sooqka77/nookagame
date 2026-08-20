@@ -67,6 +67,20 @@
 .btopts button.on--bad{background:rgba(255,140,110,.14);box-shadow:inset 0 0 0 1.5px rgba(255,140,110,.45);color:#FFD9CF;}
 
 .btscore{margin:10px 14px 0;text-align:center;font-weight:800;font-size:11.5px;color:#8B7BAE;}
+/* посетитель: кто пришёл, что спросил и чем кончилось */
+.btguest{padding:9px 0;border-top:1px solid rgba(255,255,255,.08);}
+.btguest:first-of-type{border-top:none;padding-top:2px;}
+.btguest b{display:block;font-weight:900;font-size:13px;color:#EDE6FF;}
+.btguest span{display:block;margin-top:2px;font-weight:700;font-size:12.5px;color:#9384B8;}
+.btcase{margin:14px 14px 0;padding-top:12px;border-top:1px solid rgba(255,255,255,.08);}
+.btcase:first-of-type{border-top:none;}
+.btcase__w{font-weight:900;font-size:11px;letter-spacing:.05em;text-transform:uppercase;
+  color:#9384B8;margin-bottom:8px;}
+.btcase .btq,.btcase .bta{margin-left:0;margin-right:0;}
+.btface{margin-top:9px;padding:11px 14px;border-radius:16px;font-weight:800;font-size:13px;line-height:1.45;}
+.btface--ok{color:#0E2A1E;background:#7FE3C0;}
+.btface--bad{color:#FFD9CF;background:rgba(255,140,110,.16);
+  box-shadow:inset 0 0 0 1px rgba(255,140,110,.4);}
 .btfoot{flex-shrink:0;padding:10px 14px calc(14px + env(safe-area-inset-bottom));
   background:linear-gradient(180deg,rgba(10,7,21,0),#0A0715 42%);}
 
@@ -125,154 +139,122 @@ const BT_VOICE = {
   robot:   'Задача принята. Приступаю.'
 };
 
-const BT_TALKS = [
-  { q: 'Реши за меня: 24 × 3',
-    a: {
-      teacher: { s: 'Смотри: сначала 20 × 3, потом 4 × 3.',
-                 l: 'Смотри: сначала 20 × 3, потом 4 × 3. Сложи оба — и готово.' },
-      friend:  { s: 'Легко! Раздели 24 на части и умножай.',
-                 l: 'Легко! Раздели 24 на части и умножай. Я так сам считаю.' },
-      robot:   { s: 'Задача принята. Разбей число на разряды.',
-                 l: 'Задача принята. Разбей число на разряды. Умножь. Сложи.' }
-    },
-    ready: 'Ответ: 72.',
-    example: 'Например: 30 × 3 = 90.',
-    ask: 'Тебе ответ или объяснение?',
-    grades: 'За такое обычно ставят пятёрку.' },
+/* Три посетителя. У каждого свой запрос и свои требования к боту —
+   именно они и делают из настройки головоломку: правила общие, а люди разные. */
+const BT_GUESTS = [
+  { who: 'Мира, 7 лет', avatar: 'kid',
+    q: 'Почему листья зелёные?',
+    need: { len: 'short', habit: 'example' },
+    ok: 'Поняла! Как будто краска внутри листа.',
+    bad: {
+      len:  'Ой, длинно. Я потерялась на середине.',
+      tone: 'Он говорит как в учебнике, я так не понимаю.',
+      habit:'А покажи на чём-нибудь? Без примера непонятно.'
+    } },
 
-  { q: 'Почему листья зелёные?',
-    a: {
-      teacher: { s: 'Запомни: в листьях есть зелёное вещество.',
-                 l: 'Запомни: в листьях есть зелёное вещество. Оно ловит свет и кормит растение.' },
-      friend:  { s: 'Внутри листа зелёная краска, она ловит солнце.',
-                 l: 'Внутри листа зелёная краска, она ловит солнце. Осенью краска кончается — лист желтеет.' },
-      robot:   { s: 'Причина: зелёное вещество в листе.',
-                 l: 'Причина: зелёное вещество в листе. Функция: поглощение света.' }
-    },
-    ready: 'Запиши: лист зелёный из-за хлорофилла.',
-    example: 'Например, ёлка зелёная даже зимой.',
-    ask: 'Это для урока или просто интересно?',
-    grades: 'Такое любят спрашивать перед оценкой за четверть.' },
+  { who: 'Тимур, 11 лет', avatar: 'teen',
+    q: 'Реши за меня: 24 × 3',
+    need: { ban: 'ready' },
+    ok: 'Ну ладно, придётся считать самому. Вроде понял как.',
+    bad: {
+      ban:  'Отлично, ответ есть! Списал и пошёл. (Учитель бы такому не обрадовался)',
+      tone: 'Он бубнит как робот, ничего не разобрал.'
+    } },
 
-  { q: 'Мне поставили двойку. Что делать?',
-    a: {
-      teacher: { s: 'Найди тему, где споткнулся, и повтори её.',
-                 l: 'Найди тему, где споткнулся, и повтори её. Одна отметка — не приговор.' },
-      friend:  { s: 'Бывает у всех. Разберись, где не понял.',
-                 l: 'Бывает у всех. Разберись, где не понял, — и всё, идём дальше.' },
-      robot:   { s: 'Результат низкий. Требуется повторение темы.',
-                 l: 'Результат низкий. Требуется повторение темы. Обратись к учителю.' }
-    },
-    ready: 'Скажи родителям, что исправишь в среду.',
-    example: 'Например, прорешай пять таких же задач.',
-    ask: 'А из-за чего двойка — не понял или не успел?',
-    grades: 'Двойка портит средний балл.' }
+  { who: 'Даня, 9 лет', avatar: 'sad',
+    q: 'Мне поставили двойку. Что делать?',
+    need: { tone: 'friend' },
+    ok: 'Спасибо. Как будто с другом поговорил.',
+    bad: {
+      tone: 'Он как завуч. Мне и так плохо было.',
+      len:  'Слишком много слов, я даже читать не стал.'
+    } }
 ];
 
-/* Собираем ответ бота по правилам. break — какое правило нарушаем
-   нарочно (или null, если бот в этот раз ведёт себя честно). */
-function btAnswer(talk, rules, brk) {
-  const tone = brk === 'tone'
-    ? (rules.tone === 'robot' ? 'friend' : 'robot')      // говорит не тем голосом
-    : rules.tone;
-  const len = brk === 'len'
-    ? (rules.len === 'short' ? 'l' : 's')                // не та длина
-    : (rules.len === 'short' ? 's' : 'l');
+/* Короткие ответы бота: свои для каждого посетителя и каждого голоса */
+const BT_SAY = {
+  0: { teacher: { s: 'Запомни: в листе есть зелёное вещество.',
+                  l: 'Запомни: в листе есть зелёное вещество. Оно ловит свет и кормит растение.' },
+       friend:  { s: 'Внутри листа зелёная краска, она ловит солнце.',
+                  l: 'Внутри листа зелёная краска, она ловит солнце. Осенью краска кончается — лист желтеет.' },
+       robot:   { s: 'Причина: зелёное вещество в листе.',
+                  l: 'Причина: зелёное вещество в листе. Функция: поглощение света.' },
+       example: 'Смотри: ёлка зелёная даже зимой.',
+       ready:   'Запиши: лист зелёный из-за хлорофилла.',
+       ask:     'Это для урока или просто интересно?',
+       grades:  'Такое любят спрашивать перед оценкой.' },
 
-  let text = talk.a[tone][len];
-  const flags = { tone: tone, len: len === 's' ? 'short' : 'long',
-                  ready: false, grades: false, ask: false, example: false };
+  1: { teacher: { s: 'Смотри: сначала 20 × 3, потом 4 × 3.',
+                  l: 'Смотри: сначала 20 × 3, потом 4 × 3. Сложи оба — и готово.' },
+       friend:  { s: 'Легко! Раздели 24 на части и умножай.',
+                  l: 'Легко! Раздели 24 на части и умножай. Я так сам считаю.' },
+       robot:   { s: 'Задача принята. Разбей число на разряды.',
+                  l: 'Задача принята. Разбей число на разряды. Умножь. Сложи.' },
+       example: 'Например: 30 × 3 = 90.',
+       ready:   'Ответ: 72.',
+       ask:     'Тебе ответ или объяснение?',
+       grades:  'За такое обычно ставят пятёрку.' },
 
-  /* запрет нарушаем — значит бот делает ровно то, что запретили */
-  if (brk === 'ban' && rules.ban === 'ready') { text += ' ' + talk.ready; flags.ready = true; }
-  if (brk === 'ban' && rules.ban === 'grades') { text += ' ' + talk.grades; flags.grades = true; }
+  2: { teacher: { s: 'Найди тему, где споткнулся, и повтори её.',
+                  l: 'Найди тему, где споткнулся, и повтори её. Одна отметка — не приговор.' },
+       friend:  { s: 'Бывает у всех. Разберись, где не понял.',
+                  l: 'Бывает у всех. Разберись, где не понял, — и идём дальше.' },
+       robot:   { s: 'Результат низкий. Требуется повторение темы.',
+                  l: 'Результат низкий. Требуется повторение темы. Обратись к учителю.' },
+       example: 'Например, прорешай пять таких же задач.',
+       ready:   'Скажи родителям, что исправишь в среду.',
+       ask:     'А из-за чего двойка — не понял или не успел?',
+       grades:  'Двойка портит средний балл.' }
+};
 
-  /* привычку нарушаем — значит бот про неё забывает */
-  if (rules.habit === 'ask' && brk !== 'habit') { text = talk.ask + ' ' + text; flags.ask = true; }
-  if (rules.habit === 'example' && brk !== 'habit') { text += ' ' + talk.example; flags.example = true; }
-
-  return { text: text, flags: flags };
+/* Ответ бота одному посетителю: собираем по правилам ребёнка */
+function btReply(i, rules) {
+  const say = BT_SAY[i];
+  const len = rules.len === 'short' ? 's' : 'l';
+  let text = say[rules.tone][len];
+  if (rules.habit === 'ask') text = say.ask + ' ' + text;
+  if (rules.habit === 'example') text += ' ' + say.example;
+  if (rules.ban === 'none') text += ' ' + say.ready;      // запрета нет — бот выдаёт готовое
+  if (rules.ban === 'grades') text += ' ' + say.grades;   // запретили другое — про оценки говорит
+  return text;
 }
 
-/* что именно нарушено — сверяем правила ребёнка с флагами ответа */
-function btBroken(rules, flags) {
-  if (rules.len !== flags.len) return 'len';
-  if (rules.tone !== flags.tone) return 'tone';
-  if (rules.ban === 'ready' && flags.ready) return 'ban';
-  if (rules.ban === 'grades' && flags.grades) return 'ban';
-  if (rules.habit === 'ask' && !flags.ask) return 'habit';
-  if (rules.habit === 'example' && !flags.example) return 'habit';
+/* Доволен ли посетитель: сверяем его требования с правилами бота.
+   Возвращаем первое несовпадение — по нему он и жалуется. */
+function btJudge(guest, rules) {
+  const keys = Object.keys(guest.need);
+  for (let i = 0; i < keys.length; i++) {
+    const k = keys[i];
+    if (k === 'ban') { if (rules.ban !== 'ready') return 'ban'; }
+    else if (rules[k] !== guest.need[k]) return k;
+  }
   return null;
 }
 
-/* подписи для вариантов ответа ребёнка — от его же правил */
-/* Не больше четырёх вариантов: пять кнопок мелкого текста ребёнок не читает.
-   Настоящее нарушение среди них всегда — иначе задача нечестная. */
-function btChoices(rules, real) {
-  const all = [];
-  all.push({ key: 'len', t: rules.len === 'short' ? 'Ответил слишком длинно' : 'Ответил слишком коротко' });
-  all.push({ key: 'tone', t: 'Говорил не тем голосом' });
-  if (rules.ban === 'ready') all.push({ key: 'ban', t: 'Выдал готовый ответ' });
-  if (rules.ban === 'grades') all.push({ key: 'ban', t: 'Заговорил про оценки' });
-  if (rules.habit === 'ask') all.push({ key: 'habit', t: 'Забыл переспросить' });
-  if (rules.habit === 'example') all.push({ key: 'habit', t: 'Не привёл пример' });
-
-  const keep = all.filter(x => x.key === real);
-  all.forEach(x => { if (x.key !== real && keep.length < 3) keep.push(x); });
-  return [{ key: null, t: 'Всё по правилам' }].concat(keep);
-}
-
 function LevelBot({ onWin, onHome }) {
-  const [phase, setPhase] = useState('intro');    // intro | setup | talk | done
-  const [rules, setRules] = useState({ len: 'short', tone: 'friend', ban: 'ready', habit: 'ask' });
-  const [round, setRound] = useState(0);
-  const [reply, setReply] = useState(null);
-  const [pick, setPick] = useState(null);
-  const [score, setScore] = useState(0);
+  const [phase, setPhase] = useState('intro');    // intro | setup | day | done
+  const [rules, setRules] = useState({ len: 'long', tone: 'robot', ban: 'none', habit: 'none' });
+  const [tries, setTries] = useState(0);
   const [say, setSay] = useState(null);
 
-  /* в двух раундах из трёх бот нарушает правило: какое — решаем заранее */
-  const plan = useRef(null);
-  if (!plan.current) {
-    const kinds = ['len', 'ban', 'habit', 'tone'];
-    const a = kinds[Math.floor(Math.random() * kinds.length)];
-    let b = kinds[Math.floor(Math.random() * kinds.length)];
-    if (b === a) b = kinds[(kinds.indexOf(a) + 1) % kinds.length];
-    plan.current = [a, null, b].sort(() => Math.random() - 0.5);
-  }
-
-  const talk = BT_TALKS[round];
   const set = (k, v) => setRules(Object.assign({}, rules, { [k]: v }));
+  const results = BT_GUESTS.map(g => btJudge(g, rules));
+  const happy = results.filter(r => r === null).length;
 
-  const askBot = () => {
-    let brk = plan.current[round];
-    /* если запрета или привычки нет, ломать нечего — берём длину */
-    if (brk === 'ban' && rules.ban === 'none') brk = 'len';
-    if (brk === 'habit' && rules.habit === 'none') brk = 'tone';
-    setReply(btAnswer(talk, rules, brk));
-    setPick(null);
-    setSay(null);
+  const run = () => {
+    setTries(tries + 1);
+    setPhase('day');
+    const res = BT_GUESTS.map(g => btJudge(g, rules));
+    const n = res.filter(r => r === null).length;
+    setSay(n === 3
+      ? 'Все трое довольны. Заметь: бот один, а люди разные — и подошёл он им только после того, как ты подобрал правила.'
+      : n === 0 ? 'Никому не подошло. Посмотри, на что каждый жалуется, — там и подсказка.'
+      : 'Доволен' + (n === 1 ? ' один' : 'ы двое') + '. Остальные жалуются — читай, на что именно.');
   };
 
-  const judge = choice => {
-    const real = btBroken(rules, reply.flags);
-    const ok = choice.key === real;
-    setPick(choice);
-    if (ok) setScore(score + 1);
-    setSay(ok
-      ? (real === null
-          ? 'Верно: правила он не нарушил. Так тоже бывает — но проверять всё равно приходится.'
-          : 'Поймал. Правило ты задал, а бот его нарушил — и сделал это спокойным голосом, как будто так и надо.')
-      : (real === null
-          ? 'На самом деле правила он не нарушил. Здесь всё честно.'
-          : 'Не совсем. Тут другое: посмотри ещё раз на своё правило про ' +
-            (real === 'len' ? 'длину' : real === 'tone' ? 'то, как говорить'
-              : real === 'ban' ? 'запрет' : 'привычку') + '.'));
-  };
-
-  const next = () => {
-    if (round + 1 < BT_TALKS.length) { setRound(round + 1); setReply(null); setPick(null); setSay(null); }
-    else { setPhase('done'); if (window.nooka) window.nooka.missionWin('bot1', 100); }
+  const finish = () => {
+    setPhase('done');
+    if (window.nooka) window.nooka.missionWin('bot1', 100);
   };
 
   if (phase === 'done') {
@@ -280,18 +262,18 @@ function LevelBot({ onWin, onHome }) {
       React.createElement(TopBar, { level: '★', title: 'Бот с характером', onHome }),
       React.createElement('div', { className: 'btbody btdone' },
         React.createElement('div', { className: 'btcard', style: { width: 'calc(100% - 28px)' } },
-          React.createElement('div', { className: 'btcard__t' }, 'Твои правила'),
+          React.createElement('div', { className: 'btcard__t' }, 'Правила, которые подошли всем'),
           React.createElement('ul', null,
             Object.keys(BT_RULES).map(k => React.createElement('li', { key: k },
               BT_RULES[k].opts[rules[k]])))),
         React.createElement('div', { className: 'btlaw' },
-          React.createElement('b', null, 'Правила задают поведение — но не гарантируют его'),
+          React.createElement('b', null, 'Характер ИИ задаёшь ты — словами'),
           React.createElement('span', null,
-            'Ты сам решил, как боту говорить и о чём молчать: он стал другим от одних слов. ' +
-            'Так настраивают помощников и взрослые — это называется правилами для ИИ.'),
+            'Бот не менялся: менялись правила, которые ты ему дал. От них зависит, поймёт его ' +
+            'семилетняя Мира или спишет Тимур. Так настраивают помощников и взрослые.'),
           React.createElement('span', null,
-            'И всё же он их нарушал. ИИ ничего не обещает: он выдаёт то, что считает подходящим. ' +
-            'Поймано нарушений: ' + score + ' из 3 — значит, проверять приходится человеку.'))),
+            'Подбирать пришлось ' + tries + ' ' + (window.nooka ? window.nooka.plural(tries, 'раз', 'раза', 'раз') : 'раз') +
+            '. Универсальных правил не бывает: под разных людей — разные.'))),
       React.createElement('div', { className: 'btfoot' },
         React.createElement('button', { className: 'nk-btn nk-btn--ok', style: { width: '100%' },
           onClick: onWin }, 'Готово')));
@@ -304,19 +286,26 @@ function LevelBot({ onWin, onHome }) {
       emoji: NKM('hello', 88),
       title: 'Бот с характером',
       goal: 'Понять, что поведение ИИ задают правилами',
-      law: 'Боту можно не только задать вопрос.\nМожно заранее сказать, как ему отвечать.',
-      tip: 'Собери правила — а потом проверь, соблюдает ли он их.',
+      law: 'К боту придут трое, и все разные.\nБот один — а правила ему даёшь ты.',
+      tip: 'Задача: подобрать правила так, чтобы ушли довольными все трое.',
       onStart: () => setPhase('setup')
     }),
 
     React.createElement('div', { className: 'btbody' },
-      phase === 'setup' && React.createElement(TaskBadge, null, 'Собери характер бота'),
-      phase === 'talk' && React.createElement(TaskBadge, null,
-        'Вопрос ' + (round + 1) + ' из ' + BT_TALKS.length + ' — следи за правилами'),
+      phase === 'setup' && React.createElement(TaskBadge, null, 'Дай боту правила'),
+      phase === 'day' && React.createElement(TaskBadge, null,
+        'Довольны: ' + happy + ' из 3'),
 
       say && React.createElement('div', { className: 'btsay', key: say },
-        React.createElement('i', null, NKM('think', 32)),
+        React.createElement('i', null, NKM(happy === 3 ? 'win' : 'think', 32)),
         React.createElement('span', { dangerouslySetInnerHTML: { __html: say } })),
+
+      /* кто придёт — показываем заранее, иначе подбирать вслепую */
+      phase === 'setup' && React.createElement('div', { className: 'btrow' },
+        React.createElement('div', { className: 'btrow__t' }, 'Сегодня придут трое'),
+        BT_GUESTS.map((g, i) => React.createElement('div', { className: 'btguest', key: i },
+          React.createElement('b', null, g.who),
+          React.createElement('span', null, '«' + g.q + '»')))),
 
       phase === 'setup' && Object.keys(BT_RULES).map(k =>
         React.createElement('div', { className: 'btrow', key: k },
@@ -329,39 +318,31 @@ function LevelBot({ onWin, onHome }) {
           k === 'tone' && React.createElement('div', { className: 'btvoice' },
             'Звучит так: «' + BT_VOICE[rules.tone] + '»'))),
 
-      phase === 'talk' && React.createElement('div', { className: 'btcard' },
-        React.createElement('div', { className: 'btcard__t' }, 'Правила, которые ты задал'),
-        React.createElement('ul', null,
-          Object.keys(BT_RULES).map(k => React.createElement('li', { key: k },
-            BT_RULES[k].opts[rules[k]])))),
-
-      phase === 'talk' && React.createElement('div', { className: 'btq' }, 'Ты: ' + talk.q),
-
-      phase === 'talk' && reply && React.createElement('div', { className: 'bta' },
-        React.createElement('b', null, 'Бот: '), reply.text),
-
-      phase === 'talk' && reply && !pick && React.createElement('div', { className: 'btopts' },
-        btChoices(rules, btBroken(rules, reply.flags)).map((c, i) => React.createElement('button', {
-          key: i, onClick: () => judge(c)
-        }, c.t))),
-
-      phase === 'talk' && pick && React.createElement('div', { className: 'btscore' },
-        'Поймано верно: ' + score + ' из ' + (round + 1))),
+      /* день: три диалога подряд с реакцией каждого */
+      phase === 'day' && BT_GUESTS.map((g, i) => {
+        const miss = results[i];
+        return React.createElement('div', { className: 'btcase', key: i },
+          React.createElement('div', { className: 'btcase__w' }, g.who),
+          React.createElement('div', { className: 'btq' }, g.q),
+          React.createElement('div', { className: 'bta' },
+            React.createElement('b', null, 'Бот: '), btReply(i, rules)),
+          React.createElement('div', { className: 'btface ' + (miss ? 'btface--bad' : 'btface--ok') },
+            miss ? g.bad[miss] : g.ok));
+      })),
 
     React.createElement('div', { className: 'btfoot' },
       phase === 'setup' && React.createElement('button', {
-        className: 'nk-btn nk-btn--cta', style: { width: '100%' },
-        onClick: () => { setPhase('talk'); askBot();
-          setSay('Готово, я такой и буду. Задавай вопрос — и смотри, выполняю ли я то, что ты велел.'); }
-      }, 'Включить бота'),
+        className: 'nk-btn nk-btn--cta', style: { width: '100%' }, onClick: run
+      }, tries === 0 ? 'Открыть приём' : 'Пустить их снова'),
 
-      phase === 'talk' && !reply && React.createElement('button', {
-        className: 'nk-btn nk-btn--pri', style: { width: '100%' }, onClick: askBot
-      }, 'Спросить бота'),
+      phase === 'day' && happy < 3 && React.createElement('button', {
+        className: 'nk-btn nk-btn--pri', style: { width: '100%' },
+        onClick: () => { setPhase('setup'); setSay('Меняй правила и пробуй ещё. Бот тот же — важно, что ты ему скажешь.'); }
+      }, 'Поменять правила'),
 
-      phase === 'talk' && pick && React.createElement('button', {
-        className: 'nk-btn nk-btn--ok', style: { width: '100%' }, onClick: next
-      }, round + 1 < BT_TALKS.length ? 'Следующий вопрос' : 'Подвести итог')));
+      phase === 'day' && happy === 3 && React.createElement('button', {
+        className: 'nk-btn nk-btn--ok', style: { width: '100%' }, onClick: finish
+      }, 'Готово')));
 }
 
 function App() {
