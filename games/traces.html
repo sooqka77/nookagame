@@ -1,0 +1,273 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1">
+<meta name="theme-color" content="#0E0719">
+<title>Кому показать рекламу — Nooka</title>
+<meta property="og:title" content="Кому показать рекламу — Nooka">
+<meta property="og:description" content="Курс ИИ-грамотности для детей 8–12: три игры, тридцать уровней по 15 минут. Первая игра — бесплатно, с телефона, без установки.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://nookagame.ru/games/traces.html">
+<meta property="og:image" content="https://nookagame.ru/screenshots/og.jpg">
+<meta property="og:site_name" content="Nooka">
+<link href="/fonts/nooka-fonts.css" rel="stylesheet">
+<link rel="stylesheet" href="nooka-ui.css">
+<style>
+/* ============ КОМУ ПОКАЗАТЬ РЕКЛАМУ ============ */
+.trroot{height:100vh;overflow:hidden;max-width:480px;margin:0 auto;position:relative;}
+.tr{height:100%;display:flex;flex-direction:column;overflow:hidden;
+  background:linear-gradient(180deg,#161426 0%,#0F0E1C 62%,#09080F 100%);}
+.trbody{flex:1;overflow-y:auto;padding:0 0 6px;-webkit-overflow-scrolling:touch;}
+
+.trsay{display:flex;gap:10px;align-items:flex-start;margin:2px 14px 0;padding:13px 15px;
+  border-radius:20px;background:rgba(255,255,255,.055);
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.09);animation:trIn .3s ease-out both;}
+.trsay i{flex-shrink:0;line-height:0;}
+.trsay span{font-weight:700;font-size:13.5px;line-height:1.45;color:#DCD8EC;}
+.trsay b{color:#FFD84D;font-weight:900;}
+
+/* товар этого раунда */
+.trad{margin:12px 14px 0;padding:14px 16px;border-radius:20px;display:flex;align-items:center;gap:14px;
+  background:linear-gradient(140deg,rgba(255,216,77,.14),rgba(255,216,77,.05));
+  box-shadow:inset 0 0 0 1.5px rgba(255,216,77,.35);}
+.trad__t{font-weight:900;font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:#E7C765;}
+.trad__n{margin-top:3px;font-family:var(--nk-brand),var(--nk-body);font-weight:700;font-size:17px;color:#FFF1C9;}
+
+/* люди — только следы, без имён */
+.trlist{margin:12px 14px 0;display:flex;flex-direction:column;gap:9px;}
+.trman{padding:13px 15px;border:none;cursor:pointer;text-align:left;border-radius:18px;font-family:inherit;
+  background:rgba(255,255,255,.045);box-shadow:inset 0 0 0 1px rgba(255,255,255,.09);}
+.trman b{display:block;font-weight:900;font-size:12.5px;color:#CFC8E6;margin-bottom:6px;}
+.trman span{display:block;font-weight:700;font-size:12.5px;line-height:1.5;color:#8F87AD;}
+.trman--hit{background:rgba(127,227,192,.15);box-shadow:inset 0 0 0 1.5px rgba(127,227,192,.5);}
+.trman--miss{background:rgba(255,140,110,.13);box-shadow:inset 0 0 0 1.5px rgba(255,140,110,.42);}
+.trman--used{opacity:.45;}
+
+.trres{margin:11px 14px 0;padding:12px 15px;border-radius:16px;font-weight:800;font-size:13px;line-height:1.45;}
+.trres--ok{color:#0E2A1E;background:#7FE3C0;}
+.trres--no{color:#FFD9CF;background:rgba(255,140,110,.16);box-shadow:inset 0 0 0 1px rgba(255,140,110,.4);}
+
+/* досье на самого ребёнка */
+.trme{margin:12px 14px 0;padding:16px;border-radius:22px;
+  background:linear-gradient(150deg,rgba(255,140,110,.14),rgba(255,140,110,.05));
+  box-shadow:inset 0 0 0 1.5px rgba(255,140,110,.4);}
+.trme__t{font-weight:900;font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;
+  color:#FFB4A0;margin-bottom:10px;}
+.trme li{font-weight:800;font-size:13.5px;line-height:1.6;color:#FFE3DA;}
+.trme ul{margin:0;padding-left:18px;}
+
+.trscore{margin:10px 14px 0;text-align:center;font-weight:800;font-size:11.5px;color:#8F87AD;}
+.trfoot{flex-shrink:0;padding:10px 14px calc(14px + env(safe-area-inset-bottom));
+  background:linear-gradient(180deg,rgba(9,8,15,0),#09080F 42%);}
+
+.trdone{display:flex;flex-direction:column;align-items:center;padding-top:6px;}
+.trlaw{margin:14px 18px 0;text-align:center;}
+.trlaw b{display:block;font-family:var(--nk-brand),var(--nk-body);font-weight:700;
+  font-size:17px;line-height:1.3;color:#F1EDFF;}
+.trlaw span{display:block;margin-top:8px;font-weight:700;font-size:13.5px;color:#9F97BE;line-height:1.45;}
+
+@keyframes trIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
+@media (prefers-reduced-motion: reduce){.tr *{animation:none !important;}}
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script src="react-bundle.js"></script>
+<script src="nooka-core.js"></script>
+<script src="nooka-levels.js"></script>
+<script src="nooka-access.js"></script>
+<script src="nooka-gallery.js"></script>
+<script src="nooka-ui.js"></script>
+<script>
+/* ============================================================
+   КОМУ ПОКАЗАТЬ РЕКЛАМУ — бонус третьей игры.
+
+   В курсе есть уровень «Что не рассказывать ИИ»: там ребёнок —
+   тот, у кого между делом собрали досье. Здесь он по другую
+   сторону стола и сам собирает людей по следам. Понимать механику
+   полезнее, чем заучить запрет.
+
+   В финале след показывается его собственный — из профиля игры,
+   который лежит у него же на телефоне. Ничего не отправляется
+   никуда: в том и мысль, что данные копятся сами собой.
+   ============================================================ */
+
+/* люди без имён — только следы, которые они оставили */
+const TR_PEOPLE = [
+  { id: 1, tag: 'Человек 1', trace: ['искал: как научить щенка команде «сидеть»',
+                                     'заходил в зоомагазин', 'смотрел ролики про корм'] },
+  { id: 2, tag: 'Человек 2', trace: ['искала: платье на выпускной',
+                                     'была в трёх магазинах одежды за неделю'] },
+  { id: 3, tag: 'Человек 3', trace: ['искал: как заклеить камеру',
+                                     'смотрел карту велодорожек'] },
+  { id: 4, tag: 'Человек 4', trace: ['смотрел обзоры наушников',
+                                     'искал: скидки на технику'] },
+  { id: 5, tag: 'Человек 5', trace: ['искала: как выбрать краски',
+                                     'заходила в магазин для художников'] },
+  { id: 6, tag: 'Человек 6', trace: ['искал: во сколько закрывается каток',
+                                     'смотрел: как научиться тормозить на коньках'] }
+];
+
+/* три заказа: товар и кому он на самом деле нужен */
+const TR_ADS = [
+  { name: 'Корм для щенков', who: 1,
+    ok: 'Продано. Он и правда завёл щенка — хотя нигде об этом не писал.',
+    no: 'Мимо. Этот человек про собак вообще не искал — деньги на показ ушли зря.' },
+  { name: 'Наушники со скидкой', who: 4,
+    ok: 'Продано. Человек уже неделю выбирал наушники — оставалось попасться на глаза.',
+    no: 'Мимо. Ему это не нужно, он искал совсем другое.' },
+  { name: 'Набор красок', who: 5,
+    ok: 'Продано. Она искала краски сама — мы только оказались рядом в нужный момент.',
+    no: 'Мимо. Красками этот человек не интересовался.' }
+];
+
+/* след самого ребёнка — из его же профиля в игре */
+function trMyTrace() {
+  const out = [];
+  try {
+    const p = window.nooka ? window.nooka.profile() : null;
+    if (!p) return out;
+    const done = Object.keys(p.missions || {});
+    if (done.length) out.push('прошёл уровней: ' + done.length);
+    if (done.some(k => k.indexOf('draw') === 0 || k.indexOf('data') === 0))
+      out.push('дольше всего задерживался там, где надо рисовать');
+    if (done.some(k => k.indexOf('prompt') === 0 || k.indexOf('forge') === 0 || k === 'riddle1'))
+      out.push('любит уровни, где надо описывать словами');
+    const days = (p.days || []).length;
+    if (days > 1) out.push('заходил в игру в разные дни: ' + days);
+    const h = new Date().getHours();
+    out.push('играет ' + (h < 11 ? 'по утрам' : h < 17 ? 'днём' : h < 22 ? 'по вечерам' : 'поздно вечером'));
+    if (p.xp) out.push('набрал опыта: ' + p.xp);
+  } catch (e) {}
+  if (!out.length) out.push('пока только зашёл в эту игру — но и это уже след');
+  return out;
+}
+
+function LevelTraces({ onWin, onHome }) {
+  const [phase, setPhase] = useState('intro');   // intro | work | twist | me | done
+  const [round, setRound] = useState(0);
+  const [pick, setPick] = useState(null);
+  const [hits, setHits] = useState(0);
+  const [say, setSay] = useState(null);
+  const mine = useRef(null);
+  if (!mine.current) mine.current = trMyTrace();
+
+  const ad = TR_ADS[round];
+
+  const show = man => {
+    if (pick) return;
+    setPick(man);
+    const ok = man.id === ad.who;
+    if (ok) setHits(hits + 1);
+    setSay(ok ? ad.ok : ad.no);
+  };
+
+  const next = () => {
+    if (round + 1 < TR_ADS.length) {
+      setRound(round + 1); setPick(null);
+      setSay('Следующий заказ. Смотри на следы — они говорят больше, чем кажется.');
+    } else {
+      setPhase('twist');
+      setSay('Попаданий: <b>' + hits + ' из 3</b>. А теперь главное: <b>никто из этих людей ' +
+        'не писал о себе ничего.</b> Ни «у меня щенок», ни «я хожу на каток». Всё это мы поняли ' +
+        'по мелочам, которые они оставили по дороге.');
+    }
+  };
+
+  const finish = () => { setPhase('done'); if (window.nooka) window.nooka.missionWin('traces1', 110); };
+
+  if (phase === 'done') {
+    return React.createElement('div', { className: 'tr' },
+      React.createElement(TopBar, { level: '★', title: 'Кому показать рекламу', onHome }),
+      React.createElement('div', { className: 'trbody trdone' },
+        React.createElement('div', { className: 'trlaw' },
+          React.createElement('b', null, 'Портрет собирают из мелочей'),
+          React.createElement('span', null,
+            'Ни один человек не рассказывал о себе — но по следам стало ясно, у кого щенок, ' +
+            'кто выбирает наушники, кто рисует. Каждая мелочь по отдельности пустяк, вместе они дают портрет.'),
+          React.createElement('span', null,
+            'Так работают ленты и реклама: они не читают мысли, они складывают следы. ' +
+            'Поэтому и стоит помнить, что след остаётся всегда — даже когда кажется, что ты ничего не сказал.'))),
+      React.createElement('div', { className: 'trfoot' },
+        React.createElement('button', { className: 'nk-btn nk-btn--ok', style: { width: '100%' },
+          onClick: onWin }, 'Готово')));
+  }
+
+  return React.createElement('div', { className: 'tr' },
+    React.createElement(TopBar, { level: '★', title: 'Кому показать рекламу', onHome }),
+
+    phase === 'intro' && React.createElement(IntroModal, {
+      emoji: NKM('hello', 88),
+      title: 'Кому показать рекламу',
+      goal: 'Увидеть, как из мелочей собирают портрет',
+      law: 'Сегодня ты по другую сторону экрана.\nТы решаешь, кому показать рекламу.',
+      tip: 'Имён нет — есть только следы: что искали, куда заходили, что смотрели.',
+      onStart: () => { setPhase('work');
+        setSay('Первый заказ. Показать можно одному человеку — выбирай по следам.'); }
+    }),
+
+    React.createElement('div', { className: 'trbody' },
+      phase === 'work' && React.createElement(TaskBadge, null,
+        'Заказ ' + (round + 1) + ' из ' + TR_ADS.length),
+      phase === 'twist' && React.createElement(TaskBadge, null, 'А теперь про тебя'),
+
+      say && React.createElement('div', { className: 'trsay', key: say },
+        React.createElement('i', null, NKM(phase === 'twist' ? 'think' : 'hello', 32)),
+        React.createElement('span', { dangerouslySetInnerHTML: { __html: say } })),
+
+      phase === 'work' && React.createElement('div', { className: 'trad' },
+        React.createElement('div', null,
+          React.createElement('div', { className: 'trad__t' }, 'Надо продать'),
+          React.createElement('div', { className: 'trad__n' }, ad.name))),
+
+      phase === 'work' && React.createElement('div', { className: 'trlist' },
+        TR_PEOPLE.map(man => React.createElement('button', {
+          key: man.id,
+          className: 'trman' + (pick && pick.id === man.id
+            ? (man.id === ad.who ? ' trman--hit' : ' trman--miss')
+            : (pick ? ' trman--used' : '')),
+          onClick: () => show(man)
+        },
+          React.createElement('b', null, man.tag),
+          man.trace.map((t, i) => React.createElement('span', { key: i }, '· ' + t))))),
+
+      phase === 'work' && pick && React.createElement('div', { className: 'trscore' },
+        'Попаданий: ' + hits + ' из ' + (round + 1)),
+
+      /* поворот: тот же приём применён к самому игроку */
+      phase === 'twist' && React.createElement('div', { className: 'trme' },
+        React.createElement('div', { className: 'trme__t' }, 'След, который оставил ты — прямо здесь'),
+        React.createElement('ul', null,
+          mine.current.map((t, i) => React.createElement('li', { key: i }, t)))),
+
+      phase === 'twist' && React.createElement('div', { className: 'trsay' },
+        React.createElement('i', null, NKM('win', 32)),
+        React.createElement('span', null,
+          'Ты мне этого не рассказывал. Я просто посмотрел, во что и когда ты играл. ' +
+          'Хорошая новость: этот список никуда не уходит — он лежит на твоём телефоне. ' +
+          'Плохая: в других местах такие списки уходят.'))),
+
+    React.createElement('div', { className: 'trfoot' },
+      phase === 'work' && pick && React.createElement('button', {
+        className: 'nk-btn nk-btn--pri', style: { width: '100%' }, onClick: next
+      }, round + 1 < TR_ADS.length ? 'Следующий заказ' : 'Закончить смену'),
+
+      phase === 'twist' && React.createElement('button', {
+        className: 'nk-btn nk-btn--cta', style: { width: '100%' }, onClick: finish
+      }, 'Понятно')));
+}
+
+function App() {
+  return React.createElement('div', { className: 'trroot' },
+    React.createElement(LevelTraces, {
+      onWin: () => { window.location.href = 'game.html?g=inside'; },
+      onHome: () => { window.location.href = 'game.html?g=inside'; }
+    }));
+}
+ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(App, null));
+
+</script>
+</body>
+</html>
