@@ -96,6 +96,19 @@ h1{font-family:var(--brand);font-weight:700;font-size:27px;line-height:1.18;marg
 .g .tag--lock{background:rgba(45,27,69,.07);color:var(--ink-3)}
 .g--lock{opacity:.72}
 
+/* Код показываем крупно и с кнопкой копирования: это единственное, что
+   человеку нужно унести с этой страницы, чтобы открыть игры на втором
+   устройстве. Мелким шрифтом такое переписывают с ошибками. */
+.code{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:14px 0 4px;
+  padding:15px 17px;border-radius:18px;background:#fff;box-shadow:inset 0 0 0 1.5px rgba(45,27,69,.12)}
+.code b{font-family:var(--brand);font-weight:700;font-size:19px;letter-spacing:.06em;
+  color:var(--ink);word-break:break-all}
+.code button{margin-left:auto;flex:none;padding:10px 16px;border:none;border-radius:999px;cursor:pointer;
+  font-family:var(--brand);font-weight:700;font-size:13px;color:var(--pri-4);background:var(--pri-1)}
+.code button:active{transform:translateY(2px)}
+.state--bad{background:linear-gradient(180deg,#FFEFEA,#FFE2DA);
+  box-shadow:var(--shadow),inset 0 0 0 2px rgba(217,74,52,.35)}
+.state--bad .badge{background:rgba(217,74,52,.14);color:#A8341F}
 .hint{font-weight:700;font-size:13px;line-height:1.6;color:var(--ink-3);margin-top:8px}
 .foot{margin-top:30px;padding-top:18px;border-top:1px solid var(--line);text-align:center;
   font-weight:700;font-size:12.5px;line-height:1.7;color:var(--ink-3)}
@@ -154,10 +167,29 @@ setTimeout(function () {
   function render() {
     var st = A.state();
     var open = st.paid || A.openAll;
+    var pay = A.payInfo && A.payInfo();      // вернулись из платёжки?
 
     /* ── состояние ─────────────────────────────────────────── */
     var box = document.getElementById('state');
-    if (st.paid) {
+    if (pay && pay.failed) {
+      box.className = 'state state--bad';
+      box.innerHTML = '<span class="badge">Оплата не прошла</span>' +
+        '<h2>Деньги не списаны</h2>' +
+        '<p>Банк не подтвердил оплату — доступ не открыт и платить заново за то же ' +
+        'не придётся. Обычно помогает повторить попытку или выбрать другой способ оплаты.</p>';
+    } else if (pay && pay.lost) {
+      box.className = 'state state--warn';
+      box.innerHTML = '<span class="badge">Нужна наша помощь</span>' +
+        '<h2>Оплата прошла, а код потерялся</h2>' +
+        '<p>Так бывает, если по дороге закрылась вкладка. Напишите нам — найдём ваш ' +
+        'платёж и откроем доступ вручную в тот же день. Платить ещё раз не нужно.</p>';
+    } else if (pay && pay.ok) {
+      box.className = 'state state--on';
+      box.innerHTML = '<span class="badge">Оплата прошла</span>' +
+        '<h2>Готово — все три игры открыты</h2>' +
+        '<p>Доступ включён на этом устройстве, вводить ничего не нужно. ' +
+        'Чек банк пришлёт на почту, которую вы указали при оплате.</p>';
+    } else if (st.paid) {
       /* Считаем целые сутки вниз: код печатается с запасом вверх, и годовой
          доступ иначе показывался бы как «367 дней» против обещанных 366. */
       var left = Math.max(1, Math.floor((st.until - Date.now()) / 86400000));
@@ -247,11 +279,31 @@ setTimeout(function () {
     if (open) {
       help.innerHTML =
         '<div class="card">' +
-          '<h3>Сохраните это сообщение</h3>' +
-          '<p>Доступ записан в память браузера этого устройства. Если очистить данные браузера ' +
-          'или сменить телефон — код нужно будет ввести снова. Письмо или сообщение с кодом ' +
-          'лучше не удалять.</p>' +
-          '<a class="btn btn--cta btn--wide" href="../games/game.html?g=data">Открыть игры →</a>' +
+          '<h3>' + (st.code ? 'Сохраните код доступа' : 'Доступ открыт') + '</h3>' +
+          '<p>Доступ записан в память браузера этого устройства. Чтобы открыть игры ' +
+          'на другом телефоне или планшете — введите там этот код. Он же вернёт доступ, ' +
+          'если очистить данные браузера.</p>' +
+          (st.code
+            ? '<div class="code"><b id="myCode">' + st.code + '</b>' +
+              '<button id="copyCode">Скопировать</button></div>'
+            : '') +
+          '<a class="btn btn--cta btn--wide" style="margin-top:14px" ' +
+            'href="../games/game.html?g=data">Открыть игры →</a>' +
+        '</div>';
+      var cp = document.getElementById('copyCode');
+      if (cp) cp.onclick = function () {
+        var t = document.getElementById('myCode').textContent;
+        if (navigator.clipboard) navigator.clipboard.writeText(t);
+        cp.textContent = 'Скопировано';
+        setTimeout(function () { cp.textContent = 'Скопировать'; }, 1600);
+      };
+    } else if (pay && pay.failed) {
+      help.innerHTML =
+        '<div class="card">' +
+          '<h3>Попробовать ещё раз</h3>' +
+          '<p>Ничего не потеряно: доступ не оплачен, деньги не списаны. Первая игра ' +
+          'при этом остаётся открытой — её можно проходить прямо сейчас.</p>' +
+          '<a class="btn btn--cta btn--wide" href="../buy/">Вернуться к оплате →</a>' +
         '</div>';
     } else {
       help.innerHTML =

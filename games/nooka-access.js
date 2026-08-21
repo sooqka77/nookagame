@@ -22,12 +22,9 @@
                         целиком (поле free в реестре), две другие — по коду */
   var OPEN_ALL = false;  // ← стена включена: бесплатна только первая игра
 
-  /* ── КУДА ВЕДЁТ КНОПКА ОПЛАТЫ ─────────────────────────────
-     Сюда вставить ссылку платёжки — одну на весь сайт: её берут и стена
-     внутри игр, и тарифы на лендинге. Пока пусто — кнопки ведут в Telegram,
-     где код выдаётся руками.                                            */
-  var PAY_URL = '';                          // ← вставить ссылку оплаты
-  var TG_URL  = 'https://t.me/NookaGame';    // запасной путь, пока платёжки нет
+  /* Поддержка и запасной путь: пока не подключена платёжка, кнопки оплаты
+     ведут сюда, и код выдаётся руками. */
+  var TG_URL = 'https://t.me/NookaGame';
 
   /* Страницы продажи. Стена внутри игр не тащит человека сразу в банк:
      сначала страница, где написано, что он покупает и как получит доступ. */
@@ -35,28 +32,41 @@
   var ACCESS_URL = '/access/';
   var OFERTA_URL = '/legal/oferta.html';
 
-  /* ── ОПЛАТА ПО ТАРИФАМ ────────────────────────────────────
-     У каждого тарифа свои ссылка и QR — банк выдаёт их отдельно на каждую
-     сумму. Заполнять по мере готовности: пустое поле просто не показывается,
-     и кнопка уводит в Telegram, а не в никуда.
-       url — ссылка платёжки (кнопка «Оплатить»)
-       qr  — картинка QR, положить рядом со страницей: buy/qr-year.png       */
-  var PAY = {
-    quarter: { url: '', qr: '' },     // 490 ₽ · 92 дня
-    year:    { url: '', qr: '' }      // 1450 ₽ · 366 дней
-  };
+  /* ── PAYKEEPER: АВТОМАТИЧЕСКАЯ ВЫДАЧА ДОСТУПА ──────────────
+     Сюда — адрес платёжной формы из личного кабинета PayKeeper, вида
+     https://<ваш-магазин>.server.paykeeper.ru/create/
+     Пока пусто, кнопки оплаты ведут в Telegram и покупателю обещана
+     ручная выдача. Как только адрес появится — включается автомат:
 
-  /* ── КАК ПОКУПАТЕЛЬ ПОЛУЧАЕТ КОД ──────────────────────────
-     'manual' — после оплаты пишет нам в Telegram, отвечаем кодом.
-                Работает с любым QR, включая обычный QR из банка.
-     'auto'   — платёжка сама присылает код на почту. Переключать только
-                когда автовыдача действительно настроена в платёжке:
-                от этого зависит, что обещано покупателю на странице оплаты. */
-  var DELIVERY = 'manual';
+       1. покупатель жмёт «Оплатить» — здесь же печатается его код
+          и уходит в форму как адрес возврата;
+       2. PayKeeper проводит оплату и возвращает человека на /access/,
+          дописав к адресу ?payment_id=…&clientid=…&result=success;
+       3. страница видит успех, включает доступ и показывает код.
 
-  /* Сколько ждать код при ручной выдаче — обещание, которое видит покупатель.
-     Держать его выполнимым: лучше пообещать 15 минут и ответить за две. */
+     Покупатель не пишет нам ни строчки.                                 */
+  var PAYKEEPER = '';        // ← адрес формы оплаты PayKeeper
+
+  /* Куда PayKeeper возвращает покупателя. Адрес должен быть абсолютным
+     и вести на боевой домен: с localhost платёжка не работает.
+
+     Код кладём в хеш, а не в параметр. PayKeeper дописывает свои
+     параметры строкой «?payment_id=…» — если в адресе уже есть «?»,
+     получится два вопросительных знака и сломанный адрес. Хеш переживает
+     обе склейки, а заодно не уходит в журналы хостинга. */
+  var SITE       = 'https://nookagame.ru';
+  var RETURN_URL = SITE + '/access/';
+
+  /* Сколько ждать код, если выдаём руками (пока не подключён PayKeeper).
+     Держать выполнимым: лучше пообещать 15 минут и ответить за две. */
   var DELIVERY_WAIT = '15 минут';
+
+  /* Код печатается до оплаты и ждёт возвращения покупателя. Страховка на
+     случай, если хеш по дороге потеряется: тогда доступ включит сам факт
+     успешного возврата. Живёт два часа — дольше нельзя, иначе ссылку
+     с успехом можно будет подставить руками много позже. */
+  var PEND = 'nooka_pending';
+  var PEND_TTL = 2 * 3600 * 1000;
 
   /* ── ДЕМО-ДОСТУП ПО ССЫЛКЕ ────────────────────────────────
      Ссылка вида nookagame.ru/demo/?k=NOOKA-XXXX-YYYY открывает все три игры
@@ -89,8 +99,8 @@
   var DAY = 86400000;
 
   var PLANS = {
-    quarter: { code: 0, days: 92,  price: '490 ₽',  title: 'Три месяца', note: 'Вторая и третья игры — ещё 20 уровней. Продлевать не нужно: срок вышел — доступ закрылся сам.' },
-    year:    { code: 1, days: 366, price: '1450 ₽', title: 'Год',        note: 'Те же 20 уровней на 12 месяцев плюс все новые игры платформы, которые выйдут за год.' },
+    quarter: { code: 0, days: 92,  rub: 490,  price: '490 ₽',  title: 'Три месяца', note: 'Вторая и третья игры — ещё 20 уровней. Продлевать не нужно: срок вышел — доступ закрылся сам.' },
+    year:    { code: 1, days: 366, rub: 1450, price: '1450 ₽', title: 'Год',        note: 'Те же 20 уровней на 12 месяцев плюс все новые игры платформы, которые выйдут за год.' },
     /* Демо не продаётся: под него печатается ссылка для показов (серия 15).
        Срок длинный, чтобы не перевыпускать перед каждой встречей, — на случай
        утечки есть рубильник DEMO_OFF. */
@@ -157,7 +167,10 @@
        проверка живёт в скрипте, а он грузится с сайта при каждом заходе. */
     if (DEMO_OFF && a.serial === DEMO_SERIAL) return { paid: false, demoOff: true };
     if (a.until < Date.now()) return { paid: false, expired: true, plan: a.plan };
-    return { paid: true, plan: a.plan, until: a.until, days: Math.ceil((a.until - Date.now()) / DAY) };
+    /* Код отдаём наружу: на странице доступа его показывают, чтобы человек
+       мог открыть игры на втором устройстве, ничего не разыскивая. */
+    return { paid: true, plan: a.plan, until: a.until, code: a.code,
+             days: Math.ceil((a.until - Date.now()) / DAY) };
   }
 
   function unlock(raw) {
@@ -368,6 +381,92 @@
     });
   }
 
+  /* ── оплата: уход в PayKeeper ────────────────────────────
+     Код печатается прямо здесь, в момент нажатия, и не лежит в исходнике
+     страницы заранее. Одновременно кладём его в память браузера: если
+     хеш по дороге потеряется, доступ включит сам факт успешной оплаты. */
+  function pendMake(plan) {
+    /* серии 14 и 15 заняты ключом владельца и демо — берём ниже */
+    var code = make(plan, Math.floor(Math.random() * 14));
+    try {
+      localStorage.setItem(PEND, JSON.stringify({ code: code, plan: plan, at: Date.now() }));
+    } catch (e) {}
+    return code;
+  }
+  function pendGet() {
+    try {
+      var p = JSON.parse(localStorage.getItem(PEND) || 'null');
+      if (!p || !p.code || Date.now() - p.at > PEND_TTL) return null;
+      return p;
+    } catch (e) { return null; }
+  }
+  function pendClear() { try { localStorage.removeItem(PEND); } catch (e) {} }
+
+  /* Есть ли куда вести на оплату прямо сейчас */
+  function canPay() { return !!PAYKEEPER; }
+
+  function startPay(plan) {
+    if (!canPay()) { window.open(TG_URL, '_blank', 'noopener'); return false; }
+    var p = PLANS[plan] || PLANS.quarter;
+    var code = pendMake(plan);
+    var f = document.createElement('form');
+    f.method = 'POST';
+    f.action = PAYKEEPER;
+    f.acceptCharset = 'utf-8';
+    f.style.display = 'none';
+    function add(name, value) {
+      var i = document.createElement('input');
+      i.type = 'hidden'; i.name = name; i.value = value;
+      f.appendChild(i);
+    }
+    add('sum', String(p.rub));
+    add('orderid', 'NK-' + Date.now().toString(36).toUpperCase());
+    add('service_name', 'Доступ к играм Nooka — ' + p.title.toLowerCase());
+    add('user_result_callback', RETURN_URL + '#' + code);
+    document.body.appendChild(f);
+    f.submit();
+    return true;
+  }
+
+  /* ── возвращение из платёжки ─────────────────────────────
+     PayKeeper дописывает к адресу ?payment_id=…&clientid=…&result=success.
+     Если он склеил адрес тупо, всё это уехало в хеш следом за кодом —
+     поэтому ищем параметры и там, и там. */
+  function payReturn() {
+    var q = null, hq = null, code = '';
+    try { q = new URLSearchParams(location.search); } catch (e) {}
+    var hash = (location.hash || '').replace(/^#/, '');
+    var cut = hash.indexOf('?');
+    if (cut >= 0) {
+      code = hash.slice(0, cut);
+      try { hq = new URLSearchParams(hash.slice(cut + 1)); } catch (e) {}
+    } else code = hash;
+
+    function par(k) {
+      var v = q && q.get(k); if (v) return v;
+      v = hq && hq.get(k); return v || '';
+    }
+    var result = par('result'), pid = par('payment_id');
+    if (!result && !pid) return null;          // это не возврат из платёжки
+
+    /* Адрес чистим всегда: в clientid лежит имя плательщика, а имени
+       не место ни в адресной строке, ни в чужом скриншоте. */
+    function wipe() {
+      try { history.replaceState(null, '', location.pathname); } catch (e) {}
+    }
+
+    if (result === 'fail') { wipe(); return { ok: false, failed: true }; }
+
+    var pend = pendGet();
+    var use = parse(code) ? code : (pend ? pend.code : '');
+    if (!use) { wipe(); return { ok: false, lost: true }; }
+
+    var r = unlock(use);
+    wipe();
+    if (r.ok) { pendClear(); return { ok: true, code: use, plan: r.plan, until: r.until }; }
+    return { ok: false, why: r.why };
+  }
+
   /* ── доступ по ссылке ────────────────────────────────────
      Код можно передать не только руками, но и адресом: ?k=NOOKA-XXXX-YYYY.
      Сразу после разбора чистим адрес — чтобы код не уезжал дальше вместе
@@ -399,7 +498,12 @@
     setTimeout(function () { el.remove(); }, 4200);
   }
 
+  var payResult = null;
+
   function boot() {
+    /* Сначала возврат из платёжки, потом ссылка с кодом: если человек
+       вернулся с оплаты, стена не должна успеть моргнуть ему в лицо. */
+    payResult = payReturn();
     fromLink();      // ссылка работает и до включения стены: доступ ляжет впрок
     guard();
   }
@@ -410,18 +514,20 @@
   window.nookaAccess = {
     openAll: allOpen(),
     wallPreview: WALL_PREVIEW,
-    payUrl: PAY_URL,
     tgUrl: TG_URL,
     buyUrl: BUY_URL,             // куда вести кнопку «купить» — на страницу покупки
     accessUrl: ACCESS_URL,
     ofertaUrl: OFERTA_URL,
-    pay: PAY,
-    delivery: DELIVERY,
+    /* Автомат включён ровно тогда, когда задан адрес формы PayKeeper.
+       От этого зависят и кнопки, и то, что обещано покупателю. */
+    canPay: canPay,
+    delivery: canPay() ? 'auto' : 'manual',
     deliveryWait: DELIVERY_WAIT,
-    /* Куда ведёт кнопка оплаты конкретного тарифа: своя ссылка тарифа,
-       иначе общая, иначе Telegram — чтобы кнопка никогда не была пустой. */
-    planPay: function (k) { return (PAY[k] && PAY[k].url) || PAY_URL || TG_URL; },
-    planQr:  function (k) { return (PAY[k] && PAY[k].qr) || ''; },
+    startPay: startPay,
+    /* Итог возврата из платёжки: считается на загрузке, поэтому отдаём
+       геттером — свойство было бы снято раньше, чем boot отработает. */
+    payInfo: function () { return payResult; },
+    pendGet: pendGet,
     demoSerial: DEMO_SERIAL,
     demoOff: DEMO_OFF,
     fromLink: fromLink,
