@@ -39,6 +39,22 @@ button.alt{background:#EFE9FF;color:var(--pri)}
   никакого сервера. Внутри кода зашиты тариф и дата окончания.</p>
 
   <div class="card">
+    <label>Выдать доступ покупателю</label>
+    <p class="sub" style="margin:0 0 12px">Оплатили — нажмите кнопку и отправьте готовое сообщение.
+    Внутри уже и код, и ссылка, по которой доступ открывается одним нажатием.</p>
+    <div class="row">
+      <select id="sPlan">
+        <option value="quarter">Три месяца — 490 ₽</option>
+        <option value="year">Год — 1450 ₽</option>
+      </select>
+      <button id="sGo">Выпустить доступ</button>
+      <button class="alt" id="sCopy">Скопировать сообщение</button>
+    </div>
+    <div class="out" id="sOut" style="white-space:pre-wrap"></div>
+    <div class="hint" id="sHint"></div>
+  </div>
+
+  <div class="card">
     <label>Сколько кодов и на какой тариф</label>
     <div class="row">
       <select id="plan">
@@ -87,10 +103,45 @@ button.alt{background:#EFE9FF;color:var(--pri)}
 <script src="../games/nooka-levels.js"></script>
 <script src="../games/nooka-access.js"></script>
 <script>
-var out = document.getElementById('out'), hint = document.getElementById('hint');
 function dstr(ms){ var d = new Date(ms);
   return String(d.getDate()).padStart(2,'0')+'.'+String(d.getMonth()+1).padStart(2,'0')+'.'+d.getFullYear(); }
 
+/* ── выдача одному покупателю ──────────────────────────────────────
+   Главная кнопка этой страницы: после оплаты нужно за десять секунд
+   получить текст, который можно вставить в Telegram не редактируя. */
+var sOut = document.getElementById('sOut'), sHint = document.getElementById('sHint');
+var sMsg = '';
+
+document.getElementById('sGo').onclick = function () {
+  var plan = document.getElementById('sPlan').value;
+  var code = nookaAccess.make(plan, Math.floor(Math.random() * 14));   // серии 14 и 15 заняты
+  var p = nookaAccess.parse(code);
+  var link = 'https://nookagame.ru/access/?k=' + code;
+  var title = plan === 'year' ? 'год' : 'три месяца';
+
+  sMsg =
+    'Спасибо за оплату! Доступ к Nooka открыт.\n\n' +
+    'Нажмите ссылку — откроются все три игры:\n' + link + '\n\n' +
+    'Если ссылка не сработала, введите код вручную на nookagame.ru/access\n' +
+    'Код: ' + code + '\n\n' +
+    'Тариф: ' + title + ', доступ действует до ' + dstr(p.until) + '.\n' +
+    'Код работает на всех устройствах семьи — телефон, планшет, компьютер.\n\n' +
+    'Сохраните это сообщение: по нему доступ вернётся, если сменить телефон ' +
+    'или очистить браузер. Вопросы — просто ответьте здесь.';
+
+  sOut.textContent = sMsg;
+  sHint.textContent = 'Код ' + code + ' · до ' + dstr(p.until) +
+    ' · запишите, кому выдали. Срок считается от этой минуты, поэтому выпускайте под конкретную оплату.';
+};
+
+document.getElementById('sCopy').onclick = function () {
+  if (!sMsg) return;
+  navigator.clipboard.writeText(sMsg);
+  this.textContent = 'Скопировано';
+  var b = this; setTimeout(function () { b.textContent = 'Скопировать сообщение'; }, 1400);
+};
+
+var out = document.getElementById('out'), hint = document.getElementById('hint');
 document.getElementById('go').onclick = function(){
   var plan = document.getElementById('plan').value;
   var n = Math.max(1, Math.min(60, parseInt(document.getElementById('n').value, 10) || 1));

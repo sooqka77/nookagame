@@ -29,6 +29,35 @@
   var PAY_URL = '';                          // ← вставить ссылку оплаты
   var TG_URL  = 'https://t.me/NookaGame';    // запасной путь, пока платёжки нет
 
+  /* Страницы продажи. Стена внутри игр не тащит человека сразу в банк:
+     сначала страница, где написано, что он покупает и как получит доступ. */
+  var BUY_URL    = '/buy/';
+  var ACCESS_URL = '/access/';
+  var OFERTA_URL = '/legal/oferta.html';
+
+  /* ── ОПЛАТА ПО ТАРИФАМ ────────────────────────────────────
+     У каждого тарифа свои ссылка и QR — банк выдаёт их отдельно на каждую
+     сумму. Заполнять по мере готовности: пустое поле просто не показывается,
+     и кнопка уводит в Telegram, а не в никуда.
+       url — ссылка платёжки (кнопка «Оплатить»)
+       qr  — картинка QR, положить рядом со страницей: buy/qr-year.png       */
+  var PAY = {
+    quarter: { url: '', qr: '' },     // 490 ₽ · 92 дня
+    year:    { url: '', qr: '' }      // 1450 ₽ · 366 дней
+  };
+
+  /* ── КАК ПОКУПАТЕЛЬ ПОЛУЧАЕТ КОД ──────────────────────────
+     'manual' — после оплаты пишет нам в Telegram, отвечаем кодом.
+                Работает с любым QR, включая обычный QR из банка.
+     'auto'   — платёжка сама присылает код на почту. Переключать только
+                когда автовыдача действительно настроена в платёжке:
+                от этого зависит, что обещано покупателю на странице оплаты. */
+  var DELIVERY = 'manual';
+
+  /* Сколько ждать код при ручной выдаче — обещание, которое видит покупатель.
+     Держать его выполнимым: лучше пообещать 15 минут и ответить за две. */
+  var DELIVERY_WAIT = '15 минут';
+
   /* ── ДЕМО-ДОСТУП ПО ССЫЛКЕ ────────────────────────────────
      Ссылка вида nookagame.ru/demo/?k=NOOKA-XXXX-YYYY открывает все три игры
      без ввода кода: удобно показывать партнёрам и школам.
@@ -182,7 +211,9 @@
     ".nkpw__go{padding:13px 18px;border:none;border-radius:14px;cursor:pointer;font-family:'Unbounded','Nunito',system-ui,sans-serif;" +
       'font-weight:700;font-size:14px;color:#fff;background:linear-gradient(180deg,#9B78FF,#7B4FF2)}' +
     '.nkpw__err{min-height:17px;margin-top:8px;font-weight:700;font-size:12px}' +
-    '.nkpw__err--bad{color:#FF9E8E}.nkpw__err--ok{color:#7CE9B7}';
+    '.nkpw__err--bad{color:#FF9E8E}.nkpw__err--ok{color:#7CE9B7}' +
+    '.nkpw__fine{margin-top:14px;font-weight:700;font-size:11.5px;line-height:1.5;color:#7E6E9C}' +
+    '.nkpw__fine a{color:#A896C9;text-decoration:underline}';
 
   function paywall(opts) {
     opts = opts || {};
@@ -214,13 +245,18 @@
           '</div>' +
           '<div class="nkpw__err" id="nkpwErr"></div>' +
         '</div>' +
+        '<div class="nkpw__fine">Разовая оплата, без автосписаний. Вернём деньги за 14 дней. ' +
+          '<a href="' + OFERTA_URL + '" target="_blank" rel="noopener">Оферта</a></div>' +
       '</div>';
     document.body.appendChild(w);
 
+    /* Тариф ведёт на страницу покупки, а не прямо в банк: там написано,
+       что именно открывается, как придёт код и что деньги вернут. Человек,
+       которого швырнули из игры сразу в форму оплаты, не платит. */
     function plan(k) {
       var p = PLANS[k];
       return '<a class="nkpw__p' + (k === 'year' ? ' nkpw__p--best' : '') + '" href="' +
-        (opts.payUrl || PAY_URL || TG_URL) + '" target="_blank" rel="noopener">' +
+        (opts.payUrl || BUY_URL) + '#' + k + '">' +
         (k === 'year' ? '<span class="nkpw__flag">Выгоднее</span>' : '') +
         '<b>' + p.price + '</b><i>' + p.title + '</i><span>' + p.note + '</span></a>';
     }
@@ -376,7 +412,16 @@
     wallPreview: WALL_PREVIEW,
     payUrl: PAY_URL,
     tgUrl: TG_URL,
-    buyUrl: PAY_URL || TG_URL,   // куда вести кнопку «купить» прямо сейчас
+    buyUrl: BUY_URL,             // куда вести кнопку «купить» — на страницу покупки
+    accessUrl: ACCESS_URL,
+    ofertaUrl: OFERTA_URL,
+    pay: PAY,
+    delivery: DELIVERY,
+    deliveryWait: DELIVERY_WAIT,
+    /* Куда ведёт кнопка оплаты конкретного тарифа: своя ссылка тарифа,
+       иначе общая, иначе Telegram — чтобы кнопка никогда не была пустой. */
+    planPay: function (k) { return (PAY[k] && PAY[k].url) || PAY_URL || TG_URL; },
+    planQr:  function (k) { return (PAY[k] && PAY[k].qr) || ''; },
     demoSerial: DEMO_SERIAL,
     demoOff: DEMO_OFF,
     fromLink: fromLink,

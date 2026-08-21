@@ -41,6 +41,10 @@ img{max-width:100%}
 .nk-t-h2{font-family:var(--nk-display);font-weight:900;font-size:20px;line-height:1.2}
 .nk-t-body{font-weight:700;font-size:16px;line-height:1.45}
 .nk-t-caption{font-weight:700;font-size:13px;line-height:1.35;color:var(--nk-ink-2)}
+/* Реквизиты продавца — обязательная строка на сайте, который принимает оплату */
+.course-note a{color:var(--nk-pri-3);text-decoration:underline;text-underline-offset:2px}
+.ft-req{margin-top:18px;padding-top:16px;border-top:1px solid rgba(45,27,69,.09);
+  font-weight:700;font-size:12px;line-height:1.65;color:var(--nk-ink-3)}
 
 .nk-clay{background:var(--nk-surface);border-radius:var(--nk-r-l);
   box-shadow:var(--nk-shadow-card),inset 0 2px 0 rgba(255,255,255,.9),inset 0 -3px 0 rgba(45,27,69,.05)}
@@ -435,7 +439,8 @@ footer{border-top:2px solid rgba(123,79,242,.12);background:#FFF6E9}
     <p class="nk-t-body sec-sub">ИИ уже рядом с ребёнком — в поиске, в переводчике, в чатах. Здесь он разбирается, откуда ИИ берёт ответы, почему тот уверенно врёт и чего ему нельзя о себе рассказывать. Тридцать уровней по 15 минут: не теория, а руками.</p>
 
     <div class="course-grid" id="courseGrid"></div>
-    <div class="course-note">Первая игра целиком бесплатна — без регистрации и без карты.</div>
+    <div class="course-note">Первая игра целиком бесплатна — без регистрации и без карты.
+      Вторая и третья открываются <a href="/buy/">одним кодом на всю семью</a>.</div>
     <p class="course-frame">Программа собрана по международной рамке <b>«Пять больших идей об ИИ»</b> — по ней выстроен весь курс: каждый уровень закрывает свою идею.</p>
   </section>
 
@@ -549,7 +554,7 @@ footer{border-top:2px solid rgba(123,79,242,.12);background:#FFF6E9}
           <div><span class="ok">✓</span> <span class="pt">Отчёт родителю: что ребёнок освоил и о чём его спросить</span></div>
           <div><span class="ok">✓</span> <span class="pt">Карта не привязывается, <b>списывать нечего</b></span></div>
         </div>
-        <button class="nk-btn nk-btn--soft" style="width:100%" data-buy>Взять на три месяца</button>
+        <button class="nk-btn nk-btn--soft" style="width:100%" data-buy="quarter">Взять на три месяца</button>
       </div>
       <div class="price-box pro">
         <span class="price-badge">ВЫГОДНЕЕ</span>
@@ -563,10 +568,11 @@ footer{border-top:2px solid rgba(123,79,242,.12);background:#FFF6E9}
           <div><span class="ok">✓</span> <span class="pt">В планах науки и технологии, <b>доплачивать не нужно</b></span></div>
           <div><span class="ok">✓</span> <span class="pt">Не подошло, <b>вернём деньги</b> за 14 дней</span></div>
         </div>
-        <button class="nk-btn nk-btn--cta" style="width:100%" data-buy>Взять на год</button>
+        <button class="nk-btn nk-btn--cta" style="width:100%" data-buy="year">Взять на год</button>
       </div>
     </div>
-    <div class="price-hint">Оплата и код доступа — через наш Telegram. Код вводится прямо в игре: аккаунт создавать не нужно.</div>
+    <div class="price-hint">После оплаты приходит код доступа — он открывает игры на любом устройстве семьи.
+      Аккаунт создавать не нужно. <a href="/access/">Код уже есть →</a></div>
   </section>
 
   <section class="wrap final">
@@ -586,13 +592,15 @@ footer{border-top:2px solid rgba(123,79,242,.12);background:#FFF6E9}
       <div><div class="ft-logo">Noo<span>ka</span> · © 2026</div><div class="nk-t-caption" style="margin-top:4px">Образовательные игры для детей 6–14 лет</div></div>
       <div class="ft-links">
         <a href="base/">Моя база</a>
-        <a href="#subjects">Игры</a>
-        <a href="#how">Как это работает</a>
         <a href="#plans">Тарифы</a>
+        <a href="access/">Мой доступ</a>
         <a href="teacher/">Учителю</a>
+        <a href="legal/oferta.html">Оферта</a>
+        <a href="legal/privacy.html">Персональные данные</a>
         <a href="https://t.me/NookaGame" target="_blank" rel="noopener">Telegram</a>
       </div>
     </div>
+    <div class="wrap ft-req" id="ftReq"></div>
   </footer>
 </div>
 
@@ -606,8 +614,13 @@ footer{border-top:2px solid rgba(123,79,242,.12);background:#FFF6E9}
 
 <script src="games/nooka-levels.js"></script>
 <script src="games/nooka-access.js"></script>
+<script src="legal/requisites.js"></script>
 <script>
 var WAITLIST_URL = 'https://t.me/NookaGame';
+(function(){ var R = window.NOOKA_LEGAL, el = document.getElementById('ftReq');
+  if (!R || !el) return;
+  el.innerHTML = R.seller + ' · ИНН ' + R.inn + ' · ОГРНИП ' + R.ogrnip + ' · ' + R.address +
+    ' · <a href="mailto:' + R.email + '">' + R.email + '</a>'; })();
 var V = '?v=202607211900';
 
 var PLANETS = [
@@ -664,8 +677,9 @@ document.querySelectorAll('[data-play]').forEach(function(b){ b.addEventListener
 /* Куда ведёт «купить» — решает games/nooka-access.js (там же и стена внутри игр),
    чтобы ссылка оплаты правилась в одном месте на весь сайт. */
 document.querySelectorAll('[data-buy]').forEach(function(b){ b.addEventListener('click', function(){
-  var url = (window.nookaAccess && window.nookaAccess.buyUrl) || WAITLIST_URL;
-  window.open(url,'_blank','noopener');
+  var url = (window.nookaAccess && window.nookaAccess.buyUrl) || '/buy/';
+  var plan = b.getAttribute('data-buy');
+  window.location.href = url + (plan ? '#' + plan : '');
 }); });
 
 /* витрина курса — из единого реестра games/nooka-levels.js */

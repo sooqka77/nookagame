@@ -1,0 +1,328 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Открыть весь курс — Nooka</title>
+<meta name="description" content="Вторая и третья игры курса Nooka: 20 уровней про то, как управлять ИИ и что у него внутри. 490 ₽ на три месяца или 1450 ₽ на год. Без подписки и привязки карты.">
+<meta property="og:title" content="Nooka — открыть весь курс">
+<meta property="og:description" content="Ещё 20 уровней про ИИ для ребёнка 8–12. Разовая оплата, без автосписаний, возврат 14 дней.">
+<meta property="og:image" content="https://nookagame.ru/screenshots/og.jpg">
+<link rel="icon" type="image/svg+xml" href="../logo.svg">
+<link href="/fonts/nooka-fonts.css" rel="stylesheet">
+<style>
+:root{
+  --bg:#FFF4E4; --surface:#FFFDF8; --ink:#2D1B45; --ink-2:#6B5680; --ink-3:#A797B8;
+  --pri-1:#E4D9FF; --pri-2:#A98BFF; --pri-3:#7B4FF2; --pri-4:#5836BD;
+  --sun-1:#FFF1B4; --sun-2:#FFD84D; --sun-3:#E8AE1F;
+  --ok-1:#C9F4DE; --ok-2:#4ED99B; --ok-3:#1FA76E;
+  --line:rgba(45,27,69,.1);
+  --brand:'Unbounded','Nunito',system-ui,sans-serif;
+  --shadow:0 10px 22px -8px rgba(45,27,69,.18),0 4px 10px -4px rgba(45,27,69,.08);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;padding:0 0 56px;background:var(--bg);color:var(--ink);
+  font-family:'Nunito',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+.wrap{max-width:900px;margin:0 auto;padding:0 20px}
+a{color:var(--pri-3);font-weight:800;text-decoration:none}
+a:hover{color:var(--pri-4)}
+img{max-width:100%}
+
+.top{padding:20px 0 16px}
+.top .row{display:flex;align-items:center;justify-content:space-between;gap:14px}
+.top img{height:30px;display:block}
+.top .back{font-weight:800;font-size:14px;color:var(--ink-2)}
+
+.head{text-align:center;padding:14px 0 4px}
+.chip{display:inline-flex;align-items:center;gap:7px;padding:7px 15px;border-radius:999px;
+  background:var(--surface);box-shadow:var(--shadow);font-weight:800;font-size:12.5px;color:var(--ink-2)}
+.chip .dot{width:7px;height:7px;border-radius:50%;background:var(--ok-2)}
+h1{font-family:var(--brand);font-weight:700;font-size:30px;line-height:1.16;margin:16px 0 10px;letter-spacing:-.015em}
+h1 span{color:var(--pri-3)}
+.lede{font-weight:700;font-size:16px;line-height:1.5;color:var(--ink-2);margin:0 auto 6px;max-width:560px}
+
+/* ── три шага: главное обещание страницы ─────────────────── */
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:30px 0 8px}
+.step{background:var(--surface);border-radius:22px;padding:18px 18px 20px;box-shadow:var(--shadow);position:relative}
+.step b{display:flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:11px;
+  font-family:var(--brand);font-weight:700;font-size:14px;background:var(--pri-1);color:var(--pri-4);margin-bottom:11px}
+.step h3{font-family:var(--brand);font-weight:700;font-size:14.5px;margin:0 0 6px;line-height:1.3}
+.step p{font-weight:700;font-size:13.5px;line-height:1.5;color:var(--ink-2);margin:0}
+@media(max-width:700px){.steps{grid-template-columns:1fr;gap:10px}
+  .step{display:flex;gap:14px;align-items:flex-start;padding:15px 16px}
+  .step b{flex:none;margin-bottom:0}}
+
+/* ── что открывается ─────────────────────────────────────── */
+.sec{margin-top:44px}
+.sec-h{font-family:var(--brand);font-weight:700;font-size:21px;line-height:1.25;margin:0 0 6px}
+.sec-s{font-weight:700;font-size:14.5px;line-height:1.5;color:var(--ink-2);margin:0 0 18px}
+.opens{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:640px){.opens{grid-template-columns:1fr}}
+.op{background:var(--surface);border-radius:22px;padding:17px 19px;box-shadow:var(--shadow);
+  border-left:5px solid var(--t,var(--pri-2))}
+.op .n{font-weight:800;font-size:12px;color:var(--ink-3);letter-spacing:.04em;text-transform:uppercase}
+.op h4{font-family:var(--brand);font-weight:700;font-size:17px;margin:5px 0 3px}
+.op .s{font-weight:800;font-size:13px;color:var(--ink-2);margin-bottom:10px}
+.op ul{margin:0;padding-left:17px}
+.op li{font-weight:700;font-size:13.5px;line-height:1.55;color:var(--ink-2);margin-bottom:3px}
+
+/* ── тарифы ──────────────────────────────────────────────── */
+.plans{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:20px}
+@media(max-width:700px){.plans{grid-template-columns:1fr}}
+.pl{scroll-margin-top:18px;position:relative;background:var(--surface);border-radius:28px;padding:24px 22px 22px;box-shadow:var(--shadow)}
+.pl--best{background:linear-gradient(180deg,#FFFBEC,#FFF6DC);
+  box-shadow:0 16px 34px -14px rgba(232,174,31,.45),inset 0 0 0 2px rgba(255,216,77,.75)}
+.pl-flag{position:absolute;top:-11px;left:22px;padding:5px 13px;border-radius:999px;
+  font-family:var(--brand);font-weight:700;font-size:10.5px;letter-spacing:.05em;
+  background:linear-gradient(180deg,#FFF1B4,#FFD84D);color:#5C4200;box-shadow:0 4px 10px -3px rgba(232,174,31,.6)}
+.pl-tier{font-weight:800;font-size:13px;color:var(--ink-2);margin-bottom:4px}
+.pl-amt{font-family:var(--brand);font-weight:700;font-size:38px;line-height:1;letter-spacing:-.02em}
+.pl-per{font-weight:800;font-size:13px;color:var(--ink-3);margin:7px 0 14px}
+.pl-why{font-weight:800;font-size:13px;line-height:1.45;color:var(--pri-4);background:var(--pri-1);
+  border-radius:13px;padding:9px 12px;margin-bottom:14px}
+.pl--best .pl-why{color:#7A5200;background:rgba(255,216,77,.4)}
+.pl-f{margin:0 0 18px;padding:0;list-style:none}
+.pl-f li{position:relative;padding-left:25px;font-weight:700;font-size:14px;line-height:1.5;
+  color:var(--ink);margin-bottom:9px}
+.pl-f li::before{content:'';position:absolute;left:0;top:3px;width:17px;height:17px;border-radius:50%;
+  background:var(--ok-1);box-shadow:inset 0 0 0 1.5px var(--ok-2)}
+.pl-f li::after{content:'';position:absolute;left:5px;top:8px;width:7px;height:4px;
+  border-left:2px solid var(--ok-3);border-bottom:2px solid var(--ok-3);transform:rotate(-45deg)}
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:16px 22px;border:none;
+  border-radius:999px;cursor:pointer;font-family:var(--brand);font-weight:700;font-size:16px;
+  color:var(--ink);text-decoration:none;transition:transform .1s,filter .15s}
+.btn:hover{filter:brightness(1.04);transform:translateY(-1px)}
+.btn:active{transform:translateY(3px)}
+.btn--cta{background:linear-gradient(180deg,#FFF1B4,#FFD84D 60%,#FFC53A);
+  box-shadow:0 6px 0 var(--sun-3),0 14px 26px -8px rgba(232,174,31,.5)}
+.btn--pri{color:#fff;background:linear-gradient(180deg,#9B78FF,#7B4FF2 60%,#6E41E4);
+  box-shadow:0 6px 0 var(--pri-4),0 14px 26px -8px rgba(123,79,242,.5)}
+.btn--soft{background:linear-gradient(180deg,#fff,#FFF6E9);box-shadow:0 5px 0 rgba(45,27,69,.1),var(--shadow)}
+.btn:active{box-shadow:0 2px 0 rgba(45,27,69,.18)}
+
+/* QR прячем под кнопку: со своего телефона его не отсканируешь,
+   он нужен тем, кто открыл сайт на компьютере. */
+.qr{margin-top:12px;text-align:center}
+.qr summary{cursor:pointer;font-weight:800;font-size:13px;color:var(--ink-2);list-style:none;
+  padding:8px;border-radius:12px}
+.qr summary::-webkit-details-marker{display:none}
+.qr summary:hover{background:rgba(45,27,69,.04)}
+.qr-img{margin:10px auto 0;width:190px;padding:12px;background:#fff;border-radius:18px;box-shadow:var(--shadow)}
+.qr-hint{font-weight:700;font-size:12.5px;line-height:1.5;color:var(--ink-3);margin:9px 0 0}
+
+.paid{margin-top:26px;background:var(--surface);border-radius:24px;padding:22px;box-shadow:var(--shadow);
+  display:flex;align-items:center;gap:18px;flex-wrap:wrap;justify-content:space-between}
+.paid h3{font-family:var(--brand);font-weight:700;font-size:17px;margin:0 0 5px}
+.paid p{font-weight:700;font-size:14px;line-height:1.5;color:var(--ink-2);margin:0;max-width:440px}
+.paid .btn{width:auto;flex:none}
+
+.safe{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:20px}
+@media(max-width:700px){.safe{grid-template-columns:1fr}}
+.sf{background:var(--surface);border-radius:20px;padding:16px 18px;box-shadow:var(--shadow)}
+.sf b{display:block;font-family:var(--brand);font-weight:700;font-size:14px;margin-bottom:5px}
+.sf span{font-weight:700;font-size:13px;line-height:1.5;color:var(--ink-2)}
+
+.faq{margin-top:16px}
+.fq{background:var(--surface);border-radius:18px;margin-bottom:9px;box-shadow:var(--shadow);overflow:hidden}
+.fq summary{cursor:pointer;padding:15px 18px;font-family:var(--brand);font-weight:700;font-size:14.5px;
+  list-style:none;display:flex;justify-content:space-between;gap:12px;align-items:center}
+.fq summary::-webkit-details-marker{display:none}
+.fq summary::after{content:'+';font-size:19px;color:var(--ink-3);flex:none}
+.fq[open] summary::after{content:'–'}
+.fq p{margin:0;padding:0 18px 16px;font-weight:700;font-size:14px;line-height:1.6;color:var(--ink-2)}
+
+.legal{margin-top:34px;padding-top:20px;border-top:1px solid var(--line);
+  font-weight:700;font-size:12.5px;line-height:1.65;color:var(--ink-3);text-align:center}
+.legal a{font-size:12.5px}
+.legal .req{margin-top:10px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="top"><div class="row">
+    <a href="../index.html"><img src="../logo.svg" alt="Nooka"></a>
+    <a class="back" href="../index.html">← На главную</a>
+  </div></div>
+
+  <div class="head">
+    <span class="chip"><span class="dot"></span>Первая игра остаётся бесплатной</span>
+    <h1>Открыть <span>весь курс</span></h1>
+    <p class="lede">Ещё двадцать уровней: как заставить ИИ понять тебя с первого раза
+    и что у него внутри. Разовая оплата — не подписка.</p>
+  </div>
+
+  <div class="steps" id="steps"></div>
+
+  <div class="sec">
+    <h2 class="sec-h">Что откроется</h2>
+    <p class="sec-s">Две игры целиком. Первая игра курса как была бесплатной, так и останется.</p>
+    <div class="opens" id="opens"></div>
+  </div>
+
+  <div class="sec">
+    <h2 class="sec-h">Выберите срок</h2>
+    <p class="sec-s">Код действует свой срок и заканчивается сам. Карта не привязывается —
+    списывать нечего.</p>
+    <div class="plans" id="plans"></div>
+
+    <div class="paid">
+      <div>
+        <h3>Уже оплатили?</h3>
+        <p id="paidText">Заберите код доступа — и всё откроется. Если код уже на руках,
+        введите его на странице доступа.</p>
+      </div>
+      <a class="btn btn--soft" href="../access/">Забрать доступ →</a>
+    </div>
+  </div>
+
+  <div class="sec">
+    <h2 class="sec-h">Спокойно за деньги</h2>
+    <div class="safe">
+      <div class="sf"><b>Не подписка</b><span>Срок вышел — доступ закрылся сам. Карта не привязывается,
+      автоматически ничего не спишется.</span></div>
+      <div class="sf"><b>Возврат 14 дней</b><span>Не подошло — вернём деньги полностью и без объяснений.
+      Достаточно написать в Telegram.</span></div>
+      <div class="sf"><b>Чек от ИП</b><span>Оплата идёт официально, чек приходит на почту.
+      Реквизиты продавца — внизу страницы.</span></div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <h2 class="sec-h">Частые вопросы</h2>
+    <div class="faq" id="faq"></div>
+  </div>
+
+  <div class="legal">
+    Оплачивая доступ, вы соглашаетесь с <a href="../legal/oferta.html">публичной офертой</a>
+    и <a href="../legal/privacy.html">политикой обработки персональных данных</a>.
+    <div class="req" id="req"></div>
+  </div>
+</div>
+
+<script src="../games/nooka-levels.js"></script>
+<script src="../games/nooka-access.js"></script>
+<script src="../legal/requisites.js"></script>
+<script>
+(function () {
+  var A = window.nookaAccess, L = window.nookaLevels, R = window.NOOKA_LEGAL;
+  var manual = A.delivery !== 'auto';
+
+  /* ── три шага. Текст второго шага зависит от того, как выдаётся код:
+        руками в Telegram или письмом от платёжки. Обещание должно
+        совпадать с тем, что происходит на самом деле. ─────────────── */
+  var STEPS = [
+    { h: 'Оплатите', p: 'Кнопкой или по QR из банка. Сумма — 490 ₽ за три месяца или 1450 ₽ за год.' },
+    manual
+      ? { h: 'Напишите нам', p: 'После оплаты нажмите «Забрать доступ» — и отправьте нам сообщение. ' +
+          'Код пришлём в ответ, обычно за ' + A.deliveryWait + '.' }
+      : { h: 'Получите код', p: 'Код доступа придёт письмом на ту же почту, куда платёжка пришлёт чек. ' +
+          'Проверьте папку «Промоакции».' },
+    { h: 'Откройте', p: 'Нажмите присланную ссылку — все три игры открыты. Регистрироваться не нужно.' }
+  ];
+  document.getElementById('steps').innerHTML = STEPS.map(function (s, i) {
+    return '<div class="step"><b>' + (i + 1) + '</b><div><h3>' + s.h + '</h3><p>' + s.p + '</p></div></div>';
+  }).join('');
+
+  /* ── что открывается: платные игры из реестра, без ручного дублирования ── */
+  var paid = L.games.filter(function (g) { return (g.free || 0) < g.levels.length; });
+  document.getElementById('opens').innerHTML = paid.map(function (g) {
+    var pick = g.levels.filter(function (l) { return l.href; }).slice(0, 3);
+    if (pick.length < 3) pick = g.levels.slice(0, 3);
+    return '<div class="op" style="--t:' + g.tint + '">' +
+      '<div class="n">' + g.levels.length + ' уровней · ' + g.age + '</div>' +
+      '<h4>' + g.name + '</h4><div class="s">' + g.sub + '</div>' +
+      '<ul>' + pick.map(function (l) { return '<li>' + l.t + '</li>'; }).join('') + '</ul></div>';
+  }).join('');
+
+  /* ── тарифы. Кнопка ведёт туда, где реально можно заплатить: ссылка
+        тарифа, общая ссылка или Telegram. Пустых кнопок не бывает. ── */
+  var PLAN_VIEW = {
+    quarter: {
+      per: '163 ₽ в месяц', why: 'Дешевле одного занятия с репетитором',
+      f: ['Вторая и третья игры — <b>ещё 20 уровней</b>',
+          'Один код на <b>всю семью</b>, а не на одного ребёнка',
+          'Отчёт родителю: что ребёнок освоил и о чём его спросить',
+          'Карта не привязывается, <b>списывать нечего</b>']
+    },
+    year: {
+      per: '121 ₽ в месяц вместо 163', why: 'Год выходит как три квартала — четвёртый в подарок',
+      f: ['Те же 20 уровней, но <b>на 12 месяцев</b>',
+          'Плюс <b>каждая новая игра</b>, которая выйдет за год',
+          'В планах науки и технологии, <b>доплачивать не нужно</b>',
+          'Не подошло — <b>вернём деньги</b> за 14 дней']
+    }
+  };
+  document.getElementById('plans').innerHTML = ['quarter', 'year'].map(function (k) {
+    var p = A.plans[k], v = PLAN_VIEW[k], best = k === 'year';
+    var url = A.planPay(k), qr = A.planQr(k);
+    var tg = url === A.tgUrl;
+    var qrBlock = qr
+      ? '<details class="qr"><summary>Оплатить по QR из банка</summary>' +
+          '<img class="qr-img" src="' + qr + '" alt="QR для оплаты тарифа «' + p.title + '»">' +
+          '<p class="qr-hint">Наведите камеру банка с другого телефона. ' +
+          'Если сайт открыт на этом же телефоне — проще нажать кнопку выше.</p></details>'
+      : '';
+    return '<div class="pl' + (best ? ' pl--best' : '') + '" id="' + k + '">' +
+      (best ? '<span class="pl-flag">ВЫГОДНЕЕ</span>' : '') +
+      '<div class="pl-tier">' + p.title + '</div>' +
+      '<div class="pl-amt">' + p.price + '</div>' +
+      '<div class="pl-per">' + v.per + ' · ' + (k === 'year' ? '366 дней' : '92 дня') + ', без автопродления</div>' +
+      '<div class="pl-why">' + v.why + '</div>' +
+      '<ul class="pl-f">' + v.f.map(function (x) { return '<li>' + x + '</li>'; }).join('') + '</ul>' +
+      '<a class="btn ' + (best ? 'btn--cta' : 'btn--pri') + '" href="' + url + '"' +
+        (tg ? ' target="_blank" rel="noopener"' : '') + '>' +
+        (tg ? 'Оплатить через Telegram' : 'Оплатить ' + p.price) + '</a>' +
+      qrBlock + '</div>';
+  }).join('');
+
+  /* Карточки тарифов рисует скрипт, поэтому к моменту перехода по #year
+     якоря ещё не существует и браузер никуда не прокручивает. Доводим сами. */
+  var want = (location.hash || '').replace('#', '');
+  if (want && document.getElementById(want)) {
+    setTimeout(function () {
+      document.getElementById(want).scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 60);
+  }
+
+  document.getElementById('paidText').textContent = manual
+    ? 'Напишите нам, что оплатили, — пришлём код доступа, обычно за ' + A.deliveryWait +
+      '. Если код уже на руках, введите его на странице доступа.'
+    : 'Код пришёл письмом — введите его на странице доступа или просто нажмите ссылку из письма.';
+
+  /* ── вопросы, которые родитель задаёт до оплаты, а не после ─────── */
+  var FAQ = [
+    ['Что будет, если ребёнку не зайдёт?',
+     'Вернём деньги полностью в течение 14 дней с оплаты — без объяснений и без спора. ' +
+     'Напишите в Telegram, укажите дату оплаты и код.'],
+    ['Деньги будут списываться каждый месяц?',
+     'Нет. Это разовая оплата за срок: 92 дня или 366 дней. Карта нигде не сохраняется, ' +
+     'подписка не оформляется, продлевать ничего не нужно — срок просто закончится.'],
+    ['На скольких устройствах работает код?',
+     'Код рассчитан на одну семью: его можно ввести и на телефоне ребёнка, и на планшете, ' +
+     'и на компьютере. Публиковать его или отдавать посторонним нельзя.'],
+    ['Нужно ли что-то устанавливать и регистрироваться?',
+     'Нет. Игры открываются в браузере телефона, планшета или компьютера. Аккаунт не создаётся, ' +
+     'логина и пароля нет — доступ держится на коде.'],
+    ['Где хранится прогресс ребёнка?',
+     'В памяти браузера на том устройстве, где играли. На наши серверы он не уходит, ' +
+     'и о ребёнке мы не собираем никаких данных. Обратная сторона: если очистить данные браузера, ' +
+     'прогресс сотрётся. Сообщение с кодом лучше сохранить — по нему доступ вернётся за секунду.'],
+    ['Код не пришёл — что делать?',
+     'Написать в Telegram ' + R.tgName + ' или на ' + R.email + ', приложив подтверждение оплаты. ' +
+     'Выдадим повторно и бесплатно.'],
+    ['Можно использовать в школе или кружке?',
+     'Для педагогов условия отдельные — напишите в Telegram. Открытый урок «Час с ИИ» ' +
+     'с планом занятия уже лежит на сайте бесплатно.']
+  ];
+  document.getElementById('faq').innerHTML = FAQ.map(function (q) {
+    return '<details class="fq"><summary>' + q[0] + '</summary><p>' + q[1] + '</p></details>';
+  }).join('');
+
+  document.getElementById('req').innerHTML =
+    R.seller + ' · ИНН ' + R.inn + ' · ОГРНИП ' + R.ogrnip + '<br>' +
+    R.address + ' · <a href="mailto:' + R.email + '">' + R.email + '</a>';
+})();
+</script>
+</body>
+</html>

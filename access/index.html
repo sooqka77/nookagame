@@ -1,0 +1,286 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Мой доступ — Nooka</title>
+<meta name="description" content="Ввести код доступа Nooka и открыть все три игры курса. Проверить, до какой даты действует доступ.">
+<meta name="robots" content="noindex">
+<link rel="icon" type="image/svg+xml" href="../logo.svg">
+<link href="/fonts/nooka-fonts.css" rel="stylesheet">
+<style>
+:root{
+  --bg:#FFF4E4; --surface:#FFFDF8; --ink:#2D1B45; --ink-2:#6B5680; --ink-3:#A797B8;
+  --pri-1:#E4D9FF; --pri-2:#A98BFF; --pri-3:#7B4FF2; --pri-4:#5836BD;
+  --sun-1:#FFF1B4; --sun-2:#FFD84D; --sun-3:#E8AE1F;
+  --ok-1:#C9F4DE; --ok-2:#4ED99B; --ok-3:#1FA76E;
+  --warn-1:#FFD6CC; --warn-3:#D94A34;
+  --line:rgba(45,27,69,.1);
+  --brand:'Unbounded','Nunito',system-ui,sans-serif;
+  --shadow:0 10px 22px -8px rgba(45,27,69,.18),0 4px 10px -4px rgba(45,27,69,.08);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;padding:0 0 56px;background:var(--bg);color:var(--ink);
+  font-family:'Nunito',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+.wrap{max-width:620px;margin:0 auto;padding:0 20px}
+a{color:var(--pri-3);font-weight:800;text-decoration:none}
+a:hover{color:var(--pri-4)}
+img{max-width:100%}
+
+.top{padding:20px 0 16px}
+.top .row{display:flex;align-items:center;justify-content:space-between;gap:14px}
+.top img{height:30px;display:block}
+.top .back{font-weight:800;font-size:14px;color:var(--ink-2)}
+
+h1{font-family:var(--brand);font-weight:700;font-size:27px;line-height:1.18;margin:10px 0 8px;letter-spacing:-.015em}
+.lede{font-weight:700;font-size:15px;line-height:1.5;color:var(--ink-2);margin:0 0 22px}
+
+/* ── главная плашка состояния: с неё родитель начинает читать ── */
+.state{border-radius:24px;padding:20px 22px;margin-bottom:18px;box-shadow:var(--shadow)}
+.state--on{background:linear-gradient(180deg,#E8FBF2,#D6F6E8);box-shadow:var(--shadow),inset 0 0 0 2px rgba(78,217,155,.5)}
+.state--off{background:var(--surface)}
+.state--warn{background:linear-gradient(180deg,#FFF6E4,#FFEFD2);box-shadow:var(--shadow),inset 0 0 0 2px rgba(255,216,77,.6)}
+.state .badge{display:inline-flex;align-items:center;gap:7px;padding:6px 13px;border-radius:999px;
+  font-weight:800;font-size:12px;margin-bottom:10px}
+.state--on .badge{background:rgba(31,167,110,.14);color:#136E48}
+.state--off .badge{background:var(--pri-1);color:var(--pri-4)}
+.state--warn .badge{background:rgba(232,174,31,.2);color:#7A5200}
+.state h2{font-family:var(--brand);font-weight:700;font-size:19px;line-height:1.28;margin:0 0 6px}
+.state p{font-weight:700;font-size:14.5px;line-height:1.55;color:var(--ink-2);margin:0}
+
+.card{background:var(--surface);border-radius:24px;padding:20px 22px;margin-bottom:16px;box-shadow:var(--shadow)}
+.card h3{font-family:var(--brand);font-weight:700;font-size:16px;margin:0 0 6px}
+.card p{font-weight:700;font-size:14px;line-height:1.55;color:var(--ink-2);margin:0 0 14px}
+.card p:last-child{margin-bottom:0}
+
+.row{display:flex;gap:9px}
+.row input{flex:1;min-width:0;padding:15px 16px;border:none;border-radius:16px;
+  font-family:var(--brand);font-weight:700;font-size:15px;letter-spacing:.05em;text-transform:uppercase;
+  color:var(--ink);background:#fff;box-shadow:inset 0 0 0 1.5px rgba(45,27,69,.14);outline:none}
+.row input::placeholder{color:var(--ink-3);letter-spacing:.05em}
+.row input:focus{box-shadow:inset 0 0 0 2px var(--pri-2)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:15px 24px;border:none;
+  border-radius:999px;cursor:pointer;font-family:var(--brand);font-weight:700;font-size:15px;
+  color:var(--ink);text-decoration:none;transition:transform .1s,filter .15s;white-space:nowrap}
+.btn:hover{filter:brightness(1.04);transform:translateY(-1px)}
+.btn:active{transform:translateY(3px)}
+.btn--pri{color:#fff;background:linear-gradient(180deg,#9B78FF,#7B4FF2 60%,#6E41E4);box-shadow:0 5px 0 var(--pri-4)}
+.btn--cta{background:linear-gradient(180deg,#FFF1B4,#FFD84D 60%,#FFC53A);box-shadow:0 5px 0 var(--sun-3)}
+.btn--soft{background:linear-gradient(180deg,#fff,#FFF6E9);box-shadow:0 5px 0 rgba(45,27,69,.1),var(--shadow)}
+.btn--wide{width:100%}
+.msg{min-height:20px;margin-top:10px;font-weight:800;font-size:13.5px;line-height:1.45}
+.msg--bad{color:var(--warn-3)}
+.msg--ok{color:var(--ok-3)}
+
+.games{display:flex;flex-direction:column;gap:10px}
+.g{display:flex;align-items:center;gap:14px;padding:15px 16px;border-radius:20px;text-decoration:none;
+  background:#fff;box-shadow:inset 0 0 0 1.5px rgba(45,27,69,.08)}
+.g:hover{box-shadow:inset 0 0 0 2px var(--pri-2)}
+.g .n{flex:none;width:38px;height:38px;border-radius:13px;display:flex;align-items:center;justify-content:center;
+  font-family:var(--brand);font-weight:700;font-size:15px;background:var(--pri-1);color:var(--pri-4)}
+.g b{display:block;font-family:var(--brand);font-weight:700;font-size:15px;color:var(--ink)}
+.g s{display:block;margin-top:3px;font-weight:700;font-size:12.5px;line-height:1.4;color:var(--ink-2);text-decoration:none}
+.g .tx{flex:1 1 auto;min-width:0}
+.g .tag{margin-left:auto;flex:none;padding:5px 11px;border-radius:999px;font-weight:800;font-size:11px}
+/* На узком экране номер и бирка вместе съедают половину строки, и название
+   игры ломается в столбик по одному слову. Номер убираем — порядок и так
+   виден сверху вниз, — а бирку опускаем под текст. */
+@media(max-width:430px){
+  .g{flex-wrap:wrap;row-gap:9px}
+  .g .n{display:none}
+  .g .tx{flex:1 1 100%}
+  .g .tag{margin-left:0}
+}
+.g .tag--free{background:var(--ok-1);color:var(--ok-3)}
+.g .tag--open{background:var(--ok-1);color:var(--ok-3)}
+.g .tag--lock{background:rgba(45,27,69,.07);color:var(--ink-3)}
+.g--lock{opacity:.72}
+
+.hint{font-weight:700;font-size:13px;line-height:1.6;color:var(--ink-3);margin-top:8px}
+.foot{margin-top:30px;padding-top:18px;border-top:1px solid var(--line);text-align:center;
+  font-weight:700;font-size:12.5px;line-height:1.7;color:var(--ink-3)}
+.foot a{font-size:12.5px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="top"><div class="row" style="display:flex">
+    <a href="../index.html"><img src="../logo.svg" alt="Nooka"></a>
+    <a class="back" href="../index.html">← На главную</a>
+  </div></div>
+
+  <h1>Мой доступ</h1>
+  <p class="lede">Здесь видно, что открыто и до какого числа. Аккаунта нет — доступ держится на коде.</p>
+
+  <div class="state" id="state"><h2>Проверяем…</h2></div>
+
+  <div id="unlock"></div>
+
+  <div class="card">
+    <h3>Игры курса</h3>
+    <div class="games" id="games"></div>
+    <p class="hint" id="gamesHint"></p>
+  </div>
+
+  <div id="help"></div>
+
+  <p class="foot" id="foot"></p>
+</div>
+
+<script src="../games/nooka-levels.js"></script>
+<script src="../games/nooka-access.js"></script>
+<script src="../legal/requisites.js"></script>
+<script>
+/* nooka-access сам разбирает ?k=NOOKA-XXXX-YYYY и чистит адрес — к моменту
+   отрисовки доступ уже записан. Поэтому рисуем следующим тиком, а не сразу. */
+setTimeout(function () {
+  var A = window.nookaAccess, L = window.nookaLevels, R = window.NOOKA_LEGAL;
+  var manual = A.delivery !== 'auto';
+
+  function plural(n, one, few, many) {
+    var a = Math.abs(n) % 100, b = a % 10;
+    if (a > 10 && a < 20) return many;
+    if (b > 1 && b < 5) return few;
+    if (b === 1) return one;
+    return many;
+  }
+  function dstr(ms) {
+    var d = new Date(ms);
+    return String(d.getDate()).padStart(2, '0') + '.' +
+           String(d.getMonth() + 1).padStart(2, '0') + '.' + d.getFullYear();
+  }
+
+  function render() {
+    var st = A.state();
+    var open = st.paid || A.openAll;
+
+    /* ── состояние ─────────────────────────────────────────── */
+    var box = document.getElementById('state');
+    if (st.paid) {
+      /* Считаем целые сутки вниз: код печатается с запасом вверх, и годовой
+         доступ иначе показывался бы как «367 дней» против обещанных 366. */
+      var left = Math.max(1, Math.floor((st.until - Date.now()) / 86400000));
+      box.className = 'state state--on';
+      box.innerHTML = '<span class="badge">Всё открыто</span>' +
+        '<h2>Доступ открыт: три игры, 30 уровней</h2>' +
+        '<p>Действует ещё ' + left + ' ' + plural(left, 'день', 'дня', 'дней') +
+        ' — до ' + dstr(st.until) + '. Дальше доступ закроется сам, ' +
+        'списывать нечего: карта не привязана.</p>';
+    } else if (A.openAll) {
+      box.className = 'state state--on';
+      box.innerHTML = '<span class="badge">Всё открыто</span>' +
+        '<h2>Открыты все три игры</h2><p>Сейчас курс открыт целиком.</p>';
+    } else if (st.demoOff) {
+      box.className = 'state state--warn';
+      box.innerHTML = '<span class="badge">Ссылка отозвана</span>' +
+        '<h2>Эта демо-ссылка больше не работает</h2>' +
+        '<p>Первая игра открыта всем и остаётся бесплатной — её можно пройти целиком.</p>';
+    } else if (st.expired) {
+      box.className = 'state state--warn';
+      box.innerHTML = '<span class="badge">Срок закончился</span>' +
+        '<h2>Срок доступа вышел</h2>' +
+        '<p>Первая игра остаётся открытой навсегда. Чтобы вернуть остальные две — ' +
+        'возьмите новый код, прогресс ребёнка при этом никуда не денется.</p>';
+    } else {
+      box.className = 'state state--off';
+      box.innerHTML = '<span class="badge">Открыта первая игра</span>' +
+        '<h2>Пока открыта первая игра курса</h2>' +
+        '<p>Десять уровней бесплатно и без регистрации. Вторая и третья игры открываются кодом.</p>';
+    }
+
+    /* ── ввод кода: не показываем тем, у кого уже открыто ──── */
+    var un = document.getElementById('unlock');
+    un.innerHTML = open ? '' :
+      '<div class="card">' +
+        '<h3>Ввести код доступа</h3>' +
+        '<p>Код пришёл в сообщении и выглядит так: NOOKA-K7M3-QP9F. ' +
+        'Регистр и дефисы не важны.</p>' +
+        '<div class="row">' +
+          '<input id="in" placeholder="NOOKA-••••-••••" autocomplete="off" spellcheck="false" ' +
+            'autocapitalize="characters">' +
+          '<button class="btn btn--pri" id="go">Открыть</button>' +
+        '</div>' +
+        '<div class="msg" id="msg"></div>' +
+      '</div>';
+
+    if (!open) {
+      var inp = document.getElementById('in'), msg = document.getElementById('msg');
+      document.getElementById('go').onclick = function () {
+        var r = A.unlock(inp.value);
+        if (r.ok) {
+          msg.className = 'msg msg--ok';
+          msg.textContent = 'Готово. Открываем…';
+          setTimeout(render, 700);
+        } else {
+          msg.className = 'msg msg--bad';
+          msg.textContent = r.why;
+          inp.focus();
+        }
+      };
+      inp.onkeydown = function (e) { if (e.key === 'Enter') document.getElementById('go').click(); };
+    }
+
+    /* ── игры с бирками доступа ────────────────────────────── */
+    var g = document.getElementById('games');
+    g.innerHTML = '';
+    L.games.forEach(function (game, i) {
+      var free = (game.free || 0) >= game.levels.length;
+      var locked = !free && !open;
+      var tag = free ? '<span class="tag tag--free">Бесплатно</span>'
+        : locked ? '<span class="tag tag--lock">По коду</span>'
+        : '<span class="tag tag--open">Открыто</span>';
+      var a = document.createElement('a');
+      a.className = 'g' + (locked ? ' g--lock' : '');
+      a.href = locked ? '../buy/' : '../games/game.html?g=' + game.key;
+      a.innerHTML = '<span class="n">' + (i + 1) + '</span>' +
+        '<span class="tx"><b>' + game.name + '</b><s>' + game.sub + ' · ' +
+        game.levels.length + ' уровней · ' + game.age + '</s></span>' + tag;
+      g.appendChild(a);
+    });
+    document.getElementById('gamesHint').textContent = open
+      ? 'Открывается на любом устройстве, где введён код: телефон, планшет, компьютер.'
+      : 'Первую игру можно проходить прямо сейчас — она бесплатна целиком и навсегда.';
+
+    /* ── помощь: разная до и после оплаты ──────────────────── */
+    var help = document.getElementById('help');
+    if (open) {
+      help.innerHTML =
+        '<div class="card">' +
+          '<h3>Сохраните это сообщение</h3>' +
+          '<p>Доступ записан в память браузера этого устройства. Если очистить данные браузера ' +
+          'или сменить телефон — код нужно будет ввести снова. Письмо или сообщение с кодом ' +
+          'лучше не удалять.</p>' +
+          '<a class="btn btn--cta btn--wide" href="../games/game.html?g=data">Открыть игры →</a>' +
+        '</div>';
+    } else {
+      help.innerHTML =
+        '<div class="card">' +
+          '<h3>Оплатили, но кода нет?</h3>' +
+          '<p>' + (manual
+            ? 'Напишите нам в Telegram, что оплатили, — пришлём код, обычно за ' + A.deliveryWait +
+              '. Если платили давно, приложите чек: найдём оплату и выдадим код повторно.'
+            : 'Код приходит письмом на почту, указанную при оплате. Проверьте папку «Промоакции» ' +
+              'и «Спам». Если письма нет — напишите нам, выдадим повторно.') + '</p>' +
+          '<a class="btn btn--soft btn--wide" href="' + R.tg + '" target="_blank" rel="noopener">' +
+            'Написать в Telegram ' + R.tgName + '</a>' +
+        '</div>' +
+        '<div class="card">' +
+          '<h3>Ещё не оплачивали?</h3>' +
+          '<p>Вторая и третья игры — это ещё двадцать уровней: как управлять ИИ и что у него ' +
+          'внутри. Разовая оплата, без подписки, возврат в течение 14 дней.</p>' +
+          '<a class="btn btn--cta btn--wide" href="../buy/">Посмотреть тарифы →</a>' +
+        '</div>';
+    }
+  }
+
+  render();
+  document.getElementById('foot').innerHTML =
+    '<a href="' + R.tg + '" target="_blank" rel="noopener">Поддержка в Telegram</a> · ' +
+    '<a href="../legal/oferta.html">Оферта</a> · ' +
+    '<a href="../legal/privacy.html">Персональные данные</a><br>' +
+    R.short + ' · ИНН ' + R.inn;
+}, 30);
+</script>
+</body>
+</html>

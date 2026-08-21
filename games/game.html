@@ -73,6 +73,22 @@ h1{font-family:var(--brand);font-weight:900;font-size:30px;line-height:1.1;
   box-shadow:0 0 14px var(--gtint,var(--pri));transition:width .6s cubic-bezier(.2,.8,.3,1)}
 .prog__n{margin-top:9px;font-weight:700;font-size:12px;color:var(--ink-3)}
 
+/* ── плашка закрытой игры ──────────────────────────────────
+   Родитель, пришедший с витрины, видит десять замков. Без этой плашки
+   на странице не написано ни почему закрыто, ни что с этим делать. */
+.wall{margin-top:14px;padding:17px 18px;border-radius:20px;
+  background:linear-gradient(180deg,rgba(255,216,77,.13),rgba(255,216,77,.05));
+  box-shadow:inset 0 0 0 1.5px rgba(255,216,77,.36)}
+.wall b{display:block;font-family:var(--brand);font-weight:700;font-size:14.5px;color:#FFE7B8;margin-bottom:6px}
+.wall p{margin:0 0 13px;font-weight:700;font-size:13px;line-height:1.5;color:var(--ink-2)}
+.wall-row{display:flex;gap:9px;flex-wrap:wrap;align-items:center}
+.wall-go{display:inline-flex;align-items:center;gap:7px;padding:12px 20px;border-radius:999px;
+  text-decoration:none;font-family:var(--brand);font-weight:700;font-size:14px;color:#33240A;
+  background:linear-gradient(180deg,#FFF1B4,#FFD84D);box-shadow:0 4px 0 #C79412}
+.wall-go:active{transform:translateY(2px);box-shadow:0 2px 0 #C79412}
+.wall-alt{padding:12px 4px;font-weight:800;font-size:13px;color:var(--ink-2);text-decoration:none}
+.wall-alt:hover{color:#FFE7B8}
+
 /* ── маршрут ── */
 .route{margin-top:26px;position:relative}
 .st{position:relative;margin-bottom:12px}
@@ -288,7 +304,27 @@ document.getElementById('head').innerHTML =
       ? '<div class="prog__n">Открыто ' + st.ready + ' ' + plural(st.ready,'уровень','уровня','уровней') +
         ', ещё ' + (st.total - st.ready) + ' в работе</div>'
       : '<div class="prog__n">Все ' + st.total + ' уровней готовы</div>') +
-  '</div>';
+  '</div>' + wallNote();
+
+/* Если в игре нечего играть без кода — объясняем это прямо здесь и даём
+   обе дороги: купить и ввести код. Молчащий столбик замков — потерянный
+   родитель, который просто уходит. */
+function wallNote() {
+  var open = G.levels.some(function (lv) { return lv.href && nookaAccess.canPlay(key, lv.n); });
+  if (open) return '';
+  var freeGame = nookaLevels.games.filter(function (x) {
+    return (x.free || 0) >= x.levels.length; })[0];
+  return '<div class="wall">' +
+    '<b>Эта игра открывается по коду</b>' +
+    '<p>Первая игра курса бесплатна целиком' +
+      (freeGame ? ' — «' + esc(freeGame.name) + '», ' + freeGame.levels.length + ' уровней' : '') +
+      '. Вторая и третья открываются одним кодом на всю семью: разовая оплата, ' +
+      'без подписки, возврат в течение 14 дней.</p>' +
+    '<div class="wall-row">' +
+      '<a class="wall-go" href="' + nookaAccess.buyUrl + '">Открыть весь курс →</a>' +
+      '<a class="wall-alt" href="' + nookaAccess.accessUrl + '">У меня есть код</a>' +
+    '</div></div>';
+}
 
 /* ── маршрут ── */
 document.getElementById('route').innerHTML = G.levels.map(function (lv) {
