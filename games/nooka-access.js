@@ -77,10 +77,12 @@
   var DEMO_SERIAL = 15;
   var DEMO_OFF = false;   // ← рубильник: true и выложить — демо закрыто
 
-  /* ── предпросмотр стены до старта продаж ──────────────────
-     ?wall=1 включает стену только в этой вкладке, ?wall=0 выключает.
-     Нужно, чтобы посмотреть глазами родителя, ничего не открывая
-     и не закрывая всем остальным. На проде поведение не меняется. */
+  /* ── предпросмотр: «как видит родитель без оплаты» ─────────
+     ?wall=1 включает режим только в этой вкладке, ?wall=0 выключает.
+     Гасит и общий показ, и записанный на устройстве доступ — иначе
+     владелец с личным ключом видит всё открытым и проверить не может.
+     Сам ключ при этом остаётся в памяти браузера: закрыл режим —
+     доступ на месте. Другим людям это ничего не меняет. */
   var WALL_PREVIEW = false;
   try {
     var wq = new URLSearchParams(location.search).get('wall');
@@ -161,6 +163,9 @@
     try { return JSON.parse(localStorage.getItem(KEY)) || null; } catch (e) { return null; }
   }
   function state() {
+    /* В режиме предпросмотра притворяемся, что оплаты нет: это единственный
+       способ увидеть сайт глазами покупателя, не стирая свой ключ. */
+    if (WALL_PREVIEW) return { paid: false, preview: true };
     var a = load();
     if (!a || !a.until) return { paid: false };
     /* Демо отозвали — доступ гаснет и на тех устройствах, где уже открыт:
@@ -500,12 +505,32 @@
 
   var payResult = null;
 
+  /* Метка режима. Без неё владелец, открывший превью и забывший о нём,
+     решит, что потерял доступ, — и полезет чинить то, что не сломано. */
+  function previewBadge() {
+    if (!WALL_PREVIEW || document.getElementById('nkprev')) return;
+    var off = location.pathname + '?wall=0';
+    var el = document.createElement('div');
+    el.id = 'nkprev';
+    /* nowrap обязателен: на телефоне текст иначе встаёт в четыре строки
+       и плашка превращается в кляксу поверх страницы */
+    el.style.cssText = 'position:fixed;left:50%;bottom:16px;transform:translateX(-50%);z-index:10001;' +
+      'display:flex;align-items:center;gap:11px;white-space:nowrap;' +
+      'padding:10px 15px;border-radius:999px;background:#150F2E;color:#FFF6DC;' +
+      "font:800 12.5px/1.2 'Nunito',system-ui,sans-serif;box-shadow:0 14px 34px rgba(0,0,0,.45);" +
+      'border:1.5px solid rgba(255,216,77,.55)';
+    el.innerHTML = '<span>Вид как у родителя без оплаты</span>' +
+      '<a href="' + off + '" style="color:#FFD84D;text-decoration:underline;white-space:nowrap">Выключить</a>';
+    document.body.appendChild(el);
+  }
+
   function boot() {
     /* Сначала возврат из платёжки, потом ссылка с кодом: если человек
        вернулся с оплаты, стена не должна успеть моргнуть ему в лицо. */
     payResult = payReturn();
     fromLink();      // ссылка работает и до включения стены: доступ ляжет впрок
     guard();
+    previewBadge();
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
