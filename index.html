@@ -366,6 +366,23 @@ footer{border-top:2px solid rgba(123,79,242,.12);background:#FFF6E9}
   border-top:1px solid rgba(255,255,255,.1)}
 .cc-foot b{font-family:var(--nk-brand);font-weight:700;font-size:14px}
 .cc-foot span{font-size:13.5px;font-weight:800;color:var(--t)}
+/* Цена рядом с числом уровней: «за что платить» должно читаться в строке,
+   а не выводиться из бирки на обложке. */
+.cc-foot .cc-price--free{color:#5FE3A6}
+.cc-foot .cc-price--pay{color:#FFD84D}
+/* Кнопка действия. До неё карточка целиком вела в хаб, и по ней нельзя было
+   понять, где играть бесплатно, а где купить: подпись «Открыть →» была
+   одинаковой у всех трёх. */
+.cc-go{display:flex;align-items:center;justify-content:center;gap:8px;
+  width:calc(100% - 44px);margin:14px 22px 0;padding:14px 18px;border:none;border-radius:999px;
+  cursor:pointer;font-family:var(--nk-brand);font-weight:700;font-size:14.5px;line-height:1;
+  transition:transform .1s,filter .15s}
+.cc-go:hover{filter:brightness(1.06)}
+.cc-go--play{color:#2D1B45;background:linear-gradient(180deg,#FFF1B4,#FFD84D 60%,#FFC53A);
+  box-shadow:0 4px 0 #C79412}
+.cc-go--buy{color:#fff;background:linear-gradient(180deg,#9B78FF,#7B4FF2);box-shadow:0 4px 0 #4B2CA8}
+.cc-go:active{transform:translateY(3px);box-shadow:0 1px 0 rgba(0,0,0,.4)}
+.cc-hint{margin:9px 22px 0;text-align:center;font-size:11.5px;font-weight:700;color:#9C8CBE}
 .cc-soon{font-size:11.5px;font-weight:700;color:#8878A8;margin-top:2px}
 .course-frame{margin:16px auto 0;max-width:720px;text-align:center;font-size:12.5px;
   font-weight:600;line-height:1.6;color:var(--nk-ink-2)}
@@ -698,7 +715,9 @@ document.querySelectorAll('[data-buy]').forEach(function(b){ b.addEventListener(
     var st = nookaLevels.stats(g.key);
     var pick = g.levels.filter(function(l){ return l.href; }).slice(0, 3);
     if (pick.length < 3) pick = g.levels.slice(0, 3);
-    var card = document.createElement('button');
+    /* Карточка — не кнопка: внутри живут настоящие кнопки действия,
+       а кнопку в кнопку вкладывать нельзя. */
+    var card = document.createElement('div');
     card.className = 'cc';
     card.style.setProperty('--t', g.tint);
     var SHOT = { data: 'cover-data', control: 'cover-control', inside: 'cover-inside' };
@@ -731,7 +750,31 @@ document.querySelectorAll('[data-buy]').forEach(function(b){ b.addEventListener(
         '<div class="cc-sub">'+g.sub+'</div>' +
         '<ul class="cc-list">' + pick.map(function(l){ return '<li>'+l.t+'</li>'; }).join('') + '</ul>' +
       '</div>' +
-      '<div class="cc-foot"><b>'+st.total+' уровней</b><span>Открыть →</span></div>';
+      '<div class="cc-foot"><b>'+st.total+' уровней</b>' +
+        /* Цена нужна, только пока есть что покупать. Когда доступ уже открыт —
+           кодом, демо-ссылкой или показом — слово «Оплачено» было бы неправдой. */
+        (freeGame || locked
+          ? '<span class="cc-price cc-price--' + (freeGame ? 'free' : 'pay') + '">' +
+            (freeGame ? 'Бесплатно' : 'от ' + (A ? A.plans.quarter.price : '490 ₽')) + '</span>'
+          : '') + '</div>' +
+      /* Кнопка говорит ровно то, что произойдёт по нажатию: играть или купить */
+      '<button class="cc-go cc-go--' + (locked ? 'buy' : 'play') + '" data-act="' +
+        (locked ? 'buy' : 'play') + '">' +
+        (freeGame ? 'Играть бесплатно →' : locked ? 'Купить доступ →' : 'Играть →') + '</button>' +
+      /* Подпись есть у каждой карточки — иначе кнопки встают на разной
+         высоте и ряд разъезжается */
+      '<div class="cc-hint">' +
+        (locked ? 'Один код открывает обе платные игры'
+                : freeGame ? 'Без регистрации и без карты'
+                : 'Доступ открыт — можно играть') + '</div>';
+
+    /* По кнопке — своё действие, по остальной карточке — заглянуть внутрь */
+    var go = card.querySelector('[data-act]');
+    go.addEventListener('click', function(e){
+      e.stopPropagation();
+      if (go.getAttribute('data-act') === 'buy') window.location.href = '/buy/';
+      else openGame('games/game.html?g='+g.key);
+    });
     card.addEventListener('click', function(){ openGame('games/game.html?g='+g.key); });
     box.appendChild(card);
   });
