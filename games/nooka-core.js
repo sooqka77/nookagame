@@ -47,8 +47,32 @@
   };
   function icon(name, size) { return ICONS[name] ? svg(ICONS[name], size) : ''; }
 
+  /* ── догадка ребёнка ──────────────────────────────────────
+     Перед уровнем ребёнок отвечает на вопрос уровня наугад, а в конце
+     видит, что оказалось на самом деле. Смысл не в правильном ответе,
+     а в том, чтобы он заметил разницу между тем, что думал, и тем, что
+     выяснил сам: без этой разницы уровень читается как просто игра.
+     Храним в localStorage — уровень может перезагрузиться по дороге. */
+  var BET = 'nooka_bet';
+  function betKey() {
+    try {
+      var c = window.nookaAccess && window.nookaAccess.currentLevel();
+      return c ? BET + '_' + c.game.key + '_' + c.level.n : BET + '_x';
+    } catch (e) { return BET + '_x'; }
+  }
+  function betSet(i, text) {
+    try { localStorage.setItem(betKey(), JSON.stringify({ i: i, t: text })); } catch (e) {}
+  }
+  function betGet() {
+    try { return JSON.parse(localStorage.getItem(betKey()) || 'null'); } catch (e) { return null; }
+  }
+  function betClear() { try { localStorage.removeItem(betKey()); } catch (e) {} }
+
   window.nooka = {
     icon: icon,
+    betSet: betSet,
+    betGet: betGet,
+    betClear: betClear,
     profile: load,
 
     /* Склонение существительного при числе: 1 выстрел, 2 выстрела, 5 выстрелов.
@@ -179,6 +203,13 @@
         '#nooka-win .nk-now b{display:block;font-size:10.5px;letter-spacing:1.2px;color:#A9791B;margin-bottom:5px}' +
         '#nooka-win .nk-now span{display:block;font-size:18px;line-height:1.25;font-weight:700;color:#111118}' +
         '#nooka-win .nk-show{font-size:13.5px;color:#6B7280;margin-bottom:16px}' +
+        '#nooka-win .nk-bet{text-align:left;border-radius:18px;padding:14px 16px;margin-bottom:14px;' +
+          'background:#F4F0FF;box-shadow:inset 0 0 0 1.5px rgba(123,47,255,.22)}' +
+        '#nooka-win .nk-bet b{display:block;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;' +
+          'color:#7B2FFF;margin-bottom:4px}' +
+        '#nooka-win .nk-bet p{margin:0 0 12px;font-size:15px;line-height:1.35;font-weight:700;color:#2D1B45}' +
+        '#nooka-win .nk-bet p:last-child{margin-bottom:0}' +
+        '#nooka-win .nk-bet .hit{color:#1FA76E}' +
         '#nooka-win .nk-next{display:block;width:100%;background:#7B2FFF;color:#fff;border:none;border-radius:16px;padding:14px;' +
         'font-size:16px;font-weight:700;cursor:pointer;font-family:inherit;margin-bottom:8px}' +
         '#nooka-win .nk-base{display:block;color:#7B2FFF;font-weight:700;font-size:14px;text-decoration:none;padding:8px}' +
@@ -189,7 +220,7 @@
          следующий уровень этой же игры, а ссылка ниже возвращает к списку.
          Сам уровень никуда не уводит: любой переход тут только по клику. */
       var hub = { href: '../base/', label: '\u041c\u043e\u044f \u0431\u0430\u0437\u0430' };
-      var next = null, hasArt = false, now = '';
+      var next = null, hasArt = false, now = '', real = '', betOk = null;
       try {
         if (window.nookaLevels && opts.mid) {
           window.nookaLevels.games.forEach(function (g) {
@@ -206,6 +237,11 @@
               hub.label = '\u041a \u0443\u0440\u043e\u0432\u043d\u044f\u043c: ' + g.name;
               hasArt = !!lv.art;
               now = lv.now || '';
+              real = lv.real || '';
+              if (lv.bets && typeof lv.bet === 'number') {
+                var b = betGet();
+                if (b) betOk = (b.i === lv.bet) ? { ok: true, t: b.t } : { ok: false, t: b.t };
+              }
               var nx = g.levels[i + 1];
               if (nx && nx.href) next = { href: nx.href, title: nx.t };
             });
@@ -226,6 +262,20 @@
            теперь умеешь». Без неё уровень запоминается как игра, а знание из него
            не достаётся. Фраза в инфинитиве — она одинаково читается и мальчику,
            и девочке. Берётся из реестра, поля нет — блок не показывается. */
+        /* Сверка догадки. Ребёнок перед уровнем сказал, что думает, — здесь
+           видит, что оказалось. Разницу между этими двумя строчками он
+           обнаруживает сам, и она запоминается, а не прочитывается. */
+        (betOk && real
+          ? '<div class="nk-bet">' +
+              /* Без мужского рода: половина играющих — девочки. «Ты думал»
+                 и «ты угадал» пришлось бы писать в двух вариантах, поэтому
+                 говорим про догадку, а не про того, кто её сделал. */
+              '<b>' + (betOk.ok ? 'Догадка верна' : 'Твоя догадка') + '</b>' +
+              '<p' + (betOk.ok ? ' class="hit"' : '') + '>' + betOk.t + '</p>' +
+              '<b>' + (betOk.ok ? 'И вот почему' : 'А оказалось') + '</b>' +
+              '<p>' + real + '</p>' +
+            '</div>'
+          : '') +
         (now ? '<div class="nk-now"><b>ТЕПЕРЬ ТЫ ЭТО УМЕЕШЬ</b><span>' + now + '</span></div>' : '') +
         '<div class="nk-show">Покажи родителям, что у тебя получилось</div>' +
         '<button class="nk-next">' + (opts.nextLabel ||
@@ -234,6 +284,7 @@
         (hasArt ? '<a class="nk-base" href="../base/index.html#gallery">\u0412 \u043a\u043e\u043b\u043b\u0435\u043a\u0446\u0438\u044e</a>' : '') +
         '</div>';
       document.body.appendChild(wrap);
+      if (betOk) betClear();
 
       var pct = rank.next ? Math.min(100, Math.round((total - rank.at) / (rank.next.at - rank.at) * 100)) : 100;
       requestAnimationFrame(function () { wrap.querySelector('.nk-bar i').style.width = pct + '%'; });

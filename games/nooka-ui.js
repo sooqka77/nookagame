@@ -222,10 +222,78 @@ function FailModal({
    Берётся из реестра nooka-levels.js — все формулировки правятся в одном месте.
    Явно переданный goal перебивает реестр. */
 function nkGoal() {
+  var lv = nkLevel();
+  return (lv && lv.goal) || '';
+}
+function nkLevel() {
   try {
     var cur = window.nookaAccess && window.nookaAccess.currentLevel();
-    return (cur && cur.level && cur.level.goal) || '';
-  } catch (e) { return ''; }
+    return (cur && cur.level) || null;
+  } catch (e) { return null; }
+}
+
+/* ── экран догадки ────────────────────────────────────────────
+   Заменяет собой объяснение перед уровнем. Раньше здесь стояли три
+   текстовых блока подряд — «чему учимся», «правило» и подсказка, —
+   и ребёнок девяти лет пропускал их все: между ним и игрой была
+   кнопка «Начать», а всё остальное читалось как препятствие.
+
+   Теперь на экране нет ничего, что можно пропустить: чтобы начать,
+   нужно ответить на вопрос уровня. Ответ не проверяется и не
+   оценивается — он нужен, чтобы в конце ребёнок увидел разницу между
+   тем, что думал, и тем, что выяснил сам. Эта разница и есть понимание;
+   без неё уровень читается как просто игра.
+
+   Подсказка не исчезла — она приходит плашкой уже внутри игры, в тот
+   момент, когда действительно нужна. */
+function GuessGate({ emoji, title, ask, bets, tip, onStart }) {
+  function pick(i) {
+    try { window.nooka && window.nooka.betSet(i, bets[i]); } catch (e) {}
+    if (tip) { try { window.nooka && window.nooka.beat(tip); } catch (e) {} }
+    onStart();
+  }
+  return React.createElement('div', {
+    style: {
+      position: 'absolute', inset: 0,
+      background: 'linear-gradient(160deg,#182A4A 0%,#0D1427 55%)',
+      display: 'flex', flexDirection: 'column', alignItems: 'center',
+      justifyContent: 'center', padding: '28px 22px', overflowY: 'auto', zIndex: 100
+    }
+  },
+    React.createElement('div', { className: 'ak-bob', style: { fontSize: 54, marginBottom: 6 } }, emoji),
+    React.createElement('div', {
+      style: {
+        fontFamily: 'var(--ak-display)', fontWeight: 700, fontSize: 12,
+        letterSpacing: '.09em', color: '#FFD84D', marginBottom: 12, textTransform: 'uppercase'
+      }
+    }, title),
+    React.createElement('div', {
+      style: {
+        fontFamily: 'var(--ak-display)', fontWeight: 700, fontSize: 25, lineHeight: 1.22,
+        color: '#FFF6DC', textAlign: 'center', maxWidth: 330, marginBottom: 20
+      }
+    }, ask),
+    React.createElement('div', {
+      style: { width: '100%', maxWidth: 330, display: 'flex', flexDirection: 'column', gap: 10 }
+    }, bets.map(function (b, i) {
+      return React.createElement('button', {
+        key: i,
+        onClick: function () { pick(i); },
+        style: {
+          width: '100%', padding: '15px 18px', border: 'none', borderRadius: 18, cursor: 'pointer',
+          textAlign: 'left', fontFamily: 'var(--ak-display)', fontWeight: 700, fontSize: 16,
+          lineHeight: 1.3, color: '#FFF6DC', background: 'rgba(255,255,255,.07)',
+          boxShadow: 'inset 0 0 0 1.5px rgba(255,255,255,.16)'
+        }
+      }, b);
+    })),
+    React.createElement('div', {
+      style: {
+        marginTop: 16, fontSize: 13, fontWeight: 700, lineHeight: 1.45,
+        color: '#9FB0CC', textAlign: 'center', maxWidth: 300
+      }
+    }, 'Выбери, что думаешь. Проверим прямо сейчас — ошибиться тут нельзя.')
+  );
 }
 function IntroModal({
   emoji,
@@ -236,6 +304,14 @@ function IntroModal({
   tip,
   onStart
 }) {
+  /* Если у уровня в реестре есть вопрос и варианты догадки — показываем
+     их вместо объяснения. Уровни, где этого ещё нет, работают по-старому. */
+  var lv = nkLevel();
+  if (lv && lv.ask && lv.bets && lv.bets.length) {
+    return React.createElement(GuessGate, {
+      emoji: emoji, title: title, ask: lv.ask, bets: lv.bets, tip: tip, onStart: onStart
+    });
+  }
   return /*#__PURE__*/React.createElement("div", {
     style: {
       position: 'absolute',
