@@ -229,14 +229,16 @@
               if (x.mid !== opts.mid) return;
               hub.href = 'game.html?g=' + g.key;
               hub.label = 'К уровням: ' + g.name;
-              now = x.now || '';
+              now = x.goal || x.now || '';
             });
             g.levels.forEach(function (lv, i) {
               if (lv.mid !== opts.mid && lv.aim !== opts.mid) return;
               hub.href = 'game.html?g=' + g.key;
               hub.label = '\u041a \u0443\u0440\u043e\u0432\u043d\u044f\u043c: ' + g.name;
               hasArt = !!lv.art;
-              now = lv.now || '';
+              /* Замыкание: в начале уровня та же фраза стояла как «здесь
+                 учимся». Ребёнок должен узнать её, а не прочитать новую. */
+              now = lv.goal || lv.now || '';
               real = lv.real || '';
               if (lv.bets && typeof lv.bet === 'number') {
                 var b = betGet();

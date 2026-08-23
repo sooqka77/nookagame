@@ -261,12 +261,21 @@ function GuessGate({ emoji, title, ask, bets, tip, onStart }) {
     }
   },
     React.createElement('div', { className: 'ak-bob', style: { fontSize: 54, marginBottom: 6 } }, emoji),
+    /* Название уровня ребёнку ничего не говорит — здесь стоит умение,
+       которому уровень учит. Та же формулировка встретит его на экране
+       победы: «здесь учимся» в начале и «теперь умеешь» в конце. */
     React.createElement('div', {
       style: {
-        fontFamily: 'var(--ak-display)', fontWeight: 700, fontSize: 12,
-        letterSpacing: '.09em', color: '#FFD84D', marginBottom: 12, textTransform: 'uppercase'
+        fontFamily: 'var(--ak-display)', fontWeight: 700, fontSize: 10.5,
+        letterSpacing: '.1em', color: '#FFD84D', marginBottom: 5, textTransform: 'uppercase'
       }
-    }, title),
+    }, 'Здесь учимся'),
+    React.createElement('div', {
+      style: {
+        fontFamily: 'var(--ak-display)', fontWeight: 700, fontSize: 16, lineHeight: 1.25,
+        color: '#FFE7B8', textAlign: 'center', maxWidth: 320, marginBottom: 16
+      }
+    }, nkGoal() || title),
     React.createElement('div', {
       style: {
         fontFamily: 'var(--ak-display)', fontWeight: 700, fontSize: 25, lineHeight: 1.22,
@@ -359,7 +368,7 @@ function IntroModal({
       color: '#FFD84D',
       marginBottom: 7
     }
-  }, "ЧЕМУ УЧИМСЯ"), /*#__PURE__*/React.createElement("div", {
+  }, "ЗДЕСЬ УЧИМСЯ"), /*#__PURE__*/React.createElement("div", {
     style: {
       fontFamily: 'var(--ak-display)',
       fontWeight: 700,
