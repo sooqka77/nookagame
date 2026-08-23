@@ -261,21 +261,35 @@ function GuessGate({ emoji, title, ask, bets, tip, onStart }) {
     }
   },
     React.createElement('div', { className: 'ak-bob', style: { fontSize: 54, marginBottom: 6 } }, emoji),
-    /* Название уровня ребёнку ничего не говорит — здесь стоит умение,
-       которому уровень учит. Та же формулировка встретит его на экране
-       победы: «здесь учимся» в начале и «теперь умеешь» в конце. */
+    /* Название уровня — «Рентгенолог», «Диджей», «Джинн-буквалист» — само по
+       себе интригует, поэтому стоит крупно и первым. Пояснение, чему уровень
+       учит, идёт под ним отдельной строкой: то же самое ребёнок увидит на
+       экране победы как «теперь ты это умеешь». */
     React.createElement('div', {
       style: {
-        fontFamily: 'var(--ak-display)', fontWeight: 700, fontSize: 10.5,
-        letterSpacing: '.1em', color: '#FFD84D', marginBottom: 5, textTransform: 'uppercase'
+        fontFamily: 'var(--ak-display)', fontWeight: 700, fontSize: 24, lineHeight: 1.15,
+        color: 'var(--ak-ink)', textAlign: 'center', marginBottom: 8
       }
-    }, 'Здесь учимся'),
-    React.createElement('div', {
+    }, title),
+    nkGoal() && React.createElement('div', {
       style: {
-        fontFamily: 'var(--ak-display)', fontWeight: 700, fontSize: 16, lineHeight: 1.25,
-        color: '#FFE7B8', textAlign: 'center', maxWidth: 320, marginBottom: 16
+        display: 'flex', alignItems: 'baseline', justifyContent: 'center', gap: 7,
+        flexWrap: 'wrap', maxWidth: 320, marginBottom: 18
       }
-    }, nkGoal() || title),
+    },
+      React.createElement('span', {
+        style: {
+          fontFamily: 'var(--ak-display)', fontWeight: 700, fontSize: 10,
+          letterSpacing: '.1em', color: '#FFD84D', textTransform: 'uppercase'
+        }
+      }, 'Здесь учимся'),
+      React.createElement('span', {
+        style: {
+          fontFamily: 'var(--ak-display)', fontWeight: 700, fontSize: 14.5,
+          lineHeight: 1.3, color: '#FFE7B8', textAlign: 'center'
+        }
+      }, nkGoal())
+    ),
     React.createElement('div', {
       style: {
         fontFamily: 'var(--ak-display)', fontWeight: 700, fontSize: 25, lineHeight: 1.22,
