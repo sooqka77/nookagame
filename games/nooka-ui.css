@@ -345,3 +345,20 @@ html::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
   .p5sc svg *,.p5sc svg{animation:none !important;}
 }
 
+
+
+/* ── кнопка «Назад» на тёмных уровнях ──────────────────────────────
+   Белая кнопка из светлой темы на тёмном фоне читалась как случайное
+   пятно, а её бледно-сиреневая надпись почти сливалась с заливкой.
+   Стеклянная кнопка не спорит с содержанием экрана и остаётся читаемой. */
+.ak-btn--soft.nk-back{
+  color:#D8E3F6;
+  background:rgba(255,255,255,.08);
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.17);
+}
+.ak-btn--soft.nk-back:hover{background:rgba(255,255,255,.14);}
+.ak-btn--soft.nk-back:active{transform:translateY(1px);}
+
+/* Стрелка в надписи кнопки не должна уезжать на вторую строку:
+   «В правую →» в узкой колонке рвалось после слова. */
+.nk-btn{white-space:nowrap;}

@@ -19,7 +19,10 @@ function TopBar({
       flexShrink: 0
     }
   }, /*#__PURE__*/React.createElement("button", {
-    className: "ak-btn ak-btn--soft ak-btn--sm",
+    /* nk-back переопределяет белую заливку на стеклянную. Стиль лежит
+       в nooka-ui.css, который подключают только тёмные уровни курса, —
+       светлые игры (физика, код, промпты) его не видят и остаются как были. */
+    className: "ak-btn ak-btn--soft ak-btn--sm nk-back",
     onClick: onHome
   }, "← Назад"), /*#__PURE__*/React.createElement("div", {
     style: {

@@ -38,7 +38,10 @@
 
 /* две кучки */
 .clpiles{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 14px 0;}
-.clpile{padding:12px 10px;border-radius:20px;min-height:104px;
+/* Кучки — это места, куда ребёнок складывает зверей, поэтому они должны
+   выглядеть как ёмкости, а не как полоски: при низкой высоте под ними
+   оставалось полэкрана пустоты, и экран читался незаконченным. */
+.clpile{padding:14px 10px;border-radius:20px;min-height:186px;
   background:rgba(255,255,255,.04);box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.09);}
 .clpile__t{font-weight:900;font-size:11px;color:#7E8CA8;text-align:center;margin-bottom:8px;}
 .clpile__i{display:flex;flex-wrap:wrap;gap:5px;justify-content:center;}
@@ -101,9 +104,12 @@
    ============================================================ */
 
 const CL_COLORS = {
-  sun:  { t: 'жёлтые',  fill: '#FFD84D', dark: '#7A5B00' },
-  sea:  { t: 'синие',   fill: '#6FC3FF', dark: '#0B4A73' },
-  rose: { t: 'розовые', fill: '#FF9ECF', dark: '#7A2A54' }
+  /* fill — основной тон, lite — блик сверху, deep — тень снизу и уши,
+     dark — черты мордочки. Три тона вместо одного дают объём: плоская
+     заливка читалась как аппликация из бумаги. */
+  sun:  { t: 'жёлтые',  fill: '#FFD84D', lite: '#FFF0A8', deep: '#E5A912', dark: '#6B4E00' },
+  sea:  { t: 'синие',   fill: '#6FC3FF', lite: '#C4E9FF', deep: '#2E8FD4', dark: '#08405F' },
+  rose: { t: 'розовые', fill: '#FF9ECF', lite: '#FFD3E9', deep: '#E0669F', dark: '#6B2049' }
 };
 const CL_FEATURES = {
   color: { t: 'по цвету',  q: 'Цвет',  n: 3 },
@@ -125,22 +131,76 @@ const CL_ZOO = (() => {
   return out;
 })();
 
-/* существо рисуется по своим признакам: цвет заливки, форма тела, уши */
+/* Существо рисуется по трём своим признакам: цвет, форма тела, уши —
+   именно их ребёнок и должен различать, поэтому они остаются самыми
+   заметными. Всё остальное — объём, мордочка, лапы, тень — добавлено,
+   чтобы зверь выглядел живым: плоские круги с точками вместо глаз
+   читались как заготовка, а не как персонаж, и уровень от этого
+   выглядел незаконченным.
+
+   Каждому существу даётся свой поворот зрачков и наклон, чтобы двенадцать
+   зверей не выглядели одним, размноженным двенадцать раз. */
 function ClBeast({ b, size }) {
   const s = size || 54;
   const C = CL_COLORS[b.color];
-  const body = b.shape === 'round'
-    ? React.createElement('circle', { cx: 30, cy: 34, r: 20, fill: C.fill })
-    : React.createElement('rect', { x: 11, y: 15, width: 38, height: 38, rx: 8, fill: C.fill });
+  const uid = 'cb' + b.color + b.shape + b.ears;
+  const round = b.shape === 'round';
+  const tilt = (b.id % 3 - 1) * 3;          // лёгкий наклон головы
+  const look = (b.id % 2 ? 1 : -1) * 0.9;   // куда смотрят зрачки
+
+  const body = round
+    ? React.createElement('circle', { cx: 32, cy: 37, r: 21, fill: 'url(#' + uid + ')' })
+    : React.createElement('rect', { x: 11, y: 16, width: 42, height: 42, rx: 11, fill: 'url(#' + uid + ')' });
+
+  /* Уши: острые торчком или висячие каплей. Рисуются тёмным тоном —
+     так они не сливаются с телом и признак виден даже мельком. */
   const ear = (x, flip) => b.ears === 'sharp'
-    ? React.createElement('path', { key: x, d: 'M' + x + ' 20 l' + (flip ? -7 : 7) + ' -13 l3 15 z', fill: C.fill })
-    : React.createElement('ellipse', { key: x, cx: x + (flip ? -5 : 5), cy: 17, rx: 5, ry: 8, fill: C.fill });
-  return React.createElement('svg', { width: s, height: s, viewBox: '0 0 60 60' },
-    ear(18, true), ear(42, false), body,
-    React.createElement('circle', { cx: 23, cy: 32, r: 3.4, fill: C.dark }),
-    React.createElement('circle', { cx: 37, cy: 32, r: 3.4, fill: C.dark }),
-    React.createElement('path', { d: 'M26 42 q4 4 8 0', stroke: C.dark, strokeWidth: 2.4,
-      fill: 'none', strokeLinecap: 'round' }));
+    /* Основание уха заводим внутрь головы и делаем широким: узкий
+       треугольник, поставленный вплотную, читался как приклеенный сбоку. */
+    ? React.createElement('path', {
+        key: x,
+        d: 'M' + (x - 6) + ' ' + (round ? 28 : 26) +
+           ' L' + (x + (flip ? -5 : 5)) + ' ' + (round ? 7 : 5) +
+           ' L' + (x + 6) + ' ' + (round ? 28 : 26) + ' Z',
+        fill: C.deep
+      })
+    : React.createElement('ellipse', {
+        key: x, cx: x + (flip ? -3 : 3), cy: round ? 24 : 22,
+        rx: 7, ry: 11, fill: C.deep,
+        transform: 'rotate(' + (flip ? -24 : 24) + ' ' + (x + (flip ? -3 : 3)) + ' ' + (round ? 24 : 22) + ')'
+      });
+
+  const eye = (x) => React.createElement('g', { key: x },
+    React.createElement('ellipse', { cx: x, cy: 35, rx: 5.4, ry: 5.8, fill: '#FFFFFF' }),
+    React.createElement('circle', { cx: x + look, cy: 36, r: 2.9, fill: C.dark }),
+    React.createElement('circle', { cx: x + look - 1, cy: 34.6, r: 1.1, fill: '#FFFFFF' })
+  );
+
+  return React.createElement('svg', {
+    width: s, height: s, viewBox: '0 0 64 64', style: { display: 'block', overflow: 'visible' }
+  },
+    React.createElement('defs', null,
+      React.createElement('radialGradient', { id: uid, cx: '35%', cy: '28%', r: '78%' },
+        React.createElement('stop', { offset: '0%', stopColor: C.lite }),
+        React.createElement('stop', { offset: '55%', stopColor: C.fill }),
+        React.createElement('stop', { offset: '100%', stopColor: C.deep })
+      )
+    ),
+    /* тень — зверь стоит, а не висит в воздухе */
+    React.createElement('ellipse', { cx: 32, cy: 59, rx: 15, ry: 3.2, fill: 'rgba(0,0,0,.32)' }),
+    React.createElement('g', { transform: 'rotate(' + tilt + ' 32 36)' },
+      ear(23, true), ear(41, false),
+      body,
+      /* лапки */
+      React.createElement('ellipse', { cx: 24, cy: 56, rx: 6, ry: 3.6, fill: C.deep }),
+      React.createElement('ellipse', { cx: 40, cy: 56, rx: 6, ry: 3.6, fill: C.deep }),
+      eye(25), eye(39),
+      React.createElement('path', {
+        d: 'M27 45 q5 5 10 0', stroke: C.dark, strokeWidth: 2.6,
+        fill: 'none', strokeLinecap: 'round'
+      })
+    )
+  );
 }
 
 /* насколько раскладка ребёнка совпадает с признаком: считаем лучшее
@@ -272,14 +332,14 @@ function LevelCluster({ onWin, onHome }) {
       /* раскладываем зверей по одному */
       phase === 'sort' && React.createElement('div', { className: 'clnow' },
         React.createElement('div', { className: 'clnow__t' }, 'Сейчас перед тобой'),
-        React.createElement(ClBeast, { b: cur, size: 96 })),
+        React.createElement(ClBeast, { b: cur, size: 132 })),
 
       (phase === 'sort' || phase === 'why') && React.createElement('div', { className: 'clpiles' },
         [0, 1].map(side => React.createElement('div', { className: 'clpile', key: side },
           React.createElement('div', { className: 'clpile__t' },
             (side === 0 ? 'Левая кучка' : 'Правая кучка') + ' · ' + zooOf(side).length),
           React.createElement('div', { className: 'clpile__i' },
-            zooOf(side).map(b => React.createElement(ClBeast, { key: b.id, b: b, size: 34 })))))),
+            zooOf(side).map(b => React.createElement(ClBeast, { key: b.id, b: b, size: 40 })))))),
 
       /* Нейро разложил по своему признаку */
       (phase === 'neuro' || phase === 'pick') && React.createElement('div', { className: 'clzoo' },
