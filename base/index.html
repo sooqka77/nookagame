@@ -217,6 +217,23 @@ if(r.next){
 }
 document.getElementById('xpText').textContent=xp+' XP';
 
+/* ── экран новичка ────────────────────────────────────────────────
+   Пока ребёнок не прошёл ни одного уровня, база встречала его тремя
+   нулями подряд: «0 XP», пустая полоса и большой «0 дней подряд».
+   Первое, что он видит о себе, — перечень того, чего у него нет.
+   Показываем вместо этого ближайший шаг и его цену. */
+if (xp === 0) {
+  var first = nookaLevels.games[0].levels[0];
+  document.getElementById('rSub').textContent = 'Опыт копится за пройденные уровни';
+  document.querySelector('.xpbar .lbl').innerHTML =
+    '<span>За первый уровень</span><b>+' + first.xp + ' XP</b>';
+  /* полосу оставляем пустой намеренно: она показывает, что есть куда расти */
+  var stEl = document.querySelector('.streak');
+  stEl.innerHTML = '<div class="t" style="font-size:13px;line-height:1.4">Сыграй сегодня —<br>' +
+    'начнётся серия ' + nooka.icon('огонь', 15) + '</div>';
+  stEl.style.padding = '16px 18px';
+}
+
 /* ── курс: три игры ── */
 (function(){
   var NUM=['','Игра 1','Игра 2','Игра 3'];
@@ -228,10 +245,15 @@ document.getElementById('xpText').textContent=xp+' XP';
     return '<a class="cg" href="../games/game.html?g='+g.key+'" style="--t:'+g.tint+'">'+
       '<div class="cg-top"><span class="cg-no">'+NUM[i+1]+'</span><span class="cg-age">'+g.age+'</span></div>'+
       '<h3>'+g.name+'</h3><p>'+g.sub+'</p>'+
-      '<div class="lbl"><span>Пройдено</span><b>'+s.done+' из '+s.total+'</b></div>'+
+      /* Пока игра не начата, «Пройдено 0 из 10» не говорит ничего нового —
+         ноль и так виден по пустой полосе. Вместо счётчика показываем, чем
+         игра открывается: название первого уровня работает как приглашение. */
+      (s.done
+        ? '<div class="lbl"><span>Пройдено</span><b>'+s.done+' из '+s.total+'</b></div>'
+        : '<div class="lbl"><span>Уровней</span><b>'+s.total+'</b></div>')+
       '<div class="bar"><i style="width:'+pct+'%"></i></div>'+
       (s.ready<s.total?'<div class="cg-note">Открыто '+s.ready+', ещё '+(s.total-s.ready)+' в работе</div>':
-        '<div class="cg-note">Все уровни открыты</div>')+
+        s.done?'':'<div class="cg-note">«'+g.levels[0].t+'» — '+g.levels[0].goal+'</div>')+
       '<div class="cg-cta">'+(s.done?'Продолжить →':'Начать →')+'</div></a>';
   }).join('');
 
@@ -259,7 +281,7 @@ document.getElementById('planets').innerHTML=GAMES.map(function(g){
     '<div class="pl-head"><div class="pl-emo" style="background:'+g.bg+'">'+nooka.icon(g.ico,24)+'</div>'+
     '<div><div class="pl-name">'+g.name+(full?' <span class="badge-done">пройдено ✓</span>':'')+'</div>'+
     '<div class="pl-sub">'+g.sub+'</div></div></div>'+
-    '<div class="lbl"><span>Миссии</span><b>'+d+' из '+g.total+'</b></div>'+
+    '<div class="lbl"><span>Миссии</span><b>'+(d?d+' из '+g.total:g.total+' штук')+'</b></div>'+
     '<div class="bar"><i style="width:'+pct+'%"></i></div>'+
     '<a class="play" href="'+g.src+'">'+(d>0&&!full?'Продолжить →':full?'Играть ещё →':'Начать →')+'</a></div>';
 }).join('');
