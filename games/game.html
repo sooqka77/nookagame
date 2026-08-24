@@ -349,7 +349,12 @@ document.getElementById('route').innerHTML = G.levels.map(function (lv) {
   return '<div class="' + cls + (now ? ' st--open' : '') + '" data-n="' + lv.n + '">' +
     '<button class="st__hd">' +
       '<span class="st__no">' + ico('g-' + lv.g) + '<i>' + lv.n + '</i></span>' +
-      '<span class="st__tx"><b>' + esc(lv.t) + '</b><span>' + esc(lv.s) + '</span></span>' +
+      /* В карточке маршрута — чему уровень учит, а не пересказ механики.
+         Описания s занимают 48–96 знаков, в две строки влезает 55, поэтому
+         девять карточек из десяти обрывались на полуслове. Формулировка цели
+         короче, никогда не обрезается, и отвечает на вопрос, который ребёнок
+         задаёт в хабе: что мне это даст. Механику он и так увидит, открыв. */
+      '<span class="st__tx"><b>' + esc(lv.t) + '</b><span>' + esc(lv.goal || lv.s) + '</span></span>' +
       '<span class="st__mk">' + mark + '</span>' +
     '</button>' +
     '<div class="st__body"><div class="st__in">' +
