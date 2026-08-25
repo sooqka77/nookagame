@@ -201,7 +201,6 @@ function LevelTraces({ onWin, onHome }) {
     phase === 'intro' && React.createElement(IntroModal, {
       emoji: NKM('hello', 88),
       title: 'Кому показать рекламу',
-      goal: 'Увидеть, как из мелочей собирают портрет',
       law: 'Сегодня ты по другую сторону экрана.\nТы решаешь, кому показать рекламу.',
       tip: 'Имён нет — есть только следы: что искали, куда заходили, что смотрели.',
       onStart: () => { setPhase('work');

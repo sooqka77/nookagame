@@ -285,7 +285,6 @@ function LevelBot({ onWin, onHome }) {
     phase === 'intro' && React.createElement(IntroModal, {
       emoji: NKM('hello', 88),
       title: 'Бот с характером',
-      goal: 'Понять, что поведение ИИ задают правилами',
       law: 'К боту придут трое, и все разные.\nБот один — а правила ему даёшь ты.',
       tip: 'Задача: подобрать правила так, чтобы ушли довольными все трое.',
       onStart: () => setPhase('setup')

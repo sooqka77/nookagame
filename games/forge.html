@@ -1148,7 +1148,15 @@ function LevelForge({
     emoji: NKM('hello', 88),
     title: bonus ? 'Мастерская загадок' : 'Мастерская предметов',
     /* у бонуса своя цель: в реестре по этому файлу лежит четвёртый уровень */
-    goal: bonus ? 'Убедиться, что важна каждая деталь' : undefined,
+    /* В бонусном режиме адрес тот же, что у уровня, поэтому цель берём
+       из списка бонусов реестра — иначе показалась бы цель уровня. */
+    goal: bonus ? (function () {
+      try {
+        var g = window.nookaLevels.game('control');
+        var x = (g.extras || []).filter(function (e) { return /forge/.test(e.href || ''); })[0];
+        return x && x.goal;
+      } catch (e) { return undefined; }
+    })() : undefined,
     law: bonus
       ? 'Куй что хочешь, а потом загадай другу.\nОн увидит вещь — но не слова.'
       : 'Нейро кузнец: он выкует что угодно.\nНо ровно то, что опишешь словами.',

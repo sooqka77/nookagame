@@ -296,7 +296,6 @@ function LevelVision({ onWin, onHome }) {
     phase === 'intro' && React.createElement(IntroModal, {
       emoji: NKM('hello', 88),
       title: 'Смотри в дырочку',
-      goal: 'Понять, как ИИ смотрит на картинку',
       law: 'Я никогда не вижу картинку целиком.\nЯ подглядываю в маленькую дырочку.',
       tip: 'Сейчас попробуешь так же: угадай, что нарисовано, если видно только кусочек.',
       onStart: () => setPhase('hole')

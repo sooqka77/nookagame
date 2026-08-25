@@ -230,7 +230,8 @@ function nkGoal() {
 }
 function nkLevel() {
   try {
-    var cur = window.nookaAccess && window.nookaAccess.currentLevel();
+    var A = window.nookaAccess;
+    var cur = A && (A.currentAny ? A.currentAny() : A.currentLevel());
     return (cur && cur.level) || null;
   } catch (e) { return null; }
 }

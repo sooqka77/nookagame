@@ -371,7 +371,7 @@ function LevelWords({ onWin, onHome }) {
       /* из чего он выбирал */
       turn && turn.ai && React.createElement('div', { className: 'wdhow' },
         turn.ai.forks > 1
-          ? 'После этих слов у меня было ' + turn.ai.forks + ' продолжений. Взял самое частое: ' + turn.ai.conf + '%'
+          ? 'После этих слов у меня было ' + turn.ai.forks + ' ' + nooka.plural(turn.ai.forks, 'продолжение', 'продолжения', 'продолжений') + '. Взял самое частое: ' + turn.ai.conf + '%'
           : 'После этих слов у меня только одно продолжение — тут я не мог ошибиться'),
 
       !turn && opts && React.createElement('div', { className: 'wdopts' },

@@ -335,6 +335,35 @@
     return hit;
   }
 
+  /* Уровень или бонус, открытый по этому адресу. Бонусы лежат отдельно от
+     levels, и без этого поиска их страницы не знают своей цели: она была
+     вписана прямо в файл и расходилась с реестром при каждой правке. */
+  function currentAny() {
+    var hit = currentLevel();
+    if (hit) return hit;
+    if (!window.nookaLevels) return null;
+    var file = (location.pathname.split('/').pop() || '').toLowerCase();
+    var here = null;
+    try { here = new URLSearchParams(location.search); } catch (e) {}
+    var found = null;
+    window.nookaLevels.games.forEach(function (g) {
+      (g.extras || []).forEach(function (x) {
+        if (found || !x.href) return;
+        var base = x.href.split(/[?#]/)[0].toLowerCase();
+        if (base !== file) return;
+        var qs = (x.href.split('?')[1] || '').split('#')[0];
+        var same = true;
+        if (qs) qs.split('&').forEach(function (kv) {
+          if (!kv) return;
+          var i = kv.indexOf('='), k = i < 0 ? kv : kv.slice(0, i), v = i < 0 ? '' : kv.slice(i + 1);
+          if (!here || here.get(k) !== v) same = false;
+        });
+        if (same) found = { game: g, level: x };
+      });
+    });
+    return found;
+  }
+
   /* Все уровни, которые живут в этом файле. Нужны, когда по адресу нельзя
      понять, какой именно уровень открыт: prompt.html держит внутри пять
      уровней и переключает их сам, без перезагрузки страницы. Тогда судим
@@ -557,6 +586,7 @@
     demoOff: DEMO_OFF,
     fromLink: fromLink,
     currentLevel: currentLevel,
+    currentAny: currentAny,
     fileLevels: fileLevels,
     guard: guard,
     plans: PLANS,

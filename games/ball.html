@@ -281,8 +281,8 @@ function LevelBall({ onWin, onHome }) {
                   : run.slow
                     ? 'Шагает верно, но крошечно. За ' + BL_LIMIT + ' шагов не добрался: ему нужен 141.'
                     : run.steps <= 12
-                      ? 'Вот так. Дно найдено за ' + run.steps + ' шагов.'
-                      : 'Дошёл, но долго — ' + run.steps + ' шагов. Шаг можно и посмелее.')),
+                      ? 'Вот так. Дно найдено за ' + run.steps + ' ' + nooka.plural(run.steps, 'шаг', 'шага', 'шагов') + '.'
+                      : 'Дошёл, но долго — ' + run.steps + ' ' + nooka.plural(run.steps, 'шаг', 'шага', 'шагов') + '. Шаг можно и посмелее.')),
 
         React.createElement('div', { className: 'blvalwrap' },
           React.createElement(BlValley, { m: m, ball: ball, trail: trail })),

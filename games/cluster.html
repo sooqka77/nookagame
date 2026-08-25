@@ -311,7 +311,6 @@ function LevelCluster({ onWin, onHome }) {
     phase === 'intro' && React.createElement(IntroModal, {
       emoji: NKM('hello', 88),
       title: 'Разложи по кучкам',
-      goal: 'Увидеть, что ИИ сам находит группы',
       law: 'Тут никто не подписывал зверей.\nГруппы придётся найти самим — и тебе, и мне.',
       tip: 'Раскидай двенадцать зверей на две кучки — как считаешь нужным.',
       onStart: () => setPhase('sort')
