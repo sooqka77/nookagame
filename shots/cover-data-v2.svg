@@ -1,0 +1,102 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 400" width="500" height="400">
+  <!-- Обложка первой игры: ребёнок нарисовал кота пальцем — машина узнала.
+       Главное отличие от прежней версии: кот нарисован по-детски, кривовато,
+       незамкнутыми линиями. Идеальный неоновый контур читался как логотип
+       и ничего не сообщал; кривой рисунок сразу говорит, чья это рука. -->
+  <defs>
+    <linearGradient id="bg2" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#1E1638"/>
+      <stop offset="58%" stop-color="#120C26"/>
+      <stop offset="100%" stop-color="#090614"/>
+    </linearGradient>
+    <radialGradient id="halo2" cx=".5" cy=".42" r=".62">
+      <stop offset="0%" stop-color="#4CC9F0" stop-opacity=".30"/>
+      <stop offset="60%" stop-color="#4CC9F0" stop-opacity=".07"/>
+      <stop offset="100%" stop-color="#4CC9F0" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="slate2" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#241B42"/>
+      <stop offset="100%" stop-color="#171029"/>
+    </linearGradient>
+    <linearGradient id="ink2" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#7DE2FF"/>
+      <stop offset="100%" stop-color="#49B7F5"/>
+    </linearGradient>
+    <filter id="soft2" x="-60%" y="-60%" width="220%" height="220%">
+      <feGaussianBlur stdDeviation="7"/>
+    </filter>
+    <filter id="tiny2" x="-60%" y="-60%" width="220%" height="220%">
+      <feGaussianBlur stdDeviation="2.2"/>
+    </filter>
+  </defs>
+
+  <rect width="500" height="400" fill="url(#bg2)"/>
+  <rect width="500" height="400" fill="url(#halo2)"/>
+
+  <!-- доска для рисования, слегка повёрнута: живее, чем строго по сетке -->
+  <g transform="rotate(-2.5 250 196)">
+    <rect x="96" y="52" width="308" height="252" rx="26" fill="url(#slate2)"
+          stroke="#3B2F63" stroke-width="2"/>
+    <rect x="108" y="64" width="284" height="228" rx="18" fill="#0F0A1E" opacity=".55"/>
+    <!-- клетка, как в тетради -->
+    <g stroke="#6E5CA8" stroke-width=".7" opacity=".16">
+      <path d="M140 64V292M172 64V292M204 64V292M236 64V292M268 64V292M300 64V292M332 64V292M364 64V292"/>
+      <path d="M108 96h284M108 128h284M108 160h284M108 192h284M108 224h284M108 256h284"/>
+    </g>
+
+    <!-- ── детский кот: линии неровные, углы не сходятся ── -->
+    <g fill="none" stroke-linecap="round" stroke-linejoin="round" filter="url(#tiny2)" opacity=".55">
+      <g stroke="#7DE2FF" stroke-width="11">
+        <path d="M198 120c-10-18-11-32-6-36 9 4 21 12 30 19"/>
+        <path d="M302 118c9-17 19-27 27-29 1 11-2 24-6 33"/>
+        <path d="M186 168c-4 44 22 82 66 84 45 2 74-33 72-78-2-42-30-64-70-65-38-1-65 22-68 59z"/>
+      </g>
+    </g>
+    <g fill="none" stroke="url(#ink2)" stroke-width="7.5" stroke-linecap="round" stroke-linejoin="round">
+      <!-- уши: левое чуть выше правого, как и бывает от руки -->
+      <path d="M198 120c-10-18-11-32-6-36 9 4 21 12 30 19"/>
+      <path d="M302 118c9-17 19-27 27-29 1 11-2 24-6 33"/>
+      <!-- морда: контур не замкнут до конца -->
+      <path d="M186 168c-4 44 22 82 66 84 45 2 74-33 72-78-2-42-30-64-70-65-36-1-62 20-67 55"/>
+      <!-- усы разной длины -->
+      <path d="M150 186l38 7M148 208l40-1M158 230l32-9"/>
+      <path d="M360 184l-38 8M362 206l-40 0M352 228l-32-10"/>
+    </g>
+    <!-- глаза и нос, поставленные не совсем симметрично -->
+    <g fill="#7DE2FF">
+      <ellipse cx="228" cy="182" rx="9" ry="10.5"/>
+      <ellipse cx="282" cy="186" rx="9" ry="10.5"/>
+    </g>
+    <path d="M247 208q8 7 15 1" fill="none" stroke="#7DE2FF" stroke-width="6" stroke-linecap="round"/>
+  </g>
+
+  <!-- След касания на конце усов: рисунок только что вели пальцем.
+       Нарисованная рука в этом размере читалась как жёлтое пятно,
+       а круги от касания понятны и не спорят с рисунком. -->
+  <g transform="translate(332 236)">
+    <circle r="30" fill="#7DE2FF" opacity=".13" filter="url(#soft2)"/>
+    <circle r="19" fill="none" stroke="#7DE2FF" stroke-width="2" opacity=".38"/>
+    <circle r="11" fill="none" stroke="#7DE2FF" stroke-width="2.4" opacity=".62"/>
+    <circle r="4.5" fill="#BDF0FF"/>
+  </g>
+
+  <!-- вердикт машины -->
+  <g transform="translate(250 340)">
+    <rect x="-152" y="-23" width="304" height="46" rx="23" fill="#0E2A22"
+          stroke="#31C08A" stroke-width="2"/>
+    <circle cx="-124" cy="0" r="12.5" fill="#31C08A"/>
+    <path d="M-130.5 0l4.5 5.2 8.5-10.4" fill="none" stroke="#08160F" stroke-width="3.4"
+          stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="-104" y="6" font-family="Nunito,system-ui,sans-serif" font-size="17.5"
+          font-weight="800" fill="#BFF3DE">Это кот · уверен на 86%</text>
+  </g>
+
+  <!-- искры: машина «думает» -->
+  <g fill="#7DE2FF">
+    <circle cx="72" cy="120" r="3" opacity=".55"/>
+    <circle cx="60" cy="196" r="2.2" opacity=".38"/>
+    <circle cx="438" cy="104" r="2.6" opacity=".48"/>
+    <circle cx="452" cy="180" r="3.4" opacity=".33"/>
+    <circle cx="424" cy="268" r="2" opacity=".42"/>
+  </g>
+</svg>

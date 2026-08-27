@@ -1,0 +1,82 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 400" width="500" height="400">
+  <!-- Обложка третьей игры: заглядываем внутрь машины.
+       Прежняя версия была схемой из учебника — узлы и числа сами по себе.
+       Здесь та же сеть, но внутри корпуса: видно, что это устройство,
+       а не диаграмма, и видно, каким путём сигнал дошёл до ответа. -->
+  <defs>
+    <linearGradient id="bgI2" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#241A34"/>
+      <stop offset="58%" stop-color="#150E23"/>
+      <stop offset="100%" stop-color="#0A0715"/>
+    </linearGradient>
+    <radialGradient id="haloI2" cx=".52" cy=".46" r=".58">
+      <stop offset="0%" stop-color="#FFD84D" stop-opacity=".22"/>
+      <stop offset="100%" stop-color="#FFD84D" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="shellI2" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#3B2F5C"/>
+      <stop offset="100%" stop-color="#241B3C"/>
+    </linearGradient>
+    <filter id="softI2" x="-60%" y="-60%" width="220%" height="220%">
+      <feGaussianBlur stdDeviation="8"/>
+    </filter>
+    <filter id="glowI2" x="-70%" y="-70%" width="240%" height="240%">
+      <feGaussianBlur stdDeviation="3.4"/>
+    </filter>
+  </defs>
+
+  <rect width="500" height="400" fill="url(#bgI2)"/>
+  <rect width="500" height="400" fill="url(#haloI2)"/>
+
+  <g>
+    <rect x="88" y="72" width="324" height="252" rx="52" fill="url(#shellI2)"
+          stroke="#544178" stroke-width="2.5"/>
+    <rect x="112" y="96" width="276" height="204" rx="34" fill="#0D0A18"/>
+    <rect x="112" y="96" width="276" height="204" rx="34" fill="none"
+          stroke="#6E5AA0" stroke-width="1.6" opacity=".6"/>
+    <g fill="#6B5794">
+      <circle cx="104" cy="88" r="4"/><circle cx="396" cy="88" r="4"/>
+      <circle cx="104" cy="308" r="4"/><circle cx="396" cy="308" r="4"/>
+    </g>
+  </g>
+
+  <g transform="translate(0 6)">
+    <g stroke="#7A6AA8" stroke-width="1.6" opacity=".5">
+      <path d="M158 138L232 122M158 138L232 190M158 190L232 122M158 190L232 190M158 190L232 254M158 242L232 190M158 242L232 254"/>
+      <path d="M232 122L316 158M232 190L316 158M232 254L316 158M232 190L316 236M232 254L316 236"/>
+    </g>
+    <g stroke="#FFD84D" stroke-width="3.2" fill="none" filter="url(#glowI2)" opacity=".9">
+      <path d="M158 138L232 190L316 158"/>
+    </g>
+    <g stroke="#FFD84D" stroke-width="2.6" fill="none">
+      <path d="M158 138L232 190L316 158"/>
+    </g>
+    <g fill="#1A1430" stroke="#8574B8" stroke-width="2.4">
+      <circle cx="158" cy="190" r="15"/><circle cx="158" cy="242" r="15"/>
+      <circle cx="232" cy="122" r="17"/><circle cx="232" cy="254" r="17"/>
+      <circle cx="316" cy="236" r="16"/>
+    </g>
+    <g fill="#2A2038" stroke="#FFD84D" stroke-width="3">
+      <circle cx="158" cy="138" r="15"/>
+      <circle cx="232" cy="190" r="17"/>
+    </g>
+    <g fill="#FFF3C4">
+      <circle cx="196" cy="164" r="3.6"/>
+      <circle cx="274" cy="174" r="3.2"/>
+    </g>
+  </g>
+
+  <g transform="translate(316 158)">
+    <circle r="34" fill="#FFD84D" opacity=".22" filter="url(#softI2)"/>
+    <circle r="25" fill="#FFD84D"/>
+    <text y="6" text-anchor="middle" font-family="Nunito,system-ui,sans-serif"
+          font-size="17" font-weight="900" fill="#3A2A00">кот</text>
+  </g>
+
+  <g transform="translate(250 356)">
+    <rect x="-142" y="-21" width="284" height="42" rx="21" fill="#1A1330"
+          stroke="#7A63B8" stroke-width="2"/>
+    <text y="6" text-anchor="middle" font-family="Nunito,system-ui,sans-serif"
+          font-size="16.5" font-weight="800" fill="#E3D7FF">Видно, как машина решает</text>
+  </g>
+</svg>
