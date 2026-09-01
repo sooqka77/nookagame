@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Журнал прохождения — Nooka</title>
+<meta name="robots" content="noindex">
+<link href="/fonts/nooka-fonts.css" rel="stylesheet">
+<style>
+:root{--bg:#FFF4E4;--card:#FFFDF8;--ink:#2D1B45;--ink2:#6B5680;--ink3:#A797B8;
+ --pri:#7B4FF2;--bad:#D94A34;--ok:#1FA76E;--line:rgba(45,27,69,.1)}
+*{box-sizing:border-box}
+body{margin:0;padding:0 0 60px;background:var(--bg);color:var(--ink);
+  font-family:'Nunito',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+.wrap{max-width:760px;margin:0 auto;padding:0 18px}
+h1{font-family:'Unbounded','Nunito',sans-serif;font-weight:700;font-size:24px;margin:22px 0 6px}
+.sub{font-weight:700;font-size:14px;line-height:1.5;color:var(--ink2);margin:0 0 18px}
+.state{padding:14px 16px;border-radius:18px;margin-bottom:16px;font-weight:800;font-size:14px}
+.on{background:#DDF7EA;color:#136E48;box-shadow:inset 0 0 0 1.5px rgba(31,167,110,.35)}
+.off{background:#FFF0DC;color:#7A5200;box-shadow:inset 0 0 0 1.5px rgba(232,174,31,.4)}
+.row{display:flex;gap:9px;flex-wrap:wrap;margin-bottom:18px}
+.btn{padding:12px 18px;border:none;border-radius:999px;cursor:pointer;text-decoration:none;
+  font-family:'Unbounded','Nunito',sans-serif;font-weight:700;font-size:14px}
+.pri{color:#fff;background:var(--pri)}.soft{color:var(--ink);background:#fff;box-shadow:inset 0 0 0 1.5px var(--line)}
+.sum{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin-bottom:18px}
+.card{background:var(--card);border-radius:18px;padding:14px 16px;box-shadow:0 8px 20px -12px rgba(45,27,69,.2)}
+.card b{display:block;font-family:'Unbounded','Nunito',sans-serif;font-size:22px}
+.card span{font-size:12px;font-weight:700;color:var(--ink2)}
+table{width:100%;border-collapse:collapse;background:var(--card);border-radius:18px;overflow:hidden}
+th,td{padding:9px 12px;text-align:left;font-size:13px;font-weight:700;border-bottom:1px solid var(--line);vertical-align:top}
+th{background:#F4EEFF;font-size:11px;letter-spacing:.04em;text-transform:uppercase;color:var(--ink2)}
+td.k-ошибка{color:var(--bad)}td.k-победа{color:var(--ok)}
+.empty{padding:26px;text-align:center;color:var(--ink3);font-weight:700}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Журнал прохождения</h1>
+  <p class="sub">Техническая сторона: что открывалось, где случились ошибки, за что начислен
+  опыт. Записывается только на этом устройстве и никуда не отправляется.</p>
+
+  <div class="state" id="state"></div>
+  <div class="row">
+    <a class="btn pri" href="?log=1">Включить запись</a>
+    <a class="btn soft" href="?log=0">Выключить и стереть</a>
+    <button class="btn soft" id="copy">Скопировать отчёт</button>
+  </div>
+
+  <div class="sum" id="sum"></div>
+  <div id="tbl"></div>
+</div>
+
+<script src="../games/nooka-levels.js"></script>
+<script src="../games/nooka-core.js"></script>
+<script>
+(function () {
+  var arr = [];
+  try { arr = JSON.parse(localStorage.getItem('nooka_log') || '[]'); } catch (e) {}
+  var on = nooka.logOn();
+
+  document.getElementById('state').className = 'state ' + (on ? 'on' : 'off');
+  document.getElementById('state').textContent = on
+    ? 'Запись включена. Проходите уровни как обычно — сюда вернётесь в конце.'
+    : 'Запись выключена. Нажмите «Включить запись», потом играйте.';
+
+  var errs = arr.filter(function (x) { return x.k === 'ошибка'; });
+  var wins = arr.filter(function (x) { return x.k === 'победа'; });
+  var opens = arr.filter(function (x) { return x.k === 'открыт'; });
+  document.getElementById('sum').innerHTML =
+    '<div class="card"><b>' + opens.length + '</b><span>экранов открыто</span></div>' +
+    '<div class="card"><b>' + wins.length + '</b><span>уровней пройдено</span></div>' +
+    '<div class="card" style="' + (errs.length ? 'box-shadow:inset 0 0 0 2px rgba(217,74,52,.4)' : '') + '">' +
+      '<b>' + errs.length + '</b><span>ошибок</span></div>';
+
+  var t = document.getElementById('tbl');
+  if (!arr.length) { t.innerHTML = '<div class="empty">Пока пусто</div>'; return; }
+  function tm(x) { var d = new Date(x); return String(d.getHours()).padStart(2,'0') + ':' +
+    String(d.getMinutes()).padStart(2,'0') + ':' + String(d.getSeconds()).padStart(2,'0'); }
+  t.innerHTML = '<table><tr><th>время</th><th>что</th><th>где</th><th>подробности</th></tr>' +
+    arr.slice().reverse().map(function (x) {
+      return '<tr><td>' + tm(x.t) + '</td><td class="k-' + x.k + '">' + x.k + '</td>' +
+        '<td>' + x.u + '</td><td>' + x.s + '</td></tr>';
+    }).join('') + '</table>';
+
+  document.getElementById('copy').onclick = function () {
+    var txt = 'Журнал Nooka — ' + new Date().toLocaleString('ru') + '\n' +
+      'экранов: ' + opens.length + ', пройдено: ' + wins.length + ', ошибок: ' + errs.length + '\n\n' +
+      arr.map(function (x) { return tm(x.t) + '  ' + x.k + '  ' + x.u + '  ' + x.s; }).join('\n');
+    navigator.clipboard.writeText(txt);
+    this.textContent = 'Скопировано';
+    var b = this; setTimeout(function () { b.textContent = 'Скопировать отчёт'; }, 1600);
+  };
+})();
+</script>
+</body>
+</html>

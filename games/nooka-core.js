@@ -68,8 +68,52 @@
   }
   function betClear() { try { localStorage.removeItem(betKey()); } catch (e) {} }
 
+  /* ── чёрный ящик ──────────────────────────────────────────
+     Когда по уровням идёт не разработчик, а человек, консоли никто не
+     видит: тихая ошибка, неначисленный опыт или несохранённый прогресс
+     проходят незамеченными, а по описанию «что-то подвисло» их не найти.
+
+     Включается ссылкой ?log=1 и дальше живёт в браузере, пока не выключат
+     через ?log=0. Пишет только техническое: адрес уровня, ошибки, опыт.
+     Ничего никуда не отправляет — запись лежит на устройстве, читать её
+     нужно на странице tools/log.html.                                   */
+  var LOG = 'nooka_log';
+  var logOn = false;
+  try {
+    var lq = new URLSearchParams(location.search).get('log');
+    if (lq === '1') localStorage.setItem(LOG + '_on', '1');
+    if (lq === '0') { localStorage.removeItem(LOG + '_on'); localStorage.removeItem(LOG); }
+    logOn = localStorage.getItem(LOG + '_on') === '1';
+  } catch (e) {}
+
+  function logPush(kind, text) {
+    if (!logOn) return;
+    try {
+      var arr = JSON.parse(localStorage.getItem(LOG) || '[]');
+      arr.push({ t: Date.now(), k: kind, s: String(text).slice(0, 180),
+                 u: location.pathname.split('/').pop() + location.search + location.hash });
+      if (arr.length > 400) arr = arr.slice(-400);   // журнал не должен пухнуть без предела
+      localStorage.setItem(LOG, JSON.stringify(arr));
+    } catch (e) {}
+  }
+
+  if (logOn) {
+    window.addEventListener('error', function (e) {
+      logPush('ошибка', (e.message || '') + ' @' + (e.filename || '').split('/').pop() + ':' + (e.lineno || ''));
+    });
+    window.addEventListener('unhandledrejection', function (e) {
+      logPush('ошибка', 'promise: ' + String(e.reason));
+    });
+    /* Заголовок ставит уже отрисованный уровень, поэтому ждём: сразу после
+       загрузки в document.title лежит имя предыдущего экрана, и журнал
+       подписывал бы уровни чужими названиями. */
+    setTimeout(function () { logPush('открыт', document.title); }, 900);
+  }
+
   window.nooka = {
     icon: icon,
+    log: logPush,
+    logOn: function () { return logOn; },
     betSet: betSet,
     betGet: betGet,
     betClear: betClear,
@@ -250,6 +294,8 @@
           });
         }
       } catch (e) {}
+
+      logPush('победа', 'опыт +' + gained + ', всего ' + total + (now ? ', умение: ' + now : ''));
 
       var wrap = document.createElement('div');
       wrap.id = 'nooka-win';
